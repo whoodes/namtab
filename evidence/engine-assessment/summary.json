@@ -1,0 +1,247 @@
+{
+  "completed_at": "2026-10-15T17:21:44.132809+00:00",
+  "scope": "Completed bounded BUILD vs ADOPT vs REDESIGN assessment only; no dependent product implementation",
+  "recommendation": "Adopt pinned official libghostty-vt public core for next gated prototype; build owned semantic rendering/contracts; no full VT rewrite now",
+  "verdicts": {
+    "legacy_serializer_X4": "FAIL, original oracle unchanged",
+    "A_revised_xterm": "PASS_BOUNDED_STATE_MODEL; full keys/rendering/recovery/maintenance open",
+    "B_official_libghostty_vt": "PASS_BOUNDED_C_API; production adoption conditional",
+    "C_owned_engine": "ANALYZED_NOT_BUILT; lexer-reuse, fork and scratch investments compared"
+  },
+  "shared_fixture_sha256": "f4be9e644749b53fe236b6bed4b61410230c7775221f2633f51f18b9c904999a",
+  "same_shared_cases": 6,
+  "xterm_split_trials": 111,
+  "ghostty_prefix_split_trials": 86,
+  "ghostty_extended_cases": 5,
+  "foundation_checks_pass": 14,
+  "rust_tests_pass": 15,
+  "js_tests_pass": 12,
+  "existing_seeded_partitions": 192,
+  "environment": {
+    "platform": "linux",
+    "release": "6.8.0-138-generic",
+    "arch": "x64",
+    "cpu_count": 4,
+    "memory_bytes": 16721039360,
+    "os_release": "PRETTY_NAME=\"Ubuntu 22.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"22.04\"\nVERSION=\"22.04.5 LTS (Jammy Jellyfish)\"\nVERSION_CODENAME=jammy\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=jammy\n",
+    "display": "No display/IME/screen-reader or live outer-terminal experiment performed; headless synthetic tests only."
+  },
+  "commands": {
+    "ghostty-build": {
+      "path": "evidence/engine-assessment/commands/ghostty-build-3.json",
+      "exit": 0,
+      "elapsed_seconds": 0.175,
+      "command": [
+        "/home/w/codex-dir/project-x/.tools/zig/zig-x86_64-linux-0.16.0/zig",
+        "build",
+        "-Demit-lib-vt",
+        "-Dsimd=false",
+        "-Doptimize=ReleaseSafe",
+        "--prefix",
+        "/home/w/codex-dir/project-x/.artifacts/engine-assessment/ghostty"
+      ],
+      "input_file_sha256": {
+        "tests/assessment/ghostty-proof.c": "7f6e4a0ba1daf845bd54d39cc7933dd15422a33747cab424cc8bb2b8d78e51cc",
+        "tests/assessment/ghostty-assessment.mjs": "199a592427cb860e8c03d6716c87719c7d707ce824ee3320fbdc8998feb88def",
+        "tests/assessment/xterm-assessment.mjs": "37cf4c1d9d122600e301d906aed4b1e226840a127346a5c68edfd18e37768a22",
+        "tests/assessment/expectations.json": "36b0186836b1c227cc6b5d18b4141ccedb9a757f0c65c8537237ead4e8e41af3",
+        "tests/fixtures/terminal/continuations.json": "f4be9e644749b53fe236b6bed4b61410230c7775221f2633f51f18b9c904999a"
+      }
+    },
+    "compile-ghostty-proof": {
+      "path": "evidence/engine-assessment/commands/compile-ghostty-proof-6.json",
+      "exit": 0,
+      "elapsed_seconds": 0.119,
+      "command": [
+        "/home/w/codex-dir/project-x/.tools/zig/zig-x86_64-linux-0.16.0/zig",
+        "cc",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-I",
+        "/home/w/codex-dir/project-x/.artifacts/engine-assessment/ghostty/include",
+        "tests/assessment/ghostty-proof.c",
+        "-L",
+        "/home/w/codex-dir/project-x/.artifacts/engine-assessment/ghostty/lib",
+        "-lghostty-vt",
+        "-Wl,-rpath,/home/w/codex-dir/project-x/.artifacts/engine-assessment/ghostty/lib",
+        "-o",
+        "/home/w/codex-dir/project-x/.artifacts/engine-assessment/ghostty-proof"
+      ],
+      "input_file_sha256": {
+        "tests/assessment/ghostty-proof.c": "7f6e4a0ba1daf845bd54d39cc7933dd15422a33747cab424cc8bb2b8d78e51cc",
+        "tests/assessment/ghostty-assessment.mjs": "199a592427cb860e8c03d6716c87719c7d707ce824ee3320fbdc8998feb88def",
+        "tests/assessment/xterm-assessment.mjs": "37cf4c1d9d122600e301d906aed4b1e226840a127346a5c68edfd18e37768a22",
+        "tests/assessment/expectations.json": "36b0186836b1c227cc6b5d18b4141ccedb9a757f0c65c8537237ead4e8e41af3",
+        "tests/fixtures/terminal/continuations.json": "f4be9e644749b53fe236b6bed4b61410230c7775221f2633f51f18b9c904999a"
+      }
+    },
+    "independent-xterm-oracle": {
+      "path": "evidence/engine-assessment/commands/independent-xterm-oracle-3.json",
+      "exit": 0,
+      "elapsed_seconds": 0.5,
+      "command": [
+        "node",
+        "tests/assessment/xterm-assessment.mjs"
+      ],
+      "input_file_sha256": {
+        "tests/assessment/ghostty-proof.c": "7f6e4a0ba1daf845bd54d39cc7933dd15422a33747cab424cc8bb2b8d78e51cc",
+        "tests/assessment/ghostty-assessment.mjs": "199a592427cb860e8c03d6716c87719c7d707ce824ee3320fbdc8998feb88def",
+        "tests/assessment/xterm-assessment.mjs": "37cf4c1d9d122600e301d906aed4b1e226840a127346a5c68edfd18e37768a22",
+        "tests/assessment/expectations.json": "36b0186836b1c227cc6b5d18b4141ccedb9a757f0c65c8537237ead4e8e41af3",
+        "tests/fixtures/terminal/continuations.json": "f4be9e644749b53fe236b6bed4b61410230c7775221f2633f51f18b9c904999a"
+      }
+    },
+    "ghostty-fixture-proof": {
+      "path": "evidence/engine-assessment/commands/ghostty-fixture-proof-3.json",
+      "exit": 0,
+      "elapsed_seconds": 2.851,
+      "command": [
+        "node",
+        "tests/assessment/ghostty-assessment.mjs"
+      ],
+      "input_file_sha256": {
+        "tests/assessment/ghostty-proof.c": "7f6e4a0ba1daf845bd54d39cc7933dd15422a33747cab424cc8bb2b8d78e51cc",
+        "tests/assessment/ghostty-assessment.mjs": "199a592427cb860e8c03d6716c87719c7d707ce824ee3320fbdc8998feb88def",
+        "tests/assessment/xterm-assessment.mjs": "37cf4c1d9d122600e301d906aed4b1e226840a127346a5c68edfd18e37768a22",
+        "tests/assessment/expectations.json": "36b0186836b1c227cc6b5d18b4141ccedb9a757f0c65c8537237ead4e8e41af3",
+        "tests/fixtures/terminal/continuations.json": "f4be9e644749b53fe236b6bed4b61410230c7775221f2633f51f18b9c904999a"
+      }
+    },
+    "preserved-original-x4": {
+      "path": "evidence/engine-assessment/commands/preserved-original-x4-1.json",
+      "exit": 1,
+      "elapsed_seconds": 0.114,
+      "command": [
+        "node",
+        "tests/system/engine-probe.mjs",
+        "--require-pass"
+      ],
+      "input_file_sha256": {
+        "tests/assessment/ghostty-proof.c": "4d7b88f7552c19b923edd7b70a5d55380ba567013ade58d8f398af762cd95a13",
+        "tests/assessment/ghostty-assessment.mjs": "12ab7d16a80c9a9710df273a590a413cc08818b219d2d9cdaabe470268bf59c8",
+        "tests/assessment/xterm-assessment.mjs": "37cf4c1d9d122600e301d906aed4b1e226840a127346a5c68edfd18e37768a22",
+        "tests/assessment/expectations.json": "36b0186836b1c227cc6b5d18b4141ccedb9a757f0c65c8537237ead4e8e41af3",
+        "tests/fixtures/terminal/continuations.json": "f4be9e644749b53fe236b6bed4b61410230c7775221f2633f51f18b9c904999a"
+      }
+    },
+    "zig-version": {
+      "path": "evidence/engine-assessment/commands/zig-version-1.json",
+      "exit": 0,
+      "elapsed_seconds": 0.009,
+      "command": [
+        ".tools/zig/zig-x86_64-linux-0.16.0/zig",
+        "version"
+      ],
+      "input_file_sha256": {
+        "tests/assessment/ghostty-proof.c": "4d7b88f7552c19b923edd7b70a5d55380ba567013ade58d8f398af762cd95a13",
+        "tests/assessment/ghostty-assessment.mjs": "12ab7d16a80c9a9710df273a590a413cc08818b219d2d9cdaabe470268bf59c8",
+        "tests/assessment/xterm-assessment.mjs": "37cf4c1d9d122600e301d906aed4b1e226840a127346a5c68edfd18e37768a22",
+        "tests/assessment/expectations.json": "36b0186836b1c227cc6b5d18b4141ccedb9a757f0c65c8537237ead4e8e41af3",
+        "tests/fixtures/terminal/continuations.json": "f4be9e644749b53fe236b6bed4b61410230c7775221f2633f51f18b9c904999a"
+      }
+    },
+    "zig-cc-version": {
+      "path": "evidence/engine-assessment/commands/zig-cc-version-1.json",
+      "exit": 0,
+      "elapsed_seconds": 0.035,
+      "command": [
+        ".tools/zig/zig-x86_64-linux-0.16.0/zig",
+        "cc",
+        "--version"
+      ],
+      "input_file_sha256": {
+        "tests/assessment/ghostty-proof.c": "4d7b88f7552c19b923edd7b70a5d55380ba567013ade58d8f398af762cd95a13",
+        "tests/assessment/ghostty-assessment.mjs": "12ab7d16a80c9a9710df273a590a413cc08818b219d2d9cdaabe470268bf59c8",
+        "tests/assessment/xterm-assessment.mjs": "37cf4c1d9d122600e301d906aed4b1e226840a127346a5c68edfd18e37768a22",
+        "tests/assessment/expectations.json": "36b0186836b1c227cc6b5d18b4141ccedb9a757f0c65c8537237ead4e8e41af3",
+        "tests/fixtures/terminal/continuations.json": "f4be9e644749b53fe236b6bed4b61410230c7775221f2633f51f18b9c904999a"
+      }
+    },
+    "final-foundation": {
+      "path": "evidence/engine-assessment/commands/final-foundation-1.json",
+      "exit": 0,
+      "elapsed_seconds": 6.962,
+      "command": [
+        "make",
+        "verify"
+      ],
+      "input_file_sha256": {
+        "tests/assessment/ghostty-proof.c": "4d7b88f7552c19b923edd7b70a5d55380ba567013ade58d8f398af762cd95a13",
+        "tests/assessment/ghostty-assessment.mjs": "12ab7d16a80c9a9710df273a590a413cc08818b219d2d9cdaabe470268bf59c8",
+        "tests/assessment/xterm-assessment.mjs": "37cf4c1d9d122600e301d906aed4b1e226840a127346a5c68edfd18e37768a22",
+        "tests/assessment/expectations.json": "36b0186836b1c227cc6b5d18b4141ccedb9a757f0c65c8537237ead4e8e41af3",
+        "tests/fixtures/terminal/continuations.json": "f4be9e644749b53fe236b6bed4b61410230c7775221f2633f51f18b9c904999a"
+      }
+    },
+    "final-docs": {
+      "path": "evidence/engine-assessment/commands/final-docs-3.json",
+      "exit": 0,
+      "elapsed_seconds": 0.74,
+      "command": [
+        "make",
+        "docs"
+      ],
+      "input_file_sha256": {
+        "tests/assessment/ghostty-proof.c": "7f6e4a0ba1daf845bd54d39cc7933dd15422a33747cab424cc8bb2b8d78e51cc",
+        "tests/assessment/ghostty-assessment.mjs": "199a592427cb860e8c03d6716c87719c7d707ce824ee3320fbdc8998feb88def",
+        "tests/assessment/xterm-assessment.mjs": "37cf4c1d9d122600e301d906aed4b1e226840a127346a5c68edfd18e37768a22",
+        "tests/assessment/expectations.json": "36b0186836b1c227cc6b5d18b4141ccedb9a757f0c65c8537237ead4e8e41af3",
+        "tests/fixtures/terminal/continuations.json": "f4be9e644749b53fe236b6bed4b61410230c7775221f2633f51f18b9c904999a"
+      }
+    },
+    "final-style-and-contract-check": {
+      "path": "evidence/engine-assessment/commands/final-style-and-contract-check-1.json",
+      "exit": 0,
+      "elapsed_seconds": 2.463,
+      "command": [
+        "make",
+        "check"
+      ],
+      "input_file_sha256": {
+        "tests/assessment/ghostty-proof.c": "7f6e4a0ba1daf845bd54d39cc7933dd15422a33747cab424cc8bb2b8d78e51cc",
+        "tests/assessment/ghostty-assessment.mjs": "199a592427cb860e8c03d6716c87719c7d707ce824ee3320fbdc8998feb88def",
+        "tests/assessment/xterm-assessment.mjs": "37cf4c1d9d122600e301d906aed4b1e226840a127346a5c68edfd18e37768a22",
+        "tests/assessment/expectations.json": "36b0186836b1c227cc6b5d18b4141ccedb9a757f0c65c8537237ead4e8e41af3",
+        "tests/fixtures/terminal/continuations.json": "f4be9e644749b53fe236b6bed4b61410230c7775221f2633f51f18b9c904999a"
+      }
+    }
+  },
+  "built_artifact_hashes_verified": [
+    {
+      "path": ".artifacts/engine-assessment/ghostty/lib/libghostty-vt.a",
+      "sha256": "ed77c34ee7e89ba58afd5a14a11254b18ca81d60a7e329e5cc2efa1ff6e26452"
+    },
+    {
+      "path": ".artifacts/engine-assessment/ghostty/lib/libghostty-vt.so.0.1.0",
+      "sha256": "7233966bb39275b8445a9a8b970170ef6fd109b8b8feb8b164cce00be40d588a"
+    }
+  ],
+  "estimate_not_measurement": {
+    "owned_semantic_core_with_lexer": "3\u20135 experienced engineers / 9\u201318 months",
+    "scratch_core": "4\u20136 experienced engineers / 18\u201330 months",
+    "own_core_plus_two_frontend_terminal_subsystem": "6\u20139 engineers / 18\u201336 months; excludes agent supervision/isolation/remote and full port qualification"
+  },
+  "limits": [
+    "No real renderer/IME/screen-reader/host terminal or application conformance",
+    "No Rust FFI or process/PTY/runtime implementation",
+    "No actual crash/checkpoint-tail/capture-consent or cross-version/architecture recovery",
+    "No G6 all-process performance/security/fuzz/upgrade clearance",
+    "No project license adopted, remotes, commits or publication"
+  ],
+  "documentation": {
+    "canonical_pages": 22,
+    "markdown_files": 25,
+    "local_links_and_fragments": 380,
+    "strict_mkdocs": "PASS, zero warnings/errors"
+  },
+  "original_preservation": "17 prior files hash-archived; original fixture/oracle/manifest and old X4 result bytes unchanged; 19 prior specification pages separately hash-archived",
+  "reviewed_source_sha256": {
+    "tests/assessment/expectations.json": "36b0186836b1c227cc6b5d18b4141ccedb9a757f0c65c8537237ead4e8e41af3",
+    "tests/assessment/ghostty-assessment.mjs": "199a592427cb860e8c03d6716c87719c7d707ce824ee3320fbdc8998feb88def",
+    "tests/assessment/ghostty-proof.c": "7f6e4a0ba1daf845bd54d39cc7933dd15422a33747cab424cc8bb2b8d78e51cc",
+    "tests/assessment/xterm-assessment.mjs": "37cf4c1d9d122600e301d906aed4b1e226840a127346a5c68edfd18e37768a22"
+  },
+  "reviewable_files": 143
+}

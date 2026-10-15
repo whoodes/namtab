@@ -1,0 +1,85 @@
+{
+  "main": {
+    "sha": "22fa134a07f5749edd9e92c6bc17d8aaf61843be",
+    "date": "2026-10-15T08:22:33Z"
+  },
+  "releases": [
+    {
+      "tag": "tip",
+      "date": "2022-11-17T19:22:01Z",
+      "prerelease": true,
+      "assets": [
+        {
+          "name": "ghostty-macos-universal-debug-fast.zip",
+          "url": "https://github.com/ghostty-org/ghostty/releases/download/tip/ghostty-macos-universal-debug-fast.zip",
+          "digest": "sha256:738c9f1ce18efa3d198163abce4d9db5f7b493c6f66c255ec7e92bd002dd56d7"
+        },
+        {
+          "name": "ghostty-macos-universal-debug-slow.zip",
+          "url": "https://github.com/ghostty-org/ghostty/releases/download/tip/ghostty-macos-universal-debug-slow.zip",
+          "digest": "sha256:c7fa8f4faa40795693d51d4d9c008a1c9948e9401a56b4ed0f76203f614aafa9"
+        },
+        {
+          "name": "ghostty-macos-universal.zip",
+          "url": "https://github.com/ghostty-org/ghostty/releases/download/tip/ghostty-macos-universal.zip",
+          "digest": "sha256:6ce128e0c3f333d77a4f2be157446f217259233cc865ad5ecb3e7b92e3df59a4"
+        },
+        {
+          "name": "ghostty-source.tar.gz",
+          "url": "https://github.com/ghostty-org/ghostty/releases/download/tip/ghostty-source.tar.gz",
+          "digest": "sha256:6c1039b118dd06776512436fedf741a23647ec7441be5ce43e5d1aadc39258e8"
+        },
+        {
+          "name": "ghostty-source.tar.gz.minisig",
+          "url": "https://github.com/ghostty-org/ghostty/releases/download/tip/ghostty-source.tar.gz.minisig",
+          "digest": "sha256:2d3a2efb3bb076e9c215cfb9fc93cd276ed2044d36501671d4c04b0e6ddb9156"
+        },
+        {
+          "name": "ghostty-vt-small.wasm",
+          "url": "https://github.com/ghostty-org/ghostty/releases/download/tip/ghostty-vt-small.wasm",
+          "digest": "sha256:37ecd882cac5ff05e8c3948a086b5f3b19dbb0bbb413aa45b4464358e937c2a5"
+        },
+        {
+          "name": "ghostty-vt-small.wasm.minisig",
+          "url": "https://github.com/ghostty-org/ghostty/releases/download/tip/ghostty-vt-small.wasm.minisig",
+          "digest": "sha256:e70f804dbbfeb3efa1bcb5cfd2ceabb42f8bbc085b213f6c7c63837a012242a3"
+        },
+        {
+          "name": "ghostty-vt.wasm",
+          "url": "https://github.com/ghostty-org/ghostty/releases/download/tip/ghostty-vt.wasm",
+          "digest": "sha256:46dc8159e2de7b31733456f428fde6ca0a4d9425395ff9583a449f79cc60049d"
+        },
+        {
+          "name": "ghostty-vt.wasm.minisig",
+          "url": "https://github.com/ghostty-org/ghostty/releases/download/tip/ghostty-vt.wasm.minisig",
+          "digest": "sha256:6f6eb46b18c998082c816e80619ebf7b1fe589bcb5e6f81aa4ec2935486639d1"
+        },
+        {
+          "name": "ghostty-vt.xcframework.zip",
+          "url": "https://github.com/ghostty-org/ghostty/releases/download/tip/ghostty-vt.xcframework.zip",
+          "digest": "sha256:469a74544746ba0ce9279a9e3405336c9c881c1c526b25a3f06341274cbae4e4"
+        },
+        {
+          "name": "ghostty-vt.xcframework.zip.minisig",
+          "url": "https://github.com/ghostty-org/ghostty/releases/download/tip/ghostty-vt.xcframework.zip.minisig",
+          "digest": "sha256:2115b8ae4c84d1a07f4ab2ad180d59edfb8bd658428538453c4bd8c0af3f9c56"
+        },
+        {
+          "name": "Ghostty.dmg",
+          "url": "https://github.com/ghostty-org/ghostty/releases/download/tip/Ghostty.dmg",
+          "digest": "sha256:85b6c2174ff58a9ccdf4c6041f7c70623010f0cf3fa5e057ad13067857fe376d"
+        },
+        {
+          "name": "libghostty-vt-source.tar.gz",
+          "url": "https://github.com/ghostty-org/ghostty/releases/download/tip/libghostty-vt-source.tar.gz",
+          "digest": "sha256:bd682eb401f83a693cd2f7cb4834c7bb81f2f00bd9bff89dfcfcf6c1041f2258"
+        },
+        {
+          "name": "libghostty-vt-source.tar.gz.minisig",
+          "url": "https://github.com/ghostty-org/ghostty/releases/download/tip/libghostty-vt-source.tar.gz.minisig",
+          "digest": "sha256:3196f484f0a77a8868680c623352b7a1113579c09e7c7777f76dbb4e4997e528"
+        }
+      ]
+    }
+  ]
+}

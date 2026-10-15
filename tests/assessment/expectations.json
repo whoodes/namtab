@@ -1,0 +1,36 @@
+{
+  "oracle": "Session-authored independent expectations for cursor/text; not generated from engine output. Coordinates zero-based. Attribute check on partial-csi is additional to the old text-only oracle.",
+  "cases": {
+    "plain": {
+      "lines": ["hello world", "", "", "", ""],
+      "cursor": [11, 0],
+      "buffer": "normal"
+    },
+    "saved-cursor": {
+      "lines": ["", "  X", "", "", ""],
+      "cursor": [3, 1],
+      "buffer": "normal"
+    },
+    "scroll-region": {
+      "lines": ["1", "3", "4", "X", "5"],
+      "cursor": [1, 3],
+      "buffer": "normal"
+    },
+    "custom-tabs": {
+      "lines": ["   X", "", "", "", ""],
+      "cursor": [4, 0],
+      "buffer": "normal"
+    },
+    "alternate": {
+      "lines": ["normalZ", "", "", "", ""],
+      "cursor": [7, 0],
+      "buffer": "normal"
+    },
+    "partial-csi": {
+      "lines": ["X", "", "", "", ""],
+      "cursor": [1, 0],
+      "buffer": "normal",
+      "foregroundPaletteAtOrigin": 1
+    }
+  }
+}

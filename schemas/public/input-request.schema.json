@@ -1,0 +1,153 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "InputRequest",
+  "type": "object",
+  "properties": {
+    "context": {
+      "$ref": "#/definitions/Context"
+    },
+    "intent": {
+      "$ref": "#/definitions/Intent"
+    },
+    "request_id": {
+      "type": "string"
+    },
+    "version": {
+      "type": "integer",
+      "maximum": 255,
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "request_id",
+    "context",
+    "intent"
+  ],
+  "definitions": {
+    "Context": {
+      "type": "object",
+      "properties": {
+        "endpoint": {
+          "type": "string"
+        },
+        "focus": {
+          "type": "string"
+        },
+        "generation": {
+          "type": "string"
+        },
+        "geometry": {
+          "type": "string"
+        },
+        "incarnation": {
+          "type": "string"
+        },
+        "prefix": {
+          "type": "string"
+        },
+        "profile": {
+          "type": "string"
+        },
+        "session": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "session",
+        "incarnation",
+        "endpoint",
+        "generation",
+        "prefix",
+        "geometry",
+        "profile",
+        "focus"
+      ]
+    },
+    "Intent": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "alt": {
+              "type": "boolean"
+            },
+            "ctrl": {
+              "type": "boolean"
+            },
+            "key": {
+              "$ref": "#/definitions/Key"
+            },
+            "kind": {
+              "type": "string",
+              "const": "key"
+            },
+            "shift": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "key",
+            "shift",
+            "alt",
+            "ctrl"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "text"
+            },
+            "text": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "text"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "paste"
+            },
+            "text": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "text"
+          ]
+        }
+      ]
+    },
+    "Key": {
+      "type": "string",
+      "enum": [
+        "Up",
+        "Down",
+        "Left",
+        "Right",
+        "Tab",
+        "Enter",
+        "Escape",
+        "Backspace",
+        "F1",
+        "F12",
+        "KeypadEnter"
+      ]
+    }
+  }
+}

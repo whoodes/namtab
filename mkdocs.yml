@@ -1,0 +1,49 @@
+site_name: Project X
+site_description: Local engineering evidence and agent-first terminal design
+site_dir: .artifacts/site
+strict: true
+theme:
+  name: mkdocs
+  navigation_depth: 3
+markdown_extensions:
+  - tables
+  - fenced_code
+  - toc:
+      permalink: true
+validation:
+  nav:
+    omitted_files: warn
+    not_found: warn
+  links:
+    not_found: warn
+    anchors: warn
+    unrecognized_links: warn
+nav:
+  - "Design index": "index.md"
+  - "Engineering evidence":
+      - "BUILD / ADOPT / REDESIGN": "engineering/19-engine-build-adopt-redesign-assessment.md"
+      - "Foundation and gate results": "engineering/18-foundation-gate-results.md"
+  - "Product":
+      - "Scope and supervision": "product/01-product-and-supervision.md"
+      - "Evidence and coordination": "product/02-work-evidence-and-coordination.md"
+  - "Architecture":
+      - "Engine ownership decision": "adr/0001-engine-ownership-and-presentation.md"
+      - "Continuity / checkpoint decision": "adr/0002-terminal-continuity-and-checkpoints.md"
+      - "Recommended baseline / ADRs": "architecture/10-recommended-baseline-and-adrs.md"
+      - "Execution and navigation": "architecture/03-execution-terminal-and-remote.md"
+      - "Isolation and approvals": "architecture/04-isolation-security-and-approvals.md"
+      - "Storage and extensions": "architecture/05-architecture-storage-and-extensions.md"
+  - "Human experience":
+      - "Desktop and shared UX": "ux/11-human-experience-spec.md"
+      - "Host TUI and parity": "ux/13-dual-frontend-and-host-tui.md"
+  - "Engineering":
+      - "Ordered prototypes": "engineering/12-prototype-plan.md"
+      - "Repository and practices": "engineering/14-repository-and-engineering-practices.md"
+      - "Dependencies": "engineering/15-dependencies-and-supply-chain.md"
+      - "Tests and CI": "engineering/16-test-and-ci-strategy.md"
+      - "xterm risks / vetoes": "engineering/17-xterm-adapter-risk-and-gates.md"
+      - "Validation and roadmap": "engineering/07-validation-roadmap-and-risks.md"
+  - "Research and review":
+      - "Technology comparisons": "research/06-technology-distribution-and-compatibility.md"
+      - "Source ledger / decisions": "research/08-research-and-decisions.md"
+      - "Prior self-reviews": "reviews/09-self-review-and-coverage.md"

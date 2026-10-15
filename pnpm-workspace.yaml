@@ -1,0 +1,10 @@
+packages:
+  - apps/*
+  - packages/*
+storeDir: .cache/pnpm-store
+cacheDir: .cache/pnpm-cache
+stateDir: .cache/pnpm-state
+ignoreScripts: true
+strictPeerDependencies: true
+minimumReleaseAge: 10080
+managePackageManagerVersions: false

@@ -1,0 +1,6 @@
+{
+  "version": 1,
+  "request_id": "synthetic-1",
+  "context": {"session": "session-1", "incarnation": "inc-1", "endpoint": "client-1", "generation": "1", "prefix": "5", "geometry": "1", "profile": "1", "focus": "1"},
+  "intent": {"kind": "key", "key": "Up", "shift": false, "alt": false, "ctrl": false}
+}

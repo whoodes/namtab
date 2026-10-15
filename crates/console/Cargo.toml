@@ -1,0 +1,15 @@
+[package]
+name = "project-x-console"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+project-x-client = { path = "../client" }
+ratatui.workspace = true
+crossterm.workspace = true
+serde_json.workspace = true

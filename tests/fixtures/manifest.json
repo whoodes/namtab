@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "files": [
+    {
+      "path": "input/request.json",
+      "sha256": "d4ac6148b69efa10c86893f17272bd7187e5fed861a6d550c574bdda59980b3b",
+      "origin": "Session-authored synthetic fixture; no captured data"
+    },
+    {
+      "path": "terminal/continuations.json",
+      "sha256": "f4be9e644749b53fe236b6bed4b61410230c7775221f2633f51f18b9c904999a",
+      "origin": "Session-authored synthetic fixture; no captured data"
+    }
+  ]
+}

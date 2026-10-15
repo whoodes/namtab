@@ -1,0 +1,27 @@
+{
+  "command": [
+    ".artifacts/engine-assessment/ghostty-proof",
+    "--controls"
+  ],
+  "cwd": ".",
+  "recorded_at": "2026-10-15T16:49:08.249033+00:00",
+  "elapsed_seconds": 0.013,
+  "timeout_seconds": 300,
+  "exit": 0,
+  "verdict": "PASS",
+  "error": null,
+  "environment_overrides": {
+    "CARGO_HOME": "/home/w/codex-dir/project-x/.cache/cargo",
+    "PIP_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/pip",
+    "XDG_CACHE_HOME": "/home/w/codex-dir/project-x/.cache/xdg",
+    "XDG_DATA_HOME": "/home/w/codex-dir/project-x/.cache/xdg-data",
+    "XDG_STATE_HOME": "/home/w/codex-dir/project-x/.cache/xdg-state",
+    "ZIG_GLOBAL_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/engine-assessment/zig-global",
+    "ZIG_LOCAL_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/engine-assessment/zig-local",
+    "NPM_CONFIG_USERCONFIG": "/dev/null",
+    "NPM_CONFIG_GLOBALCONFIG": "/dev/null"
+  },
+  "stdout": "{\"upNormal\":\"1b5b41\",\"keypadNormal\":\"0d\",\"upApplication\":\"1b4f41\",\"keypadApplicationDefault1035\":\"0d\",\"keypadApplication\":\"1b4f4d\",\"ctrlUp\":\"1b5b313b3541\",\"shiftTab\":\"1b5b5a\",\"f12\":\"1b5b32347e\",\"canonicalReplyEvents\":2,\"canonicalReplies\":\"1b5b313b31521b5b313b3152\",\"restoreEffectEvents\":0,\"restoredNewReplyEvents\":2,\"overLimitContinuationEncodeResult\":-2}\n",
+  "stderr": "",
+  "output_truncated": false
+}

@@ -1,0 +1,114 @@
+{
+  "date": "2026-10-15",
+  "method": "Relocation plus relative Markdown link rewrites only at the recorded migration boundary. Original and migrated hashes precede engineering-status/anchor edits recorded in document 18. The manifest is provenance, not a retained byte archive. No divergent canonical design copies.",
+  "documents": [
+    {
+      "original": "17-xterm-adapter-risk-and-gates.md",
+      "destination": "docs/engineering/17-xterm-adapter-risk-and-gates.md",
+      "original_sha256": "ef2591fdca58505be1418260eda33dec73c75e9de2216f095db871cff236a2c1",
+      "migrated_sha256": "81cde6815dd176121bebeb8582e860a86c6cff2572eb7349a1ce5a89af5576da"
+    },
+    {
+      "original": "10-recommended-baseline-and-adrs.md",
+      "destination": "docs/architecture/10-recommended-baseline-and-adrs.md",
+      "original_sha256": "41370f3702263b188b30fbd470b0da786a61f154b5878999976ca49f365da558",
+      "migrated_sha256": "9434cab30929cef5e3cc420b74ee62e3795b8ed432eea52083978f7834ddce8c"
+    },
+    {
+      "original": "11-human-experience-spec.md",
+      "destination": "docs/ux/11-human-experience-spec.md",
+      "original_sha256": "f1c48a37d30dc00c74315c2a1eb33f352047226d3c3470bd2f491a078b405dae",
+      "migrated_sha256": "34571a5f8bd7a18e1c7b61834f1ce3bf4d7323c3f3e0aaa71f144821635769da"
+    },
+    {
+      "original": "12-prototype-plan.md",
+      "destination": "docs/engineering/12-prototype-plan.md",
+      "original_sha256": "db972d3ac9383ff46ed791cf70d12a6c743de84ec89e9b449d1f0fd90040d3f8",
+      "migrated_sha256": "c2b75307beae0bd8a1805a251815a024044c99469d8dd21a669e2beaef2140c6"
+    },
+    {
+      "original": "04-isolation-security-and-approvals.md",
+      "destination": "docs/architecture/04-isolation-security-and-approvals.md",
+      "original_sha256": "b4dedd110be792c740a48b9cd81e26fe86fc053bf7b6f312d86e2d01f56cd2f8",
+      "migrated_sha256": "c1b1ce1f7c9a21e5127645df6e56d7e2a6243f25f06cd93d266820911701f8a2"
+    },
+    {
+      "original": "13-dual-frontend-and-host-tui.md",
+      "destination": "docs/ux/13-dual-frontend-and-host-tui.md",
+      "original_sha256": "89d9bdb690fa7e9ae4335221be670ad739945afb625be35dd630411b758644dd",
+      "migrated_sha256": "1d66f82b356b85250482842dc3e6a47822c05fb39d867ee002c075c3f2425a10"
+    },
+    {
+      "original": "09-self-review-and-coverage.md",
+      "destination": "docs/reviews/09-self-review-and-coverage.md",
+      "original_sha256": "05ded5cec48f83f74eeecaedd2fe5d28d11beba2298ed3a4bf604b7c4fac9ec0",
+      "migrated_sha256": "76c5df92846d5a93bc9cefbc2d0991d2b4e21ef6046b3d0e1639d98598a172a2"
+    },
+    {
+      "original": "02-work-evidence-and-coordination.md",
+      "destination": "docs/product/02-work-evidence-and-coordination.md",
+      "original_sha256": "36a80549c19c165856bd73e74dbc8c7e41f1c2a415a73f4a3b72a7b527d74ac3",
+      "migrated_sha256": "d80438eaab8363d3b27e2f89b33ab509e62acf75c49711223f858450d3afa126"
+    },
+    {
+      "original": "08-research-and-decisions.md",
+      "destination": "docs/research/08-research-and-decisions.md",
+      "original_sha256": "cf79d4741a7cdcb167b03e637cd56a6ae8d4bed574bde11124a498def8784ac9",
+      "migrated_sha256": "d6f7816ce1a1b84d79e0daf9594512f83b1ff3592d391e82aa0e7683bf7ea8ea"
+    },
+    {
+      "original": "14-repository-and-engineering-practices.md",
+      "destination": "docs/engineering/14-repository-and-engineering-practices.md",
+      "original_sha256": "89aca5502a5e46c9f99358f351b45c7483a9ee046fa4801925470f9cae6c0845",
+      "migrated_sha256": "5e4adbe825ec92be60f0cec156e6455ed761b52a16bde9fe1a0c484188ba7f66"
+    },
+    {
+      "original": "03-execution-terminal-and-remote.md",
+      "destination": "docs/architecture/03-execution-terminal-and-remote.md",
+      "original_sha256": "7317fe6dab266a4577aa41529342a8013945950c99ceab0069bc417c0fbd279c",
+      "migrated_sha256": "241e8c4da0f3b699e4d7aaf7f3475fccf7388ad2637695f3174e4ac51ebd12df"
+    },
+    {
+      "original": "05-architecture-storage-and-extensions.md",
+      "destination": "docs/architecture/05-architecture-storage-and-extensions.md",
+      "original_sha256": "aa02e41010e66a11aa39f041e8bd9b6da75d29253810c77c126c08234d1ece74",
+      "migrated_sha256": "cbcfca61efc04536b33525fe0bbc7cd5bba7cb8a1846545cd9867ecd8e1ba21d"
+    },
+    {
+      "original": "01-product-and-supervision.md",
+      "destination": "docs/product/01-product-and-supervision.md",
+      "original_sha256": "d114418696893f5d864c3ba91efe53cbe73a59961926c33ad68d0d43458229bd",
+      "migrated_sha256": "d56fb30e9ed6180c5e8115ef6cb0cbfeabbe5fc839be9b67603fc28e750b7a13"
+    },
+    {
+      "original": "16-test-and-ci-strategy.md",
+      "destination": "docs/engineering/16-test-and-ci-strategy.md",
+      "original_sha256": "f5c98109b868a0e63cc12d0acbfac109eec57695ff6568a0578254f636f4b450",
+      "migrated_sha256": "d59b184f52d35f42ab47fc3adbdcef790924fa8b236b00efafe8232db02137ca"
+    },
+    {
+      "original": "07-validation-roadmap-and-risks.md",
+      "destination": "docs/engineering/07-validation-roadmap-and-risks.md",
+      "original_sha256": "99f5eb73700ca45f5ef6aa0251a78086e4581990bf7b2770882fd50f9dfedb60",
+      "migrated_sha256": "7f2579a7b588caeee28e627883c22d854954d0be2fe8289ecb1efa67902ae404"
+    },
+    {
+      "original": "15-dependencies-and-supply-chain.md",
+      "destination": "docs/engineering/15-dependencies-and-supply-chain.md",
+      "original_sha256": "b880d5ce7248100ab738f569f3a48ada05061ea908e1aa9ded5eba131ddd41fe",
+      "migrated_sha256": "9b3f347cfe6d0f23dbf65022439140873b36ea4b2df6ac1d4937ebb068f5c3be"
+    },
+    {
+      "original": "06-technology-distribution-and-compatibility.md",
+      "destination": "docs/research/06-technology-distribution-and-compatibility.md",
+      "original_sha256": "2f71b0801baee281562221483218846e039715cf1388ba92d4d207672507277d",
+      "migrated_sha256": "4379b52a54b150dc4cf4678860c148dfd6c5fe6941cce28d24997da9c71e6e65"
+    },
+    {
+      "original": "README.md",
+      "destination": "docs/index.md",
+      "original_sha256": "2e59f77023581a71193da5d0f966a20eddaaa713bbd90da63b6c9bd0beda36ca",
+      "migrated_sha256": "4e3bad68a44540c9bfa9ccb97243b5d9c8e0f6e4fb3ff602c72f3ae5de3cf57e"
+    }
+  ]
+}

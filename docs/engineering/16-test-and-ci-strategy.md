@@ -1,0 +1,130 @@
+# Tests, CI lanes and dual-frontend validation
+
+> Current executable subset: Rust unit/properties, generated-wire and synthetic dual-client normalization, headless continuation/query/chunk tests, seeded partitions, static boundaries and strict docs. A check workflow is authored but has not run on a CI provider. X4 is red. The wider lanes below remain requirements; see [evidence](18-foundation-gate-results.md).
+
+
+[Index](../index.md) · [Existing suites and navigation cases](07-validation-roadmap-and-risks.md) · [Engineering practices](14-repository-and-engineering-practices.md) · [xterm gates](17-xterm-adapter-risk-and-gates.md)
+
+**Target test strategy, partially bootstrapped.** This document defines full-product acceptance and cost controls; 18 records the actual smaller executable subset. No full-product benchmark or real frontend/runtime certification exists. T1–T13/N01–N16 and PP1–PP8 remain the core catalog; new dual-client cases refine it rather than duplicate every application journey.
+
+## Layered test infrastructure
+
+| Layer / owner | Concrete test method and fixtures | Evidence / limitation |
+| --- | --- | --- |
+| Domain / domain | Unit and Proptest command/state traces for lifecycle, dependency revisions, approvals, leases, budgets, evidence expiry; injected monotonic/wall clocks and IDs | Reference model independently states permitted transitions; do not merely round-trip the production function. Shrink failures and retain sanitized seeds. A bounded model is not a universal proof |
+| Synchronization / service | Small model-based races for generation fences, reserve/consume/dispatch, receipt pruning and cancellation; optional Loom for actual shared-memory primitives | Exercise before/after boundaries and bounded interleavings. Loom does not explore arbitrary Tokio, SQLite, FDs or kernel behavior |
+| Protocol / protocol + both clients | Valid/invalid schema corpus; frame fragmentation/size/depth/credit; duplicate keys; decimal-string overflow; lossless path bytes; unknown fields; version/capability negotiation | Rust and TS validate identical fixtures. Domain authority decisions come from one broker, not two replicated validators |
+| Emulator / terminal-adapter | Byte/resize/options golden histories, per-boundary chunking, seeded JS mutation, differential references, reply/query event counts | Compare cells/cursor/modes/attributes/frontier and continuation, not just screenshots. Reference disagreement creates a triage item, not majority-vote truth |
+| PTY/process / platform + keeper | Disposable real PTY sessions: shells, foreground pipelines, raw mode, `/dev/tty`, EOF, echo, signal handlers, descendants retaining slave, leader exit, detached jobs | Managed launch/wait/status and merged PTY stream verified separately from pipe stdout/stderr. Mock PTYs cannot establish job control |
+| Frontend behavior / console + desktop | Ratatui TestBackend snapshots/reducer tests; React Testing Library/Vitest; identical broker scenario server; typed requests asserted | Proves view mapping, keyboard routes and displayed state only. A simulated grid/DOM does not establish real emulator input, IME, GPU or screen-reader support |
+| Full system / service + test owner | Real broker/engine/keepers, both clients, controlled CLI/TUI/editor/REPL fixtures, local fake agent/provider and side-effect counter | Verify observed transitions and artifact/process results, including unknowns. No live model/service or user credentials required |
+| Runtime/distribution / security + packaging | Rootless-profile negative tests in disposable qualified VMs; install/update/logout/migration/fault and all-process load | Host controls must actually be available. A skip is not G4 evidence; packages need clean-machine and real-display checks |
+
+Tools are selected in [15](15-dependencies-and-supply-chain.md#test-and-quality-dependencies). Primary methodology references: [Proptest](https://proptest-rs.github.io/proptest/intro.html), [Loom](https://github.com/tokio-rs/loom), [Ratatui TestBackend](https://ratatui.rs/concepts/backends/), [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/), [cargo-fuzz](https://rust-fuzz.github.io/book/cargo-fuzz.html). Tool availability is not evidence these product tests exist.
+
+## Terminal conformance and real interaction
+
+Canonical cases cover split UTF-8 and every split position of representative CSI/OSC/DCS sequences, invalid/overlong inputs, carriage returns, combining/ZWJ/CJK/ambiguous widths, wide-cell continuation, tabs, colors/attributes, wrap/save state, primary/alternate transitions, scroll regions, queries/replies, focus/mouse modes, paste and resize ordering. Include unfinished strings at attach/crash, synchronized-output starvation and payload/cell caps. Enumerating every partition of a long stream is exponential: exhaustively split short minimal fixtures, use seeded partitions/mutation for long streams and publish the bound.
+
+Golden state must include sufficient hidden continuation context to reveal a serializer that only reproduces current pixels. Append adversarial output after reattach; a grid hash alone cannot pass X4. Byte-equivalent chunk histories should reach equivalent state under a fixed deterministic engine/profile/scheduled event ordering; intentionally time-sensitive interactions require separately documented timing tests. No claim of deterministic process execution follows.
+
+Use upstream/reference corpora only with provenance/license review. A differential result is classified as engine bug, profile difference, reference bug or unresolved; never normalize a security or Unicode bug to force agreement. Cargo fuzz targets Rust framing/state parsers; seeded JS harnesses or upstream-compatible tooling target xterm. Do not claim a Rust fuzzer exercised a JS parser just because it sent bytes over IPC. Regressions become small reviewed fixtures; no ongoing fork of terminal semantics solely to make tests green.
+
+Real application matrix starts with clean Bash, dash/POSIX sh, configured Zsh and Fish; pager/menu/curses fixture, Vim/Neovim or configured terminal Emacs, Python/SQLite-like REPL, opaque agent-CLI fixture and a chosen real CLI profile when licensing/protocol review permits. Pin application/config/image versions. Clean profiles are repeatability fixtures, not claims about every user dotfile. Include custom keybindings and inherited virtual environments explicitly. No dependency on Zsh, Powerlevel10k or Oh My Zsh for passing core cases.
+
+Run N01–N16 over native agent API and each human frontend where the outer host can represent the key. Unsupported outer physical combinations are disclosed and tested through Send key; that does not excuse failing the inner mandatory encoding set. Input tests distinguish UI commands, canonical application intents, process controls and terminal-generated replies. File-save/result assertions inspect actual artifacts/processes rather than trusting a status line. Password/MFA/approval fixtures use synthetic secrets and fresh protected contexts; secret values must not reappear in logs, receipt fields, snapshots or support bundles. Known detection limits remain explicit.
+
+## Dual-frontend contract cases
+
+| Case | Required scenario and assertion | Suites/gates |
+| --- | --- | --- |
+| DF01 — Same task truth | TUI, desktop and API see the same revisions, provenance, gaps/expiry and blocked dependency after cursor resume | T1/T10/T14, G2/G8 |
+| DF02 — One writer | Both human clients plus agent compete; focus/select never acquires input; explicit takeover fences all old client generations | T5/T13/T14, N09/N11, G7/G8 |
+| DF03 — Input nesting | Ctrl+G quote/timeout, outer tmux/screen and SSH escape collisions, lone Escape/Alt, missing enhanced reports, paste containing prefix characters | T3/T13/T14, N07/N12/N15, PP2 |
+| DF04 — Display and geometry | TUI canonical cell pages, desktop replica continuation, one size owner, cropped mirror, rapid/tiny resize, Unicode/font mismatch | T2/T4/T14, X3/X4, PP1/PP2 |
+| DF05 — Attach and loss | Detach/suspend/resume either client, kill UI, lose SSH, reconnect after keeper/broker/engine loss, capture off/on | T9/T10/T14, G3; no direct private-store/PTY recovery route |
+| DF06 — Review and protection | Review one revision on both clients; mutate context; old approval fails; known protected prompt/clipboard/paste routes cannot confirm a broker grant; uncertified outer paste separation denies TUI Allow | T5/T7/T8/T14, G2/G5; compromised host UI limits remain |
+| DF07 — Accessibility and configuration | Keyboard-only control, actual screen-reader/host pair, linear mode, ASCII/mono, shared TOML migration and unsupported keymap feedback | T12/T14/T15, G5/G8; no forced font/shell changes |
+| DF08 — Load and separation | TUI-only, desktop-only and both attached at G6 load; UI/backpressure failure never weakens admission; clients cannot reach private endpoints | T7/T12/T14/T15, G6/G8/X5 |
+
+## Crash, storage, runtime and unknown effects
+
+Inject faults at durable approval reservation/consumption, keeper admission, spawn, first/partial/last write, external effect, receipt recording, evidence temporary write/promotion/reference commit, projection checkpoint/cursor cut and migration. Kill each process class separately: console/TUI, Electron main/renderer/GPU, native engine worker (and Node reference host when tested), Rust broker and keeper. A SIGKILL test is not a power-loss test; an injected fsync failure is not proof against every filesystem/controller fault. Add actual supported-filesystem recovery trials for release claims and document hardware assumptions.
+
+Model full/readonly disk, WAL checkpoint obstruction, corrupt/truncated spools/objects, expired IDs, old broker reconnect, competing supervisors, clock rollback, quota exhaustion and slow subscribers. Assert exact zero/partial/full/unknown delivery labels and no automatic duplicate side effect. A local disposable counting service demonstrates “effect happened, receipt lost”; it does not establish exactly-once behavior. Future remote-helper receipts need separate host identity/trust tests.
+
+Runtime tests cover filesystem escapes/symlink races, source seal versus writable workspace, inherited FDs/environment, shared Git administration, desktop/agent/runtime sockets, no network, no-pull image policy and CPU/memory/PID controls. Confirm controller confinement separately from child confinement. CI runs these on a provisioned disposable host with declared rootless prerequisites and no secrets. Missing controls produce unsupported/blocking certification, not silent host fallback. No privileged containers or host runtime socket are made available to untrusted PR code.
+
+## CI lanes and practical cost
+
+Recommend GitHub Actions initially if the project adopts hosting there; the same lane definitions can run locally/elsewhere. A pinned-checkout foundation workflow is now authored, with an intentionally blocking X4 step; no provider account/remote is configured and it has not been executed remotely. Targets below are **future time budgets**, not measured runtimes.
+
+| Lane | Trigger / planned budget | Required scope and merge/release effect |
+| --- | --- | --- |
+| CI0 — Documentation | Docs-only PR, target ≤2 minutes | Links/anchors, fences/tables, identifier coverage and changed decision consistency; no unnecessary compiler/runtime suite |
+| CI1 — Fast PR | Every source PR, target ≤8 minutes on warm clean runner | Format/lint/types, domain/unit/fixed-seed properties, wire/generator drift, both frontend contract/components, minimal PTY/navigation smoke, dependency/import/lock checks; blocking |
+| CI2 — Extended PR | Authority/protocol/terminal/runtime/storage/frontend-input/dependency/packaging changes; target ≤25 minutes | Relevant real PTY and DF cases, engine/reply/reattach corpus, fault boundaries, package assembly smoke and UI E2E; blocking before merge for affected invariants |
+| CI3 — Nightly | Protected main and explicit maintenance runs, bounded shards ≤60 minutes | Larger seeds/fuzz time budgets, differential references, exhaustive small race models, Linux/backend pairwise matrix, long floods and scheduled qualified runtime tests; failures triaged with owner |
+| CI4 — Release | Candidate frozen tuple; machine/human time scheduled explicitly | Complete required G0–G8/X1–X6 evidence for advertised profiles, all-process hardware benchmark, Wayland/X11/Orca/IME, actual host-TUI pairs, package install/update/logout/rollback, SBOM/licenses/provenance and restore/export checks; blocking |
+
+Fast-lane selection is dependency/invariant-aware, not filename-only. Protocol/engine/private-seam changes cannot skip either client. CI1 always retains stale-approval, writer fence, unknown-effect and zero-PTY-UI-command application-input checks. Nightly is not a place to hide a known correctness regression that affects an advertised profile. Avoid the full Cartesian product on every PR: retain a small must-pass core, pairwise environment samples and all critical profile overlays, with periodic/release full declared coverage. Budget long fuzz/performance jobs rather than running them unbounded.
+
+## Determinism, flakiness and quarantines
+
+Inject time/randomness at pure boundaries, pin profiles/locale/timezone/fonts/geometry, and use event/receipt/artifact readiness conditions with deadlines instead of sleeps. Live PTY/SSH/GPU/IME tests still have scheduling variability; report timing distributions and environment, not a deterministic-replay guarantee. Record the seed, minimal fixture and binary/profile tuple on failure. Do not rewrite observation races out of the test to make it stable.
+
+One diagnostic rerun may classify an infrastructure/timing failure, but retain the first failure and never report retry-until-green as a pass. Quarantine requires issue/owner, narrow scope, expiration (initial proposal seven days), reproducible evidence and substitute invariant coverage. Security/authority/data-loss/duplicate-input failures cannot be quarantined to ship the affected capability. A broken required release environment blocks its certification or explicitly removes that profile; “skipped” is not “passed.” Dedicated benchmark machines establish numerical gates; shared CI trends flag changes without inventing precise performance evidence.
+
+## Headless, desktop and OS matrix
+
+| Environment | Required evidence | Cannot establish |
+| --- | --- | --- |
+| Headless Linux | Pure/domain/model/wire, headless parser, fixture replies and real PTY lifecycle | Desktop GPU, Wayland/X11 focus/IME/fonts, actual TUI emulator behavior or screen-reader usability |
+| Linux virtual X11 display | Desktop component/E2E and basic rendering smoke | Native Wayland/real GPU, hardware keyboard/IME, complete Orca behavior |
+| Maintained Ubuntu 24.04/26.04, Wayland/X11 | Initial desktop package/core/runtime and actual assistive interactions | All Ubuntu variants, undisclosed kernel controls or future patches |
+| Real supported outer terminals + tmux/screen | TUI prefix/selection/paste/cleanup, TERM/colors/width and accessibility pair | Every TERM string, host font or altered multiplexer binding |
+| TUI over SSH to installed backend host | Remote outer latency, terminal capability loss, detach/service/logout semantics | Local latency budget or transparent remote process ownership after disconnect |
+| macOS/Windows future native hosts | Client/backend compile smoke early; later native PTY/ConPTY, process, credential, assistive, installer certification | POSIX parity from compilation; Linux container enforcement without explicit VM |
+
+Record the initial outer-terminal versions during PP2, selecting at least a common Linux desktop emulator, Project X Electron, and tmux nested inside a certified emulator. SSH is a transport overlay; Linux virtual console/basic-color behavior has a separate reduced profile. Do not advertise a named emulator/version until tested. This avoids fabricating a support list from project popularity.
+
+Playwright's Electron automation is explicitly experimental. Browser accessibility scans identify some violations, not complete accessibility: keyboard, reading order, actual screen readers and critical human tasks still require manual evidence. [Electron automation](https://playwright.dev/docs/api/class-electron), [accessibility limitations](https://playwright.dev/docs/accessibility-testing)
+
+## All-process performance
+
+Use the existing G6 machine/load and three runs: TUI only (Electron absent), desktop only, and both sharing the same 32 sessions/eight attempts, not two duplicated backends. Include Rust service/keepers/console, native engine worker (Node host for the fallback/reference), Electron main/render/GPU, all snapshots/replicas/queues/indexes. Proposed application budget remains ≤1 GiB and local p95 input-to-visible-paint ≤50 ms, decision updates ≤250 ms, admission revocation ≤100 ms. Treat TUI encode/flush time as insufficient: measure the controlled outer emulator's actual paint. Measure cold shell readiness separately from arbitrary rc files.
+
+For TUI tests report controlled host-emulator/tmux memory/CPU both separately and as complete end-to-end footprint, plus incremental impact versus an idle host; user-owned outer processes are not silently free. Report OS cache and child tool memory separately. Record visible geometry/surfaces, frame cadence, CPU/GPU, parser lag, control latency, dropped display frames and evidence gaps. Remote SSH adds measured network latency outside the local target. No claim of 128-session readiness before its own new budget/study. A shared backend is not evidence that doubled frontend state fits the budget.
+
+## Sanitized fixtures and CI artifact security
+
+Fixture manifests name format/schema, source/license, generator/app/engine/profile versions, deterministic setup, bytes/chunks/resize/input schedule, expected states/replies, consent/sanitization and known limits. Synthetic minimal fixtures are preferred. Do not import user session storage or private transcripts. Sanitizing escape streams can change parsing: regenerate with synthetic values where possible and revalidate the intended behavior. Fixtures are data, never instructions to execute embedded commands. Rendering hostile output belongs in isolated harnesses, not a contributor's ordinary terminal.
+
+Committed reviewed synthetic fixtures follow repository history. Generated synthetic CI logs/screens/traces default to seven days and bounded uploads; release evidence can use 30 days under its declared policy. Real captured output keeps ADR-A6 consent/retention (raw default 24 hours) and is never automatically public-uploaded. Store only minimized failure packets; no environment dumps, provider tokens, home paths or uncensored command lines. Redaction scans are a secondary check, not perfect-secret detection. Artifact viewers treat HTML/links/traces as untrusted and never auto-execute imports. Untrusted jobs have read-only/minimal credentials and cannot publish trusted caches or release artifacts. Lock/license/advisory and SBOM checks are defined in [15](15-dependencies-and-supply-chain.md#pinning-provenance-and-upgrade-policy).
+
+## Invariant-to-test and CI map
+
+| Invariant | Important falsifier / test ownership | Blocking lane/gate |
+| --- | --- | --- |
+| I1 — Legacy without hooks | Clean shell/menu/editor/REPL in both clients with all adapters off; T3/N01–N06 | CI1 smoke, CI2, CI4/G1 |
+| I2 — Distinct lifetimes | Closing/detaching view never completes task; leader exit versus descendants; T1/T6/DF05 | CI1 model, CI2/G3 |
+| I3 — Honest binding/quality | Source/dependency/integration mutation, output expiry/gaps, exception display in both clients; T1/DF01 | CI1/CI2/G2 |
+| I4 — Data not authority | Spoofed shell markers/OSC/dialogs/import config cannot grant or run; T7/DF06 | CI1 denial, CI2/G2/G4 |
+| I5 — One mediated writer | Three clients race takeover/partial write/disconnect; T5/DF02 | CI1 model, CI2/G7 |
+| I6 — Fresh grants, unknown reconciliation | Context changes, lost receipt/consumption crash; no repeated key/effect; T5/T9/N11 | CI1/CI2/G2/G3 |
+| I7 — Worktree not sandbox | Shared Git/FD/socket/path escapes, unavailable controls; T7/PP5 | CI2 qualified subset, CI3/CI4/G4 |
+| I8 — Finite and honest loss | Floods/slow clients/full disk/large cells/replies; T2/T9/DF08 | CI1 caps, CI2, CI3/CI4/G6/X5 |
+| I9 — History not execution replay | Rebuild checkpoint+events, missing canonical state, reboot/remote unknown; T9/DF05 | CI1 model, CI2/G3/X4 |
+| I10 — Versioned scoped extensions | Schema drift, old/unknown fields, malicious adapter, failed migration; T10/T11/T15 | CI1 generation/boundary, CI2/G2/G8 |
+| I11 — Basic offline use | Both clients zero-agent/no-account; clean package without provider/network; J01/DF07 | CI1 contracts, CI2/CI4/G1 |
+| I12 — Claims reflect enforcement | Controller/runtime badges, unsupported-host denial and mutable input limits; T7/DF01/DF06 | CI1 projection, CI2/CI4/G4/G5 |
+| I13 — Core agent navigation | N01–N16, exact target/prefix, UI commands zero managed application-input bytes; T13/DF02–DF04 | CI1 minimal, CI2/CI4/G7/X2/X3 |
+| I14 — Two clients, one authority | Forbidden imports/endpoints, shared decisions, client-specific key limits, cross-client attach/takeover; T14/T15/DF01–DF08 | CI1 boundary/contracts, CI2/CI4/G8 |
+
+Passing tests support only the pinned profile and covered failure boundaries. Structural documentation checks performed now cannot satisfy any runtime gate in this table.
+
+## Executed engine assessment extension
+
+[19](19-engine-build-adopt-redesign-assessment.md) and ADR E1/E2 add separate assessment commands: original X4 independently FAIL; A canonical/cell/replay model PASS; B public C snapshot/key proof PASS at bounded scope; C ownership is analyzed without a toy implementation. Hand-authored independent expectations, attribute checks, oracle mutation rejection, 111 xterm complete-history splits and 86 Ghostty prefix splits supplement the unchanged corpus. Five extra Ghostty state cases and malformed/version/continuation-limit refusals pass. Native grid traversal is an oracle technique, not a renderer benchmark.
+
+`make assessment-bootstrap assessment-build assessment-check` reproduces the proof with exact local sources/tools and append-only command attempts. `make verify` still checks the existing Rust/TS foundation and verifies the legacy negative regression; real frontend/runtime/fault lanes remain unrun. The original standalone engine-gate/CI marker remains red until a reviewed product-gate replacement. A snapshot round trip does not pass crash recovery, capture enforcement, portability or application conformance.

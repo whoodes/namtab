@@ -1,0 +1,40 @@
+{
+  "command": [
+    ".tools/zig/zig-x86_64-linux-0.16.0/zig",
+    "cc",
+    "-std=c11",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-I",
+    ".artifacts/engine-assessment/ghostty/include",
+    "tests/assessment/ghostty-proof.c",
+    "-L",
+    ".artifacts/engine-assessment/ghostty/lib",
+    "-lghostty-vt",
+    "-Wl,-rpath,/home/w/codex-dir/project-x/.artifacts/engine-assessment/ghostty/lib",
+    "-o",
+    ".artifacts/engine-assessment/ghostty-proof"
+  ],
+  "cwd": ".",
+  "recorded_at": "2026-10-15T16:48:42.265286+00:00",
+  "elapsed_seconds": 0.121,
+  "timeout_seconds": 300,
+  "exit": 0,
+  "verdict": "PASS",
+  "error": null,
+  "environment_overrides": {
+    "CARGO_HOME": "/home/w/codex-dir/project-x/.cache/cargo",
+    "PIP_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/pip",
+    "XDG_CACHE_HOME": "/home/w/codex-dir/project-x/.cache/xdg",
+    "XDG_DATA_HOME": "/home/w/codex-dir/project-x/.cache/xdg-data",
+    "XDG_STATE_HOME": "/home/w/codex-dir/project-x/.cache/xdg-state",
+    "ZIG_GLOBAL_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/engine-assessment/zig-global",
+    "ZIG_LOCAL_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/engine-assessment/zig-local",
+    "NPM_CONFIG_USERCONFIG": "/dev/null",
+    "NPM_CONFIG_GLOBALCONFIG": "/dev/null"
+  },
+  "stdout": "",
+  "stderr": "",
+  "output_truncated": false
+}

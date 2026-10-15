@@ -1,0 +1,9 @@
+{
+  "name": "@project-x/engine-host",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "dependencies": {
+    "@project-x/terminal-adapter": "workspace:*"
+  }
+}

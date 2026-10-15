@@ -1,0 +1,189 @@
+import { spawnSync } from "node:child_process";
+import { readFile, writeFile, mkdir } from "node:fs/promises";
+import os from "node:os";
+const root = new URL("../", import.meta.url).pathname;
+const version = (
+  await readFile(new URL("../.node-version", import.meta.url), "utf8")
+).trim();
+if (process.version !== "v" + version)
+  throw new Error("Use pinned project Node through make verify");
+const env = {
+  ...process.env,
+  CARGO_HOME: root + ".cache/cargo",
+  PIP_CACHE_DIR: root + ".cache/pip",
+  NPM_CONFIG_USERCONFIG: "/dev/null",
+  NPM_CONFIG_GLOBALCONFIG: "/dev/null",
+  PROPTEST_RNG_SEED: "424242",
+  PROPTEST_CASES: "128",
+  XDG_CACHE_HOME: root + ".cache/xdg",
+  XDG_DATA_HOME: root + ".cache/xdg-data",
+  XDG_STATE_HOME: root + ".cache/xdg-state",
+};
+const command = (bin, args) => {
+  const start = Date.now();
+  const r = spawnSync(bin, args, {
+    cwd: root,
+    env,
+    encoding: "utf8",
+    timeout: 120000,
+    maxBuffer: 4 * 1024 * 1024,
+  });
+  return {
+    command: [bin, ...args],
+    exit: r.status,
+    error: r.error?.code ?? null,
+    elapsed_ms: Date.now() - start,
+    stdout: r.stdout ?? "",
+    stderr: r.stderr ?? "",
+  };
+};
+const versions = [
+  ["cargo", ["--version"]],
+  ["rustc", ["--version"]],
+  ["node", ["--version"]],
+  ["node", [".tools/pnpm/package/bin/pnpm.cjs", "--version"]],
+  [".venv-docs/bin/python", ["--version"]],
+  ["git", ["--version"]],
+].map(([b, a]) => command(b, a));
+const steps = [
+  [
+    "repository-local-links",
+    ".venv-docs/bin/python",
+    ["-B", "scripts/check-doc-links.py"],
+  ],
+  [
+    "js-format",
+    "node",
+    [
+      ".tools/pnpm/package/bin/pnpm.cjs",
+      "exec",
+      "prettier",
+      "--check",
+      "scripts",
+      "apps",
+      "packages",
+      "tests/system",
+      "tests/fuzz",
+      "tests/assessment",
+      "package.json",
+      "tsconfig.json",
+      "mkdocs.yml",
+      "pnpm-workspace.yaml",
+      ".github/workflows/checks.yml",
+    ],
+  ],
+  [
+    "frozen-offline-install",
+    "node",
+    [
+      ".tools/pnpm/package/bin/pnpm.cjs",
+      "install",
+      "--frozen-lockfile",
+      "--offline",
+      "--ignore-scripts",
+    ],
+  ],
+  ["rust-format", "cargo", ["fmt", "--all", "--", "--check"]],
+  [
+    "rust-clippy",
+    "cargo",
+    [
+      "clippy",
+      "--workspace",
+      "--all-targets",
+      "--locked",
+      "--",
+      "-D",
+      "warnings",
+    ],
+  ],
+  ["rust-contracts", "cargo", ["test", "--workspace", "--locked"]],
+  ["bindings-drift", "node", ["scripts/generate-bindings.mjs", "--check"]],
+  ["typescript-build", "node", [".tools/pnpm/package/bin/pnpm.cjs", "build"]],
+  ["dependency-boundaries", "node", ["scripts/check-boundaries.mjs"]],
+  ["fixture-integrity", "node", ["scripts/check-fixtures.mjs"]],
+  [
+    "synthetic-contracts",
+    "node",
+    ["--test", "tests/system/foundation.test.mjs"],
+  ],
+  ["seeded-partitions", "node", ["tests/fuzz/chunk-corpus.mjs"]],
+  [
+    "offline-console",
+    "cargo",
+    ["run", "--quiet", "--locked", "-p", "project-x-console", "--", "diagnose"],
+  ],
+  [
+    "strict-mkdocs",
+    ".venv-docs/bin/python",
+    ["-m", "mkdocs", "build", "--strict"],
+  ],
+];
+const checks = [];
+for (const [name, bin, args] of steps) {
+  const r = command(bin, args);
+  const verdict = r.exit === 0 ? "PASS" : "FAIL";
+  checks.push({ name, verdict, ...r });
+  console.log(name + ": " + verdict);
+}
+const gate = command("node", [
+  "tests/system/engine-probe.mjs",
+  "--require-pass",
+]);
+let parsedGate;
+try {
+  parsedGate = JSON.parse(gate.stdout);
+} catch {
+  parsedGate = null;
+}
+const knownFailure =
+  gate.exit === 1 &&
+  parsedGate?.verdict === "FAIL" &&
+  ["saved-cursor", "scroll-region", "custom-tabs"].every((name) =>
+    parsedGate.results?.some(
+      (c) =>
+        c.name === name && c.atAttach === true && c.afterContinuation === false,
+    ),
+  );
+console.log(
+  "Essential X4 gate: " +
+    (knownFailure
+      ? "FAIL (counterexamples retained; dependent product work blocked)"
+      : "UNEXPECTED RESULT / inspect evidence"),
+);
+await mkdir(new URL("../evidence", import.meta.url), { recursive: true });
+const report = {
+  date: new Date().toISOString(),
+  environment: {
+    platform: os.platform(),
+    release: os.release(),
+    arch: os.arch(),
+    cpu_count: os.cpus().length,
+    memory_bytes: os.totalmem(),
+    os_release: await readFile("/etc/os-release", "utf8"),
+    display:
+      "No display/IME/screen-reader or live outer-terminal experiment performed; headless synthetic tests only.",
+  },
+  versions,
+  property_seed: env.PROPTEST_RNG_SEED,
+  property_cases: env.PROPTEST_CASES,
+  checks,
+  essential_gate: {
+    verdict: knownFailure ? "FAIL" : gate.exit === 0 ? "PASS_MINIMAL" : "ERROR",
+    expectedExit: 1,
+    verifiedCounterexamples: knownFailure,
+    ...gate,
+  },
+  limits:
+    "Foundation PASS is not terminal-engine certification. Tests asserting known failure do not turn X4 green. No performance budgets measured.",
+};
+await writeFile(
+  new URL("../evidence/checks.json", import.meta.url),
+  JSON.stringify(report, null, 2) + "\n",
+);
+if (
+  checks.some((c) => c.verdict === "FAIL") ||
+  versions.some((c) => c.exit !== 0) ||
+  !knownFailure
+)
+  process.exitCode = 1;

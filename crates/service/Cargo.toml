@@ -1,0 +1,16 @@
+[package]
+name = "project-x-service"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+project-x-domain = { path = "../domain" }
+project-x-protocol = { path = "../protocol" }
+project-x-platform = { path = "../platform" }
+serde_json.workspace = true
+sha2.workspace = true

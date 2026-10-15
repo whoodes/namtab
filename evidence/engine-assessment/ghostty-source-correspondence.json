@@ -1,0 +1,23 @@
+[
+  {
+    "path": "build.zig.zon",
+    "pinned_raw_url": "https://raw.githubusercontent.com/ghostty-org/ghostty/22fa134a07f5749edd9e92c6bc17d8aaf61843be/build.zig.zon",
+    "raw_sha256": "b878e4fc36f9c2b6c9ad82e5ceba58c91905fde89f0ac3d3cb7ab413ea029e39",
+    "archive_file_sha256": "b878e4fc36f9c2b6c9ad82e5ceba58c91905fde89f0ac3d3cb7ab413ea029e39",
+    "match": true
+  },
+  {
+    "path": "include/ghostty/vt/snapshot.h",
+    "pinned_raw_url": "https://raw.githubusercontent.com/ghostty-org/ghostty/22fa134a07f5749edd9e92c6bc17d8aaf61843be/include/ghostty/vt/snapshot.h",
+    "raw_sha256": "da28242bd1cebfa2e313cbbaee160c06573c7990119c8e021b4433d9b3d90b40",
+    "archive_file_sha256": "da28242bd1cebfa2e313cbbaee160c06573c7990119c8e021b4433d9b3d90b40",
+    "match": true
+  },
+  {
+    "path": "src/terminal/c/key_encode.zig",
+    "pinned_raw_url": "https://raw.githubusercontent.com/ghostty-org/ghostty/22fa134a07f5749edd9e92c6bc17d8aaf61843be/src/terminal/c/key_encode.zig",
+    "raw_sha256": "c384d20526933eb6b893476a9ca83117f02f1d46888d722608ea6f07735d35c0",
+    "archive_file_sha256": "c384d20526933eb6b893476a9ca83117f02f1d46888d722608ea6f07735d35c0",
+    "match": true
+  }
+]

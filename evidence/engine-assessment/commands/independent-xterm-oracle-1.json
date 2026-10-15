@@ -1,0 +1,27 @@
+{
+  "command": [
+    "node",
+    "tests/assessment/xterm-assessment.mjs"
+  ],
+  "cwd": ".",
+  "recorded_at": "2026-10-15T16:44:55.332903+00:00",
+  "elapsed_seconds": 0.594,
+  "timeout_seconds": 300,
+  "exit": 0,
+  "verdict": "PASS",
+  "error": null,
+  "environment_overrides": {
+    "CARGO_HOME": "/home/w/codex-dir/project-x/.cache/cargo",
+    "PIP_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/pip",
+    "XDG_CACHE_HOME": "/home/w/codex-dir/project-x/.cache/xdg",
+    "XDG_DATA_HOME": "/home/w/codex-dir/project-x/.cache/xdg-data",
+    "XDG_STATE_HOME": "/home/w/codex-dir/project-x/.cache/xdg-state",
+    "ZIG_GLOBAL_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/engine-assessment/zig-global",
+    "ZIG_LOCAL_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/engine-assessment/zig-local",
+    "NPM_CONFIG_USERCONFIG": "/dev/null",
+    "NPM_CONFIG_GLOBALCONFIG": "/dev/null"
+  },
+  "stdout": "{\n  \"candidate\": \"A revised xterm single owner\",\n  \"originalX4\": \"FAIL\",\n  \"verdict\": \"PASS_BOUNDED_STATE_MODEL\",\n  \"cases\": [\n    {\n      \"name\": \"plain\",\n      \"independentOracle\": \"PASS\",\n      \"originalSerializer\": \"PASS\",\n      \"partitions\": 12,\n      \"oracleMutationsRejected\": 2\n    },\n    {\n      \"name\": \"saved-cursor\",\n      \"independentOracle\": \"PASS\",\n      \"originalSerializer\": \"FAIL\",\n      \"partitions\": 18,\n      \"oracleMutationsRejected\": 2\n    },\n    {\n      \"name\": \"scroll-region\",\n      \"independentOracle\": \"PASS\",\n      \"originalSerializer\": \"FAIL\",\n      \"partitions\": 29,\n      \"oracleMutationsRejected\": 2\n    },\n    {\n      \"name\": \"custom-tabs\",\n      \"independentOracle\": \"PASS\",\n      \"originalSerializer\": \"FAIL\",\n      \"partitions\": 18,\n      \"oracleMutationsRejected\": 2\n    },\n    {\n      \"name\": \"alternate\",\n      \"independentOracle\": \"PASS\",\n      \"originalSerializer\": \"PASS\",\n      \"partitions\": 27,\n      \"oracleMutationsRejected\": 2\n    },\n    {\n      \"name\": \"partial-csi\",\n      \"independentOracle\": \"PASS\",\n      \"originalSerializer\": \"FAIL\",\n      \"partitions\": 7,\n      \"oracleMutationsRejected\": 2\n    }\n  ]\n}\n",
+  "stderr": "",
+  "output_truncated": false
+}

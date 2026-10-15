@@ -1,0 +1,7 @@
+# Preserve design prose; Markdown validation belongs to MkDocs/link checks.
+**/*.md
+**/node_modules/**
+**/dist/**
+packages/protocol/src/generated.ts
+packages/protocol/src/*.generated.*
+schemas/**

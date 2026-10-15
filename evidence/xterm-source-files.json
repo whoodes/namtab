@@ -1,0 +1,27 @@
+[
+  {
+    "path": "src/common/input/Keyboard.ts",
+    "url": "https://raw.githubusercontent.com/xtermjs/xterm.js/f447274f430fd22513f6adbf9862d19524471c04/src/common/input/Keyboard.ts",
+    "sha256": "b1f999aa257410ac77aa8abadf03300ca0fc582cda98f0f01b4a81ef7eb7e3d8"
+  },
+  {
+    "path": "addons/addon-serialize/src/SerializeAddon.ts",
+    "url": "https://raw.githubusercontent.com/xtermjs/xterm.js/f447274f430fd22513f6adbf9862d19524471c04/addons/addon-serialize/src/SerializeAddon.ts",
+    "sha256": "a1ed69d294d0e013aafb4e70c9a9a66c36550a410946eddb03a47d66b92a0405"
+  },
+  {
+    "path": "typings/xterm-headless.d.ts",
+    "url": "https://raw.githubusercontent.com/xtermjs/xterm.js/f447274f430fd22513f6adbf9862d19524471c04/typings/xterm-headless.d.ts",
+    "sha256": "d157ac3b7ddd0c72fb522631860ebd8b12009a55c1fd8f4730c72c244f6b9640"
+  },
+  {
+    "path": "src/common/InputHandler.ts",
+    "url": "https://raw.githubusercontent.com/xtermjs/xterm.js/f447274f430fd22513f6adbf9862d19524471c04/src/common/InputHandler.ts",
+    "sha256": "b03afd5d38dd708440699e81135f1735626d55ffdf24621fbd54cfbc41320925"
+  },
+  {
+    "path": "src/common/Types.ts",
+    "url": "https://raw.githubusercontent.com/xtermjs/xterm.js/f447274f430fd22513f6adbf9862d19524471c04/src/common/Types.ts",
+    "sha256": "ad4fc729fa168148668992a00c80b8fa21a04061b5ce34a6a817c5c143319bec"
+  }
+]

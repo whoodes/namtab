@@ -1,0 +1,137 @@
+# Repository foundation and engineering practices
+
+> Current actual foundation remains six Rust/four TS packages with no live service or frontend. The completed [assessment](19-engine-build-adopt-redesign-assessment.md) and [ADR E1](../adr/0001-engine-ownership-and-presentation.md) revise the future engine target to one native worker and owned rendering. Current reference packages are retained; no new production crate or FFI exception is implemented.
+
+
+[Index](../index.md) · [Dependencies](15-dependencies-and-supply-chain.md) · [Tests/CI](16-test-and-ci-strategy.md) · [Engine boundary](17-xterm-adapter-risk-and-gates.md)
+
+**Accepted-for-design target with a limited implemented subset.** See 18 for the exact actual files and exclusions; this document continues to describe the intended architecture rather than claim a full service/client implementation.
+
+## Concrete proposed layout and ownership
+
+Use one repository, Cargo + pnpm and one product version. Current foundation: six Rust and four TS packages. Revised target: at most one additional binary-only native engine package (justified unsafe/ABI/process boundary), with desktop + protocol as shipping TS and the old engine-host/terminal-adapter retained as assessment references until deliberately retired. Avoid separate FFI/wrapper/wire/worker microcrates. Rust edition 2024, resolver 3 and compiler 1.91.0 are pinned for the current foundation; that is not shipping-platform certification. [Cargo workspaces](https://doc.rust-lang.org/cargo/reference/workspaces.html)
+
+```text
+project-x/                         TARGET + explicit future entries; see 19 for actual inventory
+  Cargo.toml, Cargo.lock, rust-toolchain.toml
+  package.json, pnpm-workspace.yaml, pnpm-lock.yaml
+  crates/
+    protocol/                      public DTOs; future internal engine DTO namespace; schema export
+    domain/                        pure lifecycle/evidence/approval/scheduling rules
+    platform/                      PTY/process/filesystem/runtime OS adapters
+    service/                       supervisor/store; project-x-service + project-x-keeper
+    client/                        Rust public IPC client, subscriptions/receipt reconciliation
+    console/                       project-x CLI and Ratatui TUI modules, one binary
+    engine/                        FUTURE binary-only native worker, narrow audited FFI module
+  apps/
+    desktop/                       Electron main/preload + React renderer; no broker internals
+    engine-host/                   current xterm reference/assessment utility; not revised shipping target
+  packages/
+    protocol/                      generated TS public DTOs/validators + small IPC client
+    terminal-adapter/              current bounded xterm reference seam; no production browser export
+  schemas/
+    public/                        generated wire/config schemas and compatibility examples
+    private/                       generated keeper/engine schemas, never frontend imports
+  tests/
+    fixtures/                      sanitized byte/resize/input and contract cases + manifests
+    system/                        cross-process/dual-client scenarios, TS orchestration
+    fuzz/                          excluded dev-only fuzz workspace/targets
+  scripts/                         small reviewed Node .mjs check/build orchestration
+  packaging/                       Debian metadata, service lifecycle, desktop assets
+  examples/                        inert configuration/task examples, no secrets/autostart
+  docs/adr/                        future ADRs and source/dependency decision records
+```
+
+The authorized bootstrap moved the 18 canonical documents into docs/ topic directories, rewrote relative links and added strict MkDocs navigation. evidence/docs-migration.json preserves the old→new map and original/migration hashes; there are no divergent design copies. Do not create an empty directory for every proposed module. Rust service integration tests live with the service; shared fixtures live under tests, not another application crate. CLI and TUI share the client and invocation model but have separate command routing/output. A CLI JSON invocation must not initialize raw mode or a full-screen TUI.
+
+| Owner role | Package/module responsibility | Forbidden dependency/behavior |
+| --- | --- | --- |
+| Domain maintainer | domain: transitions, validation keys, permission context, dependency readiness | GUI/terminal parsing, database, real clock or OS calls inside pure transitions |
+| Protocol maintainer | protocol: narrow wire DTOs/limits; generated artifacts | Importing domain internals or policy evaluation; schema validation is not authorization |
+| Execution maintainer | platform and keeper modules: managed PTY, identity, runtime controls | Frontend event handling or acceptance decisions |
+| Service maintainer | service: domain↔wire mapping, store, admission, private engine/keeper IPC | Giving clients store/PTY FDs; deriving grants from UI state |
+| Client maintainers | client, console and desktop client code: projection/cache and user intent | service/platform/store imports, DB paths, private engine/keeper IPC |
+| Engine maintainer | future native engine worker/public C seam; current xterm assessment adapter + host | Grant creation, filesystem launch authority, UI-specific semantic TUI guesses |
+| Test/distribution maintainer | fixtures, system lanes, packaging/provenance | Privileged PR runners, silent dependency downloads in product startup |
+
+One person may fill several roles; responsibilities do not imply six teams. Security, protocol, engine or persistence changes require a second qualified reviewer where available. A solo maintainer explicitly records a delayed self-review plus the required adversarial evidence; that is not an independent audit.
+
+## Acyclic dependency graph
+
+Arrows mean imports/compile dependencies, not runtime authority. The diagram combines current reference packages with an explicitly future native worker/internal DTO namespace. Actual checks currently enforce the six-Rust/four-TS graph; they do not claim the proposed engine package exists. Private wire DTOs remain a leaf data definition, not policy; no domain→wire dependency is added.
+
+```mermaid
+flowchart TD
+    Console[console: CLI + TUI] --> Client[client]
+    Client --> Wire[protocol: public DTOs]
+    Service[service: daemon + keeper binaries] --> Wire
+    Service --> Domain[domain]
+    Service --> Platform[platform]
+    Platform --> Domain
+    Desktop[desktop] --> TSWire[TS protocol + client]
+    Desktop --> Adapter[reference terminal-adapter input types]
+    Engine[reference TS engine-host] --> AdapterNode[reference terminal-adapter node entry]
+    Native[future native engine worker] --> Wire
+    Wire --> Private[future internal engine DTO namespace]
+    TSWire --> Schema[generated public schema]
+    Private --> PrivateSchema[generated private schema]
+```
+
+domain and protocol are independent leaves, with explicit conversion at service boundaries. platform implements operations needed by service using domain value types; it never imports service. Rust client imports protocol only among application crates. JS protocol imports neither React/Electron nor xterm. Adapter entries do not import frontend app code or broker logic. Browser bundles cannot resolve the adapter's Node/private entry. Test-only harnesses may compose all processes but cannot introduce production dependency cycles.
+
+CI uses Cargo metadata and package manifests/import rules to reject forbidden edges, duplicate incompatible Crossterm versions, client SQL/PTY imports, private engine imports outside the seam, and accidental Node capabilities in renderer bundles. Cargo feature unification and generated-code exceptions need review: naming a directory private is not enforcement. Runtime authorization remains necessary even if every import check passes.
+
+## JS/TS workspace and build choice
+
+Recommend **pnpm with conventional node_modules**, a single root lockfile and explicit workspace references. Keep a pinned packageManager field/tool checksum and an exact supported Node LTS toolchain; do not assume Corepack or a globally installed manager. Electron has its own embedded runtime; the engine-host uses the separately bundled supported Node. Do not force their version numbers to match. No Nx/Turborepo/custom build graph initially.
+
+| Alternative | Verified capability | Assessment for this repository |
+| --- | --- | --- |
+| pnpm | Workspaces and local-only workspace protocol; explicit build-script policy | Recommended: clear workspace dependencies and one reviewed lock; symlinks/Electron packaging and settings-version compatibility are bootstrap gates |
+| npm | Built-in workspace support and its own lockfile/CI installation flow | Best fallback if pnpm integration adds sustained packaging cost; fewer developer prerequisites, less reason to change once proven |
+| Yarn | Plug'n'Play is a supported alternative installation model | Credible with node_modules mode; PnP adds resolution/tooling changes without a demonstrated need here |
+| Bun | Workspace support | Do not add another runtime/package-manager compatibility surface while Node/Electron are already required |
+
+Primary references: [pnpm workspaces](https://pnpm.io/workspaces), [npm workspaces](https://docs.npmjs.com/cli/v11/using-npm/workspaces/), [Yarn PnP](https://yarnpkg.com/features/pnp), [Bun workspaces](https://bun.sh/docs/pm/workspaces). These facts do not establish comparative install speed or security. Bootstrap now selects pnpm 10.32.1 and Node 24.21.0, with local checks described in 18; current documentation contains settings from multiple release lines. Test the actual selected binary's settings rather than copying obsolete onlyBuiltDependencies settings into a newer manager.
+
+Recommend TypeScript strict checking, React, Vite for renderer bundling, explicit Node-target builds for Electron main/preload (and reference engine experiments), and Electron Forge for assembly/DEB making. Do not depend on an experimental Forge/Vite integration plugin: compose renderer build and packaging with small scripts. Prototype must prove pnpm dependency collection, separate Node bundling, native Rust resources, CSP and offline package completeness. [Vite guide](https://vite.dev/guide/), [Electron Forge](https://www.electronforge.io/)
+
+## Schema ownership and duplicated state
+
+Rust public wire DTOs in protocol are the source for Schemars schema export; generated JSON Schema, TS types and standalone validators are committed with generator/version manifests. ADR E1 places future private engine DTOs in an explicitly internal namespace of protocol so Rust service/worker can share one definition. Public schema/binding generation must exclude them; separate private schemas and client namespace import bans apply. Naming a Rust module internal is not a capability boundary; authenticated private endpoints enforce runtime access. Domain structs are not automatically serialized into the public API. Recommend JSON Schema draft-07 for the initial generated contract, configured explicitly in Schemars/Ajv; validate generator support before adopting the tuple. A later dialect change is versioned. Use a constrained shared JSON Schema subset verified against Serde and the TS generator; schema support is not automatically equivalent across tools. [Schemars dialect settings](https://docs.rs/schemars/latest/schemars/generate/struct.SchemaSettings.html), [TS generation](https://github.com/bcherny/json-schema-to-typescript), [Ajv](https://github.com/ajv-validator/ajv)
+
+Represent sequence/offset/large timestamp integers as bounded decimal strings on the wire, not JS Number values beyond safe precision. Linux paths have lossless byte representation plus escaped display text. Validate frame length/depth/counts before allocation, reject duplicate security-critical object keys before generic JSON maps erase them, and fail closed for unknown authorization fields. Optional descriptive enums may display unknown. Config schema generation and compatibility examples are checked, never hand-edited generated TS plus separately maintained Rust definitions.
+
+TS protocol package exposes separate browser-safe types/validators and a Node-only public IPC client entry. Electron main owns that client; isolated renderer code uses a narrow validated preload interface, never node:net or arbitrary IPC. Main/preload validate sender, target view and action shape before forwarding; broker repeats authorization. Build/import checks prevent bundling the Node entry into a renderer. This split is inside one package, not three micro-packages.
+
+Broker owns tasks/grants/receipts; keepers own delivery/process facts; canonical engine owns terminal interpretation. Frontends own only ephemeral selection/focus/layout and versioned read caches. They must not implement a second policy engine, infer acceptance from a local status string, or repair revisions optimistically. Display pending requests separately from committed state. Reconnect discards unconfirmed cache authority and fetches snapshot+cursor. Backend domain fixtures verify decisions; shared wire fixtures verify both clients interpret the same result. Avoid a cross-language generic UI state machine that binds the entire product to one widget model.
+
+## Error, cancellation and logging contracts
+
+Errors use stable typed codes, sanitized message, operation/session identity, stage, observed revision, delivery class and reconciliation reference. Initial families: InvalidRequest, UnsupportedCapability, Unauthorized, StaleContext, LeaseLost, ResourceExhausted, Unavailable, StorageFailure, DeliveryUnknown, IncompatibleVersion. UI may explain a known error but never infer “safe to repeat” from a string. Internal panic/stack traces are not user/API payloads.
+
+Canceling an observation unsubscribes/releases credits. Canceling a submitted action requests cancellation and reports stage; it is not rollback or proof of zero bytes/effects. Correlate cancellation and action IDs; deadlines prevent new admission, not automatic reversal. Process termination is a separately authorized lifecycle action with observed result. A client disconnect releases its lease under the fencing policy; no automatic re-submission on restart.
+
+Use tracing/tracing-subscriber in Rust and one small typed TS logging wrapper. Logs contain component/version, opaque IDs, timing/queue metrics, error codes and policy-safe fields; exclude input bodies, screen cells, argv/env, secrets, selection, titles and arbitrary error strings by default. Avoid derived Debug of sensitive objects. Output capture is a separate authorized data path; debug levels cannot enable it. Bound buffers/rotation and respect ADR-A6 retention; no automatic uploads/core dumps. Sanitized errors still disclose partial/unknown results rather than suppressing material failure information.
+
+## Contributor workflow and review
+
+The root README and Makefile now document the limited bootstrap prerequisites and commands; later production tooling remains deferred. Keep changes vertically small: specify affected invariants/contracts, add meaningful regression fixtures, update source/proposal labels and run relevant lanes. Default local checks: Rust fmt/Clippy/types/tests; TS tsc/ESLint/Prettier/Vitest; schema regeneration check; boundary/license/lock diff; document links. Run cargo test doc-tests separately if the selected nextest flow omits them. No blanket public API docs for private helper functions or snapshot tests that merely mirror implementation.
+
+Use rustfmt and workspace Clippy rules, explicit safety comments for unavoidable platform unsafe code, no unchecked unwrap at process/permission boundaries, narrow public visibility and structured errors. Enable TypeScript strict/noUncheckedIndexedAccess/exactOptionalPropertyTypes after verifying supported compiler settings; restrict any to reviewed boundary decoders. ESLint rejects cross-layer imports; Prettier formats JS/TS/docs. Generated/vendor files have separate checks, never broad exemptions that hide application code. Exact tool versions are pinned, not inferred from this document.
+
+PR descriptions identify behavior, authority/evidence changes, migrations, dependency edits and validation limits. Review diffs of fixtures and generated schemas intentionally; no automatic golden acceptance. A dependency PR is not mixed with a feature unless inseparable. Source/layout changes update owning ADR and compatibility matrix. A failing correctness/security contract cannot be hidden by skipping a frontend lane.
+
+## Release, migration and realistic bootstrap
+
+Use one product 0.x version/tag for service, keeper, CLI/TUI, desktop and engine host; maintain separate protocol/schema/config/interpretation versions in the release manifest. Internal crates/packages are unpublished by default. Breaking private prototype contracts are allowed only with explicit incompatibility, migration/export handling and no resurrection of grants. Public API stability and previous-client windows begin when a public release contract is intentionally adopted. No permanent plugin ABI or automatic cross-version keeper migration.
+
+Bootstrap order is [12](12-prototype-plan.md#foundation-bootstrap-after-separate-engineering-authorization): tool/source tuple and schema checks → bounded engine/TUI feasibility → pure domain and fake clients → managed PTY/lifecycle → both real clients → restrictions/supervision → package/release evidence. Gate before creating a large architecture. Config/database upgrades preflight capacity and preserve compatible exports/backups; rollback does not blindly downgrade newer stores. Review lockfiles, release SBOM/notices and source provenance before distribution. Apache-2.0 remains a project-license recommendation, with no legal file created here.
+
+## Native-worker boundary after the assessment
+
+The future engine package may use `deny(unsafe_code)` with one explicitly audited FFI module exception; current crates retain workspace unsafe forbidden. No exception has been added. Validate C enum/struct ABI, ownership/allocator lifetimes, callback reentry/unwind, thread affinity and hostile lengths. The worker depends on wire DTOs only among application crates; service launches/authenticates it through platform operations but does not link the engine into the broker. Desktop/TUI/client cannot import private engine messages or reach that endpoint. It is not a sandbox until runtime/OS controls are verified. Public render-state extraction, Rust FFI and exact-build checkpoint migration remain EA1–EA4 gates.
+
+Current local commands and installed versions are in the root README/Makefile; `make assessment-bootstrap assessment-build assessment-check` is a separate bounded research lane. No Cargo/pnpm production dependency, crate or license was added for Ghostty; source/tool provenance supplements lockfiles under evidence/engine-assessment.
+
+The current desktop normalizer imports its small LogicalKey type from the reference terminal-adapter. Before that reference package leaves shipping dependencies, move the canonical input/frame types into generated public protocol bindings and verify both frontend contracts. Private engine DTO import checks must be added before the namespace/worker is created. These are explicit future migration gates, not changes implemented by this assessment.

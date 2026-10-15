@@ -1,0 +1,113 @@
+{
+  "repository": "https://github.com/ghostty-org/ghostty",
+  "commit": "22fa134a07f5749edd9e92c6bc17d8aaf61843be",
+  "source_url": "https://codeload.github.com/ghostty-org/ghostty/tar.gz/22fa134a07f5749edd9e92c6bc17d8aaf61843be",
+  "archive_sha256": "a07afea0e0b01cdfbf5b418c56bfd67366929dac0f9636267de5e5637351df5f",
+  "archive_bytes": 39717617,
+  "source_directory": ".cache/engine-assessment/ghostty-22fa134a07f5749edd9e92c6bc17d8aaf61843be",
+  "verification": "Official immutable commit URL over HTTPS plus recorded digest; no independent signature verification",
+  "dependency_source_edits": 0,
+  "source_files_unchanged_after_build": 5911,
+  "build_flags": [
+    "-Demit-lib-vt",
+    "-Dsimd=false",
+    "-Doptimize=ReleaseSafe"
+  ],
+  "upstream_version_in_manifest": "1.3.2-dev",
+  "libghostty_vt_abi_version": "0.1.0 development API; exact commit mandatory",
+  "built_artifacts": [
+    {
+      "path": ".artifacts/engine-assessment/ghostty/lib/libghostty-vt.a",
+      "sha256": "ed77c34ee7e89ba58afd5a14a11254b18ca81d60a7e329e5cc2efa1ff6e26452",
+      "bytes": 18340860
+    },
+    {
+      "path": ".artifacts/engine-assessment/ghostty/lib/libghostty-vt.so.0.1.0",
+      "sha256": "7233966bb39275b8445a9a8b970170ef6fd109b8b8feb8b164cce00be40d588a",
+      "bytes": 11162368
+    }
+  ],
+  "zig_cache_packages": [],
+  "build_acquired_packages": [
+    "N-V-__8AAB0eQwD-0MdOEBmz7intriBReIsIDNlukNVoNu6o",
+    "N-V-__8AADNBBQDD4MFOa3Y7R_A8PHIeWQ1IZdOiBFZS3nZ7",
+    "N-V-__8AADYiAAB_80AWnH1AxXC0tql9thT-R-DYO1gBqTLc",
+    "N-V-__8AAP5JWgCGP_AD0teWpa4krRvE9VPZzvviGdbmN4jI",
+    "aro-0.0.0-JSD1Qk6lNgDdcDV4Vh7Sfy-34m2TluIVOdPzMmj_0BjX",
+    "translate_c-0.0.0-Q_BUWhVNBwDOEcIqub4VFPJPB6D9dgwzUMHTX5KWr8Xr",
+    "uucode-0.2.0-ZZjBPuuFVgC8YZ8eld4fOKsZANLIhTFMzULQxhkLi1C7"
+  ],
+  "supply_chain_note": "Zig 0.16 acquired packages under source/zig-pkg, not global/p. Manifest URLs/content-addressed Zig hashes pin these. SIMD disabled does not mean zero bundled code: build includes Unicode tables, translate-c/aro build tooling and vendored Wuffs PNG support. Full license/advisory/SBOM review remains open.",
+  "package_metadata": [
+    {
+      "cache_identity": "N-V-__8AAB0eQwD-0MdOEBmz7intriBReIsIDNlukNVoNu6o",
+      "manifests": [],
+      "license_file_paths": [
+        "zig-pkg/N-V-__8AAB0eQwD-0MdOEBmz7intriBReIsIDNlukNVoNu6o/LICENSE",
+        "zig-pkg/N-V-__8AAB0eQwD-0MdOEBmz7intriBReIsIDNlukNVoNu6o/contrib/dotzlib/LICENSE_1_0.txt"
+      ]
+    },
+    {
+      "cache_identity": "N-V-__8AADNBBQDD4MFOa3Y7R_A8PHIeWQ1IZdOiBFZS3nZ7",
+      "manifests": [],
+      "license_file_paths": []
+    },
+    {
+      "cache_identity": "N-V-__8AADYiAAB_80AWnH1AxXC0tql9thT-R-DYO1gBqTLc",
+      "manifests": [],
+      "license_file_paths": [
+        "zig-pkg/N-V-__8AADYiAAB_80AWnH1AxXC0tql9thT-R-DYO1gBqTLc/LICENSE"
+      ]
+    },
+    {
+      "cache_identity": "N-V-__8AAP5JWgCGP_AD0teWpa4krRvE9VPZzvviGdbmN4jI",
+      "manifests": [],
+      "license_file_paths": [
+        "zig-pkg/N-V-__8AAP5JWgCGP_AD0teWpa4krRvE9VPZzvviGdbmN4jI/LICENSE",
+        "zig-pkg/N-V-__8AAP5JWgCGP_AD0teWpa4krRvE9VPZzvviGdbmN4jI/LICENSE-MIT",
+        "zig-pkg/N-V-__8AAP5JWgCGP_AD0teWpa4krRvE9VPZzvviGdbmN4jI/LICENSE-APACHE"
+      ]
+    },
+    {
+      "cache_identity": "aro-0.0.0-JSD1Qk6lNgDdcDV4Vh7Sfy-34m2TluIVOdPzMmj_0BjX",
+      "manifests": [
+        {
+          "path": "zig-pkg/aro-0.0.0-JSD1Qk6lNgDdcDV4Vh7Sfy-34m2TluIVOdPzMmj_0BjX/build.zig.zon",
+          "sha256": "6ba52af7356fb2be7bd1b4735a1e0b8d0d622771cedaa5ea0feb1955e5997940"
+        }
+      ],
+      "license_file_paths": [
+        "zig-pkg/aro-0.0.0-JSD1Qk6lNgDdcDV4Vh7Sfy-34m2TluIVOdPzMmj_0BjX/LICENSE",
+        "zig-pkg/aro-0.0.0-JSD1Qk6lNgDdcDV4Vh7Sfy-34m2TluIVOdPzMmj_0BjX/LICENSE-UNICODE"
+      ]
+    },
+    {
+      "cache_identity": "translate_c-0.0.0-Q_BUWhVNBwDOEcIqub4VFPJPB6D9dgwzUMHTX5KWr8Xr",
+      "manifests": [
+        {
+          "path": "zig-pkg/translate_c-0.0.0-Q_BUWhVNBwDOEcIqub4VFPJPB6D9dgwzUMHTX5KWr8Xr/build.zig.zon",
+          "sha256": "02681afcc66f98a61598d5281273d705412988b50195dcceb3fc0e1bf679412b"
+        }
+      ],
+      "license_file_paths": [
+        "zig-pkg/translate_c-0.0.0-Q_BUWhVNBwDOEcIqub4VFPJPB6D9dgwzUMHTX5KWr8Xr/LICENSE"
+      ]
+    },
+    {
+      "cache_identity": "uucode-0.2.0-ZZjBPuuFVgC8YZ8eld4fOKsZANLIhTFMzULQxhkLi1C7",
+      "manifests": [
+        {
+          "path": "zig-pkg/uucode-0.2.0-ZZjBPuuFVgC8YZ8eld4fOKsZANLIhTFMzULQxhkLi1C7/build.zig.zon",
+          "sha256": "cd89284dfeb723b88c8cc4c900c04f37bf0247e4f5acf4d6dd18350be7dcee4e"
+        }
+      ],
+      "license_file_paths": [
+        "zig-pkg/uucode-0.2.0-ZZjBPuuFVgC8YZ8eld4fOKsZANLIhTFMzULQxhkLi1C7/LICENSE.md"
+      ]
+    }
+  ],
+  "adapter_executable": {
+    "path": ".artifacts/engine-assessment/ghostty-proof",
+    "sha256": "9fe57e82837ba3b294db4c3697104da4b62d92f2913e6e05ec4bb10e3eb46869"
+  }
+}

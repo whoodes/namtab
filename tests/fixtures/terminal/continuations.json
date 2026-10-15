@@ -1,0 +1,32 @@
+[
+  {
+    "name": "plain",
+    "before": "hello",
+    "after": " world"
+  },
+  {
+    "name": "saved-cursor",
+    "before": "\u001b[2;3H\u001b7\u001b[4;7H",
+    "after": "\u001b8X"
+  },
+  {
+    "name": "scroll-region",
+    "before": "1\r\n2\r\n3\r\n4\r\n5\u001b[2;4r\u001b[4;1H",
+    "after": "\r\nX"
+  },
+  {
+    "name": "custom-tabs",
+    "before": "\u001b[3g\u001b[1;4H\u001bH\u001b[H",
+    "after": "\tX"
+  },
+  {
+    "name": "alternate",
+    "before": "normal\u001b[?1049hALT",
+    "after": "\u001b[?1049lZ"
+  },
+  {
+    "name": "partial-csi",
+    "before": "\u001b[31",
+    "after": "mX"
+  }
+]

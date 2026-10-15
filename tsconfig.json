@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "declaration": true,
+    "composite": true,
+    "skipLibCheck": false
+  },
+  "files": [],
+  "references": [
+    {
+      "path": "packages/protocol"
+    },
+    {
+      "path": "packages/terminal-adapter"
+    },
+    {
+      "path": "apps/engine-host"
+    },
+    {
+      "path": "apps/desktop"
+    }
+  ]
+}

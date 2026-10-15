@@ -1,0 +1,397 @@
+{
+  "gate": "X4",
+  "verdict": "FAIL",
+  "scope": "Necessary-condition headless→serialize→headless continuation, same common parser family; not a desktop/DOM test. Partial CSI is separately an unsafe-boundary case.",
+  "results": [
+    {
+      "name": "plain",
+      "before": "\"hello\"",
+      "after": "\" world\"",
+      "atAttach": true,
+      "afterContinuation": true,
+      "canonical": {
+        "cols": 12,
+        "rows": 5,
+        "cursor": [
+          11,
+          0
+        ],
+        "baseY": 0,
+        "type": "normal",
+        "lines": [
+          "hello world ",
+          "            ",
+          "            ",
+          "            ",
+          "            "
+        ],
+        "modes": {
+          "applicationCursorKeysMode": false,
+          "applicationKeypadMode": false,
+          "bracketedPasteMode": false,
+          "insertMode": false,
+          "mouseTrackingMode": "none",
+          "originMode": false,
+          "reverseWraparoundMode": false,
+          "sendFocusMode": false,
+          "synchronizedOutputMode": false,
+          "wraparoundMode": true
+        }
+      },
+      "replica": {
+        "cols": 12,
+        "rows": 5,
+        "cursor": [
+          11,
+          0
+        ],
+        "baseY": 0,
+        "type": "normal",
+        "lines": [
+          "hello world ",
+          "            ",
+          "            ",
+          "            ",
+          "            "
+        ],
+        "modes": {
+          "applicationCursorKeysMode": false,
+          "applicationKeypadMode": false,
+          "bracketedPasteMode": false,
+          "insertMode": false,
+          "mouseTrackingMode": "none",
+          "originMode": false,
+          "reverseWraparoundMode": false,
+          "sendFocusMode": false,
+          "synchronizedOutputMode": false,
+          "wraparoundMode": true
+        }
+      }
+    },
+    {
+      "name": "saved-cursor",
+      "before": "\"\\u001b[2;3H\\u001b7\\u001b[4;7H\"",
+      "after": "\"\\u001b8X\"",
+      "atAttach": true,
+      "afterContinuation": false,
+      "canonical": {
+        "cols": 12,
+        "rows": 5,
+        "cursor": [
+          3,
+          1
+        ],
+        "baseY": 0,
+        "type": "normal",
+        "lines": [
+          "            ",
+          "  X         ",
+          "            ",
+          "            ",
+          "            "
+        ],
+        "modes": {
+          "applicationCursorKeysMode": false,
+          "applicationKeypadMode": false,
+          "bracketedPasteMode": false,
+          "insertMode": false,
+          "mouseTrackingMode": "none",
+          "originMode": false,
+          "reverseWraparoundMode": false,
+          "sendFocusMode": false,
+          "synchronizedOutputMode": false,
+          "wraparoundMode": true
+        }
+      },
+      "replica": {
+        "cols": 12,
+        "rows": 5,
+        "cursor": [
+          1,
+          0
+        ],
+        "baseY": 0,
+        "type": "normal",
+        "lines": [
+          "X           ",
+          "            ",
+          "            ",
+          "            ",
+          "            "
+        ],
+        "modes": {
+          "applicationCursorKeysMode": false,
+          "applicationKeypadMode": false,
+          "bracketedPasteMode": false,
+          "insertMode": false,
+          "mouseTrackingMode": "none",
+          "originMode": false,
+          "reverseWraparoundMode": false,
+          "sendFocusMode": false,
+          "synchronizedOutputMode": false,
+          "wraparoundMode": true
+        }
+      }
+    },
+    {
+      "name": "scroll-region",
+      "before": "\"1\\r\\n2\\r\\n3\\r\\n4\\r\\n5\\u001b[2;4r\\u001b[4;1H\"",
+      "after": "\"\\r\\nX\"",
+      "atAttach": true,
+      "afterContinuation": false,
+      "canonical": {
+        "cols": 12,
+        "rows": 5,
+        "cursor": [
+          1,
+          3
+        ],
+        "baseY": 0,
+        "type": "normal",
+        "lines": [
+          "1           ",
+          "3           ",
+          "4           ",
+          "X           ",
+          "5           "
+        ],
+        "modes": {
+          "applicationCursorKeysMode": false,
+          "applicationKeypadMode": false,
+          "bracketedPasteMode": false,
+          "insertMode": false,
+          "mouseTrackingMode": "none",
+          "originMode": false,
+          "reverseWraparoundMode": false,
+          "sendFocusMode": false,
+          "synchronizedOutputMode": false,
+          "wraparoundMode": true
+        }
+      },
+      "replica": {
+        "cols": 12,
+        "rows": 5,
+        "cursor": [
+          1,
+          4
+        ],
+        "baseY": 0,
+        "type": "normal",
+        "lines": [
+          "1           ",
+          "2           ",
+          "3           ",
+          "4           ",
+          "X           "
+        ],
+        "modes": {
+          "applicationCursorKeysMode": false,
+          "applicationKeypadMode": false,
+          "bracketedPasteMode": false,
+          "insertMode": false,
+          "mouseTrackingMode": "none",
+          "originMode": false,
+          "reverseWraparoundMode": false,
+          "sendFocusMode": false,
+          "synchronizedOutputMode": false,
+          "wraparoundMode": true
+        }
+      }
+    },
+    {
+      "name": "custom-tabs",
+      "before": "\"\\u001b[3g\\u001b[1;4H\\u001bH\\u001b[H\"",
+      "after": "\"\\tX\"",
+      "atAttach": true,
+      "afterContinuation": false,
+      "canonical": {
+        "cols": 12,
+        "rows": 5,
+        "cursor": [
+          4,
+          0
+        ],
+        "baseY": 0,
+        "type": "normal",
+        "lines": [
+          "   X        ",
+          "            ",
+          "            ",
+          "            ",
+          "            "
+        ],
+        "modes": {
+          "applicationCursorKeysMode": false,
+          "applicationKeypadMode": false,
+          "bracketedPasteMode": false,
+          "insertMode": false,
+          "mouseTrackingMode": "none",
+          "originMode": false,
+          "reverseWraparoundMode": false,
+          "sendFocusMode": false,
+          "synchronizedOutputMode": false,
+          "wraparoundMode": true
+        }
+      },
+      "replica": {
+        "cols": 12,
+        "rows": 5,
+        "cursor": [
+          9,
+          0
+        ],
+        "baseY": 0,
+        "type": "normal",
+        "lines": [
+          "        X   ",
+          "            ",
+          "            ",
+          "            ",
+          "            "
+        ],
+        "modes": {
+          "applicationCursorKeysMode": false,
+          "applicationKeypadMode": false,
+          "bracketedPasteMode": false,
+          "insertMode": false,
+          "mouseTrackingMode": "none",
+          "originMode": false,
+          "reverseWraparoundMode": false,
+          "sendFocusMode": false,
+          "synchronizedOutputMode": false,
+          "wraparoundMode": true
+        }
+      }
+    },
+    {
+      "name": "alternate",
+      "before": "\"normal\\u001b[?1049hALT\"",
+      "after": "\"\\u001b[?1049lZ\"",
+      "atAttach": true,
+      "afterContinuation": true,
+      "canonical": {
+        "cols": 12,
+        "rows": 5,
+        "cursor": [
+          7,
+          0
+        ],
+        "baseY": 0,
+        "type": "normal",
+        "lines": [
+          "normalZ     ",
+          "            ",
+          "            ",
+          "            ",
+          "            "
+        ],
+        "modes": {
+          "applicationCursorKeysMode": false,
+          "applicationKeypadMode": false,
+          "bracketedPasteMode": false,
+          "insertMode": false,
+          "mouseTrackingMode": "none",
+          "originMode": false,
+          "reverseWraparoundMode": false,
+          "sendFocusMode": false,
+          "synchronizedOutputMode": false,
+          "wraparoundMode": true
+        }
+      },
+      "replica": {
+        "cols": 12,
+        "rows": 5,
+        "cursor": [
+          7,
+          0
+        ],
+        "baseY": 0,
+        "type": "normal",
+        "lines": [
+          "normalZ     ",
+          "            ",
+          "            ",
+          "            ",
+          "            "
+        ],
+        "modes": {
+          "applicationCursorKeysMode": false,
+          "applicationKeypadMode": false,
+          "bracketedPasteMode": false,
+          "insertMode": false,
+          "mouseTrackingMode": "none",
+          "originMode": false,
+          "reverseWraparoundMode": false,
+          "sendFocusMode": false,
+          "synchronizedOutputMode": false,
+          "wraparoundMode": true
+        }
+      }
+    },
+    {
+      "name": "partial-csi",
+      "before": "\"\\u001b[31\"",
+      "after": "\"mX\"",
+      "atAttach": true,
+      "afterContinuation": false,
+      "canonical": {
+        "cols": 12,
+        "rows": 5,
+        "cursor": [
+          1,
+          0
+        ],
+        "baseY": 0,
+        "type": "normal",
+        "lines": [
+          "X           ",
+          "            ",
+          "            ",
+          "            ",
+          "            "
+        ],
+        "modes": {
+          "applicationCursorKeysMode": false,
+          "applicationKeypadMode": false,
+          "bracketedPasteMode": false,
+          "insertMode": false,
+          "mouseTrackingMode": "none",
+          "originMode": false,
+          "reverseWraparoundMode": false,
+          "sendFocusMode": false,
+          "synchronizedOutputMode": false,
+          "wraparoundMode": true
+        }
+      },
+      "replica": {
+        "cols": 12,
+        "rows": 5,
+        "cursor": [
+          2,
+          0
+        ],
+        "baseY": 0,
+        "type": "normal",
+        "lines": [
+          "mX          ",
+          "            ",
+          "            ",
+          "            ",
+          "            "
+        ],
+        "modes": {
+          "applicationCursorKeysMode": false,
+          "applicationKeypadMode": false,
+          "bracketedPasteMode": false,
+          "insertMode": false,
+          "mouseTrackingMode": "none",
+          "originMode": false,
+          "reverseWraparoundMode": false,
+          "sendFocusMode": false,
+          "synchronizedOutputMode": false,
+          "wraparoundMode": true
+        }
+      }
+    }
+  ]
+}

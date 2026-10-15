@@ -1,0 +1,24 @@
+name: Foundation checks (not product certification)
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  foundation:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1, node24
+        with:
+          persist-credentials: false
+      - name: Prepare exact compiler (ephemeral runner only)
+        run: rustup toolchain install 1.91.0 --profile minimal --component rustfmt,clippy
+      - name: Local tools and locked dependencies
+        run: make bootstrap docs-install install
+      - name: Existing foundation contracts
+        run: make verify
+      - name: Essential engine gate (currently blocking by design)
+        run: make engine-gate
+# No publication, artifact uploads, credentials, privileged runners or blanket script permits.
+# The red gate is intentional until an explicit reviewed engine decision replaces it.

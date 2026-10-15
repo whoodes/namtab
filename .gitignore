@@ -1,0 +1,20 @@
+# Local tools, caches and build/test output
+.tools/
+.cache/
+.artifacts/
+.venv*/
+**/node_modules/
+**/target/
+**/dist/
+site/
+__pycache__/
+*.pyc
+# Local secrets and editor/session state (examples must use .example suffix)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+.DS_Store
+*.swp

@@ -1,0 +1,82 @@
+{
+  "purpose": "Pre-update canonical specification snapshot; historical data, not divergent active docs.",
+  "sha256": "031e43731a4ca89ff70ef66f4431c4c05a5ec4724de201bbd8ee26cda538ebcc",
+  "files": [
+    {
+      "path": "docs/index.md",
+      "sha256": "5f675f6dfe808576e02c077011121297c16da29b5f78656139cf56081363a960"
+    },
+    {
+      "path": "docs/engineering/17-xterm-adapter-risk-and-gates.md",
+      "sha256": "66c494b366ccb7ebc8abd13be5e76f73a775b23686a9c9caec8f41911c5f9baf"
+    },
+    {
+      "path": "docs/engineering/12-prototype-plan.md",
+      "sha256": "30acab162d362c399986025ebf896f97e0d2880d9ce1b4873b57fed669128d56"
+    },
+    {
+      "path": "docs/engineering/14-repository-and-engineering-practices.md",
+      "sha256": "4fcaadd4737ddbb6213f65d5353e70a97156e3921bd620bbfc53abeafb5af658"
+    },
+    {
+      "path": "docs/engineering/16-test-and-ci-strategy.md",
+      "sha256": "88dae35efe3d641efae95aff0a2665923f48f99d4982221a61a16a8aa4b3aeab"
+    },
+    {
+      "path": "docs/engineering/07-validation-roadmap-and-risks.md",
+      "sha256": "0c4c140b851b69d446cd7fbdec2906ac7be4ed9981647f2f263a9ebc1dcfe161"
+    },
+    {
+      "path": "docs/engineering/18-foundation-gate-results.md",
+      "sha256": "c5ce6a0ba8b1422599d98d2b2c952e697fdd752700b53cc98e5dffe1ebffed10"
+    },
+    {
+      "path": "docs/engineering/15-dependencies-and-supply-chain.md",
+      "sha256": "d63b5ee21f036d9a71dfcc9cb3a8de875ab8a31a500035c5900022b22b6e15a9"
+    },
+    {
+      "path": "docs/research/08-research-and-decisions.md",
+      "sha256": "f04b4b3df072419c78f53e4b06a688a45c6b4824235b6d2a7043e0be8d0f2183"
+    },
+    {
+      "path": "docs/research/06-technology-distribution-and-compatibility.md",
+      "sha256": "16b082432444bb60135b35578b6ab5851baa38446eb6245a16356bb88fe34814"
+    },
+    {
+      "path": "docs/ux/11-human-experience-spec.md",
+      "sha256": "99dc10d01bf5884faf1fb86e9b39277ab09ca6d2a34413596b0e1a423565f509"
+    },
+    {
+      "path": "docs/ux/13-dual-frontend-and-host-tui.md",
+      "sha256": "1d66f82b356b85250482842dc3e6a47822c05fb39d867ee002c075c3f2425a10"
+    },
+    {
+      "path": "docs/architecture/10-recommended-baseline-and-adrs.md",
+      "sha256": "014e40e4aa5d977c11919ab3c8b0973274dcc85cda4816ecc7e2aefe2925f6c0"
+    },
+    {
+      "path": "docs/architecture/04-isolation-security-and-approvals.md",
+      "sha256": "20953b53e2fb3a086f6463439b2c244e94b7921a75bcf0ebed1ca4ad3c987513"
+    },
+    {
+      "path": "docs/architecture/03-execution-terminal-and-remote.md",
+      "sha256": "9c7d5324df2db41e67c1f53234a7b740298cb2484bc440c95e1c632e122480d8"
+    },
+    {
+      "path": "docs/architecture/05-architecture-storage-and-extensions.md",
+      "sha256": "9b3888bca98314f85ee28295e72f7dc9d15838634620583f5a65ac93339f5b93"
+    },
+    {
+      "path": "docs/reviews/09-self-review-and-coverage.md",
+      "sha256": "5763fb1571b92782d6eab0384d4e0bf562ce2dc293829edf67976aeb3cd73f16"
+    },
+    {
+      "path": "docs/product/02-work-evidence-and-coordination.md",
+      "sha256": "9844f11c5c3e2f1cdc3521d3383acd0e7e1d855852fa1f4d742b5f57af3457a1"
+    },
+    {
+      "path": "docs/product/01-product-and-supervision.md",
+      "sha256": "d56fb30e9ed6180c5e8115ef6cb0cbfeabbe5fc839be9b67603fc28e750b7a13"
+    }
+  ]
+}

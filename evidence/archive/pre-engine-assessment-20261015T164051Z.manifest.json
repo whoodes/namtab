@@ -1,0 +1,93 @@
+{
+  "purpose": "Immutable prior check/evidence/oracle archive before any assessment rerun. Original fixture and failing gate remain canonical and unchanged.",
+  "created_at": "20261015T164051Z",
+  "archive": "evidence/archive/pre-engine-assessment-20261015T164051Z.tar.gz",
+  "sha256": "d694e7c4fa1f61a3138df70f9bc00f06906693896004a795839e4f855f479ce1",
+  "files": [
+    {
+      "path": "evidence/checks.json",
+      "sha256": "8609c3366b659ba984c483e307817e70c16d9a9dfb4129874d34b79a08aaf384",
+      "bytes": 24182
+    },
+    {
+      "path": "evidence/dependencies.json",
+      "sha256": "38fe8c82075aab36afb1cf686ee6c679bc1a67c8afa9cd00c3ea9de12a8210e2",
+      "bytes": 38591
+    },
+    {
+      "path": "evidence/docs-migration.json",
+      "sha256": "9b42ddcfbecf900e0020be8eddfa82392cbb15ef3cc2dfdf11011967eb831970",
+      "bytes": 6168
+    },
+    {
+      "path": "evidence/engine-continuation.json",
+      "sha256": "2410a56ecd6d45d08f391f15b9dd8e8d18c693b750a866d593f124747a2e5231",
+      "bytes": 10173
+    },
+    {
+      "path": "evidence/file-inventory.txt",
+      "sha256": "52601aae42feb2bacb030c13edf2d14fa25c8c1205a3590daee7c176457cb372",
+      "bytes": 2980
+    },
+    {
+      "path": "evidence/node-bootstrap.json",
+      "sha256": "32d9666899205f82d717e7f9969ebe5932fbd4abd9324bbf4bbb295a27148c5e",
+      "bytes": 908
+    },
+    {
+      "path": "evidence/pnpm-bootstrap.json",
+      "sha256": "1db92756b7df96c5cd93dd601b503ad0c106b9418f0131ef3b827ea23242efd7",
+      "bytes": 430
+    },
+    {
+      "path": "evidence/repository-status.txt",
+      "sha256": "a15717ee78b9fca490eb01d22c8423bff984a57693da2e5e068a9917c0a08a82",
+      "bytes": 3396
+    },
+    {
+      "path": "evidence/xterm-artifacts.json",
+      "sha256": "b07447375c1eb7271a7486a288b0acb161d05a4b8b371edcb229d096bde9c0ac",
+      "bytes": 2641
+    },
+    {
+      "path": "evidence/xterm-source-files.json",
+      "sha256": "59cf4b596a963d04d3cb642891fa9bbe8dc8d024df5bb8fe95471b7ff1d7ef1a",
+      "bytes": 1356
+    },
+    {
+      "path": "README.md",
+      "sha256": "9af92088b92c811e30f8e0b3fe29c4f0667123dfc426ea528d1f78008e492526",
+      "bytes": 2960
+    },
+    {
+      "path": "docs/engineering/18-foundation-gate-results.md",
+      "sha256": "c5ce6a0ba8b1422599d98d2b2c952e697fdd752700b53cc98e5dffe1ebffed10",
+      "bytes": 24870
+    },
+    {
+      "path": "tests/system/engine-probe.mjs",
+      "sha256": "3759fd2cc266b53ead0eea96f893628efcd7e7a99ddfe55792eb18ab86331b02",
+      "bytes": 2683
+    },
+    {
+      "path": "tests/system/foundation.test.mjs",
+      "sha256": "b231609e5dc021c9bb46c3f9c2c4c3a657f79be11783e4b1ecaaf016d6cd8819",
+      "bytes": 8056
+    },
+    {
+      "path": "tests/fixtures/terminal/continuations.json",
+      "sha256": "f4be9e644749b53fe236b6bed4b61410230c7775221f2633f51f18b9c904999a",
+      "bytes": 599
+    },
+    {
+      "path": "tests/fixtures/manifest.json",
+      "sha256": "a31a7d8430141048d18d7c14539281c691dbfc69f0cdc90ebc0373067278b7b8",
+      "bytes": 453
+    },
+    {
+      "path": "scripts/verify.mjs",
+      "sha256": "1268eedfffdf894cef1c57a1c78d8af45c0a51ab1b81ed6bd9a9ea552dc5bf9e",
+      "bytes": 5150
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "input_file_sha256": {
+    "tests/assessment/ghostty-proof.c": "4d7b88f7552c19b923edd7b70a5d55380ba567013ade58d8f398af762cd95a13",
+    "tests/assessment/ghostty-assessment.mjs": "12ab7d16a80c9a9710df273a590a413cc08818b219d2d9cdaabe470268bf59c8",
+    "tests/assessment/xterm-assessment.mjs": "37cf4c1d9d122600e301d906aed4b1e226840a127346a5c68edfd18e37768a22",
+    "tests/assessment/expectations.json": "36b0186836b1c227cc6b5d18b4141ccedb9a757f0c65c8537237ead4e8e41af3",
+    "tests/fixtures/terminal/continuations.json": "f4be9e644749b53fe236b6bed4b61410230c7775221f2633f51f18b9c904999a"
+  },
+  "command": [
+    "node",
+    "tests/assessment/ghostty-assessment.mjs"
+  ],
+  "cwd": ".",
+  "recorded_at": "2026-10-15T17:08:42.647204+00:00",
+  "elapsed_seconds": 2.834,
+  "timeout_seconds": 300,
+  "exit": 0,
+  "verdict": "PASS",
+  "error": null,
+  "environment_overrides": {
+    "XDG_DATA_HOME": "/home/w/codex-dir/project-x/.cache/xdg-data",
+    "CARGO_HOME": "/home/w/codex-dir/project-x/.cache/cargo",
+    "PIP_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/pip",
+    "XDG_CACHE_HOME": "/home/w/codex-dir/project-x/.cache/xdg",
+    "NPM_CONFIG_USERCONFIG": "/dev/null",
+    "NPM_CONFIG_GLOBALCONFIG": "/dev/null",
+    "XDG_STATE_HOME": "/home/w/codex-dir/project-x/.cache/xdg-state",
+    "ZIG_GLOBAL_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/engine-assessment/zig-global",
+    "ZIG_LOCAL_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/engine-assessment/zig-local"
+  },
+  "stdout": "{\n  \"candidate\": \"B official libghostty-vt\",\n  \"verdict\": \"PASS_BOUNDED_C_API\",\n  \"sharedCases\": [\n    {\n      \"name\": \"plain\",\n      \"snapshotBytes\": 1097,\n      \"partitions\": 6\n    },\n    {\n      \"name\": \"saved-cursor\",\n      \"snapshotBytes\": 1115,\n      \"partitions\": 15\n    },\n    {\n      \"name\": \"scroll-region\",\n      \"snapshotBytes\": 1097,\n      \"partitions\": 26\n    },\n    {\n      \"name\": \"custom-tabs\",\n      \"snapshotBytes\": 1092,\n      \"partitions\": 16\n    },\n    {\n      \"name\": \"alternate\",\n      \"snapshotBytes\": 1259,\n      \"partitions\": 18\n    },\n    {\n      \"name\": \"partial-csi\",\n      \"snapshotBytes\": 1096,\n      \"partitions\": 5\n    }\n  ],\n  \"extendedCases\": [\n    {\n      \"name\": \"partial-utf8\",\n      \"verdict\": \"PASS_BOUNDED\"\n    },\n    {\n      \"name\": \"combining-and-wide\",\n      \"verdict\": \"PASS_BOUNDED\"\n    },\n    {\n      \"name\": \"pending-wrap\",\n      \"verdict\": \"PASS_BOUNDED\"\n    },\n    {\n      \"name\": \"both-screens\",\n      \"verdict\": \"PASS_BOUNDED\"\n    },\n    {\n      \"name\": \"partial-osc\",\n      \"verdict\": \"PASS_BOUNDED\"\n    }\n  ],\n  \"controls\": {\n    \"upNormal\": \"1b5b41\",\n    \"keypadNormal\": \"0d\",\n    \"upApplication\": \"1b4f41\",\n    \"keypadApplicationDefault1035\": \"0d\",\n    \"keypadApplication\": \"1b4f4d\",\n    \"ctrlUp\": \"1b5b313b3541\",\n    \"shiftTab\": \"1b5b5a\",\n    \"f12\": \"1b5b32347e\",\n    \"bracketedPaste\": \"1b5b3230307e610a621b5b3230317e\",\n    \"focusEncoding\": \"1b5b49\",\n    \"canonicalReplyEvents\": 2,\n    \"canonicalReplies\": \"1b5b313b31521b5b313b3152\",\n    \"sourceReplyEventsDuringDecode\": 0,\n    \"inheritedSourceReplyEvents\": 0,\n    \"restoredKeypadApplication\": \"1b4f4d\",\n    \"restoredUpApplication\": \"1b4f41\",\n    \"restoredNewReplyEvents\": 2,\n    \"overLimitContinuationEncodeResult\": -2\n  }\n}\n",
+  "stderr": "",
+  "output_truncated": false
+}
