@@ -1,0 +1,978 @@
+{
+  "recorded_at": "2026-10-15T18:22:02.656476+00:00",
+  "purpose": "Local initial history and manifesto followup; no implementation changes or gate resolution.",
+  "git_identity": "Existing configured author and committer verified before mutations; no invented identity or global configuration change.",
+  "history_method": "Validated temporary indexes and isolated project-local work trees; commit-tree plus compare-and-swap fast-forward update-ref; index-only read-tree; no existing commit amended, rebased, reset or working-file checkout.",
+  "stages": [
+    {
+      "order": 1,
+      "commit": "0a0183b83ee1519063e799a328cb2c824399cd90",
+      "tree": "3eb9fa10d646f6cc1ec14a3fb17800c570346b20",
+      "subject": "Establish the verified foundation and engine assessment baseline",
+      "checks": [
+        {
+          "name": "staged-whitespace",
+          "command": [
+            "git",
+            "diff",
+            "--cached",
+            "--check",
+            "4b825dc642cb6eb9a060e54bf8d69288fbee4904"
+          ],
+          "cwd": ".artifacts/history/stage-1-baseline",
+          "exit": 0,
+          "expected_exit": 0,
+          "elapsed_seconds": 0.026,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "exit_matches_declared_contract": true,
+          "verdict": "PASS"
+        },
+        {
+          "name": "install",
+          "command": [
+            "node",
+            ".tools/pnpm/package/bin/pnpm.cjs",
+            "install",
+            "--frozen-lockfile",
+            "--offline",
+            "--ignore-scripts"
+          ],
+          "cwd": ".artifacts/history/stage-1-baseline",
+          "exit": 0,
+          "expected_exit": 0,
+          "elapsed_seconds": 0.612,
+          "stdout_sha256": "43174814b0f7352e00fdc20ea0173401b692ec5598facf7ca5df6deb8e8124be",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "exit_matches_declared_contract": true,
+          "verdict": "PASS"
+        },
+        {
+          "name": "foundation",
+          "command": [
+            "make",
+            "verify"
+          ],
+          "cwd": ".artifacts/history/stage-1-baseline",
+          "exit": 0,
+          "expected_exit": 0,
+          "elapsed_seconds": 35.506,
+          "stdout_sha256": "64d7c37052b5f4909dbe809c8f10a4ec9ff0eff166c2fc37b8a0dccf620f6e30",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "foundation_checks": {
+            "repository-local-links": "PASS",
+            "js-format": "PASS",
+            "frozen-offline-install": "PASS",
+            "rust-format": "PASS",
+            "rust-clippy": "PASS",
+            "rust-contracts": "PASS",
+            "bindings-drift": "PASS",
+            "typescript-build": "PASS",
+            "dependency-boundaries": "PASS",
+            "fixture-integrity": "PASS",
+            "synthetic-contracts": "PASS",
+            "seeded-partitions": "PASS",
+            "offline-console": "PASS",
+            "strict-mkdocs": "PASS"
+          },
+          "independent_x4": "FAIL",
+          "exit_matches_declared_contract": true,
+          "verdict": "PASS"
+        },
+        {
+          "name": "x4",
+          "command": [
+            "node",
+            "tests/system/engine-probe.mjs",
+            "--require-pass"
+          ],
+          "cwd": ".artifacts/history/stage-1-baseline",
+          "exit": 1,
+          "expected_exit": 1,
+          "elapsed_seconds": 0.113,
+          "stdout_sha256": "2410a56ecd6d45d08f391f15b9dd8e8d18c693b750a866d593f124747a2e5231",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "selection_verdict": "FAIL",
+          "counterexamples": [
+            "saved-cursor",
+            "scroll-region",
+            "custom-tabs"
+          ],
+          "exit_matches_declared_contract": true,
+          "verdict": "FAIL"
+        },
+        {
+          "name": "assessment",
+          "command": [
+            "make",
+            "assessment-check"
+          ],
+          "cwd": ".artifacts/history/stage-1-baseline",
+          "exit": 0,
+          "expected_exit": 0,
+          "elapsed_seconds": 3.483,
+          "stdout_sha256": "f169a002850aabf718902275bd40206e735ba18a11923313ebec2718fe6b1784",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "exit_matches_declared_contract": true,
+          "verdict": "PASS"
+        },
+        {
+          "name": "docs",
+          "command": [
+            "make",
+            "docs"
+          ],
+          "cwd": ".artifacts/history/stage-1-baseline",
+          "exit": 0,
+          "expected_exit": 0,
+          "elapsed_seconds": 0.756,
+          "stdout_sha256": "7f55720f5b2396723c77ea8a564bdf9db72174ad7ac9161add6b741f1d0320fb",
+          "stderr_sha256": "68d6d7da53cc863ea6dd5d925d63060ed655b61e53c53fd7b6863217950b4951",
+          "result": ".venv-docs/bin/python -B scripts/check-doc-links.py\n25 Markdown files, 380 local links/fragments checked, 0 errors.\n.venv-docs/bin/python -m mkdocs build --strict",
+          "exit_matches_declared_contract": true,
+          "verdict": "PASS"
+        }
+      ],
+      "parent": null,
+      "files": 143,
+      "contract": "Foundation/docs/preservation pass; original X4 stays FAIL; no native worker in this stage",
+      "staged_evidence_policy": "Checks may refresh isolated result files; those refreshes were not folded into the reviewed historical tree."
+    },
+    {
+      "order": 2,
+      "commit": "b5e80723ecdbaf4a2c3beb471f9a4fcc1f681a2e",
+      "tree": "158105b3ed7a372e010a4281dc0772fa949bfe58",
+      "subject": "Organize assessment tooling and document contribution boundaries",
+      "checks": [
+        {
+          "name": "staged-whitespace",
+          "command": [
+            "git",
+            "diff",
+            "--cached",
+            "--check",
+            "3eb9fa10d646f6cc1ec14a3fb17800c570346b20"
+          ],
+          "cwd": ".artifacts/history/stage-2-organization",
+          "exit": 0,
+          "expected_exit": 0,
+          "elapsed_seconds": 0.012,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "exit_matches_declared_contract": true,
+          "verdict": "PASS"
+        },
+        {
+          "name": "install",
+          "command": [
+            "node",
+            ".tools/pnpm/package/bin/pnpm.cjs",
+            "install",
+            "--frozen-lockfile",
+            "--offline",
+            "--ignore-scripts"
+          ],
+          "cwd": ".artifacts/history/stage-2-organization",
+          "exit": 0,
+          "expected_exit": 0,
+          "elapsed_seconds": 0.609,
+          "stdout_sha256": "4d37f4b0f61885347c08dd943581de8eed722fde6bd441523935f4125b7e7921",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "exit_matches_declared_contract": true,
+          "verdict": "PASS"
+        },
+        {
+          "name": "foundation",
+          "command": [
+            "make",
+            "verify"
+          ],
+          "cwd": ".artifacts/history/stage-2-organization",
+          "exit": 0,
+          "expected_exit": 0,
+          "elapsed_seconds": 38.798,
+          "stdout_sha256": "64d7c37052b5f4909dbe809c8f10a4ec9ff0eff166c2fc37b8a0dccf620f6e30",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "foundation_checks": {
+            "repository-local-links": "PASS",
+            "js-format": "PASS",
+            "frozen-offline-install": "PASS",
+            "rust-format": "PASS",
+            "rust-clippy": "PASS",
+            "rust-contracts": "PASS",
+            "bindings-drift": "PASS",
+            "typescript-build": "PASS",
+            "dependency-boundaries": "PASS",
+            "fixture-integrity": "PASS",
+            "synthetic-contracts": "PASS",
+            "seeded-partitions": "PASS",
+            "offline-console": "PASS",
+            "strict-mkdocs": "PASS"
+          },
+          "independent_x4": "FAIL",
+          "exit_matches_declared_contract": true,
+          "verdict": "PASS"
+        },
+        {
+          "name": "x4",
+          "command": [
+            "node",
+            "tests/system/engine-probe.mjs",
+            "--require-pass"
+          ],
+          "cwd": ".artifacts/history/stage-2-organization",
+          "exit": 1,
+          "expected_exit": 1,
+          "elapsed_seconds": 0.114,
+          "stdout_sha256": "2410a56ecd6d45d08f391f15b9dd8e8d18c693b750a866d593f124747a2e5231",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "selection_verdict": "FAIL",
+          "counterexamples": [
+            "saved-cursor",
+            "scroll-region",
+            "custom-tabs"
+          ],
+          "exit_matches_declared_contract": true,
+          "verdict": "FAIL"
+        },
+        {
+          "name": "assessment",
+          "command": [
+            "make",
+            "assessment-check"
+          ],
+          "cwd": ".artifacts/history/stage-2-organization",
+          "exit": 0,
+          "expected_exit": 0,
+          "elapsed_seconds": 3.517,
+          "stdout_sha256": "4f0e804d85c8b65e413c7faa5a2c4c2b5d166fcaca707f7196ae0012ac8461fc",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "exit_matches_declared_contract": true,
+          "verdict": "PASS"
+        },
+        {
+          "name": "docs",
+          "command": [
+            "make",
+            "docs"
+          ],
+          "cwd": ".artifacts/history/stage-2-organization",
+          "exit": 0,
+          "expected_exit": 0,
+          "elapsed_seconds": 0.766,
+          "stdout_sha256": "901ee79315befaa13e638052a717db4e45d278d7b2fa66454d7820d0c452793f",
+          "stderr_sha256": "2609513eeb2233cf3fd42ee7e506bc89013305a8ff8ff7c0cdbdc77db7935fbd",
+          "result": ".venv-docs/bin/python -B scripts/check-doc-links.py\n28 Markdown files, 392 local links/fragments checked, 0 errors.\n.venv-docs/bin/python -m mkdocs build --strict",
+          "exit_matches_declared_contract": true,
+          "verdict": "PASS"
+        }
+      ],
+      "parent": "0a0183b83ee1519063e799a328cb2c824399cd90",
+      "files": 153,
+      "contract": "Foundation/docs/preservation pass; original X4 stays FAIL; no native worker in this stage",
+      "staged_evidence_policy": "Checks may refresh isolated result files; those refreshes were not folded into the reviewed historical tree."
+    },
+    {
+      "order": 3,
+      "commit": "a911b0e7316e01cd8d6d20af08785d945c2b0e6e",
+      "tree": "35aa1756df838c5f89209dc7d00ea917bf76395f",
+      "subject": "Add the bounded native worker and retain the failed EA1 gate",
+      "checks": [
+        {
+          "name": "staged-whitespace",
+          "command": [
+            "git",
+            "diff",
+            "--cached",
+            "--check",
+            "158105b3ed7a372e010a4281dc0772fa949bfe58"
+          ],
+          "cwd": ".artifacts/history/stage-3-ea1",
+          "exit": 0,
+          "expected_exit": 0,
+          "elapsed_seconds": 0.02,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "exit_matches_declared_contract": true,
+          "verdict": "PASS"
+        },
+        {
+          "name": "install",
+          "command": [
+            "node",
+            ".tools/pnpm/package/bin/pnpm.cjs",
+            "install",
+            "--frozen-lockfile",
+            "--offline",
+            "--ignore-scripts"
+          ],
+          "cwd": ".artifacts/history/stage-3-ea1",
+          "exit": 0,
+          "expected_exit": 0,
+          "elapsed_seconds": 0.611,
+          "stdout_sha256": "9bba7a5671106ed8c6a765e6333d13dd442a4594bc2ae3bc125053560ac11362",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "exit_matches_declared_contract": true,
+          "verdict": "PASS"
+        },
+        {
+          "name": "foundation",
+          "command": [
+            "make",
+            "verify"
+          ],
+          "cwd": ".artifacts/history/stage-3-ea1",
+          "exit": 0,
+          "expected_exit": 0,
+          "elapsed_seconds": 43.889,
+          "stdout_sha256": "64d7c37052b5f4909dbe809c8f10a4ec9ff0eff166c2fc37b8a0dccf620f6e30",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "foundation_checks": {
+            "repository-local-links": "PASS",
+            "js-format": "PASS",
+            "frozen-offline-install": "PASS",
+            "rust-format": "PASS",
+            "rust-clippy": "PASS",
+            "rust-contracts": "PASS",
+            "bindings-drift": "PASS",
+            "typescript-build": "PASS",
+            "dependency-boundaries": "PASS",
+            "fixture-integrity": "PASS",
+            "synthetic-contracts": "PASS",
+            "seeded-partitions": "PASS",
+            "offline-console": "PASS",
+            "strict-mkdocs": "PASS"
+          },
+          "independent_x4": "FAIL",
+          "exit_matches_declared_contract": true,
+          "verdict": "PASS"
+        },
+        {
+          "name": "x4",
+          "command": [
+            "node",
+            "tests/system/engine-probe.mjs",
+            "--require-pass"
+          ],
+          "cwd": ".artifacts/history/stage-3-ea1",
+          "exit": 1,
+          "expected_exit": 1,
+          "elapsed_seconds": 0.106,
+          "stdout_sha256": "2410a56ecd6d45d08f391f15b9dd8e8d18c693b750a866d593f124747a2e5231",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "selection_verdict": "FAIL",
+          "counterexamples": [
+            "saved-cursor",
+            "scroll-region",
+            "custom-tabs"
+          ],
+          "exit_matches_declared_contract": true,
+          "verdict": "FAIL"
+        },
+        {
+          "name": "native-build",
+          "command": [
+            "make",
+            "ea1-build"
+          ],
+          "cwd": ".artifacts/history/stage-3-ea1",
+          "exit": 0,
+          "expected_exit": 0,
+          "elapsed_seconds": 3.863,
+          "stdout_sha256": "7858144262117e25d313e74fd7b846964c67808bbd7102e015c47ed054921916",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "exit_matches_declared_contract": true,
+          "verdict": "PASS"
+        },
+        {
+          "name": "native-ownership",
+          "command": [
+            "python3",
+            "-B",
+            "tests/ea1/ownership_check.py"
+          ],
+          "cwd": ".artifacts/history/stage-3-ea1",
+          "exit": 0,
+          "expected_exit": 0,
+          "elapsed_seconds": 0.545,
+          "stdout_sha256": "0bdbee1d48a837b0189a79db15d6013885f158f96c3c3f82de73df1de9d8edb5",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "exit_matches_declared_contract": true,
+          "verdict": "PASS"
+        },
+        {
+          "name": "native-provenance",
+          "command": [
+            "python3",
+            "-B",
+            "tests/ea1/provenance.py"
+          ],
+          "cwd": ".artifacts/history/stage-3-ea1",
+          "exit": 0,
+          "expected_exit": 0,
+          "elapsed_seconds": 0.714,
+          "stdout_sha256": "0dfae8700d44a231c1c7354ed05a5edbe2794ef11c0b3eba60d71e3f406ecc0a",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "exit_matches_declared_contract": true,
+          "verdict": "PASS"
+        },
+        {
+          "name": "preservation",
+          "command": [
+            "python3",
+            "-B",
+            "tests/ea1/preservation.py"
+          ],
+          "cwd": ".artifacts/history/stage-3-ea1",
+          "exit": 0,
+          "expected_exit": 0,
+          "elapsed_seconds": 0.058,
+          "stdout_sha256": "95829c548e1ef6ba2e1371b7adc45623a5963f6e13338ac693d8bd3b5c47cfc6",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "exit_matches_declared_contract": true,
+          "verdict": "PASS"
+        },
+        {
+          "name": "shared-inputs",
+          "command": [
+            "node",
+            "tests/ea1/shared-inputs.mjs"
+          ],
+          "cwd": ".artifacts/history/stage-3-ea1",
+          "exit": 0,
+          "expected_exit": 0,
+          "elapsed_seconds": 0.194,
+          "stdout_sha256": "850d8c70752e9e5a1dba2b6dd119ba4f91f190a7fec42d96b6aeaf55c928ca89",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "exit_matches_declared_contract": true,
+          "verdict": "PASS"
+        },
+        {
+          "name": "ea1-gate",
+          "command": [
+            "python3",
+            "-B",
+            "tests/ea1/worker_test.py"
+          ],
+          "cwd": ".artifacts/history/stage-3-ea1",
+          "exit": 1,
+          "expected_exit": 1,
+          "elapsed_seconds": 1.232,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "ccc95cec75681877f2dfa557a076445972d7df9e78d53162436ff107e9849c10",
+          "selection_verdict": "FAIL",
+          "passing_methods": 12,
+          "failing_methods": 1,
+          "failing_subcases": [
+            {
+              "chord": "Ctrl-i",
+              "expected_hex": "09",
+              "actual_hex": "1b5b3130353b3575",
+              "verdict": "FAIL"
+            },
+            {
+              "chord": "Ctrl-m",
+              "expected_hex": "0d",
+              "actual_hex": "1b5b3130393b3575",
+              "verdict": "FAIL"
+            },
+            {
+              "chord": "Ctrl-[",
+              "expected_hex": "1b",
+              "actual_hex": "1b5b39313b3575",
+              "verdict": "FAIL"
+            }
+          ],
+          "exit_matches_declared_contract": true,
+          "verdict": "FAIL"
+        },
+        {
+          "name": "docs",
+          "command": [
+            "make",
+            "docs"
+          ],
+          "cwd": ".artifacts/history/stage-3-ea1",
+          "exit": 0,
+          "expected_exit": 0,
+          "elapsed_seconds": 0.769,
+          "stdout_sha256": "412fe5bb1f16e259f372bdb36766b7faf7b73f09c8019c51d1973265ba2dd71e",
+          "stderr_sha256": "5398eca511e5aa9cde41f0220ea614f749b8e63bd9e6f75da980844c8369ded6",
+          "result": ".venv-docs/bin/python -B scripts/check-doc-links.py\n29 Markdown files, 408 local links/fragments checked, 0 errors.\n.venv-docs/bin/python -m mkdocs build --strict",
+          "exit_matches_declared_contract": true,
+          "verdict": "PASS"
+        }
+      ],
+      "parent": "b5e80723ecdbaf4a2c3beb471f9a4fcc1f681a2e",
+      "files": 221,
+      "contract": "Foundation/docs/preservation pass; original X4 stays FAIL; EA1 stays FAIL (3 alias subcases), no EA2",
+      "staged_evidence_policy": "Checks may refresh isolated result files; those refreshes were not folded into the reviewed historical tree."
+    },
+    {
+      "order": 4,
+      "commit": "b8f8d3ff2fb3efd03da4e20702e6f4b158002bbe",
+      "tree": "5c1a43be945a42122a96702a3eaca90cc10b61ad",
+      "subject": "Define the terminal manifesto and responsiveness principles",
+      "checks": [
+        {
+          "name": "staged-whitespace",
+          "command": [
+            "git",
+            "diff",
+            "--cached",
+            "--check",
+            "35aa1756df838c5f89209dc7d00ea917bf76395f"
+          ],
+          "cwd": ".artifacts/history/stage-4-manifesto",
+          "exit": 0,
+          "expected_exit": 0,
+          "elapsed_seconds": 0.006,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "exit_matches_declared_contract": true,
+          "verdict": "PASS"
+        },
+        {
+          "name": "install",
+          "command": [
+            "node",
+            ".tools/pnpm/package/bin/pnpm.cjs",
+            "install",
+            "--frozen-lockfile",
+            "--offline",
+            "--ignore-scripts"
+          ],
+          "cwd": ".artifacts/history/stage-4-manifesto",
+          "exit": 0,
+          "expected_exit": 0,
+          "elapsed_seconds": 0.589,
+          "stdout_sha256": "a2341675fd3a623154eb3fd8873e3a5275b9d3c67b24dbdcdd305f03a20fcd07",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "exit_matches_declared_contract": true,
+          "verdict": "PASS"
+        },
+        {
+          "name": "foundation",
+          "command": [
+            "make",
+            "verify"
+          ],
+          "cwd": ".artifacts/history/stage-4-manifesto",
+          "exit": 0,
+          "expected_exit": 0,
+          "elapsed_seconds": 41.142,
+          "stdout_sha256": "64d7c37052b5f4909dbe809c8f10a4ec9ff0eff166c2fc37b8a0dccf620f6e30",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "foundation_checks": {
+            "repository-local-links": "PASS",
+            "js-format": "PASS",
+            "frozen-offline-install": "PASS",
+            "rust-format": "PASS",
+            "rust-clippy": "PASS",
+            "rust-contracts": "PASS",
+            "bindings-drift": "PASS",
+            "typescript-build": "PASS",
+            "dependency-boundaries": "PASS",
+            "fixture-integrity": "PASS",
+            "synthetic-contracts": "PASS",
+            "seeded-partitions": "PASS",
+            "offline-console": "PASS",
+            "strict-mkdocs": "PASS"
+          },
+          "independent_x4": "FAIL",
+          "exit_matches_declared_contract": true,
+          "verdict": "PASS"
+        },
+        {
+          "name": "x4",
+          "command": [
+            "node",
+            "tests/system/engine-probe.mjs",
+            "--require-pass"
+          ],
+          "cwd": ".artifacts/history/stage-4-manifesto",
+          "exit": 1,
+          "expected_exit": 1,
+          "elapsed_seconds": 0.116,
+          "stdout_sha256": "2410a56ecd6d45d08f391f15b9dd8e8d18c693b750a866d593f124747a2e5231",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "selection_verdict": "FAIL",
+          "counterexamples": [
+            "saved-cursor",
+            "scroll-region",
+            "custom-tabs"
+          ],
+          "exit_matches_declared_contract": true,
+          "verdict": "FAIL"
+        },
+        {
+          "name": "native-build",
+          "command": [
+            "make",
+            "ea1-build"
+          ],
+          "cwd": ".artifacts/history/stage-4-manifesto",
+          "exit": 0,
+          "expected_exit": 0,
+          "elapsed_seconds": 3.931,
+          "stdout_sha256": "cac181d2076b55a5e2ae80cfa6e287dd299b6033c35ccc7bed7395de348ea3c0",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "exit_matches_declared_contract": true,
+          "verdict": "PASS"
+        },
+        {
+          "name": "native-ownership",
+          "command": [
+            "python3",
+            "-B",
+            "tests/ea1/ownership_check.py"
+          ],
+          "cwd": ".artifacts/history/stage-4-manifesto",
+          "exit": 0,
+          "expected_exit": 0,
+          "elapsed_seconds": 0.544,
+          "stdout_sha256": "0bdbee1d48a837b0189a79db15d6013885f158f96c3c3f82de73df1de9d8edb5",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "exit_matches_declared_contract": true,
+          "verdict": "PASS"
+        },
+        {
+          "name": "native-provenance",
+          "command": [
+            "python3",
+            "-B",
+            "tests/ea1/provenance.py"
+          ],
+          "cwd": ".artifacts/history/stage-4-manifesto",
+          "exit": 0,
+          "expected_exit": 0,
+          "elapsed_seconds": 0.761,
+          "stdout_sha256": "0dfae8700d44a231c1c7354ed05a5edbe2794ef11c0b3eba60d71e3f406ecc0a",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "exit_matches_declared_contract": true,
+          "verdict": "PASS"
+        },
+        {
+          "name": "preservation",
+          "command": [
+            "python3",
+            "-B",
+            "tests/ea1/preservation.py"
+          ],
+          "cwd": ".artifacts/history/stage-4-manifesto",
+          "exit": 0,
+          "expected_exit": 0,
+          "elapsed_seconds": 0.064,
+          "stdout_sha256": "95829c548e1ef6ba2e1371b7adc45623a5963f6e13338ac693d8bd3b5c47cfc6",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "exit_matches_declared_contract": true,
+          "verdict": "PASS"
+        },
+        {
+          "name": "shared-inputs",
+          "command": [
+            "node",
+            "tests/ea1/shared-inputs.mjs"
+          ],
+          "cwd": ".artifacts/history/stage-4-manifesto",
+          "exit": 0,
+          "expected_exit": 0,
+          "elapsed_seconds": 0.206,
+          "stdout_sha256": "850d8c70752e9e5a1dba2b6dd119ba4f91f190a7fec42d96b6aeaf55c928ca89",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "exit_matches_declared_contract": true,
+          "verdict": "PASS"
+        },
+        {
+          "name": "ea1-gate",
+          "command": [
+            "python3",
+            "-B",
+            "tests/ea1/worker_test.py"
+          ],
+          "cwd": ".artifacts/history/stage-4-manifesto",
+          "exit": 1,
+          "expected_exit": 1,
+          "elapsed_seconds": 1.264,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "3ae3abbe90e2335dd82cf5a2dddc2b2ff44d3fc5ca21f76ab893e31ac242bb3f",
+          "selection_verdict": "FAIL",
+          "passing_methods": 12,
+          "failing_methods": 1,
+          "failing_subcases": [
+            {
+              "chord": "Ctrl-i",
+              "expected_hex": "09",
+              "actual_hex": "1b5b3130353b3575",
+              "verdict": "FAIL"
+            },
+            {
+              "chord": "Ctrl-m",
+              "expected_hex": "0d",
+              "actual_hex": "1b5b3130393b3575",
+              "verdict": "FAIL"
+            },
+            {
+              "chord": "Ctrl-[",
+              "expected_hex": "1b",
+              "actual_hex": "1b5b39313b3575",
+              "verdict": "FAIL"
+            }
+          ],
+          "exit_matches_declared_contract": true,
+          "verdict": "FAIL"
+        },
+        {
+          "name": "docs",
+          "command": [
+            "make",
+            "docs"
+          ],
+          "cwd": ".artifacts/history/stage-4-manifesto",
+          "exit": 0,
+          "expected_exit": 0,
+          "elapsed_seconds": 0.795,
+          "stdout_sha256": "3033d8359abef2419a5a2d2ece92cc36538c4fd01cab9e797ae741b5a57f659c",
+          "stderr_sha256": "64847c1225234dfc5e6b789ecb8613247cb5b9d4b697cad731bc8618741572c8",
+          "result": ".venv-docs/bin/python -B scripts/check-doc-links.py\n30 Markdown files, 414 local links/fragments checked, 0 errors.\n.venv-docs/bin/python -m mkdocs build --strict",
+          "exit_matches_declared_contract": true,
+          "verdict": "PASS"
+        }
+      ],
+      "parent": "a911b0e7316e01cd8d6d20af08785d945c2b0e6e",
+      "files": 222,
+      "contract": "Foundation/docs/preservation pass; original X4 stays FAIL; EA1 stays FAIL (3 alias subcases), no EA2",
+      "staged_evidence_policy": "Checks may refresh isolated result files; those refreshes were not folded into the reviewed historical tree."
+    }
+  ],
+  "audit_commit": "The subsequent metadata-only commit containing this file. Its own hash/tree cannot be embedded without a self-reference; identify with git log -1 -- evidence/history/validation.json.",
+  "environment": {
+    "os_release": "PRETTY_NAME=\"Ubuntu 22.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"22.04\"\nVERSION=\"22.04.5 LTS (Jammy Jellyfish)\"\nVERSION_CODENAME=jammy\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=jammy\n",
+    "kernel": "6.8.0-138-generic",
+    "arch": "x86_64",
+    "versions": {
+      "rustc": "rustc 1.91.0 (f8297e351 2025-10-28)",
+      "cargo": "cargo 1.91.0 (ea2d97820 2025-10-10)",
+      "node": "v24.21.0",
+      "pnpm": "10.32.1",
+      "python": "Python 3.10.12",
+      "zig": "0.16.0",
+      "c_compiler": "clang version 21.1.0\nTarget: x86_64-unknown-linux6.8.0-gnu2.35.0\nThread model: posix\nInstalledDir: /home/w/codex-dir/project-x/.tools/zig/zig-x86_64-linux-0.16.0"
+    },
+    "core_library_sha256": "7233966bb39275b8445a9a8b970170ef6fd109b8b8feb8b164cce00be40d588a",
+    "core_commit": "22fa134a07f5749edd9e92c6bc17d8aaf61843be",
+    "resource_reuse": "Existing pinned project-local tools, Python docs environment, registry/source caches and evaluated native library reused through project-local symlinks; no downloads or new SDK build. Private pnpm links and build outputs per validation tree.",
+    "limits": "This is local validation, not fresh-machine, CI or portable artifact qualification; binary contains original checkout paths."
+  },
+  "preservation": {
+    "protected_paths_unchanged": 62,
+    "protected_paths_sha256": {
+      "Cargo.lock": "7156d2082457d9ebbc5da80a943a7b08af3f0a14b3d87a665a540042195bb52d",
+      "Cargo.toml": "ceda6df60efd0e9f83d76fbcd80d12e47193b3198cad3115bd4bc7b0448920f1",
+      "apps/desktop/package.json": "7d9285bfd7005aa89845e688c05f81200d24a0ec2a330efb56207e7a37e8a075",
+      "apps/desktop/src/input.ts": "d357e97bfd763ca25df3d3477c0801a32c6b1e08d83657c71d9eeaaef3f55e35",
+      "apps/desktop/tsconfig.json": "afd33ff6f88ca50937d8d0fc93aeb2f58b951b0c3fbd73a3f75ceb8a4badb70e",
+      "apps/engine-host/package.json": "a95cd28331a52444b28052565c235bfd9107d2a2671a1b6e1148d6a8a3180714",
+      "apps/engine-host/src/probe.ts": "facde1591d33918bf6594bad0d967ff0298285c18a1812ca116e7d2efa453992",
+      "apps/engine-host/tsconfig.json": "7a6f3171c04c6f3ef270dc0ce772d832ec9a650e19c4179b296d0ba20e566089",
+      "crates/client/Cargo.toml": "2e7f8feaf03a9f015c614bff4b78553a53487b383ae6748b1d2554f72e27f848",
+      "crates/client/src/lib.rs": "a6058e86a191f16e25877b41545fe562df50a6b81ad69f47951df25e33dfb26d",
+      "crates/console/Cargo.toml": "32252cddb2d1c87b5e3273d188d2c25d8ecfe1e7b28ee5548e12bb9c0f33b755",
+      "crates/console/src/lib.rs": "a856ad09cafbcd88ba50451d39084452484d29bf192c5113288efd50cb9896a1",
+      "crates/console/src/main.rs": "ac644d5bd3b7b846e410b98f814022a34b31503de794c7da1da2a11dab1c3f86",
+      "crates/domain/Cargo.toml": "d5fdbc7e0d408f78c1a846d3222fd129fed06458882b2ff972115310334db555",
+      "crates/domain/src/lib.rs": "a2938e28077448b3580291530b27d3c9dc28ff451455cdd7cae87f83dad67b1e",
+      "crates/engine/Cargo.toml": "dc0a402929c523fcfa0232ae3b34ad19ede65b023a19e53a6aacfde11d8ae5c6",
+      "crates/engine/build.rs": "d09d81d5f86abc07b35c4d0ca309a723fd2acd685df7b9066699913227c00922",
+      "crates/engine/native/boundary.c": "8d874f3f28a84d7b6288abb0d532aa8cd35a30e8133a21a43e3850f6ccb0893f",
+      "crates/engine/native/boundary.h": "cd1272fdeadd20bd22453a14630fb6415105accc49d5f0e266006c64a06303eb",
+      "crates/engine/src/ffi.rs": "f59978263e09537f41d14ca993474b10baa3c5a86be8a9aefca05c02c2ad388a",
+      "crates/engine/src/main.rs": "993be91a05ffa473660a7c9a4e245a04e3335f0e355713f5608b5136f14b6691",
+      "crates/platform/Cargo.toml": "2fbe15a13f94f1c4ca6c4b00d6308517cd210ae9a7814b8c3f55181c4ba08127",
+      "crates/platform/src/lib.rs": "70ab081c2717a31e94626202c12351043701c6f5ee6024a1d2ef71653a171464",
+      "crates/protocol/Cargo.toml": "421a6e11057b4627dbe3526c0a429469085f208e5cf953b5afdb254c316dd5b0",
+      "crates/protocol/examples/export-engine-schema.rs": "f18a34a1c66770f976e4f6d66cf384da9d042e6b5d1dcf3508df9a6fee304b2f",
+      "crates/protocol/examples/export-schema.rs": "60c7c6a7b41bacb8c830a9093d703a8b32a5d5ce03178bbc7c1d1f263a26405a",
+      "crates/protocol/src/internal_engine.rs": "622184545633e1f59d068da58d1b0e89fdb9bb8301e106d1f65157b8adbadf86",
+      "crates/protocol/src/lib.rs": "9f56374ae2884db1f79c732bcb5fee81acf1398813e533b9c4e601ab5dacc01e",
+      "crates/service/Cargo.toml": "03d0e1d1e16fad75864f58de4e0584a5045f9f100ff1d668e541a2fe95a6bbd1",
+      "crates/service/src/lib.rs": "29763ce711db486b5cbb239cc51475612b6a957c37a644dd1e2052ff3b2fafaa",
+      "packages/protocol/package.json": "9ca201f8233056b56ea352426dc7147e3d31cef740b97fa682e1fab3d208d295",
+      "packages/protocol/src/generated.ts": "8f6f79305d3265cb3f44198720102e8a24a4afafeeb18cad9b994682d92fb6f5",
+      "packages/protocol/src/index.ts": "b4df9095dc135ed7125cf736f46f523aabfe6a77c91a9afa7f1db7112bdd001b",
+      "packages/protocol/src/validate.generated.d.mts": "002f701febde3d029c926388267481ccbf0efbc3025a51d391df1b901d61612e",
+      "packages/protocol/src/validate.generated.mjs": "a656bdf10f9ed577c58f666cc92751be4965a7f06abe0731c9ea1b0f3f30d383",
+      "packages/protocol/tsconfig.json": "5fc456a4f573c558f1ef2a889560490348f1a2dfe1092fa2e88939fb2ef00356",
+      "packages/terminal-adapter/package.json": "fcc0060a481633d3726aed475e195b84a2d261f9f1dccf9ffa80d34d4325650e",
+      "packages/terminal-adapter/src/index.ts": "bf9ab33987922ff95abfc7ad9bbfe178d9bd6a78863b6f75f99e606de91268d3",
+      "packages/terminal-adapter/src/node.ts": "f83b5bab1591c84acc1ac47d14919105a7f38db05d756858d40006e4fb3837ab",
+      "packages/terminal-adapter/tsconfig.json": "5fc456a4f573c558f1ef2a889560490348f1a2dfe1092fa2e88939fb2ef00356",
+      "pnpm-lock.yaml": "448688b057b8276aa826d0d76aa5b1d73e088f8131ff20128701081bdb149ba4",
+      "schemas/private/engine-request.schema.json": "2202ad2092903b833292f236d1d492721fa3e1c758791418a8622d45498f72e2",
+      "schemas/private/engine-response.schema.json": "c513f16c62de68d867facc4763449711d5be3276f92bb317d5ee44a7307eb8e0",
+      "schemas/public/input-request.schema.json": "4aaa6fab3b167ba5e32e2cc972e3d01251d85b3e6cd0a845085c4e81cc63963c",
+      "tests/assessment/expectations.json": "36b0186836b1c227cc6b5d18b4141ccedb9a757f0c65c8537237ead4e8e41af3",
+      "tests/assessment/ghostty-assessment.mjs": "199a592427cb860e8c03d6716c87719c7d707ce824ee3320fbdc8998feb88def",
+      "tests/assessment/ghostty-proof.c": "7f6e4a0ba1daf845bd54d39cc7933dd15422a33747cab424cc8bb2b8d78e51cc",
+      "tests/assessment/xterm-assessment.mjs": "37cf4c1d9d122600e301d906aed4b1e226840a127346a5c68edfd18e37768a22",
+      "tests/ea1/ownership_check.py": "0c8a1155c777a07cf69b306d52e0634ac7bbfed58edc64158cd716c487fede9c",
+      "tests/ea1/preservation.py": "b13b77ce60801f50290bb01e6978cd20c013c4e9883d311169be2c598f697f7a",
+      "tests/ea1/provenance.py": "946c3cee6ea195caffb244b9e68d2f6c4556782b7faf554f41013ddb29aede65",
+      "tests/ea1/shared-inputs.mjs": "ad6c631b02cc07444689fb50ae252813d10d53b79359e3b876fde92cf7a3270d",
+      "tests/ea1/worker_test.py": "f63deb77f61eabaffc7e2015b267659e7d07fdb88cf9290150efd2b261a267ec",
+      "tests/fixtures/README.md": "d4bd91e720a087af778668de40939f9f608ce0a5a65b1826a37ee0f6297fd444",
+      "tests/fixtures/input/request.json": "d4ac6148b69efa10c86893f17272bd7187e5fed861a6d550c574bdda59980b3b",
+      "tests/fixtures/manifest.json": "a31a7d8430141048d18d7c14539281c691dbfc69f0cdc90ebc0373067278b7b8",
+      "tests/fixtures/terminal/continuations.json": "f4be9e644749b53fe236b6bed4b61410230c7775221f2633f51f18b9c904999a",
+      "tests/fuzz/README.md": "fa8565fe6efedb3cc0ef18ff071e1eed5ead8b32f6d3e8f60cab23c2cdc881de",
+      "tests/fuzz/chunk-corpus.mjs": "ff1fff89d67031fe0900aba3222f4c64b5ff981579f4bc84f96b447b87bc983a",
+      "tests/system/engine-probe.mjs": "3759fd2cc266b53ead0eea96f893628efcd7e7a99ddfe55792eb18ab86331b02",
+      "tests/system/foundation.test.mjs": "b231609e5dc021c9bb46c3f9c2c4c3a657f79be11783e4b1ecaaf016d6cd8819",
+      "tests/system/key-helper-probe.mjs": "3f0653b4a1dd1a15507e0b01d819a45c3f6420701b84049c285b9f9edc1d0e1b"
+    },
+    "source_archive_audit": {
+      "archives": [
+        {
+          "path": "evidence/archive/pre-ea1-20261015T173427Z.tar.gz",
+          "members": 139,
+          "text_only": true,
+          "sha256": "b9711446f7872a478c8a739e97d68eb25ff7459b88f86afe9ffbd2135b4f3716"
+        },
+        {
+          "path": "evidence/archive/pre-engine-assessment-20261015T164051Z.tar.gz",
+          "members": 17,
+          "text_only": true,
+          "sha256": "d694e7c4fa1f61a3138df70f9bc00f06906693896004a795839e4f855f479ce1"
+        },
+        {
+          "path": "evidence/archive/pre-engine-spec-update.tar.gz",
+          "members": 19,
+          "text_only": true,
+          "sha256": "031e43731a4ca89ff70ef66f4431c4c05a5ec4724de201bbd8ee26cda538ebcc"
+        }
+      ],
+      "caches_executables_secrets_paths_excluded": true
+    },
+    "old_reports": "Existing EA0/cleanup/EA1 inventories, Git snapshots and command logs retain their original dated contents. New results are here, not rewritten into historical evidence."
+  },
+  "selection": {
+    "X4": "FAIL in every stage; raw command exit 1",
+    "EA1": "Absent in stages 1/2; FAIL in stages 3/4; 12/13 methods pass, 3 required alias subcases fail",
+    "no_engine_switch_or_ea2": true
+  },
+  "audit_checks": {
+    "verdict": "PASS (documentation/preservation contract only; engine gates remain FAIL)",
+    "checks": [
+      {
+        "name": "staged-whitespace",
+        "command": [
+          "git",
+          "diff",
+          "--cached",
+          "--check",
+          "b8f8d3ff2fb3efd03da4e20702e6f4b158002bbe"
+        ],
+        "cwd": ".artifacts/history/stage-5-audit",
+        "exit": 0,
+        "verdict": "PASS",
+        "elapsed_seconds": 0.006,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "result": ""
+      },
+      {
+        "name": "install",
+        "command": [
+          "node",
+          ".tools/pnpm/package/bin/pnpm.cjs",
+          "install",
+          "--offline",
+          "--frozen-lockfile",
+          "--ignore-scripts"
+        ],
+        "cwd": ".artifacts/history/stage-5-audit",
+        "exit": 0,
+        "verdict": "PASS",
+        "elapsed_seconds": 0.6,
+        "stdout_sha256": "26146d132a50ecd298eaa0216775b9f5e2fa35cf2032c393582889922c07ace6",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "result": "Scope: all 5 workspace projects\nLockfile is up to date, resolution step is skipped\nProgress: resolved 1, reused 0, downloaded 0, added 0\nPackages: +26\n++++++++++++++++++++++++++\nProgress: resolved 26, reused 26, downloaded 0, added 26, done\n\ndevDependencies:\n+ @types/node 20.19.17\n+ ajv 8.17.1\n+ json-schema-to-typescript 15.0.4\n+ prettier 3.6.2\n+ typescript 5.9.3\n\nDone in 554ms using pnpm v10.32.1"
+      },
+      {
+        "name": "yaml-format",
+        "command": [
+          "node",
+          ".tools/pnpm/package/bin/pnpm.cjs",
+          "exec",
+          "prettier",
+          "--check",
+          "mkdocs.yml"
+        ],
+        "cwd": ".artifacts/history/stage-5-audit",
+        "exit": 0,
+        "verdict": "PASS",
+        "elapsed_seconds": 0.474,
+        "stdout_sha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "result": "Checking formatting...\nAll matched files use Prettier code style!"
+      },
+      {
+        "name": "boundaries",
+        "command": [
+          "node",
+          "scripts/check-boundaries.mjs"
+        ],
+        "cwd": ".artifacts/history/stage-5-audit",
+        "exit": 0,
+        "verdict": "PASS",
+        "elapsed_seconds": 0.132,
+        "stdout_sha256": "d6932058dac864f26c931b0f52a4f5009980170dc680f124bd739aef5fa3a922",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "result": "Boundary checks passed: seven Rust crates (engine is binary-only EA1), four TS packages, allowed edges acyclic. Static checks do not enforce runtime authority."
+      },
+      {
+        "name": "preservation",
+        "command": [
+          "python3",
+          "-B",
+          "tests/ea1/preservation.py"
+        ],
+        "cwd": ".artifacts/history/stage-5-audit",
+        "exit": 0,
+        "verdict": "PASS",
+        "elapsed_seconds": 0.059,
+        "stdout_sha256": "95829c548e1ef6ba2e1371b7adc45623a5963f6e13338ac693d8bd3b5c47cfc6",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "result": "Prior archives and 139 checkpoint members verified; 37 original oracle/fixture/result and assessment evidence files byte-unchanged."
+      },
+      {
+        "name": "docs",
+        "command": [
+          "make",
+          "docs"
+        ],
+        "cwd": ".artifacts/history/stage-5-audit",
+        "exit": 0,
+        "verdict": "PASS",
+        "elapsed_seconds": 0.833,
+        "stdout_sha256": "bceee72cfc93258e2e1bfabf3e18a8ce7b4f486bcb44f9b1076a2f912f575927",
+        "stderr_sha256": "fa273a62b84240bd1bd9bfab6b0e1017d4702b022c7b1fdce027518eebf9dbd4",
+        "result": ".venv-docs/bin/python -B scripts/check-doc-links.py\n31 Markdown files, 421 local links/fragments checked, 0 errors.\n.venv-docs/bin/python -m mkdocs build --strict"
+      }
+    ],
+    "implementation_build_protocol_test_tooling_paths_identical_to_stage4": 81,
+    "only_existing_files_changed_by_followup": [
+      "README.md",
+      "docs/engineering/16-test-and-ci-strategy.md",
+      "docs/index.md",
+      "evidence/README.md",
+      "mkdocs.yml"
+    ],
+    "prior_immutable_payload_preserved": true
+  },
+  "unrun": [
+    "Real frontend/PTY/security/recovery/performance certification",
+    "CI provider execution and portable artifact qualification"
+  ],
+  "finalization_contract": "Five linear local commits intended; no staged/unstaged source changes, remotes or publication. Verify actual final status after the record commit."
+}

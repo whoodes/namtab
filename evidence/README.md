@@ -7,8 +7,10 @@ All payloads are synthetic or public tool/source metadata. Never add credentials
 - `engine-continuation.json`: original independent failed xterm X4 result; keep visible and byte-identical with its oracle/fixtures.
 - `ea1/`: current native worker experiment, exact artifact pin and provenance, selection failures, bounded positive cases and append-only command attempts. `summary.json` selects final results; FAIL remains a blocking result.
 - `cleanup.json`: pre-EA1 organization verification and inventory; not engine certification.
-- `checks.json`: most recent foundation verification. Earlier versions are archived before refresh.
+- `checks.json`: most recent recorded foundation verification at that phase; earlier versions are archived before refresh.
 - `dependencies.json`, bootstrap/source records: phase-specific provenance, not a complete SBOM/security or license clearance.
-- `file-inventory.txt`, `repository-status.txt`: current reviewable path/Git snapshot; prior snapshots are archived. Caches, tools and build artifacts are ignored.
+- `file-inventory.txt`, `repository-status.txt`: dated phase-closing path/Git snapshots; use Git for current state. Caches, tools and build artifacts are ignored.
 
 Current conclusions belong in [the docs index](../docs/index.md), not a second active design in evidence. Exact historical commands can reference subsequently moved scripts; [cleanup](../docs/engineering/20-workspace-organization.md) records the path mapping, and stable Make targets reproduce the workflow.
+
+The [local history record](../docs/engineering/22-local-history-and-validation.md) and `history/validation.json` describe the initial commit series and its new isolated checks. Earlier EA0/cleanup/EA1 reports retain their original zero-commit snapshots and verdicts. Temporary validation logs stay in ignored `.artifacts/history`; only the bounded durable audit record is added.

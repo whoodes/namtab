@@ -13,6 +13,8 @@ Project X should let a person supervise many agents through tasks, changed artif
 
 **Agentic terminal navigation is a core feature.** Agents must be able to operate existing interactive shells, CLIs, TUIs, REPLs, and editors through arrows, Tab/completion, shortcuts/modifiers, control sequences, function keys, and selection/paste. A session-bound [observe-act-observe contract](architecture/03-execution-terminal-and-remote.md#observe-act-observe-and-transition-evidence) separates terminal UI commands from application input and makes uncertain transitions inspectable. Structured keys are the primary interface; explicit raw bytes provide a controlled compatibility fallback. Neither interface promises universal semantic navigation of an opaque application. See the [API boundary](architecture/05-architecture-storage-and-extensions.md#navigation-api-boundary) and [acceptance cases](engineering/07-validation-roadmap-and-risks.md#agentic-navigation-acceptance-cases).
 
+Local commit order and per-stage checks: [history record](engineering/22-local-history-and-validation.md).
+
 Current workspace organization and historical evidence boundaries: [cleanup record](engineering/20-workspace-organization.md).
 
 ## Read the design
