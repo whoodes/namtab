@@ -15,6 +15,8 @@ Project X should let a person supervise many agents through tasks, changed artif
 
 Local commit order and per-stage checks: [history record](engineering/22-local-history-and-validation.md).
 
+Latest bounded EA1 followup: [legacy-input diagnosis and exact checks](engineering/23-legacy-input-investigation.md), [public-policy ADR E3](adr/0003-legacy-input-public-policy.md). The public seam is insufficient at the pinned revision; EA1 remains FAIL and no EA2 work follows.
+
 Current workspace organization and historical evidence boundaries: [cleanup record](engineering/20-workspace-organization.md).
 
 ## Read the design

@@ -1,0 +1,39 @@
+{
+  "input_file_sha256": {
+    "tests/assessment/ghostty-proof.c": "7f6e4a0ba1daf845bd54d39cc7933dd15422a33747cab424cc8bb2b8d78e51cc",
+    "tests/assessment/ghostty-assessment.mjs": "199a592427cb860e8c03d6716c87719c7d707ce824ee3320fbdc8998feb88def",
+    "tests/assessment/xterm-assessment.mjs": "37cf4c1d9d122600e301d906aed4b1e226840a127346a5c68edfd18e37768a22",
+    "tests/assessment/expectations.json": "36b0186836b1c227cc6b5d18b4141ccedb9a757f0c65c8537237ead4e8e41af3",
+    "tests/fixtures/terminal/continuations.json": "f4be9e644749b53fe236b6bed4b61410230c7775221f2633f51f18b9c904999a",
+    "tests/system/input-contract.test.mjs": "3c277019f53812267a10583e1f2b184263d6b7a577968ac33bb7e5edf777564f",
+    "tests/ea1/input-profile.json": "345e082b0ca1e03d5a983d54b6949fcc1d344fa98b4da646313c43c1aa2febff",
+    "crates/console/tests/input_contract.rs": "aa88994be5b7b5ef7285a5a52bf6fd48cd37ba7f8b832e0b8b8350c5863b8c70",
+    "scripts/record-command.py": "b8931ffd94e898997fdce80898afcc2538aee2d95079b8b2329796886ac7261c",
+    "make/ea1.mk": "e783c4c4660fe9ea8f11b748362bea1591f1ea61c043bf182aa21a092d7320d9"
+  },
+  "command": [
+    "make",
+    "check"
+  ],
+  "cwd": ".",
+  "recorded_at": "2026-10-15T18:43:57.420456+00:00",
+  "elapsed_seconds": 2.828,
+  "timeout_seconds": 300,
+  "exit": 0,
+  "verdict": "PASS",
+  "error": null,
+  "environment_overrides": {
+    "CARGO_HOME": "/home/w/codex-dir/project-x/.cache/cargo",
+    "PIP_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/pip",
+    "XDG_CACHE_HOME": "/home/w/codex-dir/project-x/.cache/xdg",
+    "XDG_DATA_HOME": "/home/w/codex-dir/project-x/.cache/xdg-data",
+    "XDG_STATE_HOME": "/home/w/codex-dir/project-x/.cache/xdg-state",
+    "ZIG_GLOBAL_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/engine-assessment/zig-global",
+    "ZIG_LOCAL_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/engine-assessment/zig-local",
+    "NPM_CONFIG_USERCONFIG": "/dev/null",
+    "NPM_CONFIG_GLOBALCONFIG": "/dev/null"
+  },
+  "stdout": "node .tools/pnpm/package/bin/pnpm.cjs exec prettier --check scripts apps packages tests/system tests/fuzz tests/assessment tests/ea1 package.json tsconfig.json mkdocs.yml pnpm-workspace.yaml .github/workflows/checks.yml\nChecking formatting...\nAll matched files use Prettier code style!\ncargo fmt --all -- --check\ncargo clippy --workspace --all-targets --locked -- -D warnings\nnode scripts/generate-bindings.mjs --check\nnode .tools/pnpm/package/bin/pnpm.cjs build\n\n> project-x@0.1.0 build /home/w/codex-dir/project-x\n> tsc -b && node scripts/copy-generated.mjs\n\nnode scripts/check-boundaries.mjs\nBoundary checks passed: seven Rust crates (engine is binary-only EA1), four TS packages, allowed edges acyclic. Static checks do not enforce runtime authority.\nnode scripts/check-fixtures.mjs\nSanitized fixture manifest verified (2 payloads).\n",
+  "stderr": "    Checking project-x-console v0.1.0 (/home/w/codex-dir/project-x/crates/console)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.25s\n",
+  "output_truncated": false
+}

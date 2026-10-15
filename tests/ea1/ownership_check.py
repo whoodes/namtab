@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 import subprocess
+from evidence_dir import EVIDENCE
 ROOT=Path(__file__).resolve().parents[2]
 build=subprocess.run(['cargo','build','--locked','--offline','-p','project-x-engine','--message-format=json'],cwd=ROOT,text=True,capture_output=True,check=True)
 artifacts=[json.loads(s) for s in build.stdout.splitlines() if s.startswith('{')]
@@ -29,5 +30,5 @@ for name,(body,passes) in cases.items():
     assert (r.returncode==0)==passes,(name,r.stderr)
     if not passes:assert codes and set(codes)=={'E0277'},(name,r.stderr)
     results.append({'name':name,'verdict':'PASS','compiler_exit':r.returncode,'expected_compile_success':passes,'diagnostic_codes':codes,'command':command,'diagnostics':messages})
-(ROOT/'evidence/ea1/ownership.json').write_text(json.dumps({'verdict':'PASS','results':results},indent=2)+'\n')
+(EVIDENCE/'ownership.json').write_text(json.dumps({'verdict':'PASS','results':results},indent=2)+'\n')
 print('Ownership compiler checks: normal lifetime PASS, cross-thread move rejected, shared access rejected (E0277).')

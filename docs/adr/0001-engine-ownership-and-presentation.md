@@ -4,6 +4,8 @@
 
 Date: 2026-10-15. **Accepted-for-design:** one canonical interpretation owner and semantic/cell presentation for both initial frontends. **Recommended next prototype:** official pinned libghostty-vt C API. **Pending:** production adoption, complete compatibility, real rendering/accessibility, resources and upgrade gates. The subsequent [EA1 worker](../engineering/21-ea1-native-worker-results.md) establishes a bounded Rust/public-C seam but **fails required legacy control aliases**; dependent app work is stopped.
 
+The completed [ADR E3 investigation](0003-legacy-input-public-policy.md) finds no safe public policy seam for this correction at the evaluated pin. This recommendation remains conditional; no engine switch, requirement weakening or EA2 progression has been accepted.
+
 The old xterm 6.0.0/serialize 0.14.0 replica model remains a failed candidate: X4 is unchanged and independently nonzero. Those failures establish unsafe serializer continuation; they do not establish broken canonical parsing. A live canonical xterm plus semantic rendering and authorized complete interpretation replay passes the bounded shared-state model. It remains a credible fallback, with unproven complete key encoding and substantial renderer cost.
 
 Recommend libghostty-vt at commit `22fa134a07f5749edd9e92c6bc17d8aaf61843be` for the next phase because its public C API supplies cells, terminal-derived input encoding and a tested snapshot path without our adopting private parser internals. It is development API/format software, not a stable ABI promise. The assessment's six shared continuation cases and five extra state cases pass same-build snapshot continuation; this is necessary evidence, not full-engine certification.

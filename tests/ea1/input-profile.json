@@ -1,0 +1,15 @@
+{
+  "origin": "Session-authored synthetic named-key intent profile; no keyboard capture",
+  "keys": [
+    { "key": "Up", "desktop": "ArrowUp" },
+    { "key": "Down", "desktop": "ArrowDown" },
+    { "key": "Left", "desktop": "ArrowLeft" },
+    { "key": "Right", "desktop": "ArrowRight" },
+    { "key": "Tab", "desktop": "Tab" },
+    { "key": "Enter", "desktop": "Enter" },
+    { "key": "Escape", "desktop": "Escape" },
+    { "key": "Backspace", "desktop": "Backspace" },
+    { "key": "F1", "desktop": "F1" },
+    { "key": "F12", "desktop": "F12" }
+  ]
+}

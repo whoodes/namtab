@@ -2,6 +2,8 @@
 
 > Historical completed EA0 assessment. Subsequent [EA1](21-ea1-native-worker-results.md) implements the recommended bounded native seam but fails the legacy-control input selection gate. Its result blocks progression; the assessment below retains its original phase facts.
 
+> The completed [input investigation](23-legacy-input-investigation.md) confirms a public compatibility-policy seam is missing at this pin. No production correction, engine switch or EA2 progression was accepted.
+
 
 [Index](../index.md) · [Prior results](18-foundation-gate-results.md) · [Ownership decision](../adr/0001-engine-ownership-and-presentation.md) · [Continuity decision](../adr/0002-terminal-continuity-and-checkpoints.md)
 

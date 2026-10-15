@@ -16,7 +16,7 @@ import uuid
 
 ROOT = Path(__file__).resolve().parents[2]
 BINARY = ROOT / 'target/debug/project-x-engine'
-EVIDENCE = ROOT / 'evidence/ea1'
+from evidence_dir import EVIDENCE
 MODS = {'shift': False, 'alt': False, 'ctrl': False}
 
 def key(name, **mods):

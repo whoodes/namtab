@@ -1,0 +1,38 @@
+{
+  "input_file_sha256": {
+    "tests/assessment/ghostty-proof.c": "7f6e4a0ba1daf845bd54d39cc7933dd15422a33747cab424cc8bb2b8d78e51cc",
+    "tests/assessment/ghostty-assessment.mjs": "199a592427cb860e8c03d6716c87719c7d707ce824ee3320fbdc8998feb88def",
+    "tests/assessment/xterm-assessment.mjs": "37cf4c1d9d122600e301d906aed4b1e226840a127346a5c68edfd18e37768a22",
+    "tests/assessment/expectations.json": "36b0186836b1c227cc6b5d18b4141ccedb9a757f0c65c8537237ead4e8e41af3",
+    "tests/fixtures/terminal/continuations.json": "f4be9e644749b53fe236b6bed4b61410230c7775221f2633f51f18b9c904999a",
+    "mkdocs.yml": "efab67a334c6d47812da70aa4d9ce0848d17f28721f02d380a9dc88fb9d5c4f9",
+    "docs/engineering/23-legacy-input-investigation.md": "79ecc20b837ada44ec9bc125bc909a3b7fcc83ce2203acd03a3363ed014afc3f",
+    "docs/adr/0003-legacy-input-public-policy.md": "ea64369a97d2bfd0165965be80b7ce16b203c03c113741f06a8be762f5313a40",
+    "README.md": "1847bfec832752031424eb230a5868c6569ff985d99ce595da3f22e7d84c35c8"
+  },
+  "command": [
+    "make",
+    "docs"
+  ],
+  "cwd": ".",
+  "recorded_at": "2026-10-15T18:51:44.326778+00:00",
+  "elapsed_seconds": 0.844,
+  "timeout_seconds": 300,
+  "exit": 0,
+  "verdict": "PASS",
+  "error": null,
+  "environment_overrides": {
+    "CARGO_HOME": "/home/w/codex-dir/project-x/.cache/cargo",
+    "PIP_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/pip",
+    "XDG_CACHE_HOME": "/home/w/codex-dir/project-x/.cache/xdg",
+    "XDG_DATA_HOME": "/home/w/codex-dir/project-x/.cache/xdg-data",
+    "XDG_STATE_HOME": "/home/w/codex-dir/project-x/.cache/xdg-state",
+    "ZIG_GLOBAL_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/engine-assessment/zig-global",
+    "ZIG_LOCAL_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/engine-assessment/zig-local",
+    "NPM_CONFIG_USERCONFIG": "/dev/null",
+    "NPM_CONFIG_GLOBALCONFIG": "/dev/null"
+  },
+  "stdout": ".venv-docs/bin/python -B scripts/check-doc-links.py\n33 Markdown files, 438 local links/fragments checked, 0 errors.\n.venv-docs/bin/python -m mkdocs build --strict\n",
+  "stderr": "INFO    -  Cleaning site directory\nINFO    -  Building documentation to directory: /home/w/codex-dir/project-x/.artifacts/site\nINFO    -  Documentation built in 0.31 seconds\n",
+  "output_truncated": false
+}

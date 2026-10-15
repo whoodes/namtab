@@ -6,6 +6,7 @@ import platform
 import re
 import subprocess
 import tarfile
+from evidence_dir import EVIDENCE
 ROOT=Path(__file__).resolve().parents[2]
 sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
 pin=json.loads((ROOT/'evidence/ea1/artifact-pin.json').read_text())
@@ -39,5 +40,5 @@ code=['crates/engine/native/boundary.c','crates/engine/native/boundary.h','crate
 counts={n:len((ROOT/n).read_text().splitlines()) for n in code}
 assert sum(counts.values())<=800,'Adapter budget exceeded'
 record={'verdict':'PASS','environment':{'platform':platform.platform(),'machine':platform.machine(),'os_release':Path('/etc/os-release').read_text()},'versions':versions,'checked_sha256':checked,'headers_equal_pinned_source':len(pin['headers']),'loaded_library':list(paths),'worker_executable_sha256':sha(ROOT/'target/debug/project-x-engine'),'worker_build_profile':'Rust dev; C shim -O1 -g; libghostty-vt ReleaseSafe/simd=false','library_embeds_local_checkout_path':str(ROOT).encode() in (ROOT/pin['library']).read_bytes(),'locks':{'before':manifest['lockfiles'],'after':{n:sha(ROOT/n) for n in manifest['lockfiles']},'registry_package_records_unchanged':True,'only_added_package':'project-x-engine (local workspace member; no registry additions)'},'adapter_line_counts_including_comments_tests':counts,'adapter_lines':sum(counts.values()),'private_entries':0,'upstream_patches':0,'source_sha256':{n:sha(ROOT/n) for n in code+['crates/engine/src/main.rs','crates/engine/build.rs','crates/protocol/src/internal_engine.rs']},'limits':'Pinned development build on this VM, not SDK release/ABI stability, hostile allocator/fuzz certification, or production sandbox. Same-user loader tampering is outside EA1 containment.'}
-(ROOT/'evidence/ea1/provenance.json').write_text(json.dumps(record,indent=2)+'\n')
+(EVIDENCE/'provenance.json').write_text(json.dumps(record,indent=2)+'\n')
 print('35 source-matching headers, library/compiler hashes and loaded library verified. Cargo registry records and pnpm lock unchanged; one local Cargo member added. Adapter lines:',record['adapter_lines'])

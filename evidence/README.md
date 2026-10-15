@@ -6,6 +6,9 @@ All payloads are synthetic or public tool/source metadata. Never add credentials
 - `engine-assessment/`: completed A/B/C decision evidence, public source/compiler provenance and append-only command attempts. These reports are historical; reruns add new attempts rather than rewriting command logs.
 - `engine-continuation.json`: original independent failed xterm X4 result; keep visible and byte-identical with its oracle/fixtures.
 - `ea1/`: current native worker experiment, exact artifact pin and provenance, selection failures, bounded positive cases and append-only command attempts. `summary.json` selects final results; FAIL remains a blocking result.
+- `ea1-input-investigation/`: additive followup to the historical EA1 reports. `baseline.json` binds the five prior commits and 224 original tracked paths; numbered attempts retain harness failures and the final public-contract proof. The diagnostic PASS characterizes a still-failing product selection gate; `verification-summary.json` selects current checks. No historical `ea1/` report is overwritten.
+- `ea1-runs/<unique-id>/`: default destination for new EA1 Make invocations. One invocation shares an exported destination across its targets; a caller can select a fresh descriptive `EA1_EVIDENCE_DIR`. The old `evidence/ea1` destination and paths outside project evidence are refused. Do not reuse a completed attempt directory.
+- `provenance-runs/<unique-id>.json`: exclusive new xterm artifact/source verification reports. The original `xterm-artifacts.json` remains historical; `make provenance` prints the fresh path.
 - `cleanup.json`: pre-EA1 organization verification and inventory; not engine certification.
 - `checks.json`: most recent recorded foundation verification at that phase; earlier versions are archived before refresh.
 - `dependencies.json`, bootstrap/source records: phase-specific provenance, not a complete SBOM/security or license clearance.

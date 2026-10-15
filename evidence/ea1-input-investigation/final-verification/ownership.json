@@ -1,0 +1,1591 @@
+{
+  "verdict": "PASS",
+  "results": [
+    {
+      "name": "owned",
+      "verdict": "PASS",
+      "compiler_exit": 0,
+      "expected_compile_success": true,
+      "diagnostic_codes": [],
+      "command": [
+        "rustc",
+        "--edition=2024",
+        "--crate-type=lib",
+        "--emit=metadata",
+        "--error-format=json",
+        "-L",
+        "dependency=/home/w/codex-dir/project-x/target/debug/deps",
+        "-o",
+        "/home/w/codex-dir/project-x/.artifacts/ea1/ownership/owned.rmeta",
+        "--extern",
+        "serde_json=/home/w/codex-dir/project-x/target/debug/deps/libserde_json-224792c339f0c53c.rlib",
+        "--extern",
+        "project_x_protocol=/home/w/codex-dir/project-x/target/debug/deps/libproject_x_protocol-4b3ec990048a1ec2.rlib",
+        "/home/w/codex-dir/project-x/.artifacts/ea1/ownership/owned.rs"
+      ],
+      "diagnostics": [
+        {
+          "$message_type": "diagnostic",
+          "message": "function `checked` is never used",
+          "code": {
+            "code": "dead_code",
+            "explanation": null
+          },
+          "level": "warning",
+          "spans": [
+            {
+              "file_name": "/home/w/codex-dir/project-x/.artifacts/ea1/ownership/owned.rs",
+              "byte_start": 75,
+              "byte_end": 82,
+              "line_start": 2,
+              "line_end": 2,
+              "column_start": 4,
+              "column_end": 11,
+              "is_primary": true,
+              "text": [
+                {
+                  "text": "fn checked() {let mut t=ffi::Terminal::new(12,5).unwrap();let frame=t.frame().unwrap();drop(t);drop(frame);}",
+                  "highlight_start": 4,
+                  "highlight_end": 11
+                }
+              ],
+              "label": null,
+              "suggested_replacement": null,
+              "suggestion_applicability": null,
+              "expansion": null
+            }
+          ],
+          "children": [
+            {
+              "message": "`#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default",
+              "code": null,
+              "level": "note",
+              "spans": [],
+              "children": [],
+              "rendered": null
+            }
+          ],
+          "rendered": "warning: function `checked` is never used\n --> /home/w/codex-dir/project-x/.artifacts/ea1/ownership/owned.rs:2:4\n  |\n2 | fn checked() {let mut t=ffi::Terminal::new(12,5).unwrap();let frame=t.frame().unwrap();drop(t);drop(frame);}\n  |    ^^^^^^^\n  |\n  = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default\n\n"
+        },
+        {
+          "$message_type": "diagnostic",
+          "message": "struct `NativeFrame` is never constructed",
+          "code": {
+            "code": "dead_code",
+            "explanation": null
+          },
+          "level": "warning",
+          "spans": [
+            {
+              "file_name": "/home/w/codex-dir/project-x/crates/engine/src/ffi.rs",
+              "byte_start": 403,
+              "byte_end": 414,
+              "line_start": 12,
+              "line_end": 12,
+              "column_start": 8,
+              "column_end": 19,
+              "is_primary": true,
+              "text": [
+                {
+                  "text": "struct NativeFrame {",
+                  "highlight_start": 8,
+                  "highlight_end": 19
+                }
+              ],
+              "label": null,
+              "suggested_replacement": null,
+              "suggestion_applicability": null,
+              "expansion": null
+            }
+          ],
+          "children": [],
+          "rendered": "warning: struct `NativeFrame` is never constructed\n  --> /home/w/codex-dir/project-x/crates/engine/src/ffi.rs:12:8\n   |\n12 | struct NativeFrame {\n   |        ^^^^^^^^^^^\n\n"
+        },
+        {
+          "$message_type": "diagnostic",
+          "message": "struct `NativeCell` is never constructed",
+          "code": {
+            "code": "dead_code",
+            "explanation": null
+          },
+          "level": "warning",
+          "spans": [
+            {
+              "file_name": "/home/w/codex-dir/project-x/crates/engine/src/ffi.rs",
+              "byte_start": 664,
+              "byte_end": 674,
+              "line_start": 28,
+              "line_end": 28,
+              "column_start": 8,
+              "column_end": 18,
+              "is_primary": true,
+              "text": [
+                {
+                  "text": "struct NativeCell {",
+                  "highlight_start": 8,
+                  "highlight_end": 18
+                }
+              ],
+              "label": null,
+              "suggested_replacement": null,
+              "suggestion_applicability": null,
+              "expansion": null
+            }
+          ],
+          "children": [],
+          "rendered": "warning: struct `NativeCell` is never constructed\n  --> /home/w/codex-dir/project-x/crates/engine/src/ffi.rs:28:8\n   |\n28 | struct NativeCell {\n   |        ^^^^^^^^^^\n\n"
+        },
+        {
+          "$message_type": "diagnostic",
+          "message": "function `ok` is never used",
+          "code": {
+            "code": "dead_code",
+            "explanation": null
+          },
+          "level": "warning",
+          "spans": [
+            {
+              "file_name": "/home/w/codex-dir/project-x/crates/engine/src/ffi.rs",
+              "byte_start": 2089,
+              "byte_end": 2091,
+              "line_start": 81,
+              "line_end": 81,
+              "column_start": 4,
+              "column_end": 6,
+              "is_primary": true,
+              "text": [
+                {
+                  "text": "fn ok(code: c_int) -> Result<(), Error> {",
+                  "highlight_start": 4,
+                  "highlight_end": 6
+                }
+              ],
+              "label": null,
+              "suggested_replacement": null,
+              "suggestion_applicability": null,
+              "expansion": null
+            }
+          ],
+          "children": [],
+          "rendered": "warning: function `ok` is never used\n  --> /home/w/codex-dir/project-x/crates/engine/src/ffi.rs:81:4\n   |\n81 | fn ok(code: c_int) -> Result<(), Error> {\n   |    ^^\n\n"
+        },
+        {
+          "$message_type": "diagnostic",
+          "message": "struct `Terminal` is never constructed",
+          "code": {
+            "code": "dead_code",
+            "explanation": null
+          },
+          "level": "warning",
+          "spans": [
+            {
+              "file_name": "/home/w/codex-dir/project-x/crates/engine/src/ffi.rs",
+              "byte_start": 2259,
+              "byte_end": 2267,
+              "line_start": 88,
+              "line_end": 88,
+              "column_start": 12,
+              "column_end": 20,
+              "is_primary": true,
+              "text": [
+                {
+                  "text": "pub struct Terminal {",
+                  "highlight_start": 12,
+                  "highlight_end": 20
+                }
+              ],
+              "label": null,
+              "suggested_replacement": null,
+              "suggestion_applicability": null,
+              "expansion": null
+            }
+          ],
+          "children": [],
+          "rendered": "warning: struct `Terminal` is never constructed\n  --> /home/w/codex-dir/project-x/crates/engine/src/ffi.rs:88:12\n   |\n88 | pub struct Terminal {\n   |            ^^^^^^^^\n\n"
+        },
+        {
+          "$message_type": "diagnostic",
+          "message": "multiple associated items are never used",
+          "code": {
+            "code": "dead_code",
+            "explanation": null
+          },
+          "level": "warning",
+          "spans": [
+            {
+              "file_name": "/home/w/codex-dir/project-x/crates/engine/src/ffi.rs",
+              "byte_start": 2418,
+              "byte_end": 2431,
+              "line_start": 93,
+              "line_end": 93,
+              "column_start": 1,
+              "column_end": 14,
+              "is_primary": false,
+              "text": [
+                {
+                  "text": "impl Terminal {",
+                  "highlight_start": 1,
+                  "highlight_end": 14
+                }
+              ],
+              "label": "associated items in this implementation",
+              "suggested_replacement": null,
+              "suggestion_applicability": null,
+              "expansion": null
+            },
+            {
+              "file_name": "/home/w/codex-dir/project-x/crates/engine/src/ffi.rs",
+              "byte_start": 2445,
+              "byte_end": 2448,
+              "line_start": 94,
+              "line_end": 94,
+              "column_start": 12,
+              "column_end": 15,
+              "is_primary": true,
+              "text": [
+                {
+                  "text": "    pub fn new(cols: u16, rows: u16) -> Result<Self, Error> {",
+                  "highlight_start": 12,
+                  "highlight_end": 15
+                }
+              ],
+              "label": null,
+              "suggested_replacement": null,
+              "suggestion_applicability": null,
+              "expansion": null
+            },
+            {
+              "file_name": "/home/w/codex-dir/project-x/crates/engine/src/ffi.rs",
+              "byte_start": 3152,
+              "byte_end": 3156,
+              "line_start": 113,
+              "line_end": 113,
+              "column_start": 12,
+              "column_end": 16,
+              "is_primary": true,
+              "text": [
+                {
+                  "text": "    pub fn feed(&mut self, bytes: &[u8]) -> Result<(), Error> {",
+                  "highlight_start": 12,
+                  "highlight_end": 16
+                }
+              ],
+              "label": null,
+              "suggested_replacement": null,
+              "suggestion_applicability": null,
+              "expansion": null
+            },
+            {
+              "file_name": "/home/w/codex-dir/project-x/crates/engine/src/ffi.rs",
+              "byte_start": 3479,
+              "byte_end": 3485,
+              "line_start": 120,
+              "line_end": 120,
+              "column_start": 12,
+              "column_end": 18,
+              "is_primary": true,
+              "text": [
+                {
+                  "text": "    pub fn resize(&mut self, cols: u16, rows: u16) -> Result<(), Error> {",
+                  "highlight_start": 12,
+                  "highlight_end": 18
+                }
+              ],
+              "label": null,
+              "suggested_replacement": null,
+              "suggestion_applicability": null,
+              "expansion": null
+            },
+            {
+              "file_name": "/home/w/codex-dir/project-x/crates/engine/src/ffi.rs",
+              "byte_start": 3717,
+              "byte_end": 3722,
+              "line_start": 124,
+              "line_end": 124,
+              "column_start": 12,
+              "column_end": 17,
+              "is_primary": true,
+              "text": [
+                {
+                  "text": "    pub fn frame(&mut self) -> Result<Frame, Error> {",
+                  "highlight_start": 12,
+                  "highlight_end": 17
+                }
+              ],
+              "label": null,
+              "suggested_replacement": null,
+              "suggestion_applicability": null,
+              "expansion": null
+            },
+            {
+              "file_name": "/home/w/codex-dir/project-x/crates/engine/src/ffi.rs",
+              "byte_start": 6001,
+              "byte_end": 6008,
+              "line_start": 181,
+              "line_end": 181,
+              "column_start": 12,
+              "column_end": 19,
+              "is_primary": true,
+              "text": [
+                {
+                  "text": "    pub fn replies(&mut self) -> Result<Vec<u8>, Error> {",
+                  "highlight_start": 12,
+                  "highlight_end": 19
+                }
+              ],
+              "label": null,
+              "suggested_replacement": null,
+              "suggestion_applicability": null,
+              "expansion": null
+            },
+            {
+              "file_name": "/home/w/codex-dir/project-x/crates/engine/src/ffi.rs",
+              "byte_start": 6426,
+              "byte_end": 6429,
+              "line_start": 192,
+              "line_end": 192,
+              "column_start": 8,
+              "column_end": 11,
+              "is_primary": true,
+              "text": [
+                {
+                  "text": "    fn key(&mut self, name: &str, text: &str, cp: u32, mods: u8) -> Result<Vec<u8>, Error> {",
+                  "highlight_start": 8,
+                  "highlight_end": 11
+                }
+              ],
+              "label": null,
+              "suggested_replacement": null,
+              "suggestion_applicability": null,
+              "expansion": null
+            },
+            {
+              "file_name": "/home/w/codex-dir/project-x/crates/engine/src/ffi.rs",
+              "byte_start": 7208,
+              "byte_end": 7214,
+              "line_start": 216,
+              "line_end": 216,
+              "column_start": 12,
+              "column_end": 18,
+              "is_primary": true,
+              "text": [
+                {
+                  "text": "    pub fn encode(&mut self, input: Input) -> Result<Vec<u8>, Error> {",
+                  "highlight_start": 12,
+                  "highlight_end": 18
+                }
+              ],
+              "label": null,
+              "suggested_replacement": null,
+              "suggestion_applicability": null,
+              "expansion": null
+            }
+          ],
+          "children": [],
+          "rendered": "warning: multiple associated items are never used\n   --> /home/w/codex-dir/project-x/crates/engine/src/ffi.rs:94:12\n    |\n 93 | impl Terminal {\n    | ------------- associated items in this implementation\n 94 |     pub fn new(cols: u16, rows: u16) -> Result<Self, Error> {\n    |            ^^^\n...\n113 |     pub fn feed(&mut self, bytes: &[u8]) -> Result<(), Error> {\n    |            ^^^^\n...\n120 |     pub fn resize(&mut self, cols: u16, rows: u16) -> Result<(), Error> {\n    |            ^^^^^^\n...\n124 |     pub fn frame(&mut self) -> Result<Frame, Error> {\n    |            ^^^^^\n...\n181 |     pub fn replies(&mut self) -> Result<Vec<u8>, Error> {\n    |            ^^^^^^^\n...\n192 |     fn key(&mut self, name: &str, text: &str, cp: u32, mods: u8) -> Result<Vec<u8>, Error> {\n    |        ^^^\n...\n216 |     pub fn encode(&mut self, input: Input) -> Result<Vec<u8>, Error> {\n    |            ^^^^^^\n\n"
+        },
+        {
+          "$message_type": "diagnostic",
+          "message": "function `px_abi` is never used",
+          "code": {
+            "code": "dead_code",
+            "explanation": null
+          },
+          "level": "warning",
+          "spans": [
+            {
+              "file_name": "/home/w/codex-dir/project-x/crates/engine/src/ffi.rs",
+              "byte_start": 865,
+              "byte_end": 871,
+              "line_start": 40,
+              "line_end": 40,
+              "column_start": 8,
+              "column_end": 14,
+              "is_primary": true,
+              "text": [
+                {
+                  "text": "    fn px_abi(kind: u32) -> usize;",
+                  "highlight_start": 8,
+                  "highlight_end": 14
+                }
+              ],
+              "label": null,
+              "suggested_replacement": null,
+              "suggestion_applicability": null,
+              "expansion": null
+            }
+          ],
+          "children": [],
+          "rendered": "warning: function `px_abi` is never used\n  --> /home/w/codex-dir/project-x/crates/engine/src/ffi.rs:40:8\n   |\n40 |     fn px_abi(kind: u32) -> usize;\n   |        ^^^^^^\n\n"
+        },
+        {
+          "$message_type": "diagnostic",
+          "message": "function `px_new` is never used",
+          "code": {
+            "code": "dead_code",
+            "explanation": null
+          },
+          "level": "warning",
+          "spans": [
+            {
+              "file_name": "/home/w/codex-dir/project-x/crates/engine/src/ffi.rs",
+              "byte_start": 900,
+              "byte_end": 906,
+              "line_start": 41,
+              "line_end": 41,
+              "column_start": 8,
+              "column_end": 14,
+              "is_primary": true,
+              "text": [
+                {
+                  "text": "    fn px_new(cols: u16, rows: u16) -> *mut c_void;",
+                  "highlight_start": 8,
+                  "highlight_end": 14
+                }
+              ],
+              "label": null,
+              "suggested_replacement": null,
+              "suggestion_applicability": null,
+              "expansion": null
+            }
+          ],
+          "children": [],
+          "rendered": "warning: function `px_new` is never used\n  --> /home/w/codex-dir/project-x/crates/engine/src/ffi.rs:41:8\n   |\n41 |     fn px_new(cols: u16, rows: u16) -> *mut c_void;\n   |        ^^^^^^\n\n"
+        },
+        {
+          "$message_type": "diagnostic",
+          "message": "function `px_free` is never used",
+          "code": {
+            "code": "dead_code",
+            "explanation": null
+          },
+          "level": "warning",
+          "spans": [
+            {
+              "file_name": "/home/w/codex-dir/project-x/crates/engine/src/ffi.rs",
+              "byte_start": 952,
+              "byte_end": 959,
+              "line_start": 42,
+              "line_end": 42,
+              "column_start": 8,
+              "column_end": 15,
+              "is_primary": true,
+              "text": [
+                {
+                  "text": "    fn px_free(p: *mut c_void);",
+                  "highlight_start": 8,
+                  "highlight_end": 15
+                }
+              ],
+              "label": null,
+              "suggested_replacement": null,
+              "suggestion_applicability": null,
+              "expansion": null
+            }
+          ],
+          "children": [],
+          "rendered": "warning: function `px_free` is never used\n  --> /home/w/codex-dir/project-x/crates/engine/src/ffi.rs:42:8\n   |\n42 |     fn px_free(p: *mut c_void);\n   |        ^^^^^^^\n\n"
+        },
+        {
+          "$message_type": "diagnostic",
+          "message": "function `px_feed` is never used",
+          "code": {
+            "code": "dead_code",
+            "explanation": null
+          },
+          "level": "warning",
+          "spans": [
+            {
+              "file_name": "/home/w/codex-dir/project-x/crates/engine/src/ffi.rs",
+              "byte_start": 984,
+              "byte_end": 991,
+              "line_start": 43,
+              "line_end": 43,
+              "column_start": 8,
+              "column_end": 15,
+              "is_primary": true,
+              "text": [
+                {
+                  "text": "    fn px_feed(p: *mut c_void, bytes: *const u8, len: usize) -> c_int;",
+                  "highlight_start": 8,
+                  "highlight_end": 15
+                }
+              ],
+              "label": null,
+              "suggested_replacement": null,
+              "suggestion_applicability": null,
+              "expansion": null
+            }
+          ],
+          "children": [],
+          "rendered": "warning: function `px_feed` is never used\n  --> /home/w/codex-dir/project-x/crates/engine/src/ffi.rs:43:8\n   |\n43 |     fn px_feed(p: *mut c_void, bytes: *const u8, len: usize) -> c_int;\n   |        ^^^^^^^\n\n"
+        },
+        {
+          "$message_type": "diagnostic",
+          "message": "function `px_resize` is never used",
+          "code": {
+            "code": "dead_code",
+            "explanation": null
+          },
+          "level": "warning",
+          "spans": [
+            {
+              "file_name": "/home/w/codex-dir/project-x/crates/engine/src/ffi.rs",
+              "byte_start": 1055,
+              "byte_end": 1064,
+              "line_start": 44,
+              "line_end": 44,
+              "column_start": 8,
+              "column_end": 17,
+              "is_primary": true,
+              "text": [
+                {
+                  "text": "    fn px_resize(p: *mut c_void, cols: u16, rows: u16) -> c_int;",
+                  "highlight_start": 8,
+                  "highlight_end": 17
+                }
+              ],
+              "label": null,
+              "suggested_replacement": null,
+              "suggestion_applicability": null,
+              "expansion": null
+            }
+          ],
+          "children": [],
+          "rendered": "warning: function `px_resize` is never used\n  --> /home/w/codex-dir/project-x/crates/engine/src/ffi.rs:44:8\n   |\n44 |     fn px_resize(p: *mut c_void, cols: u16, rows: u16) -> c_int;\n   |        ^^^^^^^^^\n\n"
+        },
+        {
+          "$message_type": "diagnostic",
+          "message": "function `px_prepare` is never used",
+          "code": {
+            "code": "dead_code",
+            "explanation": null
+          },
+          "level": "warning",
+          "spans": [
+            {
+              "file_name": "/home/w/codex-dir/project-x/crates/engine/src/ffi.rs",
+              "byte_start": 1120,
+              "byte_end": 1130,
+              "line_start": 45,
+              "line_end": 45,
+              "column_start": 8,
+              "column_end": 18,
+              "is_primary": true,
+              "text": [
+                {
+                  "text": "    fn px_prepare(p: *mut c_void, out: *mut NativeFrame) -> c_int;",
+                  "highlight_start": 8,
+                  "highlight_end": 18
+                }
+              ],
+              "label": null,
+              "suggested_replacement": null,
+              "suggestion_applicability": null,
+              "expansion": null
+            }
+          ],
+          "children": [],
+          "rendered": "warning: function `px_prepare` is never used\n  --> /home/w/codex-dir/project-x/crates/engine/src/ffi.rs:45:8\n   |\n45 |     fn px_prepare(p: *mut c_void, out: *mut NativeFrame) -> c_int;\n   |        ^^^^^^^^^^\n\n"
+        },
+        {
+          "$message_type": "diagnostic",
+          "message": "function `px_cell` is never used",
+          "code": {
+            "code": "dead_code",
+            "explanation": null
+          },
+          "level": "warning",
+          "spans": [
+            {
+              "file_name": "/home/w/codex-dir/project-x/crates/engine/src/ffi.rs",
+              "byte_start": 1187,
+              "byte_end": 1194,
+              "line_start": 46,
+              "line_end": 46,
+              "column_start": 8,
+              "column_end": 15,
+              "is_primary": true,
+              "text": [
+                {
+                  "text": "    fn px_cell(p: *mut c_void, out: *mut NativeCell) -> c_int;",
+                  "highlight_start": 8,
+                  "highlight_end": 15
+                }
+              ],
+              "label": null,
+              "suggested_replacement": null,
+              "suggestion_applicability": null,
+              "expansion": null
+            }
+          ],
+          "children": [],
+          "rendered": "warning: function `px_cell` is never used\n  --> /home/w/codex-dir/project-x/crates/engine/src/ffi.rs:46:8\n   |\n46 |     fn px_cell(p: *mut c_void, out: *mut NativeCell) -> c_int;\n   |        ^^^^^^^\n\n"
+        },
+        {
+          "$message_type": "diagnostic",
+          "message": "function `px_finish` is never used",
+          "code": {
+            "code": "dead_code",
+            "explanation": null
+          },
+          "level": "warning",
+          "spans": [
+            {
+              "file_name": "/home/w/codex-dir/project-x/crates/engine/src/ffi.rs",
+              "byte_start": 1250,
+              "byte_end": 1259,
+              "line_start": 47,
+              "line_end": 47,
+              "column_start": 8,
+              "column_end": 17,
+              "is_primary": true,
+              "text": [
+                {
+                  "text": "    fn px_finish(p: *mut c_void) -> c_int;",
+                  "highlight_start": 8,
+                  "highlight_end": 17
+                }
+              ],
+              "label": null,
+              "suggested_replacement": null,
+              "suggestion_applicability": null,
+              "expansion": null
+            }
+          ],
+          "children": [],
+          "rendered": "warning: function `px_finish` is never used\n  --> /home/w/codex-dir/project-x/crates/engine/src/ffi.rs:47:8\n   |\n47 |     fn px_finish(p: *mut c_void) -> c_int;\n   |        ^^^^^^^^^\n\n"
+        },
+        {
+          "$message_type": "diagnostic",
+          "message": "function `px_replies` is never used",
+          "code": {
+            "code": "dead_code",
+            "explanation": null
+          },
+          "level": "warning",
+          "spans": [
+            {
+              "file_name": "/home/w/codex-dir/project-x/crates/engine/src/ffi.rs",
+              "byte_start": 1293,
+              "byte_end": 1303,
+              "line_start": 48,
+              "line_end": 48,
+              "column_start": 8,
+              "column_end": 18,
+              "is_primary": true,
+              "text": [
+                {
+                  "text": "    fn px_replies(p: *mut c_void, out: *mut u8, cap: usize, len: *mut usize) -> c_int;",
+                  "highlight_start": 8,
+                  "highlight_end": 18
+                }
+              ],
+              "label": null,
+              "suggested_replacement": null,
+              "suggestion_applicability": null,
+              "expansion": null
+            }
+          ],
+          "children": [],
+          "rendered": "warning: function `px_replies` is never used\n  --> /home/w/codex-dir/project-x/crates/engine/src/ffi.rs:48:8\n   |\n48 |     fn px_replies(p: *mut c_void, out: *mut u8, cap: usize, len: *mut usize) -> c_int;\n   |        ^^^^^^^^^^\n\n"
+        },
+        {
+          "$message_type": "diagnostic",
+          "message": "function `px_key` is never used",
+          "code": {
+            "code": "dead_code",
+            "explanation": null
+          },
+          "level": "warning",
+          "spans": [
+            {
+              "file_name": "/home/w/codex-dir/project-x/crates/engine/src/ffi.rs",
+              "byte_start": 1380,
+              "byte_end": 1386,
+              "line_start": 49,
+              "line_end": 49,
+              "column_start": 8,
+              "column_end": 14,
+              "is_primary": true,
+              "text": [
+                {
+                  "text": "    fn px_key(",
+                  "highlight_start": 8,
+                  "highlight_end": 14
+                }
+              ],
+              "label": null,
+              "suggested_replacement": null,
+              "suggestion_applicability": null,
+              "expansion": null
+            }
+          ],
+          "children": [],
+          "rendered": "warning: function `px_key` is never used\n  --> /home/w/codex-dir/project-x/crates/engine/src/ffi.rs:49:8\n   |\n49 |     fn px_key(\n   |        ^^^^^^\n\n"
+        },
+        {
+          "$message_type": "diagnostic",
+          "message": "function `px_paste` is never used",
+          "code": {
+            "code": "dead_code",
+            "explanation": null
+          },
+          "level": "warning",
+          "spans": [
+            {
+              "file_name": "/home/w/codex-dir/project-x/crates/engine/src/ffi.rs",
+              "byte_start": 1608,
+              "byte_end": 1616,
+              "line_start": 60,
+              "line_end": 60,
+              "column_start": 8,
+              "column_end": 16,
+              "is_primary": true,
+              "text": [
+                {
+                  "text": "    fn px_paste(",
+                  "highlight_start": 8,
+                  "highlight_end": 16
+                }
+              ],
+              "label": null,
+              "suggested_replacement": null,
+              "suggestion_applicability": null,
+              "expansion": null
+            }
+          ],
+          "children": [],
+          "rendered": "warning: function `px_paste` is never used\n  --> /home/w/codex-dir/project-x/crates/engine/src/ffi.rs:60:8\n   |\n60 |     fn px_paste(\n   |        ^^^^^^^^\n\n"
+        },
+        {
+          "$message_type": "diagnostic",
+          "message": "function `px_focus` is never used",
+          "code": {
+            "code": "dead_code",
+            "explanation": null
+          },
+          "level": "warning",
+          "spans": [
+            {
+              "file_name": "/home/w/codex-dir/project-x/crates/engine/src/ffi.rs",
+              "byte_start": 1773,
+              "byte_end": 1781,
+              "line_start": 68,
+              "line_end": 68,
+              "column_start": 8,
+              "column_end": 16,
+              "is_primary": true,
+              "text": [
+                {
+                  "text": "    fn px_focus(p: *mut c_void, gained: c_int, out: *mut u8, cap: usize, len: *mut usize) -> c_int;",
+                  "highlight_start": 8,
+                  "highlight_end": 16
+                }
+              ],
+              "label": null,
+              "suggested_replacement": null,
+              "suggestion_applicability": null,
+              "expansion": null
+            }
+          ],
+          "children": [],
+          "rendered": "warning: function `px_focus` is never used\n  --> /home/w/codex-dir/project-x/crates/engine/src/ffi.rs:68:8\n   |\n68 |     fn px_focus(p: *mut c_void, gained: c_int, out: *mut u8, cap: usize, len: *mut usize) -> c_int;\n   |        ^^^^^^^^\n\n"
+        },
+        {
+          "$message_type": "diagnostic",
+          "message": "function `px_mouse` is never used",
+          "code": {
+            "code": "dead_code",
+            "explanation": null
+          },
+          "level": "warning",
+          "spans": [
+            {
+              "file_name": "/home/w/codex-dir/project-x/crates/engine/src/ffi.rs",
+              "byte_start": 1873,
+              "byte_end": 1881,
+              "line_start": 69,
+              "line_end": 69,
+              "column_start": 8,
+              "column_end": 16,
+              "is_primary": true,
+              "text": [
+                {
+                  "text": "    fn px_mouse(",
+                  "highlight_start": 8,
+                  "highlight_end": 16
+                }
+              ],
+              "label": null,
+              "suggested_replacement": null,
+              "suggestion_applicability": null,
+              "expansion": null
+            }
+          ],
+          "children": [],
+          "rendered": "warning: function `px_mouse` is never used\n  --> /home/w/codex-dir/project-x/crates/engine/src/ffi.rs:69:8\n   |\n69 |     fn px_mouse(\n   |        ^^^^^^^^\n\n"
+        },
+        {
+          "$message_type": "diagnostic",
+          "message": "19 warnings emitted",
+          "code": null,
+          "level": "warning",
+          "spans": [],
+          "children": [],
+          "rendered": "warning: 19 warnings emitted\n\n"
+        }
+      ]
+    },
+    {
+      "name": "not_send",
+      "verdict": "PASS",
+      "compiler_exit": 1,
+      "expected_compile_success": false,
+      "diagnostic_codes": [
+        "E0277",
+        "E0277"
+      ],
+      "command": [
+        "rustc",
+        "--edition=2024",
+        "--crate-type=lib",
+        "--emit=metadata",
+        "--error-format=json",
+        "-L",
+        "dependency=/home/w/codex-dir/project-x/target/debug/deps",
+        "-o",
+        "/home/w/codex-dir/project-x/.artifacts/ea1/ownership/not_send.rmeta",
+        "--extern",
+        "serde_json=/home/w/codex-dir/project-x/target/debug/deps/libserde_json-224792c339f0c53c.rlib",
+        "--extern",
+        "project_x_protocol=/home/w/codex-dir/project-x/target/debug/deps/libproject_x_protocol-4b3ec990048a1ec2.rlib",
+        "/home/w/codex-dir/project-x/.artifacts/ea1/ownership/not_send.rs"
+      ],
+      "diagnostics": [
+        {
+          "$message_type": "diagnostic",
+          "message": "`NonNull<c_void>` cannot be sent between threads safely",
+          "code": {
+            "code": "E0277",
+            "explanation": "You tried to use a type which doesn't implement some trait in a place which\nexpected that trait.\n\nErroneous code example:\n\n```compile_fail,E0277\n// here we declare the Foo trait with a bar method\ntrait Foo {\n    fn bar(&self);\n}\n\n// we now declare a function which takes an object implementing the Foo trait\nfn some_func<T: Foo>(foo: T) {\n    foo.bar();\n}\n\nfn main() {\n    // we now call the method with the i32 type, which doesn't implement\n    // the Foo trait\n    some_func(5i32); // error: the trait bound `i32 : Foo` is not satisfied\n}\n```\n\nIn order to fix this error, verify that the type you're using does implement\nthe trait. Example:\n\n```\ntrait Foo {\n    fn bar(&self);\n}\n\n// we implement the trait on the i32 type\nimpl Foo for i32 {\n    fn bar(&self) {}\n}\n\nfn some_func<T: Foo>(foo: T) {\n    foo.bar(); // we can now use this method since i32 implements the\n               // Foo trait\n}\n\nfn main() {\n    some_func(5i32); // ok!\n}\n```\n\nOr in a generic context, an erroneous code example would look like:\n\n```compile_fail,E0277\nfn some_func<T>(foo: T) {\n    println!(\"{:?}\", foo); // error: the trait `core::fmt::Debug` is not\n                           //        implemented for the type `T`\n}\n\nfn main() {\n    // We now call the method with the i32 type,\n    // which *does* implement the Debug trait.\n    some_func(5i32);\n}\n```\n\nNote that the error here is in the definition of the generic function. Although\nwe only call it with a parameter that does implement `Debug`, the compiler\nstill rejects the function. It must work with all possible input types. In\norder to make this example compile, we need to restrict the generic type we're\naccepting:\n\n```\nuse std::fmt;\n\n// Restrict the input type to types that implement Debug.\nfn some_func<T: fmt::Debug>(foo: T) {\n    println!(\"{:?}\", foo);\n}\n\nfn main() {\n    // Calling the method is still fine, as i32 implements Debug.\n    some_func(5i32);\n\n    // This would fail to compile now:\n    // struct WithoutDebug;\n    // some_func(WithoutDebug);\n}\n```\n\nRust only looks at the signature of the called function, as such it must\nalready specify all requirements that will be used for every type parameter.\n"
+          },
+          "level": "error",
+          "spans": [
+            {
+              "file_name": "/home/w/codex-dir/project-x/.artifacts/ea1/ownership/not_send.rs",
+              "byte_start": 120,
+              "byte_end": 135,
+              "line_start": 2,
+              "line_end": 2,
+              "column_start": 49,
+              "column_end": 64,
+              "is_primary": true,
+              "text": [
+                {
+                  "text": "fn checked(t:ffi::Terminal) {std::thread::spawn(move || drop(t));}",
+                  "highlight_start": 49,
+                  "highlight_end": 64
+                }
+              ],
+              "label": "`NonNull<c_void>` cannot be sent between threads safely",
+              "suggested_replacement": null,
+              "suggestion_applicability": null,
+              "expansion": null
+            },
+            {
+              "file_name": "/home/w/codex-dir/project-x/.artifacts/ea1/ownership/not_send.rs",
+              "byte_start": 120,
+              "byte_end": 127,
+              "line_start": 2,
+              "line_end": 2,
+              "column_start": 49,
+              "column_end": 56,
+              "is_primary": false,
+              "text": [
+                {
+                  "text": "fn checked(t:ffi::Terminal) {std::thread::spawn(move || drop(t));}",
+                  "highlight_start": 49,
+                  "highlight_end": 56
+                }
+              ],
+              "label": "within this `{closure@/home/w/codex-dir/project-x/.artifacts/ea1/ownership/not_send.rs:2:49: 2:56}`",
+              "suggested_replacement": null,
+              "suggestion_applicability": null,
+              "expansion": null
+            },
+            {
+              "file_name": "/home/w/codex-dir/project-x/.artifacts/ea1/ownership/not_send.rs",
+              "byte_start": 101,
+              "byte_end": 119,
+              "line_start": 2,
+              "line_end": 2,
+              "column_start": 30,
+              "column_end": 48,
+              "is_primary": false,
+              "text": [
+                {
+                  "text": "fn checked(t:ffi::Terminal) {std::thread::spawn(move || drop(t));}",
+                  "highlight_start": 30,
+                  "highlight_end": 48
+                }
+              ],
+              "label": "required by a bound introduced by this call",
+              "suggested_replacement": null,
+              "suggestion_applicability": null,
+              "expansion": null
+            }
+          ],
+          "children": [
+            {
+              "message": "within `{closure@/home/w/codex-dir/project-x/.artifacts/ea1/ownership/not_send.rs:2:49: 2:56}`, the trait `Send` is not implemented for `NonNull<c_void>`",
+              "code": null,
+              "level": "help",
+              "spans": [],
+              "children": [],
+              "rendered": null
+            },
+            {
+              "message": "required because it appears within the type `Terminal`",
+              "code": null,
+              "level": "note",
+              "spans": [
+                {
+                  "file_name": "/home/w/codex-dir/project-x/crates/engine/src/ffi.rs",
+                  "byte_start": 2259,
+                  "byte_end": 2267,
+                  "line_start": 88,
+                  "line_end": 88,
+                  "column_start": 12,
+                  "column_end": 20,
+                  "is_primary": true,
+                  "text": [
+                    {
+                      "text": "pub struct Terminal {",
+                      "highlight_start": 12,
+                      "highlight_end": 20
+                    }
+                  ],
+                  "label": null,
+                  "suggested_replacement": null,
+                  "suggestion_applicability": null,
+                  "expansion": null
+                }
+              ],
+              "children": [],
+              "rendered": null
+            },
+            {
+              "message": "required because it's used within this closure",
+              "code": null,
+              "level": "note",
+              "spans": [
+                {
+                  "file_name": "/home/w/codex-dir/project-x/.artifacts/ea1/ownership/not_send.rs",
+                  "byte_start": 120,
+                  "byte_end": 127,
+                  "line_start": 2,
+                  "line_end": 2,
+                  "column_start": 49,
+                  "column_end": 56,
+                  "is_primary": true,
+                  "text": [
+                    {
+                      "text": "fn checked(t:ffi::Terminal) {std::thread::spawn(move || drop(t));}",
+                      "highlight_start": 49,
+                      "highlight_end": 56
+                    }
+                  ],
+                  "label": null,
+                  "suggested_replacement": null,
+                  "suggestion_applicability": null,
+                  "expansion": null
+                }
+              ],
+              "children": [],
+              "rendered": null
+            },
+            {
+              "message": "required by a bound in `spawn`",
+              "code": null,
+              "level": "note",
+              "spans": [
+                {
+                  "file_name": "/home/w/.rustup/toolchains/1.91.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/thread/mod.rs",
+                  "byte_start": 27097,
+                  "byte_end": 27102,
+                  "line_start": 723,
+                  "line_end": 723,
+                  "column_start": 8,
+                  "column_end": 13,
+                  "is_primary": false,
+                  "text": [
+                    {
+                      "text": "pub fn spawn<F, T>(f: F) -> JoinHandle<T>",
+                      "highlight_start": 8,
+                      "highlight_end": 13
+                    }
+                  ],
+                  "label": "required by a bound in this function",
+                  "suggested_replacement": null,
+                  "suggestion_applicability": null,
+                  "expansion": null
+                },
+                {
+                  "file_name": "/home/w/.rustup/toolchains/1.91.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/thread/mod.rs",
+                  "byte_start": 27167,
+                  "byte_end": 27171,
+                  "line_start": 726,
+                  "line_end": 726,
+                  "column_start": 8,
+                  "column_end": 12,
+                  "is_primary": true,
+                  "text": [
+                    {
+                      "text": "    F: Send + 'static,",
+                      "highlight_start": 8,
+                      "highlight_end": 12
+                    }
+                  ],
+                  "label": "required by this bound in `spawn`",
+                  "suggested_replacement": null,
+                  "suggestion_applicability": null,
+                  "expansion": null
+                }
+              ],
+              "children": [],
+              "rendered": null
+            }
+          ],
+          "rendered": "error[E0277]: `NonNull<c_void>` cannot be sent between threads safely\n   --> /home/w/codex-dir/project-x/.artifacts/ea1/ownership/not_send.rs:2:49\n    |\n  2 | fn checked(t:ffi::Terminal) {std::thread::spawn(move || drop(t));}\n    |                              ------------------ -------^^^^^^^^\n    |                              |                  |\n    |                              |                  `NonNull<c_void>` cannot be sent between threads safely\n    |                              |                  within this `{closure@/home/w/codex-dir/project-x/.artifacts/ea1/ownership/not_send.rs:2:49: 2:56}`\n    |                              required by a bound introduced by this call\n    |\n    = help: within `{closure@/home/w/codex-dir/project-x/.artifacts/ea1/ownership/not_send.rs:2:49: 2:56}`, the trait `Send` is not implemented for `NonNull<c_void>`\nnote: required because it appears within the type `Terminal`\n   --> /home/w/codex-dir/project-x/crates/engine/src/ffi.rs:88:12\n    |\n 88 | pub struct Terminal {\n    |            ^^^^^^^^\nnote: required because it's used within this closure\n   --> /home/w/codex-dir/project-x/.artifacts/ea1/ownership/not_send.rs:2:49\n    |\n  2 | fn checked(t:ffi::Terminal) {std::thread::spawn(move || drop(t));}\n    |                                                 ^^^^^^^\nnote: required by a bound in `spawn`\n   --> /home/w/.rustup/toolchains/1.91.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/thread/mod.rs:726:8\n    |\n723 | pub fn spawn<F, T>(f: F) -> JoinHandle<T>\n    |        ----- required by a bound in this function\n...\n726 |     F: Send + 'static,\n    |        ^^^^ required by this bound in `spawn`\n\n"
+        },
+        {
+          "$message_type": "diagnostic",
+          "message": "`Rc<()>` cannot be sent between threads safely",
+          "code": {
+            "code": "E0277",
+            "explanation": "You tried to use a type which doesn't implement some trait in a place which\nexpected that trait.\n\nErroneous code example:\n\n```compile_fail,E0277\n// here we declare the Foo trait with a bar method\ntrait Foo {\n    fn bar(&self);\n}\n\n// we now declare a function which takes an object implementing the Foo trait\nfn some_func<T: Foo>(foo: T) {\n    foo.bar();\n}\n\nfn main() {\n    // we now call the method with the i32 type, which doesn't implement\n    // the Foo trait\n    some_func(5i32); // error: the trait bound `i32 : Foo` is not satisfied\n}\n```\n\nIn order to fix this error, verify that the type you're using does implement\nthe trait. Example:\n\n```\ntrait Foo {\n    fn bar(&self);\n}\n\n// we implement the trait on the i32 type\nimpl Foo for i32 {\n    fn bar(&self) {}\n}\n\nfn some_func<T: Foo>(foo: T) {\n    foo.bar(); // we can now use this method since i32 implements the\n               // Foo trait\n}\n\nfn main() {\n    some_func(5i32); // ok!\n}\n```\n\nOr in a generic context, an erroneous code example would look like:\n\n```compile_fail,E0277\nfn some_func<T>(foo: T) {\n    println!(\"{:?}\", foo); // error: the trait `core::fmt::Debug` is not\n                           //        implemented for the type `T`\n}\n\nfn main() {\n    // We now call the method with the i32 type,\n    // which *does* implement the Debug trait.\n    some_func(5i32);\n}\n```\n\nNote that the error here is in the definition of the generic function. Although\nwe only call it with a parameter that does implement `Debug`, the compiler\nstill rejects the function. It must work with all possible input types. In\norder to make this example compile, we need to restrict the generic type we're\naccepting:\n\n```\nuse std::fmt;\n\n// Restrict the input type to types that implement Debug.\nfn some_func<T: fmt::Debug>(foo: T) {\n    println!(\"{:?}\", foo);\n}\n\nfn main() {\n    // Calling the method is still fine, as i32 implements Debug.\n    some_func(5i32);\n\n    // This would fail to compile now:\n    // struct WithoutDebug;\n    // some_func(WithoutDebug);\n}\n```\n\nRust only looks at the signature of the called function, as such it must\nalready specify all requirements that will be used for every type parameter.\n"
+          },
+          "level": "error",
+          "spans": [
+            {
+              "file_name": "/home/w/codex-dir/project-x/.artifacts/ea1/ownership/not_send.rs",
+              "byte_start": 120,
+              "byte_end": 135,
+              "line_start": 2,
+              "line_end": 2,
+              "column_start": 49,
+              "column_end": 64,
+              "is_primary": true,
+              "text": [
+                {
+                  "text": "fn checked(t:ffi::Terminal) {std::thread::spawn(move || drop(t));}",
+                  "highlight_start": 49,
+                  "highlight_end": 64
+                }
+              ],
+              "label": "`Rc<()>` cannot be sent between threads safely",
+              "suggested_replacement": null,
+              "suggestion_applicability": null,
+              "expansion": null
+            },
+            {
+              "file_name": "/home/w/codex-dir/project-x/.artifacts/ea1/ownership/not_send.rs",
+              "byte_start": 120,
+              "byte_end": 127,
+              "line_start": 2,
+              "line_end": 2,
+              "column_start": 49,
+              "column_end": 56,
+              "is_primary": false,
+              "text": [
+                {
+                  "text": "fn checked(t:ffi::Terminal) {std::thread::spawn(move || drop(t));}",
+                  "highlight_start": 49,
+                  "highlight_end": 56
+                }
+              ],
+              "label": "within this `{closure@/home/w/codex-dir/project-x/.artifacts/ea1/ownership/not_send.rs:2:49: 2:56}`",
+              "suggested_replacement": null,
+              "suggestion_applicability": null,
+              "expansion": null
+            },
+            {
+              "file_name": "/home/w/codex-dir/project-x/.artifacts/ea1/ownership/not_send.rs",
+              "byte_start": 101,
+              "byte_end": 119,
+              "line_start": 2,
+              "line_end": 2,
+              "column_start": 30,
+              "column_end": 48,
+              "is_primary": false,
+              "text": [
+                {
+                  "text": "fn checked(t:ffi::Terminal) {std::thread::spawn(move || drop(t));}",
+                  "highlight_start": 30,
+                  "highlight_end": 48
+                }
+              ],
+              "label": "required by a bound introduced by this call",
+              "suggested_replacement": null,
+              "suggestion_applicability": null,
+              "expansion": null
+            }
+          ],
+          "children": [
+            {
+              "message": "within `{closure@/home/w/codex-dir/project-x/.artifacts/ea1/ownership/not_send.rs:2:49: 2:56}`, the trait `Send` is not implemented for `Rc<()>`",
+              "code": null,
+              "level": "help",
+              "spans": [],
+              "children": [],
+              "rendered": null
+            },
+            {
+              "message": "required because it appears within the type `PhantomData<Rc<()>>`",
+              "code": null,
+              "level": "note",
+              "spans": [
+                {
+                  "file_name": "/home/w/.rustup/toolchains/1.91.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/marker.rs",
+                  "byte_start": 31342,
+                  "byte_end": 31353,
+                  "line_start": 822,
+                  "line_end": 822,
+                  "column_start": 12,
+                  "column_end": 23,
+                  "is_primary": true,
+                  "text": [
+                    {
+                      "text": "pub struct PhantomData<T: PointeeSized>;",
+                      "highlight_start": 12,
+                      "highlight_end": 23
+                    }
+                  ],
+                  "label": null,
+                  "suggested_replacement": null,
+                  "suggestion_applicability": null,
+                  "expansion": null
+                }
+              ],
+              "children": [],
+              "rendered": null
+            },
+            {
+              "message": "required because it appears within the type `Terminal`",
+              "code": null,
+              "level": "note",
+              "spans": [
+                {
+                  "file_name": "/home/w/codex-dir/project-x/crates/engine/src/ffi.rs",
+                  "byte_start": 2259,
+                  "byte_end": 2267,
+                  "line_start": 88,
+                  "line_end": 88,
+                  "column_start": 12,
+                  "column_end": 20,
+                  "is_primary": true,
+                  "text": [
+                    {
+                      "text": "pub struct Terminal {",
+                      "highlight_start": 12,
+                      "highlight_end": 20
+                    }
+                  ],
+                  "label": null,
+                  "suggested_replacement": null,
+                  "suggestion_applicability": null,
+                  "expansion": null
+                }
+              ],
+              "children": [],
+              "rendered": null
+            },
+            {
+              "message": "required because it's used within this closure",
+              "code": null,
+              "level": "note",
+              "spans": [
+                {
+                  "file_name": "/home/w/codex-dir/project-x/.artifacts/ea1/ownership/not_send.rs",
+                  "byte_start": 120,
+                  "byte_end": 127,
+                  "line_start": 2,
+                  "line_end": 2,
+                  "column_start": 49,
+                  "column_end": 56,
+                  "is_primary": true,
+                  "text": [
+                    {
+                      "text": "fn checked(t:ffi::Terminal) {std::thread::spawn(move || drop(t));}",
+                      "highlight_start": 49,
+                      "highlight_end": 56
+                    }
+                  ],
+                  "label": null,
+                  "suggested_replacement": null,
+                  "suggestion_applicability": null,
+                  "expansion": null
+                }
+              ],
+              "children": [],
+              "rendered": null
+            },
+            {
+              "message": "required by a bound in `spawn`",
+              "code": null,
+              "level": "note",
+              "spans": [
+                {
+                  "file_name": "/home/w/.rustup/toolchains/1.91.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/thread/mod.rs",
+                  "byte_start": 27097,
+                  "byte_end": 27102,
+                  "line_start": 723,
+                  "line_end": 723,
+                  "column_start": 8,
+                  "column_end": 13,
+                  "is_primary": false,
+                  "text": [
+                    {
+                      "text": "pub fn spawn<F, T>(f: F) -> JoinHandle<T>",
+                      "highlight_start": 8,
+                      "highlight_end": 13
+                    }
+                  ],
+                  "label": "required by a bound in this function",
+                  "suggested_replacement": null,
+                  "suggestion_applicability": null,
+                  "expansion": null
+                },
+                {
+                  "file_name": "/home/w/.rustup/toolchains/1.91.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/thread/mod.rs",
+                  "byte_start": 27167,
+                  "byte_end": 27171,
+                  "line_start": 726,
+                  "line_end": 726,
+                  "column_start": 8,
+                  "column_end": 12,
+                  "is_primary": true,
+                  "text": [
+                    {
+                      "text": "    F: Send + 'static,",
+                      "highlight_start": 8,
+                      "highlight_end": 12
+                    }
+                  ],
+                  "label": "required by this bound in `spawn`",
+                  "suggested_replacement": null,
+                  "suggestion_applicability": null,
+                  "expansion": null
+                }
+              ],
+              "children": [],
+              "rendered": null
+            }
+          ],
+          "rendered": "error[E0277]: `Rc<()>` cannot be sent between threads safely\n   --> /home/w/codex-dir/project-x/.artifacts/ea1/ownership/not_send.rs:2:49\n    |\n  2 | fn checked(t:ffi::Terminal) {std::thread::spawn(move || drop(t));}\n    |                              ------------------ -------^^^^^^^^\n    |                              |                  |\n    |                              |                  `Rc<()>` cannot be sent between threads safely\n    |                              |                  within this `{closure@/home/w/codex-dir/project-x/.artifacts/ea1/ownership/not_send.rs:2:49: 2:56}`\n    |                              required by a bound introduced by this call\n    |\n    = help: within `{closure@/home/w/codex-dir/project-x/.artifacts/ea1/ownership/not_send.rs:2:49: 2:56}`, the trait `Send` is not implemented for `Rc<()>`\nnote: required because it appears within the type `PhantomData<Rc<()>>`\n   --> /home/w/.rustup/toolchains/1.91.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/marker.rs:822:12\n    |\n822 | pub struct PhantomData<T: PointeeSized>;\n    |            ^^^^^^^^^^^\nnote: required because it appears within the type `Terminal`\n   --> /home/w/codex-dir/project-x/crates/engine/src/ffi.rs:88:12\n    |\n 88 | pub struct Terminal {\n    |            ^^^^^^^^\nnote: required because it's used within this closure\n   --> /home/w/codex-dir/project-x/.artifacts/ea1/ownership/not_send.rs:2:49\n    |\n  2 | fn checked(t:ffi::Terminal) {std::thread::spawn(move || drop(t));}\n    |                                                 ^^^^^^^\nnote: required by a bound in `spawn`\n   --> /home/w/.rustup/toolchains/1.91.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/thread/mod.rs:726:8\n    |\n723 | pub fn spawn<F, T>(f: F) -> JoinHandle<T>\n    |        ----- required by a bound in this function\n...\n726 |     F: Send + 'static,\n    |        ^^^^ required by this bound in `spawn`\n\n"
+        },
+        {
+          "$message_type": "diagnostic",
+          "message": "aborting due to 2 previous errors",
+          "code": null,
+          "level": "error",
+          "spans": [],
+          "children": [],
+          "rendered": "error: aborting due to 2 previous errors\n\n"
+        },
+        {
+          "$message_type": "diagnostic",
+          "message": "For more information about this error, try `rustc --explain E0277`.",
+          "code": null,
+          "level": "failure-note",
+          "spans": [],
+          "children": [],
+          "rendered": "For more information about this error, try `rustc --explain E0277`.\n"
+        }
+      ]
+    },
+    {
+      "name": "not_sync",
+      "verdict": "PASS",
+      "compiler_exit": 1,
+      "expected_compile_success": false,
+      "diagnostic_codes": [
+        "E0277",
+        "E0277"
+      ],
+      "command": [
+        "rustc",
+        "--edition=2024",
+        "--crate-type=lib",
+        "--emit=metadata",
+        "--error-format=json",
+        "-L",
+        "dependency=/home/w/codex-dir/project-x/target/debug/deps",
+        "-o",
+        "/home/w/codex-dir/project-x/.artifacts/ea1/ownership/not_sync.rmeta",
+        "--extern",
+        "serde_json=/home/w/codex-dir/project-x/target/debug/deps/libserde_json-224792c339f0c53c.rlib",
+        "--extern",
+        "project_x_protocol=/home/w/codex-dir/project-x/target/debug/deps/libproject_x_protocol-4b3ec990048a1ec2.rlib",
+        "/home/w/codex-dir/project-x/.artifacts/ea1/ownership/not_sync.rs"
+      ],
+      "diagnostics": [
+        {
+          "$message_type": "diagnostic",
+          "message": "`NonNull<c_void>` cannot be shared between threads safely",
+          "code": {
+            "code": "E0277",
+            "explanation": "You tried to use a type which doesn't implement some trait in a place which\nexpected that trait.\n\nErroneous code example:\n\n```compile_fail,E0277\n// here we declare the Foo trait with a bar method\ntrait Foo {\n    fn bar(&self);\n}\n\n// we now declare a function which takes an object implementing the Foo trait\nfn some_func<T: Foo>(foo: T) {\n    foo.bar();\n}\n\nfn main() {\n    // we now call the method with the i32 type, which doesn't implement\n    // the Foo trait\n    some_func(5i32); // error: the trait bound `i32 : Foo` is not satisfied\n}\n```\n\nIn order to fix this error, verify that the type you're using does implement\nthe trait. Example:\n\n```\ntrait Foo {\n    fn bar(&self);\n}\n\n// we implement the trait on the i32 type\nimpl Foo for i32 {\n    fn bar(&self) {}\n}\n\nfn some_func<T: Foo>(foo: T) {\n    foo.bar(); // we can now use this method since i32 implements the\n               // Foo trait\n}\n\nfn main() {\n    some_func(5i32); // ok!\n}\n```\n\nOr in a generic context, an erroneous code example would look like:\n\n```compile_fail,E0277\nfn some_func<T>(foo: T) {\n    println!(\"{:?}\", foo); // error: the trait `core::fmt::Debug` is not\n                           //        implemented for the type `T`\n}\n\nfn main() {\n    // We now call the method with the i32 type,\n    // which *does* implement the Debug trait.\n    some_func(5i32);\n}\n```\n\nNote that the error here is in the definition of the generic function. Although\nwe only call it with a parameter that does implement `Debug`, the compiler\nstill rejects the function. It must work with all possible input types. In\norder to make this example compile, we need to restrict the generic type we're\naccepting:\n\n```\nuse std::fmt;\n\n// Restrict the input type to types that implement Debug.\nfn some_func<T: fmt::Debug>(foo: T) {\n    println!(\"{:?}\", foo);\n}\n\nfn main() {\n    // Calling the method is still fine, as i32 implements Debug.\n    some_func(5i32);\n\n    // This would fail to compile now:\n    // struct WithoutDebug;\n    // some_func(WithoutDebug);\n}\n```\n\nRust only looks at the signature of the called function, as such it must\nalready specify all requirements that will be used for every type parameter.\n"
+          },
+          "level": "error",
+          "spans": [
+            {
+              "file_name": "/home/w/codex-dir/project-x/.artifacts/ea1/ownership/not_sync.rs",
+              "byte_start": 119,
+              "byte_end": 132,
+              "line_start": 2,
+              "line_end": 2,
+              "column_start": 48,
+              "column_end": 61,
+              "is_primary": true,
+              "text": [
+                {
+                  "text": "fn checked() {fn require<T:Sync>(){} require::<ffi::Terminal>();}",
+                  "highlight_start": 48,
+                  "highlight_end": 61
+                }
+              ],
+              "label": "`NonNull<c_void>` cannot be shared between threads safely",
+              "suggested_replacement": null,
+              "suggestion_applicability": null,
+              "expansion": null
+            }
+          ],
+          "children": [
+            {
+              "message": "within `Terminal`, the trait `Sync` is not implemented for `NonNull<c_void>`",
+              "code": null,
+              "level": "help",
+              "spans": [],
+              "children": [],
+              "rendered": null
+            },
+            {
+              "message": "required because it appears within the type `Terminal`",
+              "code": null,
+              "level": "note",
+              "spans": [
+                {
+                  "file_name": "/home/w/codex-dir/project-x/crates/engine/src/ffi.rs",
+                  "byte_start": 2259,
+                  "byte_end": 2267,
+                  "line_start": 88,
+                  "line_end": 88,
+                  "column_start": 12,
+                  "column_end": 20,
+                  "is_primary": true,
+                  "text": [
+                    {
+                      "text": "pub struct Terminal {",
+                      "highlight_start": 12,
+                      "highlight_end": 20
+                    }
+                  ],
+                  "label": null,
+                  "suggested_replacement": null,
+                  "suggestion_applicability": null,
+                  "expansion": null
+                }
+              ],
+              "children": [],
+              "rendered": null
+            },
+            {
+              "message": "required by a bound in `require`",
+              "code": null,
+              "level": "note",
+              "spans": [
+                {
+                  "file_name": "/home/w/codex-dir/project-x/.artifacts/ea1/ownership/not_sync.rs",
+                  "byte_start": 99,
+                  "byte_end": 103,
+                  "line_start": 2,
+                  "line_end": 2,
+                  "column_start": 28,
+                  "column_end": 32,
+                  "is_primary": true,
+                  "text": [
+                    {
+                      "text": "fn checked() {fn require<T:Sync>(){} require::<ffi::Terminal>();}",
+                      "highlight_start": 28,
+                      "highlight_end": 32
+                    }
+                  ],
+                  "label": "required by this bound in `require`",
+                  "suggested_replacement": null,
+                  "suggestion_applicability": null,
+                  "expansion": null
+                }
+              ],
+              "children": [],
+              "rendered": null
+            }
+          ],
+          "rendered": "error[E0277]: `NonNull<c_void>` cannot be shared between threads safely\n  --> /home/w/codex-dir/project-x/.artifacts/ea1/ownership/not_sync.rs:2:48\n   |\n 2 | fn checked() {fn require<T:Sync>(){} require::<ffi::Terminal>();}\n   |                                                ^^^^^^^^^^^^^ `NonNull<c_void>` cannot be shared between threads safely\n   |\n   = help: within `Terminal`, the trait `Sync` is not implemented for `NonNull<c_void>`\nnote: required because it appears within the type `Terminal`\n  --> /home/w/codex-dir/project-x/crates/engine/src/ffi.rs:88:12\n   |\n88 | pub struct Terminal {\n   |            ^^^^^^^^\nnote: required by a bound in `require`\n  --> /home/w/codex-dir/project-x/.artifacts/ea1/ownership/not_sync.rs:2:28\n   |\n 2 | fn checked() {fn require<T:Sync>(){} require::<ffi::Terminal>();}\n   |                            ^^^^ required by this bound in `require`\n\n"
+        },
+        {
+          "$message_type": "diagnostic",
+          "message": "`Rc<()>` cannot be shared between threads safely",
+          "code": {
+            "code": "E0277",
+            "explanation": "You tried to use a type which doesn't implement some trait in a place which\nexpected that trait.\n\nErroneous code example:\n\n```compile_fail,E0277\n// here we declare the Foo trait with a bar method\ntrait Foo {\n    fn bar(&self);\n}\n\n// we now declare a function which takes an object implementing the Foo trait\nfn some_func<T: Foo>(foo: T) {\n    foo.bar();\n}\n\nfn main() {\n    // we now call the method with the i32 type, which doesn't implement\n    // the Foo trait\n    some_func(5i32); // error: the trait bound `i32 : Foo` is not satisfied\n}\n```\n\nIn order to fix this error, verify that the type you're using does implement\nthe trait. Example:\n\n```\ntrait Foo {\n    fn bar(&self);\n}\n\n// we implement the trait on the i32 type\nimpl Foo for i32 {\n    fn bar(&self) {}\n}\n\nfn some_func<T: Foo>(foo: T) {\n    foo.bar(); // we can now use this method since i32 implements the\n               // Foo trait\n}\n\nfn main() {\n    some_func(5i32); // ok!\n}\n```\n\nOr in a generic context, an erroneous code example would look like:\n\n```compile_fail,E0277\nfn some_func<T>(foo: T) {\n    println!(\"{:?}\", foo); // error: the trait `core::fmt::Debug` is not\n                           //        implemented for the type `T`\n}\n\nfn main() {\n    // We now call the method with the i32 type,\n    // which *does* implement the Debug trait.\n    some_func(5i32);\n}\n```\n\nNote that the error here is in the definition of the generic function. Although\nwe only call it with a parameter that does implement `Debug`, the compiler\nstill rejects the function. It must work with all possible input types. In\norder to make this example compile, we need to restrict the generic type we're\naccepting:\n\n```\nuse std::fmt;\n\n// Restrict the input type to types that implement Debug.\nfn some_func<T: fmt::Debug>(foo: T) {\n    println!(\"{:?}\", foo);\n}\n\nfn main() {\n    // Calling the method is still fine, as i32 implements Debug.\n    some_func(5i32);\n\n    // This would fail to compile now:\n    // struct WithoutDebug;\n    // some_func(WithoutDebug);\n}\n```\n\nRust only looks at the signature of the called function, as such it must\nalready specify all requirements that will be used for every type parameter.\n"
+          },
+          "level": "error",
+          "spans": [
+            {
+              "file_name": "/home/w/codex-dir/project-x/.artifacts/ea1/ownership/not_sync.rs",
+              "byte_start": 119,
+              "byte_end": 132,
+              "line_start": 2,
+              "line_end": 2,
+              "column_start": 48,
+              "column_end": 61,
+              "is_primary": true,
+              "text": [
+                {
+                  "text": "fn checked() {fn require<T:Sync>(){} require::<ffi::Terminal>();}",
+                  "highlight_start": 48,
+                  "highlight_end": 61
+                }
+              ],
+              "label": "`Rc<()>` cannot be shared between threads safely",
+              "suggested_replacement": null,
+              "suggestion_applicability": null,
+              "expansion": null
+            }
+          ],
+          "children": [
+            {
+              "message": "within `Terminal`, the trait `Sync` is not implemented for `Rc<()>`",
+              "code": null,
+              "level": "help",
+              "spans": [],
+              "children": [],
+              "rendered": null
+            },
+            {
+              "message": "required because it appears within the type `PhantomData<Rc<()>>`",
+              "code": null,
+              "level": "note",
+              "spans": [
+                {
+                  "file_name": "/home/w/.rustup/toolchains/1.91.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/marker.rs",
+                  "byte_start": 31342,
+                  "byte_end": 31353,
+                  "line_start": 822,
+                  "line_end": 822,
+                  "column_start": 12,
+                  "column_end": 23,
+                  "is_primary": true,
+                  "text": [
+                    {
+                      "text": "pub struct PhantomData<T: PointeeSized>;",
+                      "highlight_start": 12,
+                      "highlight_end": 23
+                    }
+                  ],
+                  "label": null,
+                  "suggested_replacement": null,
+                  "suggestion_applicability": null,
+                  "expansion": null
+                }
+              ],
+              "children": [],
+              "rendered": null
+            },
+            {
+              "message": "required because it appears within the type `Terminal`",
+              "code": null,
+              "level": "note",
+              "spans": [
+                {
+                  "file_name": "/home/w/codex-dir/project-x/crates/engine/src/ffi.rs",
+                  "byte_start": 2259,
+                  "byte_end": 2267,
+                  "line_start": 88,
+                  "line_end": 88,
+                  "column_start": 12,
+                  "column_end": 20,
+                  "is_primary": true,
+                  "text": [
+                    {
+                      "text": "pub struct Terminal {",
+                      "highlight_start": 12,
+                      "highlight_end": 20
+                    }
+                  ],
+                  "label": null,
+                  "suggested_replacement": null,
+                  "suggestion_applicability": null,
+                  "expansion": null
+                }
+              ],
+              "children": [],
+              "rendered": null
+            },
+            {
+              "message": "required by a bound in `require`",
+              "code": null,
+              "level": "note",
+              "spans": [
+                {
+                  "file_name": "/home/w/codex-dir/project-x/.artifacts/ea1/ownership/not_sync.rs",
+                  "byte_start": 99,
+                  "byte_end": 103,
+                  "line_start": 2,
+                  "line_end": 2,
+                  "column_start": 28,
+                  "column_end": 32,
+                  "is_primary": true,
+                  "text": [
+                    {
+                      "text": "fn checked() {fn require<T:Sync>(){} require::<ffi::Terminal>();}",
+                      "highlight_start": 28,
+                      "highlight_end": 32
+                    }
+                  ],
+                  "label": "required by this bound in `require`",
+                  "suggested_replacement": null,
+                  "suggestion_applicability": null,
+                  "expansion": null
+                }
+              ],
+              "children": [],
+              "rendered": null
+            }
+          ],
+          "rendered": "error[E0277]: `Rc<()>` cannot be shared between threads safely\n   --> /home/w/codex-dir/project-x/.artifacts/ea1/ownership/not_sync.rs:2:48\n    |\n  2 | fn checked() {fn require<T:Sync>(){} require::<ffi::Terminal>();}\n    |                                                ^^^^^^^^^^^^^ `Rc<()>` cannot be shared between threads safely\n    |\n    = help: within `Terminal`, the trait `Sync` is not implemented for `Rc<()>`\nnote: required because it appears within the type `PhantomData<Rc<()>>`\n   --> /home/w/.rustup/toolchains/1.91.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/marker.rs:822:12\n    |\n822 | pub struct PhantomData<T: PointeeSized>;\n    |            ^^^^^^^^^^^\nnote: required because it appears within the type `Terminal`\n   --> /home/w/codex-dir/project-x/crates/engine/src/ffi.rs:88:12\n    |\n 88 | pub struct Terminal {\n    |            ^^^^^^^^\nnote: required by a bound in `require`\n   --> /home/w/codex-dir/project-x/.artifacts/ea1/ownership/not_sync.rs:2:28\n    |\n  2 | fn checked() {fn require<T:Sync>(){} require::<ffi::Terminal>();}\n    |                            ^^^^ required by this bound in `require`\n\n"
+        },
+        {
+          "$message_type": "diagnostic",
+          "message": "aborting due to 2 previous errors",
+          "code": null,
+          "level": "error",
+          "spans": [],
+          "children": [],
+          "rendered": "error: aborting due to 2 previous errors\n\n"
+        },
+        {
+          "$message_type": "diagnostic",
+          "message": "For more information about this error, try `rustc --explain E0277`.",
+          "code": null,
+          "level": "failure-note",
+          "spans": [],
+          "children": [],
+          "rendered": "For more information about this error, try `rustc --explain E0277`.\n"
+        }
+      ]
+    }
+  ]
+}

@@ -2,6 +2,8 @@
 
 > Subsequent [EA1 results](21-ea1-native-worker-results.md): experimental Rust/public-C state and reply seams demonstrated; required legacy control aliases **FAIL**. No EA2/dependent application work. Original X4 stays independently red.
 
+> The [completed input investigation](23-legacy-input-investigation.md) establishes a public-API policy blocker at this pin. A new public-seam decision is required before further integration; no local substitution or inferred mode tracking is approved by the result.
+
 
 > Engineering continuation: the completed [assessment](19-engine-build-adopt-redesign-assessment.md) recommends public libghostty-vt plus owned semantic rendering for the next prototype. Original serializer X4 stays failed; canonical A and native snapshot B pass bounded fixtures. EA1–EA4 refine the remaining PP1/PP2/PP3/PP4 gates, not a declaration that they passed. No dependent product implementation occurred.
 

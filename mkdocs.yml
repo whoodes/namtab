@@ -21,6 +21,7 @@ validation:
 nav:
   - "Design index": "index.md"
   - "Engineering evidence":
+      - "EA1 input policy / blocked seam": "engineering/23-legacy-input-investigation.md"
       - "Local history and validation": "engineering/22-local-history-and-validation.md"
       - "EA1 native worker / blocked gate": "engineering/21-ea1-native-worker-results.md"
       - "Workspace organization": "engineering/20-workspace-organization.md"
@@ -31,6 +32,7 @@ nav:
       - "Scope and supervision": "product/01-product-and-supervision.md"
       - "Evidence and coordination": "product/02-work-evidence-and-coordination.md"
   - "Architecture":
+      - "Legacy-input public-policy decision": "adr/0003-legacy-input-public-policy.md"
       - "Engine ownership decision": "adr/0001-engine-ownership-and-presentation.md"
       - "Continuity / checkpoint decision": "adr/0002-terminal-continuity-and-checkpoints.md"
       - "Recommended baseline / ADRs": "architecture/10-recommended-baseline-and-adrs.md"

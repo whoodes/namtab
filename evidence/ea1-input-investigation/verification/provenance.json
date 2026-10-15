@@ -1,0 +1,92 @@
+{
+  "verdict": "PASS",
+  "environment": {
+    "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+    "machine": "x86_64",
+    "os_release": "PRETTY_NAME=\"Ubuntu 22.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"22.04\"\nVERSION=\"22.04.5 LTS (Jammy Jellyfish)\"\nVERSION_CODENAME=jammy\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=jammy\n"
+  },
+  "versions": {
+    "rustc": "rustc 1.91.0 (f8297e351 2025-10-28)",
+    "cargo": "cargo 1.91.0 (ea2d97820 2025-10-10)",
+    "node": "v24.21.0",
+    "pnpm": "10.32.1",
+    "python": "Python 3.10.12",
+    "zig": "0.16.0",
+    "c_compiler": "clang version 21.1.0\nTarget: x86_64-unknown-linux6.8.0-gnu2.35.0\nThread model: posix\nInstalledDir: /home/w/codex-dir/project-x/.tools/zig/zig-x86_64-linux-0.16.0"
+  },
+  "checked_sha256": {
+    ".artifacts/engine-assessment/ghostty/lib/libghostty-vt.so.0.1.0": "7233966bb39275b8445a9a8b970170ef6fd109b8b8feb8b164cce00be40d588a",
+    ".tools/zig/zig-x86_64-linux-0.16.0/zig": "2317bbb91798556d9d0f38aabdac23db83f0979b25f767259ae474546724087c",
+    ".artifacts/engine-assessment/ghostty/include/ghostty/vt/allocator.h": "77ab59b7be308454ca31fedd203bc43c219869e2ef869a8001549958906b4fd1",
+    ".artifacts/engine-assessment/ghostty/include/ghostty/vt/build_info.h": "535e44c29b5fd9c8df172605f58616df735432f7786ca24e3cc58d7cb3ba8361",
+    ".artifacts/engine-assessment/ghostty/include/ghostty/vt/color.h": "73e0db10e4b324122be1a8a46bb6619fe5ab264bf6713543336c3e5deb7035f3",
+    ".artifacts/engine-assessment/ghostty/include/ghostty/vt/color_scheme.h": "eab0dc56e057dfc03334cba109da6e7ae118513cb2be9dc4f3b0bffc7bdad465",
+    ".artifacts/engine-assessment/ghostty/include/ghostty/vt/device.h": "79c61cd5d54fc15c60d0ce87c69adf89c85b7b748b912c41b91230979f4319fe",
+    ".artifacts/engine-assessment/ghostty/include/ghostty/vt/focus.h": "ddc28ead578ca9f683a4140420807ec9988a45f669d719e28cdf840913ea56b4",
+    ".artifacts/engine-assessment/ghostty/include/ghostty/vt/formatter.h": "9945b7aff284597d8801eb9201abc95609b3cf71360e14f2db6b8a527838a8cd",
+    ".artifacts/engine-assessment/ghostty/include/ghostty/vt/grid_ref.h": "80cc49f02d63025605d605c86f1207638ad9534ce74e9a14766299e0518d4987",
+    ".artifacts/engine-assessment/ghostty/include/ghostty/vt/grid_ref_tracked.h": "78c65cf69c1a6ee439849175221084366ca4392455503cc44e93cfdf9ddbc021",
+    ".artifacts/engine-assessment/ghostty/include/ghostty/vt/io.h": "2d79995aadc23ce175b519e3ff401ca20664da9068177aac117e0b490f45daee",
+    ".artifacts/engine-assessment/ghostty/include/ghostty/vt/key/encoder.h": "6963a275e2ba154a647382c462c416840dcdc2beb6d59aa200d80f37f9a5e196",
+    ".artifacts/engine-assessment/ghostty/include/ghostty/vt/key/event.h": "0eb11bfab67b887f4b409557b396a5da6ea17e9e62d92b97a38e723b46db635d",
+    ".artifacts/engine-assessment/ghostty/include/ghostty/vt/key.h": "2de93a84da8e9c1c1f6ac8d1d281ba054869225858a5d88ec8ec5f0d091b5eac",
+    ".artifacts/engine-assessment/ghostty/include/ghostty/vt/kitty_graphics.h": "a7e1f37191684e66835b54339fe714b14eaa882b5c1d3459fb6fc8b4a32ec8eb",
+    ".artifacts/engine-assessment/ghostty/include/ghostty/vt/modes.h": "bd40aa01f76e4351e09a1825693b27c1e4a53539411968432fc3e59e0f890f66",
+    ".artifacts/engine-assessment/ghostty/include/ghostty/vt/mouse/encoder.h": "2e409c50fcd06806dd1a86cf66751ff35362c65e14ff588e2592e8a09141c017",
+    ".artifacts/engine-assessment/ghostty/include/ghostty/vt/mouse/event.h": "68f14cd03109919cb8da36b17f70670334a3369af5c685496118c913c3049abf",
+    ".artifacts/engine-assessment/ghostty/include/ghostty/vt/mouse.h": "271fc3af121eb323f28d3e467b6d9cde1075b3ac3c400f7e25cc05dd5af03663",
+    ".artifacts/engine-assessment/ghostty/include/ghostty/vt/osc.h": "bc47daeb2c5c1ebc32aca0946be01e26d70fa2677e56f933c7a0b45083e50918",
+    ".artifacts/engine-assessment/ghostty/include/ghostty/vt/paste.h": "d82f8fd498a296220caf39b2aeeedf195fa287b020955c27613b6c55cf80eeba",
+    ".artifacts/engine-assessment/ghostty/include/ghostty/vt/point.h": "1ed7b2cda14904814727b93d406f39284e8392af706f938cf0fa1dbeaa42e774",
+    ".artifacts/engine-assessment/ghostty/include/ghostty/vt/render.h": "9918257a2862fa1fce3e4e22a63da70a98a0883ffb6894a3094057d8721aa2a2",
+    ".artifacts/engine-assessment/ghostty/include/ghostty/vt/screen.h": "d9a3ab36f8410184fd0af4a20de1c1d3a0f09e8bd28ec2de89cb243dbd008fa3",
+    ".artifacts/engine-assessment/ghostty/include/ghostty/vt/search.h": "0a7ff9bd9079f351ff2d255f8d60d33638a5ebc79c1c8076b47b332b47e40c21",
+    ".artifacts/engine-assessment/ghostty/include/ghostty/vt/selection.h": "839b495f8e24ed678fd71b6eeb75a7cebd9d634334a3303ec31d05d468f2c520",
+    ".artifacts/engine-assessment/ghostty/include/ghostty/vt/sgr.h": "8292084973e64ce61555c6721591411dba9cf968ea9ae2d9820b4f6c381f1ce5",
+    ".artifacts/engine-assessment/ghostty/include/ghostty/vt/size_report.h": "7f7a77311ab155ad13e934ed6a94274e2b02207dba529a951c8f8319b0ac9ab7",
+    ".artifacts/engine-assessment/ghostty/include/ghostty/vt/snapshot.h": "da28242bd1cebfa2e313cbbaee160c06573c7990119c8e021b4433d9b3d90b40",
+    ".artifacts/engine-assessment/ghostty/include/ghostty/vt/style.h": "ebb50a1821952dd954dd51d5897f9881c6927abd73b909e2e2f1deb3a52f31a9",
+    ".artifacts/engine-assessment/ghostty/include/ghostty/vt/sys.h": "8f83a9f4e7132d917559b3ceb9dc8145c318e2ce419c2948cbab7cc6faafd69b",
+    ".artifacts/engine-assessment/ghostty/include/ghostty/vt/terminal.h": "e5e4a44c842a04036df0b2026cb395297022d56ff3cb2867859f9c64ed5f8ff4",
+    ".artifacts/engine-assessment/ghostty/include/ghostty/vt/types.h": "6c30315aa292971c5863b90ace46d241682f8baac2fe9244acb785b0c883020e",
+    ".artifacts/engine-assessment/ghostty/include/ghostty/vt/unicode.h": "d5533c9abcebc9284033eb9c6acc0ed707a3a68a98f0d2e3d8c9b28a2beae796",
+    ".artifacts/engine-assessment/ghostty/include/ghostty/vt/wasm.h": "0136093c504af9fb2a33b7e50a70cb6b4cee0c2375beed3d73b579c092195fee",
+    ".artifacts/engine-assessment/ghostty/include/ghostty/vt.h": "014813d7dba136ae6faecb515d23e7d7dc675672094174f91e2d84ab2bb55732"
+  },
+  "headers_equal_pinned_source": 35,
+  "loaded_library": [
+    "/home/w/codex-dir/project-x/.artifacts/engine-assessment/ghostty/lib/libghostty-vt.so.0.1.0"
+  ],
+  "worker_executable_sha256": "2f0d119585c5ca2aec0050b4de3c7f2153feaa3a3b77c685f143d6b598110124",
+  "worker_build_profile": "Rust dev; C shim -O1 -g; libghostty-vt ReleaseSafe/simd=false",
+  "library_embeds_local_checkout_path": true,
+  "locks": {
+    "before": {
+      "Cargo.lock": "15fd6ca90a15ff8ba1f4579fd3b019db1186ba7c5bccd74d764d508b505c3fac",
+      "pnpm-lock.yaml": "448688b057b8276aa826d0d76aa5b1d73e088f8131ff20128701081bdb149ba4"
+    },
+    "after": {
+      "Cargo.lock": "7156d2082457d9ebbc5da80a943a7b08af3f0a14b3d87a665a540042195bb52d",
+      "pnpm-lock.yaml": "448688b057b8276aa826d0d76aa5b1d73e088f8131ff20128701081bdb149ba4"
+    },
+    "registry_package_records_unchanged": true,
+    "only_added_package": "project-x-engine (local workspace member; no registry additions)"
+  },
+  "adapter_line_counts_including_comments_tests": {
+    "crates/engine/native/boundary.c": 268,
+    "crates/engine/native/boundary.h": 28,
+    "crates/engine/src/ffi.rs": 364
+  },
+  "adapter_lines": 660,
+  "private_entries": 0,
+  "upstream_patches": 0,
+  "source_sha256": {
+    "crates/engine/native/boundary.c": "8d874f3f28a84d7b6288abb0d532aa8cd35a30e8133a21a43e3850f6ccb0893f",
+    "crates/engine/native/boundary.h": "cd1272fdeadd20bd22453a14630fb6415105accc49d5f0e266006c64a06303eb",
+    "crates/engine/src/ffi.rs": "f59978263e09537f41d14ca993474b10baa3c5a86be8a9aefca05c02c2ad388a",
+    "crates/engine/src/main.rs": "993be91a05ffa473660a7c9a4e245a04e3335f0e355713f5608b5136f14b6691",
+    "crates/engine/build.rs": "d09d81d5f86abc07b35c4d0ca309a723fd2acd685df7b9066699913227c00922",
+    "crates/protocol/src/internal_engine.rs": "622184545633e1f59d068da58d1b0e89fdb9bb8301e106d1f65157b8adbadf86"
+  },
+  "limits": "Pinned development build on this VM, not SDK release/ABI stability, hostile allocator/fuzz certification, or production sandbox. Same-user loader tampering is outside EA1 containment."
+}

@@ -39,7 +39,7 @@ try:
 except subprocess.TimeoutExpired as e:
     code,stdout,stderr=None,str(e.stdout or ''),str(e.stderr or '')
     error='timeout'
-record={'input_file_sha256':inputs,'command':command,'cwd':str(cwd.relative_to(ROOT)),'recorded_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'elapsed_seconds':round(time.monotonic()-start,3),'timeout_seconds':a.timeout,'exit':code,'verdict':'PASS' if code==0 else 'FAIL','error':error,'environment_overrides':{k:v for k,v in env.items() if k in ['CARGO_HOME','PIP_CACHE_DIR','ZIG_GLOBAL_CACHE_DIR','ZIG_LOCAL_CACHE_DIR','XDG_CACHE_HOME','XDG_DATA_HOME','XDG_STATE_HOME','NPM_CONFIG_USERCONFIG','NPM_CONFIG_GLOBALCONFIG']},'stdout':stdout[-4000000:],'stderr':stderr[-4000000:],'output_truncated':len(stdout)>4000000 or len(stderr)>4000000}
+record={'input_file_sha256':inputs,'command':command,'cwd':str(cwd.relative_to(ROOT)),'recorded_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'elapsed_seconds':round(time.monotonic()-start,3),'timeout_seconds':a.timeout,'exit':code,'verdict':'PASS' if code==0 else 'FAIL','error':error,'environment_overrides':{k:v for k,v in env.items() if k in ['CARGO_HOME','PIP_CACHE_DIR','ZIG_GLOBAL_CACHE_DIR','ZIG_LOCAL_CACHE_DIR','XDG_CACHE_HOME','XDG_DATA_HOME','XDG_STATE_HOME','NPM_CONFIG_USERCONFIG','NPM_CONFIG_GLOBALCONFIG','EA1_EVIDENCE_DIR']},'stdout':stdout[-4000000:],'stderr':stderr[-4000000:],'output_truncated':len(stdout)>4000000 or len(stderr)>4000000}
 folder.mkdir(parents=True, exist_ok=True)
 index=1
 while (folder/f'{a.name}-{index}.json').exists():index+=1

@@ -1,0 +1,45 @@
+{
+  "input_file_sha256": {
+    "tests/assessment/ghostty-proof.c": "7f6e4a0ba1daf845bd54d39cc7933dd15422a33747cab424cc8bb2b8d78e51cc",
+    "tests/assessment/ghostty-assessment.mjs": "199a592427cb860e8c03d6716c87719c7d707ce824ee3320fbdc8998feb88def",
+    "tests/assessment/xterm-assessment.mjs": "37cf4c1d9d122600e301d906aed4b1e226840a127346a5c68edfd18e37768a22",
+    "tests/assessment/expectations.json": "36b0186836b1c227cc6b5d18b4141ccedb9a757f0c65c8537237ead4e8e41af3",
+    "tests/fixtures/terminal/continuations.json": "f4be9e644749b53fe236b6bed4b61410230c7775221f2633f51f18b9c904999a",
+    "crates/engine/native/boundary.c": "8d874f3f28a84d7b6288abb0d532aa8cd35a30e8133a21a43e3850f6ccb0893f",
+    "crates/engine/native/boundary.h": "cd1272fdeadd20bd22453a14630fb6415105accc49d5f0e266006c64a06303eb",
+    "crates/engine/src/ffi.rs": "f59978263e09537f41d14ca993474b10baa3c5a86be8a9aefca05c02c2ad388a",
+    "crates/engine/src/main.rs": "993be91a05ffa473660a7c9a4e245a04e3335f0e355713f5608b5136f14b6691",
+    "crates/protocol/src/internal_engine.rs": "622184545633e1f59d068da58d1b0e89fdb9bb8301e106d1f65157b8adbadf86",
+    "Cargo.lock": "7156d2082457d9ebbc5da80a943a7b08af3f0a14b3d87a665a540042195bb52d",
+    "evidence/ea1/artifact-pin.json": "c72e012e118a668f7c3872a7265a6f32db0ca5dc145780988dc2786d77eeac45",
+    "tests/ea1/worker_test.py": "5fc6419c41bef73d91f349e59dd6f6b96e9a06a511136d012d96a004353ac248",
+    "tests/ea1/evidence_dir.py": "9d8f03607aea0c415f0b268e930f42935b2201fa5c2c3302ceb6f0942e20dc8f",
+    "tests/ea1/shared-inputs.mjs": "ad6c631b02cc07444689fb50ae252813d10d53b79359e3b876fde92cf7a3270d"
+  },
+  "command": [
+    "node",
+    "tests/ea1/shared-inputs.mjs"
+  ],
+  "cwd": ".",
+  "recorded_at": "2026-10-15T18:45:32.906219+00:00",
+  "elapsed_seconds": 0.19,
+  "timeout_seconds": 300,
+  "exit": 0,
+  "verdict": "PASS",
+  "error": null,
+  "environment_overrides": {
+    "XDG_DATA_HOME": "/home/w/codex-dir/project-x/.cache/xdg-data",
+    "CARGO_HOME": "/home/w/codex-dir/project-x/.cache/cargo",
+    "PIP_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/pip",
+    "XDG_CACHE_HOME": "/home/w/codex-dir/project-x/.cache/xdg",
+    "NPM_CONFIG_USERCONFIG": "/dev/null",
+    "NPM_CONFIG_GLOBALCONFIG": "/dev/null",
+    "XDG_STATE_HOME": "/home/w/codex-dir/project-x/.cache/xdg-state",
+    "EA1_EVIDENCE_DIR": "evidence/ea1-input-investigation/attempt-6",
+    "ZIG_GLOBAL_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/engine-assessment/zig-global",
+    "ZIG_LOCAL_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/engine-assessment/zig-local"
+  },
+  "stdout": "Three synthetic console/desktop key intents agree; native encoding asserted separately.\n",
+  "stderr": "",
+  "output_truncated": false
+}

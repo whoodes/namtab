@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { execFileSync } from "node:child_process";
 import { createRequire } from "node:module";
@@ -126,10 +126,14 @@ const report = {
   limits:
     "Registry integrity, every packaged installed file, all shared common source-map files and selected pinned upstream source checks, not independent reproducible build or signature verification. Optional addons not admitted.",
 };
-await writeFile(
-  new URL("../evidence/xterm-artifacts.json", import.meta.url),
-  JSON.stringify(report, null, 2) + "\n",
-);
+// Historical provenance is immutable. Each refresh gets an exclusive new file.
+const folder = new URL("../evidence/provenance-runs/", import.meta.url);
+await mkdir(folder, { recursive: true });
+const destination = new URL(randomUUID() + ".json", folder);
+await writeFile(destination, JSON.stringify(report, null, 2) + "\n", {
+  flag: "wx",
+});
 console.log(
   "X1 PASS_BOUNDED: registry tarball integrity, embedded commit and common InputHandler source match; browser Keyboard matches pinned source.",
 );
+console.log("Evidence: " + destination.pathname);

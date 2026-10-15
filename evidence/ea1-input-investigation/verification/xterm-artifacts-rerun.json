@@ -1,0 +1,64 @@
+{
+  "command": "make provenance",
+  "checkedAt": "2026-10-15T18:45:41.495Z",
+  "node": "v24.21.0",
+  "gate": "X1",
+  "verdict": "PASS_BOUNDED",
+  "commit": "f447274f430fd22513f6adbf9862d19524471c04",
+  "checks": [
+    {
+      "installedComparison": {
+        "installed_files_compared": 7,
+        "match": true
+      },
+      "name": "@xterm/headless",
+      "version": "6.0.0",
+      "commit": "f447274f430fd22513f6adbf9862d19524471c04",
+      "registry": "https://registry.npmjs.org/@xterm/headless/6.0.0",
+      "tarball": "https://registry.npmjs.org/@xterm/headless/-/headless-6.0.0.tgz",
+      "integrity": "sha512-5Yj1QINYCyzrZtf8OFIHi47iQtI+0qYFPHmouEfG8dHNxbZ9Tb9YGSuLcsEwj9Z+OL75GJqPyJbyoFer80a2Hw==",
+      "sha256": "07e4970b1674e7ef6cbd57c8c17746eaadcd41aa7df5b33695fd649e6ec4d78a",
+      "installedMain": "lib-headless/xterm-headless.js",
+      "license": "MIT"
+    },
+    {
+      "installedComparison": {
+        "installed_files_compared": 161,
+        "match": true
+      },
+      "name": "@xterm/xterm",
+      "version": "6.0.0",
+      "commit": "f447274f430fd22513f6adbf9862d19524471c04",
+      "registry": "https://registry.npmjs.org/@xterm/xterm/6.0.0",
+      "tarball": "https://registry.npmjs.org/@xterm/xterm/-/xterm-6.0.0.tgz",
+      "integrity": "sha512-TQwDdQGtwwDt+2cgKDLn0IRaSxYu1tSUjgKarSDkUM0ZNiSRXFpjxEsvc/Zgc5kq5omJ+V0a8/kIM2WD3sMOYg==",
+      "sha256": "908e66e04af6c8dc6b00dd3b54de088e2e81e5ed866284fd6c2fb3c2d1c7a3f6",
+      "installedMain": "lib/xterm.js",
+      "license": "MIT"
+    },
+    {
+      "installedComparison": {
+        "installed_files_compared": 8,
+        "match": true
+      },
+      "name": "@xterm/addon-serialize",
+      "version": "0.14.0",
+      "commit": "f447274f430fd22513f6adbf9862d19524471c04",
+      "registry": "https://registry.npmjs.org/@xterm/addon-serialize/0.14.0",
+      "tarball": "https://registry.npmjs.org/@xterm/addon-serialize/-/addon-serialize-0.14.0.tgz",
+      "integrity": "sha512-uteyTU1EkrQa2Ux6P/uFl2fzmXI46jy5uoQMKEOM0fKTyiW7cSn0WrFenHm5vO5uEXX/GpwW/FgILvv3r0WbkA==",
+      "sha256": "f9a290923dc9c6178446e3fc082c29812a7096a1664fd7bf904022c141c5bbfb",
+      "installedMain": "lib/addon-serialize.js",
+      "license": "MIT"
+    }
+  ],
+  "sourceMapChecks": {
+    "commonFilesCompared": 43,
+    "inputHandlerInBothMatchesPinnedSource": [
+      true,
+      true
+    ],
+    "browserKeyboardMatchesPinnedSource": true
+  },
+  "limits": "Registry integrity, every packaged installed file, all shared common source-map files and selected pinned upstream source checks, not independent reproducible build or signature verification. Optional addons not admitted."
+}
