@@ -1,0 +1,159 @@
+{
+  "verdict": "PASS_DOCUMENTATION_AND_PRESERVATION_ONLY",
+  "recorded_at": "2026-10-15T19:54:14.560117+00:00",
+  "parent_commit": "a5fb6ddf15ca14e20449d4d8c74799f8ac61e6f2",
+  "reviewed_payload_tree_before_this_record": "e70f316977877f9e4dd72449f7b008047bb08b73",
+  "scope": "Final documentation consolidation; no implementation, research, dependency/runtime changes, installs or publication.",
+  "selected_audit": {
+    "path": "evidence/docs-consolidation/audit-final.json",
+    "sha256": "807a3157d1c0513ca19438185fde2a0c2c0ac43d0201ed1d4edfaf6885895351"
+  },
+  "earlier_attempts": "Retained initial audit and command records; docs-1 failed due to navigation nesting and was repaired. Final docs-4 passes. Later staged review corrected a journey alias and normalized capability-error wording; consistency-2 selects the final content.",
+  "checks": {
+    "strict_docs": {
+      "path": "evidence/docs-consolidation/commands/docs-4.json",
+      "sha256": "315f7722aa809d652e2a1ff20986fa143fb4dc9b3db6ab3bf40d91b2d4d8f327",
+      "command": [
+        "make",
+        "docs"
+      ],
+      "exit": 0,
+      "verdict": "PASS"
+    },
+    "nav_format": {
+      "path": "evidence/docs-consolidation/commands/nav-format-1.json",
+      "sha256": "04e9b13137deb69abe2902feb49f01062120a34fac86a11dc730d15e4416e01e",
+      "command": [
+        ".tools/node/node-v24.21.0-linux-x64/bin/node",
+        ".tools/pnpm/package/bin/pnpm.cjs",
+        "exec",
+        "prettier",
+        "--check",
+        "mkdocs.yml"
+      ],
+      "exit": 0,
+      "verdict": "PASS"
+    },
+    "consistency_and_preservation": {
+      "path": "evidence/docs-consolidation/commands/consistency-2.json",
+      "sha256": "5ccc98f9314f6b949b5a9c09da1607b13b15ccf3286989c5ad1850773bfaf80a",
+      "command": [
+        "python3",
+        "-c",
+        "exact validation source is embedded in the referenced command record"
+      ],
+      "exit": 0,
+      "verdict": "PASS"
+    },
+    "legacy_archive_preservation": {
+      "path": "evidence/docs-consolidation/legacy-preservation/commands/preservation-1.json",
+      "sha256": "0a4c262cf8e377b3cdeecd3a13fd40e221c387704bb129b50357c02f079c1bad",
+      "command": [
+        "python3",
+        "-B",
+        "tests/ea1/preservation.py"
+      ],
+      "exit": 0,
+      "verdict": "PASS"
+    },
+    "docs_version": {
+      "path": "evidence/docs-consolidation/commands/docs-version-1.json",
+      "sha256": "c99c2edb88a87c3cd7161bac001a58395f7d91dc3039d3a01d081a4990306359",
+      "command": [
+        ".venv-docs/bin/python",
+        "-m",
+        "mkdocs",
+        "--version"
+      ],
+      "exit": 0,
+      "verdict": "PASS"
+    }
+  },
+  "counts": {
+    "canonical_docs": 37,
+    "current_docs": 24,
+    "historical_docs": 13,
+    "markdown_files_checked": 41,
+    "local_links_fragments": 635,
+    "link_errors": 0,
+    "protected_original_paths": 292,
+    "original_archive_members_verified": 139,
+    "original_oracle_fixture_result_paths_verified": 37,
+    "preexisting_commits_preserved": 7,
+    "reviewable_paths_after_adding_this_record": 335
+  },
+  "distillation": {
+    "before_doc_bytes": 661358,
+    "after_doc_bytes": 601966,
+    "removed_bytes": 59392,
+    "new_canonical_docs": 0
+  },
+  "status": {
+    "owned_engine": "NOT_IMPLEMENTED / NOT_RUN",
+    "historical_xterm_X4": "FAIL (unchanged, not rerun)",
+    "historical_libghostty_EA1": "FAIL (unchanged, not rerun)",
+    "foundation_runtime_tests": "Not rerun: no source/dependency/runtime edits; prior results retained, not new certification."
+  },
+  "prior_empirical_record": {
+    "path": "evidence/owned-engine-research/verification.json",
+    "sha256": "cc4aa63fd692264eb0ea77c85dd20170463651bce84da5afec43bc4528f5558b",
+    "rust_tests": 22,
+    "js_tests": 14,
+    "seeded_partitions": 192,
+    "interpretation": "Recorded at the earlier campaign revision; unchanged executable inputs, not tests executed in this pass."
+  },
+  "reviewed_staged_payload_paths": [
+    "README.md",
+    "docs/adr/0004-owned-agent-native-engine.md",
+    "docs/architecture/03-execution-terminal-and-remote.md",
+    "docs/architecture/04-isolation-security-and-approvals.md",
+    "docs/architecture/05-architecture-storage-and-extensions.md",
+    "docs/architecture/10-recommended-baseline-and-adrs.md",
+    "docs/engine/compatibility-and-core.md",
+    "docs/engine/delivery-and-validation.md",
+    "docs/engine/frontend-contracts.md",
+    "docs/engine/index.md",
+    "docs/engine/native-contract.md",
+    "docs/engine/runtime-persistence-security.md",
+    "docs/engineering/07-validation-roadmap-and-risks.md",
+    "docs/engineering/12-prototype-plan.md",
+    "docs/engineering/14-repository-and-engineering-practices.md",
+    "docs/engineering/15-dependencies-and-supply-chain.md",
+    "docs/engineering/16-test-and-ci-strategy.md",
+    "docs/engineering/contributing.md",
+    "docs/index.md",
+    "docs/product/01-product-and-supervision.md",
+    "docs/product/02-work-evidence-and-coordination.md",
+    "docs/product/manifesto.md",
+    "docs/research/06-technology-distribution-and-compatibility.md",
+    "docs/research/08-research-and-decisions.md",
+    "docs/reviews/09-self-review-and-coverage.md",
+    "docs/ux/11-human-experience-spec.md",
+    "docs/ux/13-dual-frontend-and-host-tui.md",
+    "evidence/README.md",
+    "evidence/docs-consolidation/audit-final.json",
+    "evidence/docs-consolidation/audit.json",
+    "evidence/docs-consolidation/baseline.json",
+    "evidence/docs-consolidation/commands/consistency-1.json",
+    "evidence/docs-consolidation/commands/consistency-2.json",
+    "evidence/docs-consolidation/commands/docs-1.json",
+    "evidence/docs-consolidation/commands/docs-2.json",
+    "evidence/docs-consolidation/commands/docs-3.json",
+    "evidence/docs-consolidation/commands/docs-4.json",
+    "evidence/docs-consolidation/commands/docs-version-1.json",
+    "evidence/docs-consolidation/commands/nav-format-1.json",
+    "evidence/docs-consolidation/legacy-preservation/commands/preservation-1.json",
+    "evidence/docs-consolidation/legacy-preservation/preservation.json",
+    "mkdocs.yml"
+  ],
+  "original_history": [
+    "0a0183b83ee1519063e799a328cb2c824399cd90",
+    "b5e80723ecdbaf4a2c3beb471f9a4fcc1f681a2e",
+    "a911b0e7316e01cd8d6d20af08785d945c2b0e6e",
+    "b8f8d3ff2fb3efd03da4e20702e6f4b158002bbe",
+    "4ad933102ff80da4a9851c67459c5b1ce4185757",
+    "e6f95693e7c772833223e6d41728642d505bfc50",
+    "a5fb6ddf15ca14e20449d4d8c74799f8ac61e6f2"
+  ],
+  "commit_review": "Exact staged text/modes/scope reviewed; no deletions, source/locks/binaries/caches or old report edits. Existing identity retained; no active hooks or remotes. Final hash and clean status are verified after commit, not self-embedded."
+}

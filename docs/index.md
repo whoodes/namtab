@@ -1,50 +1,48 @@
-# Project X: an agent-first terminal
+# Project X design guide
 
-Start with the [draft manifesto](product/manifesto.md) and [contributor workflow](engineering/contributing.md) for product priorities and reviewable changes.
+**Build a project-owned Rust agent-native terminal engine, with a compatibility boundary for existing Linux programs and two first-class human frontends: host-terminal TUI and Electron.** [Manifesto](product/manifesto.md) states the priorities; [ADR E4](adr/0004-owned-agent-native-engine.md) records the ownership decision and rejected alternatives.
 
-> Current direction: [owned agent-native engine campaign](engine/index.md), chosen in [ADR E4](adr/0004-owned-agent-native-engine.md). New implementation is pending; this phase completes research/design only.
+The owned engine is **not implemented**. Existing code is a bounded foundation plus historical xterm/libghostty experiments; no live product frontend, supervisor or PTY runtime exists. Their X4/EA1 gates remain **FAIL**, independently of passing foundation/document checks. The ownership decision changes the roadmap, not those results. Apache-2.0 remains a recommendation, not an adopted license.
 
-> Historical adoption evidence: xterm X4 and libghostty EA1 remain FAIL. E1/E3 next-adoption recommendations are superseded; their evidence and authority/continuity invariants remain. New owned-engine acceptance is NG0–NG4, not fixing or waiving those old gates.
+## Reading order
 
+1. [Executive scope](engine/index.md): native value, owned/reused components, useful slice versus v1 and non-goals.
+2. [Human experience](ux/11-human-experience-spec.md) and [host-TUI profile](ux/13-dual-frontend-and-host-tui.md): ordinary terminal first, scalable supervision, review and takeover.
+3. [Native contract](engine/native-contract.md) → [compatibility core](engine/compatibility-and-core.md) → [runtime/recovery](engine/runtime-persistence-security.md): authoritative identities, state and failure boundaries.
+4. [Delivery and validation](engine/delivery-and-validation.md): N0–N5, NG0–NG4, requirement/source/design/test traceability, estimates, risks and unresolved decisions.
+5. For engineering preparation, read [repository practices](engineering/14-repository-and-engineering-practices.md), [dependency inventory](engineering/15-dependencies-and-supply-chain.md), [CI strategy](engineering/16-test-and-ci-strategy.md) and [contributor workflow](engineering/contributing.md).
 
-Design baseline: 2026-10-15. Status: reviewed recommended baseline; accepted-for-design decisions remain unimplemented and measurement-gated. Linux is the first platform. The product has two initial frontends: a host-terminal TUI and a standalone Electron desktop emulator, sharing a durable local supervisor and automation interfaces. Its success depends on the human interface as much as process management.
+## Documentation ownership
 
-Project X should let a person supervise many agents through tasks, changed artifacts, decisions, and inspectable execution evidence while continuing to use ordinary shells and terminal applications. Existing terminal products already offer agent orchestration, notifications, APIs, and approval workflows. Our proposed advantage is a more coherent relationship between work, evidence, validation freshness, and human authority; this is a product hypothesis to test, not a novelty claim.
+Each row has one authoritative owner. Other pages summarize and link rather than redefine its contract. A scope conflict requires updating the owner and its traceability entry together; a later date alone does not make a paragraph authoritative.
 
-**Agentic terminal navigation is a core feature.** Agents must be able to operate existing interactive shells, CLIs, TUIs, REPLs, and editors through arrows, Tab/completion, shortcuts/modifiers, control sequences, function keys, and selection/paste. A session-bound [observe-act-observe contract](architecture/03-execution-terminal-and-remote.md#observe-act-observe-and-transition-evidence) separates terminal UI commands from application input and makes uncertain transitions inspectable. Structured keys are the primary interface; explicit raw bytes provide a controlled compatibility fallback. Neither interface promises universal semantic navigation of an opaque application. See the [API boundary](architecture/05-architecture-storage-and-extensions.md#navigation-api-boundary) and [acceptance cases](engineering/07-validation-roadmap-and-risks.md#agentic-navigation-acceptance-cases).
+| Decision or contract | Authoritative location | Supporting detail |
+| --- | --- | --- |
+| Ownership choice and supersession | [ADR E4](adr/0004-owned-agent-native-engine.md) | [Baseline decision register](architecture/10-recommended-baseline-and-adrs.md) |
+| Product scope, owned/reused components, v1 exclusions | [Engine scope](engine/index.md) | [Personas/attention](product/01-product-and-supervision.md), [manifesto](product/manifesto.md) |
+| Native identities, operations, receipts, observations, writer fencing | [Native contract](engine/native-contract.md) | [Artifact/validation/dependency policy](product/02-work-evidence-and-coordination.md) |
+| PTY/pipe semantics, parser/state, Unicode, input encoding, query replies | [Compatibility and core](engine/compatibility-and-core.md) | [Process ownership, optional adapters and remote modes](architecture/03-execution-terminal-and-remote.md) |
+| Runtime/module graph, ordering, scheduling, IPC, terminal checkpoints/recovery | [Runtime and persistence](engine/runtime-persistence-security.md) | [Domain storage, exports and extension lifecycle](architecture/05-architecture-storage-and-extensions.md) |
+| Threat model, grants, approval lifecycle, runtime isolation, secret handling | [Security and approvals](architecture/04-isolation-security-and-approvals.md) | [Terminal-specific threat mitigations](engine/runtime-persistence-security.md#threat-model-and-mitigations) |
+| Capture classes, retention and platform/distribution/license defaults | [Baseline A4–A8](architecture/10-recommended-baseline-and-adrs.md#adr-a4-linux-and-eventual-desktop-ports) | Recovery mechanics remain in the runtime contract |
+| Human information architecture, appearance, shortcuts, review, states, configuration | [Human UX](ux/11-human-experience-spec.md) | [Host TUI/SSH/paste/TERM profile](ux/13-dual-frontend-and-host-tui.md) |
+| Canonical frame/renderer integration and native-to-legacy handoff | [Frontend integration](engine/frontend-contracts.md) | Shared UX is not a second engine contract |
+| Repository paths, current versus target packages, schemas, errors/logging, releases | [Repository practices](engineering/14-repository-and-engineering-practices.md) | [Logical commit workflow](engineering/contributing.md) |
+| Proposed dependency admissions, current pin references and upgrades | [Dependencies](engineering/15-dependencies-and-supply-chain.md) | Lockfiles and dated provenance records establish actual artifacts |
+| Quality dimensions, T/N acceptance catalog and numerical performance budgets | [Acceptance and budgets](engineering/07-validation-roadmap-and-risks.md) | [CI/DF cases and all-process measurement method](engineering/16-test-and-ci-strategy.md) |
+| Compatibility qualification matrix, milestones, V/NG gates, risk register, open decisions | [Delivery](engine/delivery-and-validation.md) | [Prototype entrypoint](engineering/12-prototype-plan.md) routes to the same sequence |
+| Current research facts, revisions and evidence gaps | [Source ledger S01–S32/H01](engine/research.md) | [Requirement traceability](engine/delivery-and-validation.md#requirement-traceability) |
 
-Local commit order and per-stage checks: [history record](engineering/22-local-history-and-validation.md).
+## Status and terminology
 
-Latest bounded EA1 followup: [legacy-input diagnosis and exact checks](engineering/23-legacy-input-investigation.md), [public-policy ADR E3](adr/0003-legacy-input-public-policy.md). The public seam is insufficient at the pinned revision; EA1 remains FAIL and no EA2 work follows.
+- **Owner-chosen / accepted for design:** a current decision; not implementation authorization or proof.
+- **Recommended / proposed:** a technology default or detailed contract to validate. **Pending** identifies an unresolved choice or empirical gate.
+- **Empirical result:** applies only to its recorded source/build/environment and tested boundary. The repository evidence map (`evidence/README.md`) identifies immutable phase records; in this site, use the history links below.
+- **Historical / superseded:** retained rationale and results, not an active instruction or next step. File numbers 01–23 preserve provenance; they do not prescribe reading or milestone order.
 
-Current workspace organization and historical evidence boundaries: [cleanup record](engineering/20-workspace-organization.md).
+Use **owned terminal core** for the pure reducer/state/input library; **terminal worker** for its process; **service/broker** for domain authority; **keeper** for PTY/pipe handles and observed process facts. The product engine includes native work/control, not just VT emulation. A frontend's presentation cache is never another interpretation owner. “Raw terminal view” means canonical terminal presentation, not a PTY bypass. “Raw input” is a separately granted operation.
 
-Start with the [executive scope](engine/index.md), [primary-source campaign](engine/research.md), [native contract](engine/native-contract.md), [owned compatibility core](engine/compatibility-and-core.md), [runtime/recovery/security](engine/runtime-persistence-security.md), [frontend journeys](engine/frontend-contracts.md) and [delivery/traceability/review](engine/delivery-and-validation.md). These are the canonical owned-engine design; prior pages below retain broader product detail and phase history.
-
-## Read the design
-
-| Document | Owns |
-| --- | --- |
-| [01 — Product and supervision](product/01-product-and-supervision.md) | Personas, scope, workflows, attention, accessibility |
-| [02 — Work, evidence, and coordination](product/02-work-evidence-and-coordination.md) | Domain objects, revisions, validation, dependencies, artifact integration |
-| [03 — Execution, terminal, and remote sessions](architecture/03-execution-terminal-and-remote.md) | Core agentic navigation, key encoding/modes, observation/action loop, PTYs, ownership, SSH |
-| [04 — Isolation, security, and approvals](architecture/04-isolation-security-and-approvals.md) | Threat model, runtime profiles, enforcement, stale approvals, secrets |
-| [05 — Architecture, storage, and extensions](architecture/05-architecture-storage-and-extensions.md) | Modules, events, durability, recovery, APIs, plugins, migrations |
-| [06 — Technology, distribution, and compatibility](research/06-technology-distribution-and-compatibility.md) | Stack alternatives, reuse, packaging, licensing, support matrix |
-| [07 — Validation, roadmap, and risks](engineering/07-validation-roadmap-and-risks.md) | Measurable gates, fault injection, scheduling, staged delivery, risk register |
-| [08 — Research and decisions](research/08-research-and-decisions.md) | Official-source findings, limitations, decision ledger, open questions |
-| [09 — Self-review and coverage](reviews/09-self-review-and-coverage.md) | Two review passes, corrected contradictions, coverage, final checks |
-| [10 — Recommended baseline and ADRs](architecture/10-recommended-baseline-and-adrs.md) | Executive decision summary, concrete defaults, rationale and vetoes |
-| [11 — Human experience specification](ux/11-human-experience-spec.md) | Ordinary terminal, Work/Review UX, keyboard/focus, wireframes, journeys, recovery states |
-| [12 — Ordered prototype plan](engineering/12-prototype-plan.md) | PP1–PP8, success/failure criteria, ordered later bootstrap |
-| [13 — Dual frontend and host TUI](ux/13-dual-frontend-and-host-tui.md) | Initial TUI/Desktop parity, configuration, nested keys, host/inner TERM, SSH and accessibility |
-| [14 — Repository and engineering](engineering/14-repository-and-engineering-practices.md) | Proposed Cargo/pnpm layout, ownership/DAG, schemas, contracts and contributor practices |
-| [15 — Dependencies and supply chain](engineering/15-dependencies-and-supply-chain.md) | Proposed direct dependencies, Rust TUI comparison, licenses/unknown versions and pinning |
-| [16 — Tests and CI](engineering/16-test-and-ci-strategy.md) | Layered tests, dual-client contracts, invariant/CI map, fixtures and full-process budgets |
-| [19 — Engine BUILD/ADOPT/REDESIGN](engineering/19-engine-build-adopt-redesign-assessment.md) | Current comparative proofs, ownership estimates, recommendation and milestones |
-| [17 — Bounded xterm risk](engineering/17-xterm-adapter-risk-and-gates.md) | Exact source family, public/proposed/private APIs, patch budget, X1–X6 and replacement |
-
-Start with 10 for the executive recommendation, 11 and 13 for the human product, and 12 for the ordered plan. The current engineering continuation is 14 → 15 → 16, with 17 owning the terminal feasibility veto. Deeper paths: product → 01, 02; agentic navigation/API → 03, 05, 07; systems → 03, 05, 06; trust → 02, 04; research and review → 08, 09. Each document links back here. The source ledger distinguishes retrieved documentation from design proposals.
+**N0–N5** is the only current delivery sequence; **NG0–NG4** are its acceptance gates. **G0–G8** are cross-cutting quality dimensions, **T/N/DF/V** identify test catalogs, and **CI0–CI4** identify lanes. Old **P/PP**, **X1–X6** and **EA** adoption progressions are historical. Private experimental wire versions, a future product v1, snapshot schemas, Unicode versions and upstream library versions are distinct namespaces.
 
 ## Design invariants
 
@@ -67,12 +65,17 @@ These identifiers are the common vocabulary for all documents. They are requirem
 | I13 | Agentic navigation is core: application input and terminal UI commands have separate authority/routes, every action targets an explicit session/view context, and observed transitions are distinguished from successful byte delivery. |
 | I14 | Two initial human frontends share broker semantics and evidence, with honest capability differences. Neither owns authority, opens private persistence or reaches managed PTY/keeper/engine internals; outer TUI terminal I/O is separate. |
 
-## Baseline boundaries
+## Historical record
 
-Use Rust Ratatui/Crossterm host TUI and Electron/TypeScript/React desktop, sharing the project-owned canonical agent-native model and terminal compatibility state. Own parser/input/checkpoint semantics; reuse reviewed OS/Unicode/font/storage infrastructure. Native pipe execution and typed evidence are first-class. Both clients remain initial scope and TUI-only needs no Electron/Node engine runtime. [N0–N4](engine/delivery-and-validation.md#ordered-milestones) replaces adoption progression. Ubuntu 24.04/26.04 x86_64 remains a qualification target, not this VM's certification. Apache-2.0 is still a recommendation only.
+The MkDocs **History** section is deliberately outside the current plan. Existing paths remain stable so original citations and command records still resolve. Read these pages as dated records even where their preserved text says “current” or “next.”
 
-Actual bounded foundation: seven Rust and four internal TS packages, generated public/private schemas and local checks. The additional native worker is an EA1 experiment, not a production engine adoption. Reference Node/xterm packages remain; no frontend/runtime migration has occurred. [14](engineering/14-repository-and-engineering-practices.md) distinguishes current contents from the revised target.
+- [Technology comparisons](research/06-technology-distribution-and-compatibility.md), [prior source/decision ledger](research/08-research-and-decisions.md), [prior reviews](reviews/09-self-review-and-coverage.md).
+- [Xterm adapter/gates](engineering/17-xterm-adapter-risk-and-gates.md) and [foundation results](engineering/18-foundation-gate-results.md): X4 is a serializer-continuation failure, not proof of canonical-parser failure.
+- [BUILD/ADOPT/REDESIGN assessment](engineering/19-engine-build-adopt-redesign-assessment.md), [organization record](engineering/20-workspace-organization.md), [EA1 worker](engineering/21-ea1-native-worker-results.md), [initial history](engineering/22-local-history-and-validation.md), [input investigation](engineering/23-legacy-input-investigation.md): bounded public-C proof plus a failed classic-alias requirement; no product certification.
+- [ADR E1](adr/0001-engine-ownership-and-presentation.md) and [E3](adr/0003-legacy-input-public-policy.md) preserve superseded adoption choices. [E2](adr/0002-terminal-continuity-and-checkpoints.md) preserves the continuity rationale; current mechanics are owned by the runtime contract.
 
-P1 delivers both useful frontends with zero agents: ordinary shells/TUIs, core agent navigation, owned local sessions and bounded reconnect. P2 adds tasks/review and restricted supervision using the recommended verified rootless Podman offline profile; basic G4 is now required at P2, while P3 expands sealed validation. Host terminals remain clearly labeled host authority. Ordinary output is memory-only by default; capture/retention is explicit. Navigation keeps G7 and N01–N16 as core release gates. No cloud fleet, universal workflow framework or public plugin ABI is required.
+## Consolidation review — 2026-10-15
 
-The initial phase began with an empty directory; the prior continuation produced thirteen documents. This dual-frontend continuation read all thirteen, researched current primary sources, and rechecked `/AGENTS.md`, `/home/AGENTS.md`, `/home/w/AGENTS.md`, `/home/w/codex-dir/AGENTS.md`, and this project for instructions; none were present. This session preserves/revises the existing documents and adds five focused frontend, repository, dependency, testing and xterm-risk documents. Research used public primary sources and official source files. That prior documentation phase performed no implementation, installation or live experiment. The later authorized engineering continuation is recorded separately; no publication, private-session/credential inspection or unrelated-project change was performed. See the [completed review/check record](reviews/09-self-review-and-coverage.md#verification-record-and-residual-limits).
+Audited all 37 documentation pages, README, evidence index, navigation and contributor guidance against campaign commit `a5fb6ddf15ca14e20449d4d8c74799f8ac61e6f2`. Consolidated repeated navigation/state/recovery exposition into the native/core/runtime owners; narrowed execution/storage pages to their distinct responsibilities; replaced duplicate P/PP roadmaps and old risk registers with references to N/NG and the current risk register. Kept the T/N/DF catalogs, numerical budgets, human UX, source ledger and traceability rather than discarding edge cases. History is grouped separately, with original empirical reports/evidence unchanged.
+
+Second review challenged accidental legacy authority, frontend state duplication, replay/retry promises, privacy, zero-agent UX and solo-team maintenance cost. Repairs include one renderer default (DOM first, acceleration measured), no Node fallback in the owned runtime, one current module graph, and clear evidence/proposal namespaces. Fresh inspection hashes and check results live in repository path `evidence/docs-consolidation/`; this is a documentation audit, not a runtime result. No new research, dependency/runtime change or engine work occurred.

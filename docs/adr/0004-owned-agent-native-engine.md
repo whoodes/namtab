@@ -22,7 +22,7 @@ Adopting a legacy emulator behind a native API is no longer the selected directi
 
 This ADR supersedes **E1's adoption choice**, **E3's recommendation to seek a public SDK policy seam as the next product step**, and adoption-specific portions of baseline ADR-A1/A2, repository target and PP1/EA roadmap. It retains their single-owner, evidence, authority, dual-frontend and uncertainty invariants. E2's separation of continuity/capture/process recovery remains valid; its Ghostty-codec mechanism is historical and replaced by the owned-state design.
 
-Original xterm X4 and libghostty EA1 tests/results stay **FAIL**, with existing source, fixtures, evidence and six-commit history preserved. They are historical candidate gates, not v1 definitions for the new owned engine. No test expectations, CI jobs or source are changed by this decision. Existing passing foundation checks are not owned-engine certification.
+Original xterm X4 and libghostty EA1 tests/results stay **FAIL**, with their existing source, fixtures, evidence and pre-campaign six-commit history preserved (the campaign itself is the seventh commit). They are historical candidate gates, not v1 definitions for the new owned engine. No test expectations, CI jobs or source are changed by this decision. Existing passing foundation checks are not owned-engine certification.
 
 ## Consequences and next step
 

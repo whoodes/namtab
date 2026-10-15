@@ -1,8 +1,9 @@
 # Technology, distribution, and compatibility
 
-> Current ownership decision: [ADR E4](../adr/0004-owned-agent-native-engine.md) and the [owned-engine campaign](../engine/index.md) choose project-owned Rust agent-native semantics with a PTY compatibility layer. Adoption-specific mechanisms below are historical where superseded; product/authority/UX invariants remain. New acceptance is NG0–NG4, not fixing or waiving old X4/EA1 failures. This phase is research/design only.
+> **Historical planning/research record; entire page retained as context, not current contracts or next steps.** “Current,” “recommended,” P/PP and old stack references below refer to that phase. [E4](../adr/0004-owned-agent-native-engine.md) supersedes adoption choices; use the [authoritative document map](../index.md#documentation-ownership), [current source ledger](../engine/research.md) and [N/NG plan](../engine/delivery-and-validation.md). No empirical result is changed.
 
-> Current recommendation: [ADR E1](../adr/0001-engine-ownership-and-presentation.md) selects official pinned libghostty-vt as the next core prototype with owned semantic rendering in Electron and host TUI. [19](../engineering/19-engine-build-adopt-redesign-assessment.md) contains actual comparative proofs and costs. This supersedes the old xterm/Node-replica recommendation; the comparison sources below retain their original research limits.
+
+> Historical adoption recommendation: [ADR E1](../adr/0001-engine-ownership-and-presentation.md) selects official pinned libghostty-vt as the next core prototype with owned semantic rendering in Electron and host TUI. [19](../engineering/19-engine-build-adopt-redesign-assessment.md) contains actual comparative proofs and costs. This supersedes the old xterm/Node-replica recommendation; the comparison sources below retain their original research limits.
 
 
 [Index](../index.md) · [Architecture](../architecture/05-architecture-storage-and-extensions.md) · [Decision baseline](../architecture/10-recommended-baseline-and-adrs.md) · [Prototype plan](../engineering/12-prototype-plan.md) · [Source ledger](08-research-and-decisions.md)

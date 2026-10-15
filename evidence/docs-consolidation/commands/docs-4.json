@@ -1,0 +1,36 @@
+{
+  "input_file_sha256": {
+    "tests/assessment/ghostty-proof.c": "7f6e4a0ba1daf845bd54d39cc7933dd15422a33747cab424cc8bb2b8d78e51cc",
+    "tests/assessment/ghostty-assessment.mjs": "199a592427cb860e8c03d6716c87719c7d707ce824ee3320fbdc8998feb88def",
+    "tests/assessment/xterm-assessment.mjs": "37cf4c1d9d122600e301d906aed4b1e226840a127346a5c68edfd18e37768a22",
+    "tests/assessment/expectations.json": "36b0186836b1c227cc6b5d18b4141ccedb9a757f0c65c8537237ead4e8e41af3",
+    "tests/fixtures/terminal/continuations.json": "f4be9e644749b53fe236b6bed4b61410230c7775221f2633f51f18b9c904999a",
+    "mkdocs.yml": "7adb4cb0175639e129146920b3d9d6c84929b06085b8f64ded38d60d43ae1dfe",
+    "docs/index.md": "dd347e3766fd039abf92460c760f9eff1ac2ec0de53de011cbf65c220cbb26e9"
+  },
+  "command": [
+    "make",
+    "docs"
+  ],
+  "cwd": ".",
+  "recorded_at": "2026-10-15T19:52:55.614272+00:00",
+  "elapsed_seconds": 0.929,
+  "timeout_seconds": 300,
+  "exit": 0,
+  "verdict": "PASS",
+  "error": null,
+  "environment_overrides": {
+    "CARGO_HOME": "/home/w/codex-dir/project-x/.cache/cargo",
+    "PIP_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/pip",
+    "XDG_CACHE_HOME": "/home/w/codex-dir/project-x/.cache/xdg",
+    "XDG_DATA_HOME": "/home/w/codex-dir/project-x/.cache/xdg-data",
+    "XDG_STATE_HOME": "/home/w/codex-dir/project-x/.cache/xdg-state",
+    "ZIG_GLOBAL_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/engine-assessment/zig-global",
+    "ZIG_LOCAL_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/engine-assessment/zig-local",
+    "NPM_CONFIG_USERCONFIG": "/dev/null",
+    "NPM_CONFIG_GLOBALCONFIG": "/dev/null"
+  },
+  "stdout": ".venv-docs/bin/python -B scripts/check-doc-links.py\n41 Markdown files, 635 local links/fragments checked, 0 errors.\n.venv-docs/bin/python -m mkdocs build --strict\n",
+  "stderr": "INFO    -  Cleaning site directory\nINFO    -  Building documentation to directory: /home/w/codex-dir/project-x/.artifacts/site\nINFO    -  Documentation built in 0.36 seconds\n",
+  "output_truncated": false
+}

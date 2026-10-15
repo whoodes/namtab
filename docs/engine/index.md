@@ -12,18 +12,9 @@ The engine is broader than a VT emulator but narrower than an operating system o
 
 This direction is justified by the desired native contract and long-term ownership. Three failed aliases or an incomplete serializer do not by themselves establish that a full engine is economically necessary. [E1–E3](../adr/0003-legacy-input-public-policy.md) and reports 18–23 retain the earlier adoption rationale and failures. **Original X4 and libghostty EA1 remain FAIL.** Their regression inputs are useful; neither old candidate test becomes the new product definition. No EA2, SDK patch, dependency replacement or production engine is delivered here.
 
-## Read the campaign
+## Read the design
 
-| Document | Owns |
-| --- | --- |
-| [Research](research.md) | Questions, primary-source ledger, revisions/access gaps, standards versus practice, reuse evaluation |
-| [Native contract](native-contract.md) | Identities, typed operations/receipts, evidence, coordination and input ownership |
-| [Compatibility and core](compatibility-and-core.md) | PTY/pipe boundary, published profiles, parser/state/Unicode, input and replies |
-| [Runtime, persistence and security](runtime-persistence-security.md) | Rust modules, scheduling, IPC, snapshots/journals, recovery and threats |
-| [Human and frontend contracts](frontend-contracts.md) | Two first-class frontends, concrete journeys, accessibility and latency measurement |
-| [Delivery and validation](delivery-and-validation.md) | Requirement traceability, matrix, independent oracles, gates, staffing, risks and second review |
-
-These pages own the new engine design. Older product, security, supervision and UX requirements remain applicable unless explicitly refined here. Older adoption-specific mechanisms are historical. Use this index to resolve disagreements, rather than maintaining a second active adoption baseline.
+The [design guide](../index.md#reading-order) owns reading order and the [authoritative document map](../index.md#documentation-ownership). Follow native operations → compatibility core → runtime/recovery for implementation contracts, and shared UX → host profile → frontend integration for human behavior. [Delivery](delivery-and-validation.md) is the only current roadmap/risk/open-decision register; [research](research.md) is the current source ledger. Earlier adoption mechanisms and their recommendations are historical.
 
 ## What is native about it
 

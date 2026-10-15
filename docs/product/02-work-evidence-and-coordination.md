@@ -4,23 +4,9 @@
 
 ## Objects and authority
 
-The following is a proposed domain contract. IDs are opaque and stable; names, paths, PIDs, and pane positions are display attributes. Revisions are immutable records, not mutable labels.
+**Proposed domain policy, not implemented in full.** [Native objects/authority](../engine/native-contract.md#objects-and-authority) owns identities, incarnations, capabilities and client-bound writer leases. This page owns task acceptance, artifact/validation quality, dependency selection and workspace integration. IDs are stable opaque values; paths/PIDs/names are display attributes, not authority. Revisions are immutable records.
 
-| Object | Meaning and authoritative owner |
-| --- | --- |
-| Task / TaskRevision | Requested outcome, acceptance requirements, dependency selections, budgets; supervisor owns state |
-| Attempt | One bounded effort against a TaskRevision; supervisor schedules it, participant reports claims |
-| Participant | Human, agent instance, or service identity with explicit capabilities; broker authenticates identity |
-| Session | Durable I/O endpoint with host identity, transport, terminal profile, and ownership generation; runner owns I/O |
-| Execution | One managed launch, or an explicitly approximate shell activity interval; runner attests only what it observes |
-| ArtifactRevision | Immutable bytes/tree manifest or versioned external reference; artifact service records content and provenance |
-| Validation | A check specification, its exact subject/context, observations, outcome, and limitations |
-| Claim | A participant's statement with cited evidence; never intrinsically authoritative |
-| Decision | Human/policy disposition concerning a revision or action; authority depends on authenticated actor and scope |
-| Approval | Revocable, expiring authorization for a specific action/context; permission broker owns consumption |
-| Lease | Writer or workspace resource ownership with a fencing generation; relevant broker owns admission |
-
-Both human frontends consume these same broker-owned objects/revisions. Their local selections and cached status are projections, never an independent task/approval state machine. Lease endpoints include client identity as well as participant/session generation, so the same human in two clients is not implicitly two writers.
+Domain-specific records include TaskRevision (acceptance requirements, dependency selection and budget), ArtifactRevision (bytes/tree manifest or versioned external reference), Validation (subject/context/check/evidence/limits), Claim (attributed participant statement), Decision (authenticated disposition) and Approval (broker-owned revocable permission, governed by [security](../architecture/04-isolation-security-and-approvals.md#approval-lifecycle-and-stale-approvals)). Both frontends consume these records; neither reimplements their state machine.
 
 One agent may own several attempts; an attempt may use several sessions and executions. A terminal can predate its task. Neither a shell prompt nor an adapter's “done” event closes the task. Source authenticity proves who reported an event, not that its contents are true.
 
@@ -38,9 +24,9 @@ An EvidenceRef includes producer identity, execution/session ID, stream epoch, b
 
 Terminal screen observations additionally record rows/columns, active buffer, cursor/modes, parser and Unicode-width profile versions, output offset, and capture time. A screen is an interpretation of an observed prefix, not proof that a TUI is waiting for a particular answer. A screenshot without these attributes is useful illustration but weak execution evidence.
 
-Navigation adds an observation ID, session/host incarnation, writer generation, geometry and input-mode revisions, buffer generation, encoding/capability revision, and any source view's mapping/focus generation. Application-internal focus remains unknown unless a cooperative source reports it. An action record links the prior observation, requested logical event or raw payload identity, actual encoding/profile, delivery receipt, observed later prefix/screen or adapter/process evidence, and the transition claim. Sensitive payloads use permitted metadata or opaque references rather than recoverable plaintext or low-entropy hashes. Captured bytes obey the existing capture policy.
+[Native observation/receipt fields](../engine/native-contract.md#observation-and-evidence-schema) bind navigation evidence to target/frontier/profile/geometry/ownership. An action links prior observation → intent/encoding/delivery → later evidence → transition claim, with sensitive values retained only under authorized capture. Application widget focus remains unknown without cooperation.
 
-Byte delivery, visible change, semantic success, and task acceptance are separate claims. A Tab write can be complete while completion is still running; an editor redraw does not prove a file was saved; an unchanged grid does not prove no action occurred. A failed or unknown navigation transition must not advance an acceptance predicate. The [observe-act-observe loop](../architecture/03-execution-terminal-and-remote.md#observe-act-observe-and-transition-evidence) defines these evidence relationships without inventing deterministic application state.
+Byte delivery, visible change, semantic success, and task acceptance are separate claims. A Tab write can be complete while completion is still running; an editor redraw does not prove a file was saved; an unchanged grid does not prove no action occurred. A failed or unknown navigation transition must not advance an acceptance predicate. The [observe-act-observe loop](../engine/native-contract.md#observeactobserve-races-and-human-override) defines these evidence relationships without inventing deterministic application state.
 
 Raw, filtered, and derived evidence are different representations. Raw byte retention is explicit and restricted. A redacted transcript is exact only about its retained representation; it must not claim to preserve the missing original bytes. Offsets in filtered text map through a transformation manifest where possible; omitted spans are marked. Agent summaries cite these representations and cannot upgrade their completeness. Secret handling is defined in [04](../architecture/04-isolation-security-and-approvals.md).
 

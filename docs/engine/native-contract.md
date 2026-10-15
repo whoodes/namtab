@@ -2,7 +2,7 @@
 
 [Campaign](index.md) · [Core](compatibility-and-core.md) · [Runtime and recovery](runtime-persistence-security.md) · [Human journeys](frontend-contracts.md)
 
-**Proposed private v1 contract, not implemented or a public ABI.** The existing small domain/protocol tests are useful foundations, not this API's completed implementation. Source rationale: research S02–S05, S15–S19, S31–S32. Policy rules below are Project X decisions.
+**Proposed native contract for product v1; unimplemented, private experimental wire version pending N0.** The existing small domain/protocol tests are useful foundations, not this API's completed implementation. Source rationale: research S02–S05, S15–S19, S31–S32. Policy rules below are Project X decisions.
 
 ## Objects and authority
 
@@ -32,17 +32,21 @@ Use a small typed protocol, not an arbitrary remote object graph:
 | `CreateInteractiveSession` | Shell/program argv; declared compatibility profile; geometry; runtime and capture policies | Session identity and negotiated capabilities. Existing-shell keystrokes are not equivalent to creating a managed process. |
 | `Observe`, `Subscribe`, `ReadRange` | Explicit session or execution; requested projection; base/event cursor; data grant | Snapshot/delta/range plus completeness, gaps and availability. Credit-bounded; a stale cursor requests a new snapshot, not a guessed delta application. |
 | `AcquireWriter`, `ReleaseWriter`, `TakeOver`, `Resize` | Expected epochs/context; endpoint; sizing policy where relevant | New epoch or typed rejection. UI attach/detach does not kill work. |
-| `SendKey`, `CommitText`, `Paste`, `Mouse`, `Focus`, `SendRaw` | Distinct event type; explicit target; expected observation/profile/lease/focus/geometry; bounded payload | Receipt with encoded/delivered frontiers, later observed transitions. Raw is an explicit separately granted escape hatch, not a bypass. |
+| `SendKey`, `CommitText`, `Paste`, `Mouse`, `FocusReport`, `SendRaw` | Distinct event type; explicit target; expected observation/profile/lease/focus/geometry; bounded payload | Receipt with encoded/delivered frontiers, later observed transitions. Raw is an explicit separately granted escape hatch, not a bypass. |
+| `ViewCommand`, `ReadSelection` | Explicit endpoint/view, mapping/focus generation, bounded UI operation or identified range | Separate UI/observation/export capability; no application bytes, writer acquisition or implicit clipboard permission. Product focus changes are not terminal focus reports. |
+| `QueryOperation` | Prior operation ID/namespace; read authority | Reconcile retained delivery/outcome metadata without resubmitting; expired or unavailable facts stay unknown. |
 | `CancelOperation`, `SignalExecution`, `StopRuntime` | Target operation/execution/runtime identity, scope, escalation policy and grant | Cancellation requested/observed/no-longer-applicable/unknown. Process stop needs separate OS observations. |
 | `RegisterArtifact`, `RecordValidation`, `RequestDecision` | Authorized immutable object/evidence/context binding | Inspectable provenance, freshness and decision state. Arbitrary process output cannot invoke these methods. |
 
-Long operations return a handle and publish status; waiting does not hold a writer lease or event-loop thread unnecessarily. `WaitFor` predicates are narrowly typed (specific execution exit, observed frontier, artifact revision, explicit adapter event), with timeout/cancellation. No generic “wait until terminal ready” predicate claims application readiness. Input batches are bounded sequences of operations, not atomic TUI transactions.
+Long operations return a handle and publish status; waiting does not hold a writer lease or event-loop thread unnecessarily. `WaitFor` predicates are narrowly typed (specific execution exit, observed frontier, artifact revision, explicit adapter event), with timeout/cancellation. No generic “wait until terminal ready” predicate claims application readiness. Input context binds session/incarnation, host/helper and service authority epoch, endpoint/writer generation, observation and freshness policy, geometry/buffer generation, mode/profile/capability revision, known prompt/protection revision, action/approval reference, deadline and request ID. View-derived requests also bind mapping/focus generation; direct session input never requires human focus. Absent fields are not wildcard authority. Capabilities separately state representability, negotiation, authorization and endpoint limits.
+
+Input batches are bounded sequences of operations, not atomic TUI transactions. Revalidate each not-yet-started event; fix its encoding before the first byte and never re-encode a partial suffix under changed modes. A takeover may discard the remaining suffix, leaving application state uncertain.
 
 Illustrative shape, **not** an implemented wire schema or stable method spelling:
 
 ```json
 {
-  "version": 1,
+  "protocol": "px-native/0.x",
   "request_id": "principal-A:request-17",
   "operation": "run_process",
   "task": "task-4",
@@ -63,7 +67,7 @@ received → rejected
                    → dispatch_started → delivered(prefix) → observed_transition
                                       → partial / delivery_unknown
 managed execution separately: created → running → exit_observed → streams_drained
-task separately: proposed → running → awaiting_review → accepted / failed / unknown
+task separately: domain acceptance lifecycle (not derived from process or operation status)
 ```
 
 These are distinct fields/events, not one misleading `success` Boolean. `delivered` means the runner's specified OS write boundary, not that a program consumed, accepted or acted on the bytes. `observed_transition` cites subsequent state; the cause may be inferred if the application also emits unrelated output. A process exiting does not prove all output has drained or every descendant is gone. A task can remain unresolved after process exit.

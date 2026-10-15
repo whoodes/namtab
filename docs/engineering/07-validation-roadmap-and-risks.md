@@ -1,16 +1,12 @@
-# Validation, roadmap, and risks
+# Acceptance catalog and provisional performance budgets
 
-> Current ownership decision: [ADR E4](../adr/0004-owned-agent-native-engine.md) and the [owned-engine campaign](../engine/index.md) choose project-owned Rust agent-native semantics with a PTY compatibility layer. Adoption-specific mechanisms below are historical where superseded; product/authority/UX invariants remain. New acceptance is NG0–NG4, not fixing or waiving old X4/EA1 failures. This phase is research/design only.
-
-[Index](../index.md) · [Compatibility matrix](../research/06-technology-distribution-and-compatibility.md) · [Open decisions](../research/08-research-and-decisions.md) · [Self-review](../reviews/09-self-review-and-coverage.md)
+[Index](../index.md) · [Current delivery and risks](../engine/delivery-and-validation.md) · [CI strategy](16-test-and-ci-strategy.md)
 
 ## Status and measurement discipline
 
-Everything below is a proposed validation plan. No terminal, runtime, benchmark, or implementation tests were executed in this documentation session. Numerical targets are hypotheses to accept, revise with justification, or reject before a release. A future report must state hardware, software versions, workload, capture mode, sample count, percentile calculation, and raw evidence. Do not reinterpret this plan as passing evidence.
+This page owns cross-cutting quality dimensions **G0–G8**, suite catalog **T1–T15**, navigation cases **N01–N16**, and the numerical **G6** baseline. They are proposed criteria, not passing results or a second roadmap. [N0–N5/NG0–NG4](../engine/delivery-and-validation.md#ordered-milestones) owns delivery; its R/V table traces sources to design and validation. [CI0–CI4/DF01–DF08](16-test-and-ci-strategy.md) owns execution lanes and dual-client cases.
 
-The [repository/CI strategy](16-test-and-ci-strategy.md) now owns concrete harnesses, lanes CI0–CI4, invariant mapping, dual-client DF01–DF08 cases and headless/real-display limits. The broader infrastructure remains proposed; a bounded runnable subset and an unexecuted CI workflow now exist, with X4 failing. See [engineering evidence](18-foundation-gate-results.md).
-
-Distinguish correctness invariants from performance aspirations: stale approvals must never be knowingly dispatched by the broker; latency targets may be revised based on measurement. Randomized testing alone cannot prove an invariant. Combine explicit state-machine reasoning, property tests, adversarial tests, code review, and failure injection. Use existing emulator conformance cases where licenses permit; do not write a second terminal merely to define expected results.
+Choose the advertised profile first, then applicable cases. No test catalog makes every shell, protocol or platform mandatory at the first slice. Every result must state source/build, hardware, workload, capture mode, sample count, percentile method and evidence. Stale-authority/correctness invariants do not become optional when latency is poor. Randomized testing supports bounded claims, not universal proof.
 
 ## Resource scheduling and overload
 
@@ -28,25 +24,42 @@ Human decision backlog feeds admission control. Do not increase agent concurrenc
 
 ## Proposed measurable gates
 
-Reference workload to define before implementation: a dedicated Linux x86_64 desktop/VM with 8 vCPU, 16 GiB RAM, SSD-class local storage, 1920×1080 display, tested on both chosen display paths. This describes a future benchmark machine, not inspected current-host hardware. Separate application overhead from child process and model memory. Publish absolute and baseline-relative results.
+G identifiers are **quality dimensions**, not delivery stages or superseded engine selection tests. Current NG gates select their applicable evidence.
 
-| Gate | Proposed acceptance evidence |
+| Quality dimension | Required evidence / current delivery mapping |
 | --- | --- |
-| G0 — Selection feasibility | Recommended stack passes PP1–PP3; at most one targeted challenger for a demonstrated blocker, using the same corpus/journey; packaging/license and staffing evidence recorded |
-| G1 — Terminal foundation | Core compatibility matrix passes pinned smoke/conformance scenarios; correct alternate screen, job control, resizing, Unicode policy, pipes, and Ctrl-C/Ctrl-Z/fg behavior; no agent dependency |
-| G2 — Audit and authority | State/property tests reject every stale revision/lease/approval case in the adversarial suite; every accepted artifact has inspectable binding/quality or a visible exception; no output-only event can grant permission |
-| G3 — Durability and recovery | Crash injection at every admission/dispatch/result boundary and object-commit stage produces either reconciled state or explicit unknown/gap; no automatic duplicate side effect; compatible GUI reconnect restores observation |
-| G4 — Enforced isolation | Each advertised runtime profile passes negative filesystem/network/socket/credential tests, descendant accounting/termination tests, and capability-unavailability tests; unsupported controls fail admission |
-| G5 — Human and accessibility | Keyboard and screen-reader completion of terminal/review/takeover/recovery workflows; PP8 formative critical tasks meet predeclared criteria without unsafe errors; comparative productivity/confidence claims require a separate adequate study |
-| G6 — Load and maintainability | 32 active sessions, 8 managed attempts, aggregate 8 MiB/s output for 10 minutes: local input-to-paint p95 ≤50 ms, decision queue updates p95 ≤250 ms, automation-revoke admission p95 ≤100 ms; application memory ≤1 GiB including UI, live parsers, queues, and configured scrollback, excluding child programs and separately reported OS filesystem cache |
-| G7 — Core agentic navigation | N01–N16 pass for the required inner key set and pinned core application profiles; human outer-TUI aliases disclosed; structured/raw paths share authority checks; UI-only commands emit zero managed application-input bytes (outer TUI drawing is separate); stale/wrong-target events rejected before first delivery; receipts/uncertainty preserved |
-| G8 — Initial dual frontend and foundation | DF01–DF08 establish shared revisions/authority, private-store/managed-PTY/engine denial, attach/takeover, nested input, host capabilities, both accessibility profiles and dependency/schema/CI boundaries; neither frontend silently deferred |
+| G0 — Design feasibility | NG0 finite profile, owned state/contracts, source/license pins, staffing and bounded harness; no hidden legacy authority |
+| G1 — Classic terminal | NG1 narrow shell slice, then NG2 published app/profile matrix with terminal/PTY/job-control/Unicode behavior and no agent dependency |
+| G2 — Audit and authority | NG1/NG3 lifecycle/lease/approval/revision tests; exceptions visible; output cannot grant authority |
+| G3 — Durability and recovery | NG1 live-owner attach versus NG4 complete terminal recovery; NG3 domain/receipt faults; reconciled or explicit unknown, no duplicate effects |
+| G4 — Enforced isolation | NG3 each claimed runtime passes filesystem/network/socket/credential/descendant/control-unavailability negative tests; fail admission if unsupported |
+| G5 — Human and accessibility | Both clients' critical keyboard/actual screen-reader workflows pass predeclared formative criteria; comparative productivity needs a separate adequate study |
+| G6 — Load and responsiveness | Numerical baseline below; NG3 qualifies full declared workload, N1 reports its smaller measured workload without a full G6 claim |
+| G7 — Agent navigation | N01–N16 for published inner profiles; outer key aliases disclosed; structured/raw share authority; UI commands emit zero managed application-input bytes; stale not-yet-started input rejected |
+| G8 — Dual frontend and foundation | DF01–DF08 shared truth, attach/takeover, host capabilities, accessibility and import/schema boundaries; neither frontend deferred from a claimed release |
 
 ## Performance and resource budgets
 
-For G6, initial allocation limits: output queue ≤4 MiB/session, ≤128 MiB global at 32 sessions; live scrollback ≤32 MiB/session within a shared 256 MiB cap. Test TUI-only (Electron absent), desktop-only and both clients attached to the same backend/session set. [16](16-test-and-ci-strategy.md#all-process-performance) requires the outer emulator/multiplexer footprint and real paint separately, not free host resources or mere output-flush timing. All are inside the 1 GiB application limit, including Electron, native engine worker (Node for the reference/fallback), Rust TUI/CLI and all views/copies; they are not independent promises of simultaneous full allocation. Tighten admission/active buffers if measured process baseline leaves too little headroom. Ordinary output is memory-only by default. Opt-in persisted output is 256 MiB rolling/session within an 8 GiB shared transcript cap, including managed reservations/pins, with an independently bounded control metadata reserve. Managed evidence reserves retention rather than suffering silent rolling eviction. [ADR-A6](../architecture/10-recommended-baseline-and-adrs.md#adr-a6-capture-and-retention-defaults) defines retention and separate artifact-copy limits. These are initial tunables, not guarantees all workloads fit. The benchmark must exercise disk saturation, cap crossings, and slow clients; success means correct gap/backpressure behavior as well as latency. Revoke admission latency is measured separately from the time a process or remote service actually stops.
+**Sole numerical product-performance baseline; provisional, unmeasured.** Reference qualification machine: dedicated Linux x86_64 desktop/VM, **8 vCPU, 16 GiB RAM, SSD-class local storage, 1920×1080 display**. Record exact CPU/GPU/drivers/fonts/scaling, virtualization, OS and display/host profiles; this is not inspected current-host hardware. Run TUI-only (Electron absent), desktop-only and both against one shared backend/session set. [All-process methodology](16-test-and-ci-strategy.md#all-process-performance) owns accounting and actual-paint measurement.
 
-Vision-scale target: inspect 128 sessions with only visible surfaces rendered at interactive frame rate, while hidden sessions remain correctly parsed/accounted. Establish a new memory/output budget and human study before claiming that scale. Rendering fewer frames must not drop parser input. Baseline cold-start target is minimal-shell readiness within one second on the reference system without network/model initialization; declare a clean shell fixture, publish p50/p95 and regressions, and report arbitrary user rc startup separately. Full human rendering/fallback/resize behavior and measurement conditions are in [11](../ux/11-human-experience-spec.md#accessibility-and-performance-behavior) and [PP2–PP3](12-prototype-plan.md#pp2pp3-human-and-resource-reference-conditions).
+| Target / allocation | Provisional value and interpretation |
+| --- | --- |
+| Full qualification load | 32 sessions, eight active managed attempts, aggregate 8 MiB/s output for ten minutes |
+| Local input to visible paint | p95 ≤50 ms; include queueing, admission, encoding, parsing, IPC and real paint |
+| Decision queue update | p95 ≤250 ms |
+| Automation revoke admission | p95 ≤100 ms; separate from process/remote cessation |
+| Application memory | ≤1 GiB total product processes/copies, excluding child programs and separately reported OS cache |
+| Output queues | ≤4 MiB/session, ≤128 MiB globally at the reference concurrency |
+| Live history | ≤32 MiB/session within a shared 256 MiB cap |
+| Cold start | Minimal clean-shell readiness ≤1 second, without network/model initialization; arbitrary user rc startup reported separately |
+| Visible presentation cadence | Aim for 60 Hz when hardware permits; a presentation target, not a parser scheduling clock |
+| Later vision scale | 128 inspected sessions; requires a new memory/output budget and human study before any readiness claim |
+
+Queue/history limits are **included allocations**, not independent promises of simultaneous full occupancy. All service/keeper/core/TUI/Electron processes and view caches count; no Node engine fallback belongs to the owned shipping design. Measure the outer emulator/multiplexer separately and as total deployment footprint; it is not free. Tighten admitted concurrency or buffers explicitly if baseline memory leaves too little headroom.
+
+Report end-to-end **p50/p95/p99/max**, not only the target percentile, for control/observations/input/rendering and takeover; report model inference/provider/application time separately. Include floods, query storms, disk saturation, cap crossings, slow clients, cancellation, fairness, resize and IME. Hidden surfaces may skip paint, never parser bytes. No Rust speed-superiority claim or achieved benchmark follows.
+
+Capture quotas/retention, artifact-copy budgets and metadata reserve have one owner: [A6](../architecture/10-recommended-baseline-and-adrs.md#adr-a6-capture-and-retention-defaults). Test gaps/backpressure and evidence reservation, not silent eviction of pinned material.
 
 ## Test architecture and fault injection
 
@@ -80,7 +93,7 @@ For each positive journey, require prior identified observation → bounded acti
 
 | Case | Planned interaction / fault | Acceptance and evidence |
 | --- | --- | --- |
-| N01 — Shell history and completion | Bash/Zsh/Fish with pinned bindings: arrows through history, cursor editing, Tab completion and supported reverse/candidate cycling, Ctrl/Alt shortcuts | Correct mode-aware key delivery and observed completion/history transition under that shell's configuration; no built-in universal completer or assumption completion is read-only |
+| N01 — Shell history and completion | Published shell profiles (Bash/readline for v1; Zsh/Fish when separately qualified) with pinned bindings: arrows through history, cursor editing, Tab completion and supported reverse/candidate cycling, Ctrl/Alt shortcuts | Correct mode-aware key delivery and observed completion/history transition under that shell's configuration; no built-in universal completer or assumption completion is read-only |
 | N02 — Menus and interactive CLIs | Controlled curses/menu and fzf-like selection: arrows, Tab/Shift-Tab, page keys, supported function keys, confirm/cancel | Selected-item/result evidence matches intended bounded steps; opaque highlighting alone is labeled weaker than a known fixture/result |
 | N03 — Pager | less-like paging, PageUp/PageDown/Space, search, next match, quit | Application navigation changes the pager; terminal history scroll does not send pager input, and application keys do not move Project X focus |
 | N04 — Terminal editor | Pinned Vim/Neovim or Emacs terminal profile: movement, editing/selection, Escape and multi-key shortcuts, configured F-key action, save/exit | Observe editor transitions and verify resulting artifact separately; a redraw or status line is not proof of save; no universal binding assumption across editors |
@@ -97,50 +110,16 @@ For each positive journey, require prior identified observation → bounded acti
 | N15 — Escape ambiguity and transport | Lone Escape, Alt/meta chord, split escape sequences, delayed SSH/tmux delivery, enhanced protocol enabled/disabled | Verify declared wire profile and explicit ambiguity handling; do not claim one local write or a timing delay makes legacy Escape semantics unambiguous |
 | N16 — Interrupt versus termination | Ctrl-C under cooked/raw/enhanced keyboard modes; program catches/ignores interrupt; foreground pipeline and surviving descendants | Key receipt never marks a process terminated; separately observe job/process result and explicitly authorize signal/termination escalation; emergency ownership revocation requires no Ctrl-C success |
 
-G7 requires the baseline structured key set, text/control input, selection/paste, explicit raw fallback, and ownership/receipt rules. Optional enhanced keyboard reporting is tested only when advertised; its absence cannot justify failing all core navigation or inventing equivalent key-release behavior. A profile limitation is documented; a missing mandatory capability blocks that profile's core certification. Application journeys test specific configured bindings, not a promise to navigate every opaque interface semantically.
+G7 applies to the [published qualification matrix](../engine/delivery-and-validation.md#compatibility-matrix), not every candidate named in this catalog. It requires the baseline structured key set, text/control input, selection/paste, explicit raw fallback, and ownership/receipt rules. Optional enhanced keyboard reporting is tested only when advertised; its absence cannot justify failing all core navigation or inventing equivalent key-release behavior. A profile limitation is documented; a missing mandatory capability blocks that profile's core certification. Application journeys test specific configured bindings, not a promise to navigate every opaque interface semantically.
 
 ## Staged roadmap
 
-| Stage | User-visible deliverable | Exit gates and exclusions |
-| --- | --- | --- |
-| P0 — Owned-engine foundation | E4 direction; N0/N1 native contract, owned reducer and useful dual-client slice | NG0/NG1; historical selection evidence in 18–23 stays failed where recorded, not the new product definition |
-| P1 — Two useful initial frontends | Rust host TUI plus Electron Linux windows/panes, core agentic key/text/paste/raw navigation and observation API, ordinary shells/TUIs, keyboard/accessibility, owned local sessions, basic reconnect | G1/G7/G8, foundational G3/G5; no dependency on an agent-specific adapter, model, or network; no strict sandbox claims |
-| P2 — Supervision MVP | Tasks/artifacts/decisions, 8 parallel attempts target, navigation transition evidence and freshness, writer takeover, rootless Podman offline restricted tasks plus explicit host-mode grants, local CLI/API, bounded scheduling | G2/G3/G5/G7/G8 and initial G6; basic G4/PP5 required for restricted claims; opaque agents supported, host controller remains host-authority; no host-shell per-command safety promise |
-| P3 — Stronger managed work | Sealed validation inputs, richer runtime/credential/egress profiles, independent workspace integration | Expanded G4 plus renewed G2/G3; a failed host prerequisite blocks strict admission |
-| P4 — Remote and extensibility | Ordinary SSH UX completed, then optional helper/tmux adapters, negotiated agent adapters/plugins, migration contract; native macOS/Windows ports separately gated | G1–G5 across supported remote/native paths; no automatic helper install, transparent live migration, or remote honesty claim |
-| P5 — Vision scale | 128-session supervision, richer artifact types, optional multi-human roles and fleet placement | New scale/human studies; role isolation, cost and retention evidence; no automatic expansion merely because a queue exists |
-
-P0 now uses [N0/N1](../engine/delivery-and-validation.md#ordered-milestones); prior X1–X6 selection is historical. The existing TUI outer-input, workspace and test requirements remain, with the owned target in E4. P1 must deliver both frontends; staged engineering order does not make one optional at release. Ordinary SSH can be used as an opaque CLI from P1, and the TUI may run over SSH to an explicitly installed remote backend; product-level host/context and recovery UX is completed before P4 certification. Local terminal correctness and usable review precede fleet features. Limited built-in adapters may appear in P2; a public stable plugin ecosystem follows demonstrated extension needs. Stages are capability gates, not calendar promises. Each release is useful without the later stages.
+Use [N0–N5 and NG0–NG4](../engine/delivery-and-validation.md#ordered-milestones). This replaces the old P/PP progression; there is no second active product-stage table. N1 is a useful narrow native+shell slice in both clients, N2 qualifies classic compatibility, N3 qualifies supervised/resource/isolation/UX use, and N4 qualifies opt-in recovery. Recovery-state design starts at N0 without requiring full durability before a useful live terminal.
 
 ## Risk register
 
-Severity and likelihood below are planning judgments, not incident statistics. Owners are future module roles; assignment to people remains open.
-
-| ID | Risk | Severity / likelihood | Owner and mitigation | Evidence gate |
-| --- | --- | --- | --- | --- |
-| R1 | Product reduces to pane management with little audit benefit | High / medium | Product: comparative human study; prioritize revision/evidence decisions | G5 |
-| R2 | Legacy compatibility breaks under semantic instrumentation | High / high | Execution: adapters optional; compatibility path independent | G1/T3 |
-| R3 | Stale approval or input takeover race | Critical / medium | Permission broker: context digests, generations, partial-delivery records | G2/T5 |
-| R4 | Host-mode supervision mistaken for sandboxing | Critical / high | Security/UI: persistent profile labels; enforced profiles verified separately | G4/T7 |
-| R5 | Terminal output or plugin compromises authority | Critical / medium | Parser/broker: process isolation, safe chrome, narrow IPC, quotas | T2/T7/T11 |
-| R6 | Exact evidence conflicts with secret privacy/retention | High / high | Evidence/security: capture classes, access controls, availability states | T8/G2 |
-| R7 | Unknown remote/crash outcome causes duplicate effects | Critical / high | Runner/transport: durable IDs, receipts, reconciliation, no blind retry | G3/T10 |
-| R8 | Output/disk pressure makes control unusable | High / high | Scheduler/store: bounded queues, control reserve, visible gaps/backpressure | G6/T9 |
-| R9 | Worktrees/shared Git or caches permit cross-task corruption | High / medium | Workspace/runtime: serialized managed admin, snapshots, confined mounts | T1/T7 |
-| R10 | Human approval queue becomes the throughput bottleneck | High / high | Product/scheduler: batching with exact contexts, admission throttling, studies | G5/G6 |
-| R11 | Library API churn or archived fork raises maintenance cost | High / medium | Core owner: upstream review, pinning, narrow adaptation seam, migration budget | G0/T11 |
-| R12 | GUI architecture excludes accessibility or low-GPU hosts | High / medium | Desktop: early assistive-tech/fallback trials; selection veto | G0/G5 |
-| R13 | Too many abstraction layers delay a coherent product | High / high | Architecture: modular monolith, postpone marketplaces/fleet/scheduler plugins | P1/P2 review |
-| R14 | Package updates kill sessions or corrupt authority schema | High / medium | Distribution/store: lifecycle tests, compatible runners, backup/restore | G3/T11/T12 |
-| R15 | Validation implies complete environment closure or determinism | High / high | Domain/UI: explicit binding levels and external assumptions | T1/G2 |
-| R16 | Provider spend/delegation escapes advertised budgets | High / medium | Scheduler: hard/advisory distinction, shared ceilings, mediated-call controls | T10/G6 |
-| R17 | Navigation reaches the wrong session or uses stale modes/focus | Critical / medium | Runner/UI: explicit targets, mapping and writer generations, canonical encoding, dispatch checks | G7/N07/N09/N10 |
-| R18 | Byte delivery or apparent navigation becomes false semantic success/consent | Critical / high | Product/broker: observe-act-observe, transition evidence, protected prompts, no blind input retry or universal TUI guarantee | G7/N04/N11/N13/N16 |
-| R19 | Internal key API and presentation replicas exceed small-team maintenance capacity | High / high | Core: one pinned bridge, explicit source-family manifest, no full parser fork, upgrade rehearsal, PP1 veto | PP1/G0 |
-| R20 | Privacy default confused with recoverable persistent terminal state | High / high | Store/UI: memory-only badges, capture consent, no framebuffer-as-checkpoint claim, engine-loss unknown | PP4/G3/T8/T9 |
-| R21 | Outer TUI layers lose keys, spoil paste/width or retain sensitive output | High / high | Console: separate outer/inner profiles, quoted prefix, Send key, safe cell rendering, real-host/SSH tests and recording caveat | G8/DF03/DF04/DF07 |
-| R22 | Two frontends and test matrices exceed small-team maintenance budget | High / high | Architecture/test: shared broker truth, generated bindings, six/four packages, invariant-aware lanes, bounded supported profiles, no second parser | G8/T14/T15/CI1–CI4 |
+The [current RE risk register and open decisions](../engine/delivery-and-validation.md#risk-register-and-remaining-decisions) is authoritative. The old R1–R22 planning table is retained in Git at `a5fb6dd`; its material workspace/attention/provider/update risks are incorporated there. No empirical report or fixture was removed.
 
 ## Exit from documentation to engineering
 
-The stack, platform, runtime and capture defaults are now [recommended](../architecture/10-recommended-baseline-and-adrs.md); remaining owner and empirical gates are bounded in [08](../research/08-research-and-decisions.md#open-decisions-and-assumptions-to-resolve). Execute the ordered [PP1–PP8 plan](12-prototype-plan.md) only in a subsequent authorized engineering effort. The current path is N0 contracts/profile/fixtures, N1 owned native+shell slice in both clients, then independently gated compatibility, resources, accessibility, runtime and recovery. Old bridge/source pairing is historical adoption work. The [ordered foundation plan](12-prototype-plan.md#foundation-bootstrap-after-separate-engineering-authorization) includes repository/schema/CI gates before expansion. No additional generic abstraction resolves those empirical gates. No implementation, installation, benchmark, or publication is part of this session.
+The [prototype entrypoint](12-prototype-plan.md) routes to the same N/NG plan. Only separately authorized bounded engineering may earn those gates. Original X4/EA1 source and FAIL results remain historical counterexamples; passing foundation, documentation or preservation checks cannot certify the owned engine.

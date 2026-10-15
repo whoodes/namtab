@@ -1,42 +1,33 @@
-# Ordered prototype plan and decision gates
+# Prototype entrypoint
 
-[Design index](../index.md) · [Owned-engine scope](../engine/index.md) · [ADR E4](../adr/0004-owned-agent-native-engine.md) · [Canonical milestones](../engine/delivery-and-validation.md#ordered-milestones)
+[Index](../index.md) · [Scope](../engine/index.md) · [Canonical delivery plan](../engine/delivery-and-validation.md#ordered-milestones)
 
-The owner chose a project-owned Rust agent-native engine on 2026-10-15. This is research/design only; engineering requires a later bounded authorization. Historical PP1/EA adoption steps and their rationale remain in reports 19–23 and the prior Git revision; they are superseded as the next product plan. Original X4 and libghostty EA1 remain FAIL, unchanged. Do not fix or waive them to start the new path.
+**Planned, not implemented.** The only current engineering sequence is [N0–N5 / NG0–NG4](../engine/delivery-and-validation.md#ordered-milestones), with deliverables, dependencies, success/stop criteria, staffing and open questions in that owner document. This page preserves earlier entrypoints without maintaining another plan.
 
 ## Order and stopping rules
 
-The one authoritative engineering sequence is [N0–N5 and NG0–NG4](../engine/delivery-and-validation.md#ordered-milestones). This page maps earlier product gates without duplicating a second milestone plan.
-
-1. N0: native identity/receipt/event contract, owned complete-state inventory, finite compatibility profile, source/data pins and independent fixtures.
-2. N1: useful pipe-backed native work and PTY shell, owned reducer, takeover/live attach and minimal useful views in both clients. Prove native evidence value without prompt parsing.
-3. N2: explicitly advertised classic terminal/input/Unicode profile and real candidate application navigation.
-4. N3: parallel fairness, review/accessibility, resource/fault/runtime enforcement and declared release workload.
-5. N4: opt-in compatible complete-state recovery and corruption/crash/consent cases. State design begins at N0; full durability need not delay N1.
-6. N5: broader platforms/apps/transport/profiles/migrations only after a concrete need and validation budget.
+Start with N0's finite profile/contracts/independent fixtures and N1's useful native pipe + PTY shell slice in both clients. NG1 must show native evidence value and useful zero-agent use; neither a PTY-only API nor a backend-only demo suffices. N2/N3/N4 qualify distinct compatibility, supervised-use and recovery claims. Failure stops the dependent claim; explicit scope reduction cannot rewrite an existing advertised requirement.
 
 ## PP1: falsifying the default early
 
-PP1's old bridge/source-family exercise is historical. Its invariant survives: one interpretation/reply authority, correct input and hidden-state continuation, no frontend PTY bypass. The owned engine must pass its own independent corpus, including prior counterexample inputs, with native operations beyond a PTY API. An owned lexer or dependency must expose all bounded partial state; no private emulator authority or screenshot-as-checkpoint. Repeated failure to show a useful N1 triggers a scope/staffing/design review, not quiet adoption of another core.
+Historical adoption prototype. Its surviving concerns are covered by [core state/input/replies](../engine/compatibility-and-core.md) and NG0/NG1. X4/EA1 stay failed and are not prerequisites to fix or waive for the owned engine. No SDK patch or alternate legacy authority is implicitly authorized.
 
 ## PP2–PP3: human and resource reference conditions
 
-Both frontends remain required. Use [human journeys and measurement contract](../engine/frontend-contracts.md) and [G6 reference budgets](07-validation-roadmap-and-risks.md#performance-and-resource-budgets): eight cores, 16 GiB, SSD, 1080p with exact CPU/GPU/fonts/scaling recorded; 32 sessions/eight active attempts, 8 MiB/s aggregate for ten minutes at full qualification. N1 measures a smaller declared workload and makes no G6 pass claim.
-
-Keep provisional p95 input-to-paint 50 ms, decision update 250 ms, admission-revoke 100 ms and total product memory 1 GiB. Report p50/p95/p99/max, queues and actual paint; TUI-only, desktop-only and both on one canonical backend. Include all product processes/copies and report outer host/tmux/child-tool resources separately. Quotas are included allocations, not simultaneous full-capacity promises. No measured result follows from Rust or this documentation.
+Historical labels now route to [shared UX](../ux/11-human-experience-spec.md), [host profile](../ux/13-dual-frontend-and-host-tui.md), [frontend integration](../engine/frontend-contracts.md) and [G6 budgets](07-validation-roadmap-and-risks.md#performance-and-resource-budgets). No numerical targets are duplicated here.
 
 ## PP4–PP6: failures that must remain visible
 
-[Runtime/recovery/security](../engine/runtime-persistence-security.md) owns authority epochs, partial/unknown delivery, checkpoint cuts and no-capture loss. UI restart is not engine restart; a restored terminal is not a restored process. Existing runtime/worktree/isolation requirements still need negative tests. Restricted profiles fail admission when enforcement is unavailable. Output, prompt markers and native application statements never grant authority. Do not begin fleet/plugin expansion to avoid these local boundaries.
+[Runtime recovery](../engine/runtime-persistence-security.md#precise-v1-recovery-contract) owns capture-off loss, checkpoint cuts and UI/engine/process distinctions; [security](../architecture/04-isolation-security-and-approvals.md) owns runtime and approval enforcement. NG3/NG4 require their fault/negative evidence, not a plausible restored screen.
 
 ## PP7–PP8: release and usability decisions
 
-[Validation and staffing](../engine/delivery-and-validation.md) owns actual release tuples, both clients' accessibility and artifact/provenance review. Preserve project-local locks, notices/SBOM review, offline basic terminal use and inert configuration migration. Apache-2.0 remains unadopted. Comparative productivity claims need a declared user study; a native workflow demonstration alone is not evidence of universal superiority.
+[CI4 release scope](16-test-and-ci-strategy.md#ci-lanes-and-practical-cost), [human validation](../product/01-product-and-supervision.md#product-validation) and [N/NG delivery](../engine/delivery-and-validation.md) replace the old release/usability prototypes. Formative studies identify blockers; they do not establish population-level superiority. License adoption remains pending.
 
 ## Foundation bootstrap after separate engineering authorization
 
-Preserve current source and history. Add one cohesive future terminal library/worker package under the [module plan](../engine/runtime-persistence-security.md#module-and-process-design); extend boundaries/generated schemas deliberately. Existing seven Rust/four TS packages are a foundation and historical experiments, not the owned engine. Avoid empty microcrates or deleting failed probes. Build N1 before expanding the test matrix to every program/platform; add tests for the capability being claimed.
+Preserve the actual seven Rust/four TS foundation and historical experiments. The [target layout](14-repository-and-engineering-practices.md#concrete-proposed-layout-and-ownership) and [module contract](../engine/runtime-persistence-security.md#module-and-process-design) propose one cohesive future `terminal` library/worker package. Extend schemas/import checks deliberately; add no empty microcrates. Each new capability adds its own relevant test evidence.
 
 ## Beyond the first certified baseline
 
-Broader compatibility, graphics/bidi, cross-version migration, structured SSH helpers and macOS/Windows are separately scoped work. No universal compatibility, deterministic execution replay or process resurrection promise. New implementation and installations are outside this research campaign.
+N5 expansion is conditional on the [published qualification matrix](../engine/delivery-and-validation.md#compatibility-matrix), user need and maintenance budget. Structured remote helpers, platforms, graphics/bidi and schema migration are separate gates, not automatic v1 commitments.
