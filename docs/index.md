@@ -1,5 +1,8 @@
 # Project X: an agent-first terminal
 
+Read the [contributor workflow](engineering/contributing.md) for complete, testable changes.
+
+
 > Current decision: the bounded [BUILD/ADOPT/REDESIGN assessment](engineering/19-engine-build-adopt-redesign-assessment.md) recommends official libghostty-vt for the next prototype, with owned semantic/cell rendering in both frontends. The original xterm serializer X4 remains FAIL; bounded A/B proofs do not certify a product. [ADR E1](adr/0001-engine-ownership-and-presentation.md) and [ADR E2](adr/0002-terminal-continuity-and-checkpoints.md) supersede the former replica/language choice, preserving product requirements. No dependent application implementation was started.
 
 
@@ -8,6 +11,8 @@ Design baseline: 2026-10-15. Status: reviewed recommended baseline; accepted-for
 Project X should let a person supervise many agents through tasks, changed artifacts, decisions, and inspectable execution evidence while continuing to use ordinary shells and terminal applications. Existing terminal products already offer agent orchestration, notifications, APIs, and approval workflows. Our proposed advantage is a more coherent relationship between work, evidence, validation freshness, and human authority; this is a product hypothesis to test, not a novelty claim.
 
 **Agentic terminal navigation is a core feature.** Agents must be able to operate existing interactive shells, CLIs, TUIs, REPLs, and editors through arrows, Tab/completion, shortcuts/modifiers, control sequences, function keys, and selection/paste. A session-bound [observe-act-observe contract](architecture/03-execution-terminal-and-remote.md#observe-act-observe-and-transition-evidence) separates terminal UI commands from application input and makes uncertain transitions inspectable. Structured keys are the primary interface; explicit raw bytes provide a controlled compatibility fallback. Neither interface promises universal semantic navigation of an opaque application. See the [API boundary](architecture/05-architecture-storage-and-extensions.md#navigation-api-boundary) and [acceptance cases](engineering/07-validation-roadmap-and-risks.md#agentic-navigation-acceptance-cases).
+
+Current workspace organization and historical evidence boundaries: [cleanup record](engineering/20-workspace-organization.md).
 
 ## Read the design
 

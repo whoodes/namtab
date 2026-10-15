@@ -1,8 +1,13 @@
 # Project X
 
+Read the [contributor workflow](docs/engineering/contributing.md) for complete, testable changes.
+
+
 A local engineering foundation for an agent-first terminal with two initial clients: host-terminal TUI and Electron desktop. **This is not a working terminal application. The completed engine assessment recommends official libghostty-vt plus owned semantic/cell rendering for the next prototype. The original serializer X4 remains failed; no dependent product implementation has begun.**
 
 Read the [completed BUILD/ADOPT/REDESIGN assessment](docs/engineering/19-engine-build-adopt-redesign-assessment.md) and [ownership ADR](docs/adr/0001-engine-ownership-and-presentation.md) for pass/fail/not-run evidence, limits and the remaining prototype gates. The [design index](docs/index.md) links all 18 original documents, now canonical under `docs/`. No divergent root copies remain.
+
+Workspace organization, experimental boundaries and preserved checkpoints are recorded in [cleanup](docs/engineering/20-workspace-organization.md) and the [evidence map](evidence/README.md).
 
 The actual foundation contains:
 

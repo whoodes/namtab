@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 import tarfile
 
-root=Path(__file__).resolve().parent.parent
+root=Path(__file__).resolve().parents[2]
 manifests=sorted((root/'evidence/archive').glob('pre-engine-assessment-*.manifest.json'))
 if len(manifests)!=1:raise ValueError('Select the intended archive explicitly if more than one exists')
 m=json.loads(manifests[0].read_text());path=root/m['archive']

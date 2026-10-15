@@ -197,7 +197,7 @@ make verify
 make engine-gate   # expected nonzero: original failed model remains independent
 ```
 
-No public server is started. Bootstrap fetches exact official compiler/source digests, verifies existing source without overwriting it, and leaves build dependencies to the pinned upstream manifests/cache. `assessment-command.py` records exact argv, project-local environment overrides, versions/provenance through companion records, duration, exit, bounded stdout/stderr and fixture/source hashes. Command PASS means exit 0; candidate proof PASS additionally requires assertions. Build duration is not terminal performance. The complete latest evidence inventory and checks are recorded at the end of this session.
+No public server is started. Bootstrap fetches exact official compiler/source digests, verifies existing source without overwriting it, and leaves build dependencies to the pinned upstream manifests/cache. `scripts/record-command.py` (formerly `assessment-command.py`) records exact argv, project-local environment overrides, versions/provenance through companion records, duration, exit, bounded stdout/stderr and fixture/source hashes. Command PASS means exit 0; candidate proof PASS additionally requires assertions. Build duration is not terminal performance. The complete latest evidence inventory and checks are recorded at the end of this session.
 
 Proof outputs: `xterm-assessment.json`, `ghostty-assessment.json`, `ghostty-source.json`, `ghostty-source-correspondence.json`, `zig-tool.json` and `commands/*.json` inside `evidence/engine-assessment`. Original evidence is in the verified archive and unchanged legacy fixture/oracle. No source-family change is hidden in an npm/Cargo lock refresh.
 
