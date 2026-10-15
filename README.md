@@ -1,6 +1,6 @@
 # Project X
 
-Read the [contributor workflow](docs/engineering/contributing.md) for complete, testable changes.
+Read the [draft manifesto](docs/product/manifesto.md) for the north star and [contributor workflow](docs/engineering/contributing.md) for complete, testable changes.
 
 A local engineering foundation for an agent-first terminal with host-terminal TUI and Electron desktop clients. **No working terminal application exists. Cleanup is complete; the bounded Rust/libghostty-vt EA1 worker is implemented, but its essential legacy control-alias input gate FAILS. Dependent app work is stopped. Original xterm X4 remains independently red.**
 
@@ -31,7 +31,7 @@ make engine-gate
 
 Useful commands: `make check test stress`, `make format`, `cargo run --locked -p project-x-console -- diagnose` (through Make's project environment), and `node scripts/generate-bindings.mjs` (pinned Node/Cargo environment). The diagnostic uses a TestBackend, prints the blocked state and never enters raw mode or starts a process/PTY.
 
-Git history is local; inspect `git status` and `git log` for current state. Dated evidence reports retain their original pre-commit Git snapshots. Apache-2.0 remains a recommendation; **no project license has been adopted**.
+Git history is local; inspect `git status` and `git log` for current state. Dated evidence reports retain their original pre-commit Git snapshots. Follow the contributor workflow before changing history. Apache-2.0 remains a recommendation; **no project license has been adopted**.
 
 Reproduce the separate assessment with `make assessment-bootstrap assessment-build assessment-check` after the normal bootstrap. It uses official pinned Zig 0.16.0 and Ghostty source locally; no application/PTY/GUI is launched. New evidence is under [evidence/engine-assessment](evidence/engine-assessment/ghostty-assessment.json), with prior logs hash-archived under `evidence/archive`. Both A's canonical state model and B's public C snapshot proof pass their bounded assertions. They do not pass full rendering/accessibility, crash recovery, security, performance or upgrade gates. The original standalone `make engine-gate` remains nonzero.
 

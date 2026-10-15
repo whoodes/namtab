@@ -26,6 +26,7 @@ nav:
       - "BUILD / ADOPT / REDESIGN": "engineering/19-engine-build-adopt-redesign-assessment.md"
       - "Foundation and gate results": "engineering/18-foundation-gate-results.md"
   - "Product":
+      - "Draft manifesto": "product/manifesto.md"
       - "Scope and supervision": "product/01-product-and-supervision.md"
       - "Evidence and coordination": "product/02-work-evidence-and-coordination.md"
   - "Architecture":

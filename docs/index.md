@@ -1,6 +1,6 @@
 # Project X: an agent-first terminal
 
-Read the [contributor workflow](engineering/contributing.md) for complete, testable changes.
+Start with the [draft manifesto](product/manifesto.md) and [contributor workflow](engineering/contributing.md) for product priorities and reviewable changes.
 
 > Current gate: [EA1 worker results](engineering/21-ea1-native-worker-results.md) fail required legacy control aliases; app work is stopped.
 
