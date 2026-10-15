@@ -1,5 +1,7 @@
 # Repository foundation and engineering practices
 
+> Current ownership decision: [ADR E4](../adr/0004-owned-agent-native-engine.md) and the [owned-engine campaign](../engine/index.md) choose project-owned Rust agent-native semantics with a PTY compatibility layer. Adoption-specific mechanisms below are historical where superseded; product/authority/UX invariants remain. New acceptance is NG0–NG4, not fixing or waiving old X4/EA1 failures. This phase is research/design only.
+
 > Actual: seven Rust/four TS packages, including one binary-only experimental [EA1 worker](21-ea1-native-worker-results.md). No live frontend, broker or PTY exists. The public native seam is bounded; legacy control aliases fail the essential selection gate. Rust unsafe is confined to the worker wrapper. Reference packages remain.
 
 
@@ -24,7 +26,8 @@ project-x/                         TARGET + explicit future entries; see 19 for 
     service/                       supervisor/store; project-x-service + project-x-keeper
     client/                        Rust public IPC client, subscriptions/receipt reconciliation
     console/                       project-x CLI and Ratatui TUI modules, one binary
-    engine/                        EA1 experimental binary-only worker; narrow audited FFI module
+    engine/                        preserved EA1 experimental binary-only worker; historical failed gate
+    terminal/                      FUTURE owned pure core + worker binary; not created in this phase
   apps/
     desktop/                       Electron main/preload + React renderer; no broker internals
     engine-host/                   current xterm reference/assessment utility; not revised shipping target
@@ -44,6 +47,8 @@ project-x/                         TARGET + explicit future entries; see 19 for 
   docs/adr/                        future ADRs and source/dependency decision records
 ```
 
+The current [E4 module target](../engine/runtime-persistence-security.md#module-and-process-design) adds one future owned library/worker package, not FFI/wrapper microcrates. The graph/checks below describe the current seven-package foundation; future implementation must explicitly extend them while preserving old gates. New contract semantics live in the engine campaign; no Cargo/pnpm dependency changes occur here.
+
 The authorized bootstrap moved the 18 canonical documents into docs/ topic directories, rewrote relative links and added strict MkDocs navigation. evidence/docs-migration.json preserves the old→new map and original/migration hashes; there are no divergent design copies. Do not create an empty directory for every proposed module. Rust service integration tests live with the service; shared fixtures live under tests, not another application crate. CLI and TUI share the client and invocation model but have separate command routing/output. A CLI JSON invocation must not initialize raw mode or a full-screen TUI.
 
 | Owner role | Package/module responsibility | Forbidden dependency/behavior |
@@ -53,7 +58,7 @@ The authorized bootstrap moved the 18 canonical documents into docs/ topic direc
 | Execution maintainer | platform and keeper modules: managed PTY, identity, runtime controls | Frontend event handling or acceptance decisions |
 | Service maintainer | service: domain↔wire mapping, store, admission, private engine/keeper IPC | Giving clients store/PTY FDs; deriving grants from UI state |
 | Client maintainers | client, console and desktop client code: projection/cache and user intent | service/platform/store imports, DB paths, private engine/keeper IPC |
-| Engine maintainer | experimental native engine worker/public C seam; current xterm assessment adapter + host | Grant creation, filesystem launch authority, UI-specific semantic TUI guesses |
+| Engine maintainer | owned terminal library/worker target; preserved EA1 public-C and xterm assessment references | Grant creation, filesystem launch authority, UI-specific semantic TUI guesses |
 | Test/distribution maintainer | fixtures, system lanes, packaging/provenance | Privileged PR runners, silent dependency downloads in product startup |
 
 One person may fill several roles; responsibilities do not imply six teams. Security, protocol, engine or persistence changes require a second qualified reviewer where available. A solo maintainer explicitly records a delayed self-review plus the required adversarial evidence; that is not an independent audit.

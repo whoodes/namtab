@@ -1,5 +1,7 @@
 # Two initial frontends and the host-terminal TUI
 
+> Current ownership decision: [ADR E4](../adr/0004-owned-agent-native-engine.md) and the [owned-engine campaign](../engine/index.md) choose project-owned Rust agent-native semantics with a PTY compatibility layer. Adoption-specific mechanisms below are historical where superseded; product/authority/UX invariants remain. New acceptance is NG0–NG4, not fixing or waiving old X4/EA1 failures. This phase is research/design only.
+
 [Index](../index.md) · [Shared human UX](11-human-experience-spec.md) · [Repository boundaries](../engineering/14-repository-and-engineering-practices.md) · [Engine gate](../engineering/17-xterm-adapter-risk-and-gates.md)
 
 **Accepted-for-design:** two initial human frontends, a host-terminal TUI and Electron desktop. **Recommended:** Rust Ratatui/Crossterm for the TUI; retain Electron/React for desktop. Interoperability, accessibility and performance remain unproven. Neither is a prerequisite for the other, but both require the shared supervisor and terminal-engine service. TUI-only use does not start Electron; it needs the shared canonical native engine worker in the revised ADR E1 shipping design. The current Node/xterm code is assessment/reference infrastructure, not a migrated product.

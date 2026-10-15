@@ -1,0 +1,43 @@
+{
+  "input_file_sha256": {
+    "tests/assessment/ghostty-proof.c": "7f6e4a0ba1daf845bd54d39cc7933dd15422a33747cab424cc8bb2b8d78e51cc",
+    "tests/assessment/ghostty-assessment.mjs": "199a592427cb860e8c03d6716c87719c7d707ce824ee3320fbdc8998feb88def",
+    "tests/assessment/xterm-assessment.mjs": "37cf4c1d9d122600e301d906aed4b1e226840a127346a5c68edfd18e37768a22",
+    "tests/assessment/expectations.json": "36b0186836b1c227cc6b5d18b4141ccedb9a757f0c65c8537237ead4e8e41af3",
+    "tests/fixtures/terminal/continuations.json": "f4be9e644749b53fe236b6bed4b61410230c7775221f2633f51f18b9c904999a",
+    "mkdocs.yml": "c01914fd3da8cb133b011f237484a82f57403ede84b6578bd8aa65a72133e15b",
+    "docs/engine/index.md": "2a3dd857d8ae9e0a7c94cbc854670d037e1527a5c6e954bcd92216a20cdc42e9",
+    "docs/engine/research.md": "efeb878fc3fe0012a94d8655114f36979d2af9246c1595f0714c713a8c4b0fb2",
+    "docs/engine/native-contract.md": "e51cfe9a973ad3825dab27de65b50157526badce64b08734a49326759ec3be5f",
+    "docs/engine/compatibility-and-core.md": "4cc66b762740a55e5ec1bd6dd27a69e3690c716bf300ced7dc465b0e3e5a4649",
+    "docs/engine/runtime-persistence-security.md": "730b4864c5183631007bbad94ba3fa05af97060e71fd189eb0eabb6dd3ea7f77",
+    "docs/engine/frontend-contracts.md": "14cdca6cc4bdd0960d0148a37a721c5547cd17e55f638aef3b9c296477909911",
+    "docs/engine/delivery-and-validation.md": "612036e41b4b08e9bebfbbc7e3265b7529def8228c60813137ea11c10e8ca224",
+    "docs/adr/0004-owned-agent-native-engine.md": "9e71a6acfe32a924d83ab5d57be6c6324f664874c2a95c738cf9454b4aa84e43"
+  },
+  "command": [
+    "make",
+    "docs"
+  ],
+  "cwd": ".",
+  "recorded_at": "2026-10-15T19:22:25.341217+00:00",
+  "elapsed_seconds": 0.954,
+  "timeout_seconds": 300,
+  "exit": 0,
+  "verdict": "PASS",
+  "error": null,
+  "environment_overrides": {
+    "CARGO_HOME": "/home/w/codex-dir/project-x/.cache/cargo",
+    "PIP_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/pip",
+    "XDG_CACHE_HOME": "/home/w/codex-dir/project-x/.cache/xdg",
+    "XDG_DATA_HOME": "/home/w/codex-dir/project-x/.cache/xdg-data",
+    "XDG_STATE_HOME": "/home/w/codex-dir/project-x/.cache/xdg-state",
+    "ZIG_GLOBAL_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/engine-assessment/zig-global",
+    "ZIG_LOCAL_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/engine-assessment/zig-local",
+    "NPM_CONFIG_USERCONFIG": "/dev/null",
+    "NPM_CONFIG_GLOBALCONFIG": "/dev/null"
+  },
+  "stdout": ".venv-docs/bin/python -B scripts/check-doc-links.py\n41 Markdown files, 550 local links/fragments checked, 0 errors.\n.venv-docs/bin/python -m mkdocs build --strict\n",
+  "stderr": "INFO    -  Cleaning site directory\nINFO    -  Building documentation to directory: /home/w/codex-dir/project-x/.artifacts/site\nINFO    -  Documentation built in 0.37 seconds\n",
+  "output_truncated": false
+}

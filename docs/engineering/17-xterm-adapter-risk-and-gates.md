@@ -1,5 +1,7 @@
 # Bounded xterm adapter: authority, API risk and veto gates
 
+> Historical phase record. [ADR E4](../adr/0004-owned-agent-native-engine.md) chooses an [owned agent-native engine](../engine/index.md). Prior findings, failed gates and evidence remain unchanged; adoption-specific next-step recommendations below are superseded. They are not the new product acceptance definition.
+
 > Subsequent [EA1 results](21-ea1-native-worker-results.md): experimental Rust/public-C state and reply seams demonstrated; required legacy control aliases **FAIL**. No EA2/dependent application work. Original X4 stays independently red.
 
 

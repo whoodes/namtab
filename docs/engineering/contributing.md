@@ -1,5 +1,7 @@
 # Contribute complete, testable changes
 
+> E4 chooses an owned engine. [Current plan](../engine/delivery-and-validation.md) defines new NG gates; EA1/EA2 adoption work is historical. Preserve raw X4/EA1 failures and never label a passing preservation check engine certification. This campaign changes docs only, not CI expectations.
+
 [Design index](../index.md) · [Repository practices](14-repository-and-engineering-practices.md) · [Current gate](21-ea1-native-worker-results.md)
 
 Make one logical change per commit: a reader should understand its purpose, validate it at that revision and revert it without unrelated edits. Order prerequisites before their consumers. Keep behavior-preserving organization/refactoring separate from functional changes, dependency upgrades and product-policy documents. Avoid microcommits that leave imports, generated bindings, tests or documentation broken between steps.

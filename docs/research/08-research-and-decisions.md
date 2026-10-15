@@ -1,5 +1,7 @@
 # Research and decisions
 
+> Current ownership decision: [ADR E4](../adr/0004-owned-agent-native-engine.md) and the [owned-engine campaign](../engine/index.md) choose project-owned Rust agent-native semantics with a PTY compatibility layer. Adoption-specific mechanisms below are historical where superseded; product/authority/UX invariants remain. New acceptance is NG0–NG4, not fixing or waiving old X4/EA1 failures. This phase is research/design only.
+
 [Index](../index.md) · [Stack comparison](06-technology-distribution-and-compatibility.md) · [Roadmap and risks](../engineering/07-validation-roadmap-and-risks.md)
 
 ## Research method and limits

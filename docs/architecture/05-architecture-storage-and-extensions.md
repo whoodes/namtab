@@ -1,5 +1,7 @@
 # Architecture, storage, and extensions
 
+> Current ownership decision: [ADR E4](../adr/0004-owned-agent-native-engine.md) and the [owned-engine campaign](../engine/index.md) choose project-owned Rust agent-native semantics with a PTY compatibility layer. Adoption-specific mechanisms below are historical where superseded; product/authority/UX invariants remain. New acceptance is NG0–NG4, not fixing or waiving old X4/EA1 failures. This phase is research/design only.
+
 [Index](../index.md) · [Execution model](03-execution-terminal-and-remote.md) · [Security model](04-isolation-security-and-approvals.md) · [Technology choices](../research/06-technology-distribution-and-compatibility.md)
 
 ## Architecture shape
@@ -15,15 +17,16 @@ flowchart LR
     Plugins[Out of process adapters] --> Broker
     Broker --> Store[Local metadata and evidence store]
     Broker --> Runner[Owned session runner]
-    Runner --> Parser[Canonical native terminal engine worker]
-    Parser --> Broker
+    Runner -->|PTY output| Parser[Owned canonical terminal core worker]
+    Runner -->|Pipe streams and lifecycle facts| Broker
+    Parser -->|Observations and reply proposals| Broker
     Runner --> Runtime[Host or isolated runtime]
     Runtime --> Programs[Shells CLIs TUIs agents]
     Broker --> SSH[SSH transport adapter]
     SSH --> Remote[Optional remote runner]
 ```
 
-Recommended concrete boundary after [ADR E1](../adr/0001-engine-ownership-and-presentation.md): Rust supervisor/domain/store/CLI/TUI/keepers, native libghostty-vt worker and TS/React Electron UI with owned cell/semantic rendering. This is a design direction; actual code remains the bounded foundation/reference harness. One owner multiplexes sessions initially; shard only with evidence. Both clients use public authenticated subscriptions and receive no PTY, private engine/keeper endpoint or persistence path. Bulk data is bounded; approval/cancellation has reserved capacity. TUI-only shipping needs no Electron or separate Node engine runtime. [14](../engineering/14-repository-and-engineering-practices.md) distinguishes current packages and revised target.
+Current boundary under [ADR E4](../adr/0004-owned-agent-native-engine.md): Rust domain/service/store/CLI/TUI/keepers and an owned pure-core/worker, plus TS/React Electron UI. [The new module design](../engine/runtime-persistence-security.md#module-and-process-design) owns the future graph; existing libghostty/Node/xterm packages remain historical references. Native process/evidence operations need no VT surface. Both clients receive public projections only, with no private store/engine/keeper endpoint or PTY access. Scheduling, capture and authority remain separate; TUI-only shipping requires no Electron/Node engine runtime. No runtime migration occurs in this campaign.
 
 ## Module ownership and extension seams
 

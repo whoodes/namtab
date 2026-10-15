@@ -1,5 +1,7 @@
 # EA1: bounded Rust/libghostty-vt worker
 
+> Historical phase record. [ADR E4](../adr/0004-owned-agent-native-engine.md) chooses an [owned agent-native engine](../engine/index.md). Prior findings, failed gates and evidence remain unchanged; adoption-specific next-step recommendations below are superseded. They are not the new product acceptance definition.
+
 Date: 2026-10-15. [Index](../index.md) · [Cleanup prerequisite](20-workspace-organization.md) · [Assessment](19-engine-build-adopt-redesign-assessment.md) · [Ownership ADR](../adr/0001-engine-ownership-and-presentation.md) · [Continuity ADR](../adr/0002-terminal-continuity-and-checkpoints.md)
 
 ## Decision and stopping point

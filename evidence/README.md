@@ -2,6 +2,8 @@
 
 All payloads are synthetic or public tool/source metadata. Never add credentials, live terminal captures or private session data here.
 
+- `owned-engine-research/`: the E4 research/design campaign; pre-edit 294-path/six-commit manifest, fresh command records and final verification/preservation inventory. New engine capabilities remain unimplemented. Prior X4/EA1 evidence is preserved and failing; the owner decision is documented in `docs/engine`, not redefined by these historical candidates.
+
 - `archive/`: immutable earlier source/log checkpoints, each with SHA-256 member manifest. Pre-EA1 records preserve the 143-path starting inventory and unchanged lock hashes; dated historical paths are intentional.
 - `engine-assessment/`: completed A/B/C decision evidence, public source/compiler provenance and append-only command attempts. These reports are historical; reruns add new attempts rather than rewriting command logs.
 - `engine-continuation.json`: original independent failed xterm X4 result; keep visible and byte-identical with its oracle/fixtures.

@@ -1,5 +1,7 @@
 # Engineering foundation and engine gate results
 
+> Historical phase record. [ADR E4](../adr/0004-owned-agent-native-engine.md) chooses an [owned agent-native engine](../engine/index.md). Prior findings, failed gates and evidence remain unchanged; adoption-specific next-step recommendations below are superseded. They are not the new product acceptance definition.
+
 [Design index](../index.md) · [Prototype plan](12-prototype-plan.md) · [Engine vetoes](17-xterm-adapter-risk-and-gates.md) · [Repository target](14-repository-and-engineering-practices.md)
 
 Date: 2026-10-15. **Historical foundation-phase ledger.** The completed follow-up [engine assessment](19-engine-build-adopt-redesign-assessment.md) now owns current recommendations and new evidence. Prior check logs are archived before refresh; original X4 is preserved. Counts and “current” descriptions below refer to this earlier foundation stopping point, not the later assessment file inventory. No project license was adopted.

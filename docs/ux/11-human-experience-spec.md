@@ -1,5 +1,7 @@
 # Human experience specification
 
+> Current ownership decision: [ADR E4](../adr/0004-owned-agent-native-engine.md) and the [owned-engine campaign](../engine/index.md) choose project-owned Rust agent-native semantics with a PTY compatibility layer. Adoption-specific mechanisms below are historical where superseded; product/authority/UX invariants remain. New acceptance is NG0–NG4, not fixing or waiving old X4/EA1 failures. This phase is research/design only.
+
 [Index](../index.md) · [Recommended baseline](../architecture/10-recommended-baseline-and-adrs.md) · [Navigation protocol](../architecture/03-execution-terminal-and-remote.md#agentic-terminal-navigation) · [Prototype gates](../engineering/12-prototype-plan.md)
 
 **Accepted-for-design; usability, accessibility, and performance pending measurements.** This specification describes human behavior alongside the agent contract. It specifies two initial human clients, a host-terminal control TUI and the Electron desktop emulator, not merely a backend. Shared task/review/authority behavior applies to both; native windows/fonts/DOM/clipboard details below are desktop-specific. [13](13-dual-frontend-and-host-tui.md) owns the TUI mapping and honest capability differences. All examples are design scenarios, not observed experiments.

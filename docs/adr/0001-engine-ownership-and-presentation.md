@@ -1,5 +1,7 @@
 # ADR E1: adopt a VT core, own the terminal contract and presentation
 
+> Superseded direction: [ADR E4](0004-owned-agent-native-engine.md) chooses ownership. This ADR preserves the prior rationale/input veto and invariants; it is no longer the active adoption or next-SDK recommendation. Historical X4/EA1 remain FAIL.
+
 [Assessment](../engineering/19-engine-build-adopt-redesign-assessment.md) · [Prior baseline](../architecture/10-recommended-baseline-and-adrs.md)
 
 Date: 2026-10-15. **Accepted-for-design:** one canonical interpretation owner and semantic/cell presentation for both initial frontends. **Recommended next prototype:** official pinned libghostty-vt C API. **Pending:** production adoption, complete compatibility, real rendering/accessibility, resources and upgrade gates. The subsequent [EA1 worker](../engineering/21-ea1-native-worker-results.md) establishes a bounded Rust/public-C seam but **fails required legacy control aliases**; dependent app work is stopped.

@@ -1,5 +1,7 @@
 # ADR E2: continuity is separate from capture, durability and process recovery
 
+> Continuity/capture/process-separation invariants remain. [ADR E4](0004-owned-agent-native-engine.md) and the [owned persistence design](../engine/runtime-persistence-security.md) supersede the Ghostty-codec mechanism below; no recovery implementation or old gate verdict changes.
+
 [Assessment and recovery matrix](../engineering/19-engine-build-adopt-redesign-assessment.md#continuity-and-capture-contract) · [Capture policy](../architecture/10-recommended-baseline-and-adrs.md#adr-a6-capture-and-retention-defaults)
 
 Date: 2026-10-15. **Accepted-for-design recovery contract; unimplemented.** [EA1](../engineering/21-ea1-native-worker-results.md) tests live-owner observations and worker loss only; it implements no checkpoint/tail or process recovery. No universal durable terminal checkpoint or deterministic process replay is promised.

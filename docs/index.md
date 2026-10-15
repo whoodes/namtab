@@ -2,9 +2,9 @@
 
 Start with the [draft manifesto](product/manifesto.md) and [contributor workflow](engineering/contributing.md) for product priorities and reviewable changes.
 
-> Current gate: [EA1 worker results](engineering/21-ea1-native-worker-results.md) fail required legacy control aliases; app work is stopped.
+> Current direction: [owned agent-native engine campaign](engine/index.md), chosen in [ADR E4](adr/0004-owned-agent-native-engine.md). New implementation is pending; this phase completes research/design only.
 
-> Prior engine decision: the bounded [BUILD/ADOPT/REDESIGN assessment](engineering/19-engine-build-adopt-redesign-assessment.md) recommends official libghostty-vt for the next prototype, with owned semantic/cell rendering in both frontends. The original xterm serializer X4 remains FAIL; bounded A/B proofs do not certify a product. [ADR E1](adr/0001-engine-ownership-and-presentation.md) and [ADR E2](adr/0002-terminal-continuity-and-checkpoints.md) supersede the former replica/language choice, preserving product requirements. No dependent application implementation was started.
+> Historical adoption evidence: xterm X4 and libghostty EA1 remain FAIL. E1/E3 next-adoption recommendations are superseded; their evidence and authority/continuity invariants remain. New owned-engine acceptance is NG0–NG4, not fixing or waiving those old gates.
 
 
 Design baseline: 2026-10-15. Status: reviewed recommended baseline; accepted-for-design decisions remain unimplemented and measurement-gated. Linux is the first platform. The product has two initial frontends: a host-terminal TUI and a standalone Electron desktop emulator, sharing a durable local supervisor and automation interfaces. Its success depends on the human interface as much as process management.
@@ -18,6 +18,8 @@ Local commit order and per-stage checks: [history record](engineering/22-local-h
 Latest bounded EA1 followup: [legacy-input diagnosis and exact checks](engineering/23-legacy-input-investigation.md), [public-policy ADR E3](adr/0003-legacy-input-public-policy.md). The public seam is insufficient at the pinned revision; EA1 remains FAIL and no EA2 work follows.
 
 Current workspace organization and historical evidence boundaries: [cleanup record](engineering/20-workspace-organization.md).
+
+Start with the [executive scope](engine/index.md), [primary-source campaign](engine/research.md), [native contract](engine/native-contract.md), [owned compatibility core](engine/compatibility-and-core.md), [runtime/recovery/security](engine/runtime-persistence-security.md), [frontend journeys](engine/frontend-contracts.md) and [delivery/traceability/review](engine/delivery-and-validation.md). These are the canonical owned-engine design; prior pages below retain broader product detail and phase history.
 
 ## Read the design
 
@@ -67,7 +69,7 @@ These identifiers are the common vocabulary for all documents. They are requirem
 
 ## Baseline boundaries
 
-Recommend Rust Ratatui/Crossterm host TUI and Electron/TypeScript/React desktop, sharing one canonical native engine worker and immutable semantic/cell views. Official pinned libghostty-vt is the recommended next prototype; revised xterm is a fallback. Owning rendering/accessibility is now an explicit investment, not a waived fidelity gate. Both clients remain initial scope; TUI-only shipping must need neither Electron nor a separate Node engine runtime. Current JS/xterm packages remain reference harnesses. EA1–EA4/PP1–PP8 still gate production adoption. Ubuntu 24.04/26.04 x86_64 remains the certification target; this VM is 22.04. Apache-2.0 remains a recommendation only.
+Use Rust Ratatui/Crossterm host TUI and Electron/TypeScript/React desktop, sharing the project-owned canonical agent-native model and terminal compatibility state. Own parser/input/checkpoint semantics; reuse reviewed OS/Unicode/font/storage infrastructure. Native pipe execution and typed evidence are first-class. Both clients remain initial scope and TUI-only needs no Electron/Node engine runtime. [N0–N4](engine/delivery-and-validation.md#ordered-milestones) replaces adoption progression. Ubuntu 24.04/26.04 x86_64 remains a qualification target, not this VM's certification. Apache-2.0 is still a recommendation only.
 
 Actual bounded foundation: seven Rust and four internal TS packages, generated public/private schemas and local checks. The additional native worker is an EA1 experiment, not a production engine adoption. Reference Node/xterm packages remain; no frontend/runtime migration has occurred. [14](engineering/14-repository-and-engineering-practices.md) distinguishes current contents from the revised target.
 

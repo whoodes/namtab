@@ -1,5 +1,7 @@
 # ADR E3: retain the input veto until a public compatibility policy exists
 
+> Superseded direction: [ADR E4](0004-owned-agent-native-engine.md) chooses ownership. This ADR preserves the prior rationale/input veto and invariants; it is no longer the active adoption or next-SDK recommendation. Historical X4/EA1 remain FAIL.
+
 Date: 2026-10-15. **Accepted-for-design:** preserve classic legacy aliases and negotiated distinctions; do not infer negotiation state or falsify key events. **Measured investigation:** the pinned public seam is insufficient for the proposed correction. **EA1 remains FAIL; EA2 remains stopped.** This is a bounded decision about commit `22fa134a07f5749edd9e92c6bc17d8aaf61843be`, not rejection of all libghostty-vt versions.
 
 [Index](../index.md) · [Exact investigation and checks](../engineering/23-legacy-input-investigation.md) · [Ownership ADR](0001-engine-ownership-and-presentation.md) · [Historical EA1](../engineering/21-ea1-native-worker-results.md)

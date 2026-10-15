@@ -20,6 +20,14 @@ validation:
     unrecognized_links: warn
 nav:
   - "Design index": "index.md"
+  - "Owned agent-native engine":
+      - "Executive scope": "engine/index.md"
+      - "Primary-source campaign": "engine/research.md"
+      - "Native work and control": "engine/native-contract.md"
+      - "Compatibility and core": "engine/compatibility-and-core.md"
+      - "Runtime, persistence and security": "engine/runtime-persistence-security.md"
+      - "Human/frontend contracts": "engine/frontend-contracts.md"
+      - "Delivery, validation and review": "engine/delivery-and-validation.md"
   - "Engineering evidence":
       - "EA1 input policy / blocked seam": "engineering/23-legacy-input-investigation.md"
       - "Local history and validation": "engineering/22-local-history-and-validation.md"
@@ -32,6 +40,7 @@ nav:
       - "Scope and supervision": "product/01-product-and-supervision.md"
       - "Evidence and coordination": "product/02-work-evidence-and-coordination.md"
   - "Architecture":
+      - "Own the agent-native engine": "adr/0004-owned-agent-native-engine.md"
       - "Legacy-input public-policy decision": "adr/0003-legacy-input-public-policy.md"
       - "Engine ownership decision": "adr/0001-engine-ownership-and-presentation.md"
       - "Continuity / checkpoint decision": "adr/0002-terminal-continuity-and-checkpoints.md"

@@ -1,5 +1,7 @@
 # EA1 legacy-input investigation: completed, correction blocked
 
+> Historical phase record. [ADR E4](../adr/0004-owned-agent-native-engine.md) chooses an [owned agent-native engine](../engine/index.md). Prior findings, failed gates and evidence remain unchanged; adoption-specific next-step recommendations below are superseded. They are not the new product acceptance definition.
+
 Date: 2026-10-15. [Index](../index.md) · [Policy decision](../adr/0003-legacy-input-public-policy.md) · [Historical worker results](21-ea1-native-worker-results.md) · [Engine assessment](19-engine-build-adopt-redesign-assessment.md)
 
 ## Conclusion

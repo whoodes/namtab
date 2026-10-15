@@ -1,5 +1,7 @@
 # Engine assessment: build, adopt or redesign
 
+> Historical phase record. [ADR E4](../adr/0004-owned-agent-native-engine.md) chooses an [owned agent-native engine](../engine/index.md). Prior findings, failed gates and evidence remain unchanged; adoption-specific next-step recommendations below are superseded. They are not the new product acceptance definition.
+
 > Historical completed EA0 assessment. Subsequent [EA1](21-ea1-native-worker-results.md) implements the recommended bounded native seam but fails the legacy-control input selection gate. Its result blocks progression; the assessment below retains its original phase facts.
 
 > The completed [input investigation](23-legacy-input-investigation.md) confirms a public compatibility-policy seam is missing at this pin. No production correction, engine switch or EA2 progression was accepted.
