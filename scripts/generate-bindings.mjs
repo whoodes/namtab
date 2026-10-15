@@ -59,3 +59,49 @@ for (const [file, data] of Object.entries(outputs)) {
     await writeFile(new URL("../" + file, import.meta.url), data);
   }
 }
+
+// Private worker schema has no frontend bindings/exports. Struct decoding is authoritative.
+const engineRaw = execFileSync(
+  "cargo",
+  [
+    "run",
+    "--quiet",
+    "--locked",
+    "-p",
+    "project-x-protocol",
+    "--example",
+    "export-engine-schema",
+  ],
+  { encoding: "utf8" },
+);
+const engineFile = "schemas/private/engine-request.schema.json";
+if (process.argv.includes("--check")) {
+  if ((await readFile(engineFile, "utf8")) !== engineRaw)
+    throw new Error("Generated private schema drift");
+} else {
+  await mkdir("schemas/private", { recursive: true });
+  await writeFile(engineFile, engineRaw);
+}
+
+const responseRaw = execFileSync(
+  "cargo",
+  [
+    "run",
+    "--quiet",
+    "--locked",
+    "-p",
+    "project-x-protocol",
+    "--example",
+    "export-engine-schema",
+    "--",
+    "response",
+  ],
+  { encoding: "utf8" },
+);
+const responseFile = "schemas/private/engine-response.schema.json";
+if (process.argv.includes("--check")) {
+  if ((await readFile(responseFile, "utf8")) !== responseRaw)
+    throw new Error("Generated private response schema drift");
+} else {
+  await writeFile(responseFile, responseRaw);
+}

@@ -1,4 +1,6 @@
 //! Private prototype wire contract, not authorization or a production transport.
+pub mod internal_engine;
+
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
@@ -41,9 +43,40 @@ pub enum Key {
     Enter,
     Escape,
     Backspace,
+    Home,
+    End,
+    PageUp,
+    PageDown,
+    Insert,
+    Delete,
     F1,
+    F2,
+    F3,
+    F4,
+    F5,
+    F6,
+    F7,
+    F8,
+    F9,
+    F10,
+    F11,
     F12,
     KeypadEnter,
+    Keypad0,
+    Keypad1,
+    Keypad2,
+    Keypad3,
+    Keypad4,
+    Keypad5,
+    Keypad6,
+    Keypad7,
+    Keypad8,
+    Keypad9,
+    KeypadAdd,
+    KeypadSubtract,
+    KeypadMultiply,
+    KeypadDivide,
+    KeypadDecimal,
 }
 #[derive(Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(deny_unknown_fields)]

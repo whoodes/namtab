@@ -1,0 +1,411 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Request",
+  "type": "object",
+  "properties": {
+    "expected": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/Stamp"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "operation": {
+      "$ref": "#/definitions/Operation"
+    },
+    "seq": {
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 0
+    },
+    "version": {
+      "type": "integer",
+      "format": "uint8",
+      "maximum": 255,
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "seq",
+    "operation"
+  ],
+  "definitions": {
+    "Input": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "alt": {
+              "type": "boolean"
+            },
+            "ctrl": {
+              "type": "boolean"
+            },
+            "key": {
+              "$ref": "#/definitions/Key"
+            },
+            "kind": {
+              "type": "string",
+              "const": "key"
+            },
+            "shift": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "key",
+            "shift",
+            "alt",
+            "ctrl"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "alt": {
+              "type": "boolean"
+            },
+            "ctrl": {
+              "type": "boolean"
+            },
+            "kind": {
+              "type": "string",
+              "const": "character"
+            },
+            "shift": {
+              "type": "boolean"
+            },
+            "text": {
+              "type": "string",
+              "maxLength": 1,
+              "minLength": 1
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "text",
+            "shift",
+            "alt",
+            "ctrl"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "text"
+            },
+            "text": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "text"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "paste"
+            },
+            "text": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "text"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "gained": {
+              "type": "boolean"
+            },
+            "kind": {
+              "type": "string",
+              "const": "focus"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "gained"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "alt": {
+              "type": "boolean"
+            },
+            "button": {
+              "type": "integer",
+              "format": "uint8",
+              "maximum": 255,
+              "minimum": 0
+            },
+            "ctrl": {
+              "type": "boolean"
+            },
+            "kind": {
+              "type": "string",
+              "const": "mouse"
+            },
+            "release": {
+              "type": "boolean"
+            },
+            "shift": {
+              "type": "boolean"
+            },
+            "x": {
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            },
+            "y": {
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "x",
+            "y",
+            "button",
+            "release",
+            "shift",
+            "alt",
+            "ctrl"
+          ]
+        }
+      ]
+    },
+    "Key": {
+      "type": "string",
+      "enum": [
+        "Up",
+        "Down",
+        "Left",
+        "Right",
+        "Tab",
+        "Enter",
+        "Escape",
+        "Backspace",
+        "Home",
+        "End",
+        "PageUp",
+        "PageDown",
+        "Insert",
+        "Delete",
+        "F1",
+        "F2",
+        "F3",
+        "F4",
+        "F5",
+        "F6",
+        "F7",
+        "F8",
+        "F9",
+        "F10",
+        "F11",
+        "F12",
+        "KeypadEnter",
+        "Keypad0",
+        "Keypad1",
+        "Keypad2",
+        "Keypad3",
+        "Keypad4",
+        "Keypad5",
+        "Keypad6",
+        "Keypad7",
+        "Keypad8",
+        "Keypad9",
+        "KeypadAdd",
+        "KeypadSubtract",
+        "KeypadMultiply",
+        "KeypadDivide",
+        "KeypadDecimal"
+      ]
+    },
+    "Operation": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "cols": {
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            },
+            "incarnation": {
+              "type": "string"
+            },
+            "op": {
+              "type": "string",
+              "const": "init"
+            },
+            "rows": {
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            },
+            "session": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "op",
+            "session",
+            "incarnation",
+            "cols",
+            "rows"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "type": "string",
+              "const": "observe"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "op"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "bytes": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              }
+            },
+            "op": {
+              "type": "string",
+              "const": "feed"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "op",
+            "bytes"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "cols": {
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            },
+            "op": {
+              "type": "string",
+              "const": "resize"
+            },
+            "rows": {
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "op",
+            "cols",
+            "rows"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "input": {
+              "$ref": "#/definitions/Input"
+            },
+            "op": {
+              "type": "string",
+              "const": "encode"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "op",
+            "input"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "type": "string",
+              "const": "shutdown"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "op"
+          ]
+        }
+      ]
+    },
+    "Stamp": {
+      "type": "object",
+      "properties": {
+        "geometry": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "incarnation": {
+          "type": "string"
+        },
+        "revision": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "session": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "session",
+        "incarnation",
+        "revision",
+        "geometry"
+      ]
+    }
+  }
+}

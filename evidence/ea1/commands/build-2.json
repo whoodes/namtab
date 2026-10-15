@@ -1,0 +1,45 @@
+{
+  "input_file_sha256": {
+    "tests/assessment/ghostty-proof.c": "7f6e4a0ba1daf845bd54d39cc7933dd15422a33747cab424cc8bb2b8d78e51cc",
+    "tests/assessment/ghostty-assessment.mjs": "199a592427cb860e8c03d6716c87719c7d707ce824ee3320fbdc8998feb88def",
+    "tests/assessment/xterm-assessment.mjs": "37cf4c1d9d122600e301d906aed4b1e226840a127346a5c68edfd18e37768a22",
+    "tests/assessment/expectations.json": "36b0186836b1c227cc6b5d18b4141ccedb9a757f0c65c8537237ead4e8e41af3",
+    "tests/fixtures/terminal/continuations.json": "f4be9e644749b53fe236b6bed4b61410230c7775221f2633f51f18b9c904999a",
+    "crates/engine/native/boundary.c": "e7d0bfb87ec7835324a8d50e826d618aab646959e9859e53a05e2b2f3d6058ca",
+    "crates/engine/native/boundary.h": "cd1272fdeadd20bd22453a14630fb6415105accc49d5f0e266006c64a06303eb",
+    "crates/engine/src/ffi.rs": "4d21d6bf5fd4596b4f2d7e0e2759b26fe5b454316ec3a975d8cbd40b9a8b81eb",
+    "crates/engine/src/main.rs": "f61a64fdf7c08322ccdbef44c1fff7af40718d694406985f16bbda64ba1afc98",
+    "crates/protocol/src/internal_engine.rs": "ce72ee210605f1ef3e1c23ecc2d6606b2de41577bba90ac429eda3fc73525503",
+    "Cargo.lock": "7156d2082457d9ebbc5da80a943a7b08af3f0a14b3d87a665a540042195bb52d",
+    "evidence/ea1/artifact-pin.json": "c72e012e118a668f7c3872a7265a6f32db0ca5dc145780988dc2786d77eeac45",
+    "tests/ea1/worker_test.py": "e50d9c57992373d8362c9ca637e2a9e47962988adbbdfb1698b456771f224054"
+  },
+  "command": [
+    "cargo",
+    "build",
+    "--locked",
+    "-p",
+    "project-x-engine"
+  ],
+  "cwd": ".",
+  "recorded_at": "2026-10-15T17:44:20.381286+00:00",
+  "elapsed_seconds": 0.395,
+  "timeout_seconds": 300,
+  "exit": 0,
+  "verdict": "PASS",
+  "error": null,
+  "environment_overrides": {
+    "XDG_DATA_HOME": "/home/w/codex-dir/project-x/.cache/xdg-data",
+    "CARGO_HOME": "/home/w/codex-dir/project-x/.cache/cargo",
+    "PIP_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/pip",
+    "XDG_CACHE_HOME": "/home/w/codex-dir/project-x/.cache/xdg",
+    "NPM_CONFIG_USERCONFIG": "/dev/null",
+    "NPM_CONFIG_GLOBALCONFIG": "/dev/null",
+    "XDG_STATE_HOME": "/home/w/codex-dir/project-x/.cache/xdg-state",
+    "ZIG_GLOBAL_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/engine-assessment/zig-global",
+    "ZIG_LOCAL_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/engine-assessment/zig-local"
+  },
+  "stdout": "",
+  "stderr": "   Compiling project-x-engine v0.1.0 (/home/w/codex-dir/project-x/crates/engine)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.32s\n",
+  "output_truncated": false
+}

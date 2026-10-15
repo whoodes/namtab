@@ -65,6 +65,7 @@ const steps = [
       "tests/system",
       "tests/fuzz",
       "tests/assessment",
+      "tests/ea1",
       "package.json",
       "tsconfig.json",
       "mkdocs.yml",

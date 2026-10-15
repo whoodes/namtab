@@ -16,9 +16,27 @@ jobs:
         run: rustup toolchain install 1.91.0 --profile minimal --component rustfmt,clippy
       - name: Local tools and locked dependencies
         run: make bootstrap docs-install install
+      - name: Verified evaluated native artifact for workspace checks
+        run: make assessment-bootstrap assessment-build
       - name: Existing foundation contracts
         run: make verify
       - name: Essential engine gate (currently blocking by design)
         run: make engine-gate
-# No publication, artifact uploads, credentials, privileged runners or blanket script permits.
-# The red gate is intentional until an explicit reviewed engine decision replaces it.
+  # No publication, artifact uploads, credentials, privileged runners or blanket script permits.
+  # The red gate is intentional until an explicit reviewed engine decision replaces it.
+
+  ea1:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Exact Rust compiler
+        run: rustup toolchain install 1.91.0 --profile minimal --component rustfmt,clippy
+      - name: Local locked prerequisites
+        run: make bootstrap install assessment-bootstrap assessment-build
+      - name: Bounded native ownership and provenance
+        run: make ea1-build ea1-ownership ea1-provenance
+      - name: EA1 selection gate (currently FAIL on legacy control aliases)
+        run: make ea1-test

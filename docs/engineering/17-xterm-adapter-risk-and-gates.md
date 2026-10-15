@@ -1,5 +1,8 @@
 # Bounded xterm adapter: authority, API risk and veto gates
 
+> Subsequent [EA1 results](21-ea1-native-worker-results.md): experimental Rust/public-C state and reply seams demonstrated; required legacy control aliases **FAIL**. No EA2/dependent application work. Original X4 stays independently red.
+
+
 > Historical xterm candidate finding: serializer X4 remains FAIL and the original independent gate is preserved. [19](19-engine-build-adopt-redesign-assessment.md) independently audits canonical parsing, tests a cell-rendering redesign and official libghostty-vt, and recommends the native public core for the next prototype. ADR E1 explicitly accepts owned rendering; this revises the old no-custom-renderer cost preference without changing the old gate verdict or product fidelity requirements. The remainder records the earlier candidate boundary/budget.
 
 

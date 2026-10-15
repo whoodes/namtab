@@ -1,0 +1,325 @@
+{
+  "date": "2026-10-15T17:35:21.781Z",
+  "environment": {
+    "platform": "linux",
+    "release": "6.8.0-138-generic",
+    "arch": "x64",
+    "cpu_count": 4,
+    "memory_bytes": 16721039360,
+    "os_release": "PRETTY_NAME=\"Ubuntu 22.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"22.04\"\nVERSION=\"22.04.5 LTS (Jammy Jellyfish)\"\nVERSION_CODENAME=jammy\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=jammy\n",
+    "display": "No display/IME/screen-reader or live outer-terminal experiment performed; headless synthetic tests only."
+  },
+  "versions": [
+    {
+      "command": [
+        "cargo",
+        "--version"
+      ],
+      "exit": 0,
+      "error": null,
+      "elapsed_ms": 69,
+      "stdout": "cargo 1.91.0 (ea2d97820 2025-10-10)\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "rustc",
+        "--version"
+      ],
+      "exit": 0,
+      "error": null,
+      "elapsed_ms": 78,
+      "stdout": "rustc 1.91.0 (f8297e351 2025-10-28)\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "--version"
+      ],
+      "exit": 0,
+      "error": null,
+      "elapsed_ms": 8,
+      "stdout": "v24.21.0\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        ".tools/pnpm/package/bin/pnpm.cjs",
+        "--version"
+      ],
+      "exit": 0,
+      "error": null,
+      "elapsed_ms": 304,
+      "stdout": "10.32.1\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        ".venv-docs/bin/python",
+        "--version"
+      ],
+      "exit": 0,
+      "error": null,
+      "elapsed_ms": 4,
+      "stdout": "Python 3.10.12\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "--version"
+      ],
+      "exit": 0,
+      "error": null,
+      "elapsed_ms": 4,
+      "stdout": "git version 2.34.1\n",
+      "stderr": ""
+    }
+  ],
+  "property_seed": "424242",
+  "property_cases": "128",
+  "checks": [
+    {
+      "name": "repository-local-links",
+      "verdict": "PASS",
+      "command": [
+        ".venv-docs/bin/python",
+        "-B",
+        "scripts/check-doc-links.py"
+      ],
+      "exit": 0,
+      "error": null,
+      "elapsed_ms": 324,
+      "stdout": "27 Markdown files, 387 local links/fragments checked, 0 errors.\n",
+      "stderr": ""
+    },
+    {
+      "name": "js-format",
+      "verdict": "PASS",
+      "command": [
+        "node",
+        ".tools/pnpm/package/bin/pnpm.cjs",
+        "exec",
+        "prettier",
+        "--check",
+        "scripts",
+        "apps",
+        "packages",
+        "tests/system",
+        "tests/fuzz",
+        "tests/assessment",
+        "package.json",
+        "tsconfig.json",
+        "mkdocs.yml",
+        "pnpm-workspace.yaml",
+        ".github/workflows/checks.yml"
+      ],
+      "exit": 0,
+      "error": null,
+      "elapsed_ms": 868,
+      "stdout": "Checking formatting...\nAll matched files use Prettier code style!\n",
+      "stderr": ""
+    },
+    {
+      "name": "frozen-offline-install",
+      "verdict": "PASS",
+      "command": [
+        "node",
+        ".tools/pnpm/package/bin/pnpm.cjs",
+        "install",
+        "--frozen-lockfile",
+        "--offline",
+        "--ignore-scripts"
+      ],
+      "exit": 0,
+      "error": null,
+      "elapsed_ms": 460,
+      "stdout": "Scope: all 5 workspace projects\nLockfile is up to date, resolution step is skipped\nAlready up to date\n\nDone in 416ms using pnpm v10.32.1\n",
+      "stderr": ""
+    },
+    {
+      "name": "rust-format",
+      "verdict": "PASS",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit": 0,
+      "error": null,
+      "elapsed_ms": 230,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "rust-clippy",
+      "verdict": "PASS",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "error": null,
+      "elapsed_ms": 319,
+      "stdout": "",
+      "stderr": "    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.16s\n"
+    },
+    {
+      "name": "rust-contracts",
+      "verdict": "PASS",
+      "command": [
+        "cargo",
+        "test",
+        "--workspace",
+        "--locked"
+      ],
+      "exit": 0,
+      "error": null,
+      "elapsed_ms": 577,
+      "stdout": "\nrunning 1 test\ntest tests::gaps_require_snapshot ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 3 tests\ntest tests::prefix_paste_cannot_open_palette ... ok\ntest tests::release_is_not_another_key ... ok\ntest tests::rendering_labels_incomplete_state ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 5 tests\ntest tests::full_storage_does_not_evict_receipts ... ok\ntest tests::unknown_never_becomes_retry ... ok\ntest tests::reused_id_with_changed_payload_is_conflict ... ok\ntest tests::old_generations_never_reserve ... ok\ntest tests::at_most_one_reservation_per_id ... ok\n\ntest result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 1 test\ntest tests::bounded_geometry ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 3 tests\ntest tests::unicode_scalar_values_are_lossless_or_rejected ... ok\ntest tests::fixture_and_duplicate_keys ... ok\ntest tests::arbitrary_frames_do_not_panic ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s\n\n\nrunning 2 tests\ntest tests::stale_focus_and_unknown_are_not_writes ... ok\ntest tests::every_view_context_fence_rejects_stale_admission ... ok\n\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+      "stderr": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.14s\n     Running unittests src/lib.rs (target/debug/deps/project_x_client-23ae03a3c5d62cc4)\n     Running unittests src/lib.rs (target/debug/deps/project_x_console-b0e968f51d704b6a)\n     Running unittests src/main.rs (target/debug/deps/project_x_console-06cf37ec63924eb4)\n     Running unittests src/lib.rs (target/debug/deps/project_x_domain-444b4c1ce4333b98)\n     Running unittests src/lib.rs (target/debug/deps/project_x_platform-2a99f13fa40568ec)\n     Running unittests src/lib.rs (target/debug/deps/project_x_protocol-e90ac8f8bf514e14)\n     Running unittests src/lib.rs (target/debug/deps/project_x_service-2032959bf9d7a11b)\n   Doc-tests project_x_client\n   Doc-tests project_x_console\n   Doc-tests project_x_domain\n   Doc-tests project_x_platform\n   Doc-tests project_x_protocol\n   Doc-tests project_x_service\n"
+    },
+    {
+      "name": "bindings-drift",
+      "verdict": "PASS",
+      "command": [
+        "node",
+        "scripts/generate-bindings.mjs",
+        "--check"
+      ],
+      "exit": 0,
+      "error": null,
+      "elapsed_ms": 383,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "typescript-build",
+      "verdict": "PASS",
+      "command": [
+        "node",
+        ".tools/pnpm/package/bin/pnpm.cjs",
+        "build"
+      ],
+      "exit": 0,
+      "error": null,
+      "elapsed_ms": 472,
+      "stdout": "\n> project-x@0.1.0 build /home/w/codex-dir/project-x\n> tsc -b && node scripts/copy-generated.mjs\n\n",
+      "stderr": ""
+    },
+    {
+      "name": "dependency-boundaries",
+      "verdict": "PASS",
+      "command": [
+        "node",
+        "scripts/check-boundaries.mjs"
+      ],
+      "exit": 0,
+      "error": null,
+      "elapsed_ms": 128,
+      "stdout": "Boundary checks passed: six Rust crates, four TS packages, allowed edges acyclic. Static checks do not enforce runtime authority.\n",
+      "stderr": ""
+    },
+    {
+      "name": "fixture-integrity",
+      "verdict": "PASS",
+      "command": [
+        "node",
+        "scripts/check-fixtures.mjs"
+      ],
+      "exit": 0,
+      "error": null,
+      "elapsed_ms": 53,
+      "stdout": "Sanitized fixture manifest verified (2 payloads).\n",
+      "stderr": ""
+    },
+    {
+      "name": "synthetic-contracts",
+      "verdict": "PASS",
+      "command": [
+        "node",
+        "--test",
+        "tests/system/foundation.test.mjs"
+      ],
+      "exit": 0,
+      "error": null,
+      "elapsed_ms": 774,
+      "stdout": "✔ shared wire shape and bounded decimal semantics (11.407143ms)\n✔ synthetic Crossterm and desktop key intents agree (153.119561ms)\n✔ pinned upstream helper handles cursor modes, modifiers, Tab and function keys (0.95632ms)\n✔ helper counterexample: keypad Enter has no application-keypad input (0.307507ms)\n✔ canonical feed-only observations, no UI needed, detached immutable snapshots (18.981904ms)\n✔ two identical query events produce two canonical replies; replicas have no dispatch lane (3.457373ms)\n✔ all byte split positions preserve UTF-8/query/control interpretation (62.00002ms)\n✔ paste mode encoding is separate from key events and embedded boundaries reject (0.659314ms)\n✔ bounded per-feed and reply traffic surface unknown rather than complete (2.287549ms)\n✔ X4 regression: equal screens do not establish safe continuation (20.743541ms)\n✔ Unicode text rejects unpaired surrogates instead of lossy replacement (1.365029ms)\n✔ accepted parser bytes are detached from mutable caller storage (2.250148ms)\nℹ tests 12\nℹ suites 0\nℹ pass 12\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 728.157704\n",
+      "stderr": ""
+    },
+    {
+      "name": "seeded-partitions",
+      "verdict": "PASS",
+      "command": [
+        "node",
+        "tests/fuzz/chunk-corpus.mjs"
+      ],
+      "exit": 0,
+      "error": null,
+      "elapsed_ms": 1265,
+      "stdout": "192 deterministic parser partition runs passed; seed=0x51a7e, six synthetic cases. No execution replay claim.\n",
+      "stderr": ""
+    },
+    {
+      "name": "offline-console",
+      "verdict": "PASS",
+      "command": [
+        "cargo",
+        "run",
+        "--quiet",
+        "--locked",
+        "-p",
+        "project-x-console",
+        "--",
+        "diagnose"
+      ],
+      "exit": 0,
+      "error": null,
+      "elapsed_ms": 147,
+      "stdout": "Project X: offline foundation                                         \nX4 failed: no live terminal or process execution                      \n                                                                      \n                                                                      \n",
+      "stderr": ""
+    },
+    {
+      "name": "strict-mkdocs",
+      "verdict": "PASS",
+      "command": [
+        ".venv-docs/bin/python",
+        "-m",
+        "mkdocs",
+        "build",
+        "--strict"
+      ],
+      "exit": 0,
+      "error": null,
+      "elapsed_ms": 431,
+      "stdout": "",
+      "stderr": "INFO    -  Cleaning site directory\nINFO    -  Building documentation to directory: /home/w/codex-dir/project-x/.artifacts/site\nINFO    -  Documentation built in 0.28 seconds\n"
+    }
+  ],
+  "essential_gate": {
+    "verdict": "FAIL",
+    "expectedExit": 1,
+    "verifiedCounterexamples": true,
+    "command": [
+      "node",
+      "tests/system/engine-probe.mjs",
+      "--require-pass"
+    ],
+    "exit": 1,
+    "error": null,
+    "elapsed_ms": 109,
+    "stdout": "{\n  \"gate\": \"X4\",\n  \"verdict\": \"FAIL\",\n  \"scope\": \"Necessary-condition headless→serialize→headless continuation, same common parser family; not a desktop/DOM test. Partial CSI is separately an unsafe-boundary case.\",\n  \"results\": [\n    {\n      \"name\": \"plain\",\n      \"before\": \"\\\"hello\\\"\",\n      \"after\": \"\\\" world\\\"\",\n      \"atAttach\": true,\n      \"afterContinuation\": true,\n      \"canonical\": {\n        \"cols\": 12,\n        \"rows\": 5,\n        \"cursor\": [\n          11,\n          0\n        ],\n        \"baseY\": 0,\n        \"type\": \"normal\",\n        \"lines\": [\n          \"hello world \",\n          \"            \",\n          \"            \",\n          \"            \",\n          \"            \"\n        ],\n        \"modes\": {\n          \"applicationCursorKeysMode\": false,\n          \"applicationKeypadMode\": false,\n          \"bracketedPasteMode\": false,\n          \"insertMode\": false,\n          \"mouseTrackingMode\": \"none\",\n          \"originMode\": false,\n          \"reverseWraparoundMode\": false,\n          \"sendFocusMode\": false,\n          \"synchronizedOutputMode\": false,\n          \"wraparoundMode\": true\n        }\n      },\n      \"replica\": {\n        \"cols\": 12,\n        \"rows\": 5,\n        \"cursor\": [\n          11,\n          0\n        ],\n        \"baseY\": 0,\n        \"type\": \"normal\",\n        \"lines\": [\n          \"hello world \",\n          \"            \",\n          \"            \",\n          \"            \",\n          \"            \"\n        ],\n        \"modes\": {\n          \"applicationCursorKeysMode\": false,\n          \"applicationKeypadMode\": false,\n          \"bracketedPasteMode\": false,\n          \"insertMode\": false,\n          \"mouseTrackingMode\": \"none\",\n          \"originMode\": false,\n          \"reverseWraparoundMode\": false,\n          \"sendFocusMode\": false,\n          \"synchronizedOutputMode\": false,\n          \"wraparoundMode\": true\n        }\n      }\n    },\n    {\n      \"name\": \"saved-cursor\",\n      \"before\": \"\\\"\\\\u001b[2;3H\\\\u001b7\\\\u001b[4;7H\\\"\",\n      \"after\": \"\\\"\\\\u001b8X\\\"\",\n      \"atAttach\": true,\n      \"afterContinuation\": false,\n      \"canonical\": {\n        \"cols\": 12,\n        \"rows\": 5,\n        \"cursor\": [\n          3,\n          1\n        ],\n        \"baseY\": 0,\n        \"type\": \"normal\",\n        \"lines\": [\n          \"            \",\n          \"  X         \",\n          \"            \",\n          \"            \",\n          \"            \"\n        ],\n        \"modes\": {\n          \"applicationCursorKeysMode\": false,\n          \"applicationKeypadMode\": false,\n          \"bracketedPasteMode\": false,\n          \"insertMode\": false,\n          \"mouseTrackingMode\": \"none\",\n          \"originMode\": false,\n          \"reverseWraparoundMode\": false,\n          \"sendFocusMode\": false,\n          \"synchronizedOutputMode\": false,\n          \"wraparoundMode\": true\n        }\n      },\n      \"replica\": {\n        \"cols\": 12,\n        \"rows\": 5,\n        \"cursor\": [\n          1,\n          0\n        ],\n        \"baseY\": 0,\n        \"type\": \"normal\",\n        \"lines\": [\n          \"X           \",\n          \"            \",\n          \"            \",\n          \"            \",\n          \"            \"\n        ],\n        \"modes\": {\n          \"applicationCursorKeysMode\": false,\n          \"applicationKeypadMode\": false,\n          \"bracketedPasteMode\": false,\n          \"insertMode\": false,\n          \"mouseTrackingMode\": \"none\",\n          \"originMode\": false,\n          \"reverseWraparoundMode\": false,\n          \"sendFocusMode\": false,\n          \"synchronizedOutputMode\": false,\n          \"wraparoundMode\": true\n        }\n      }\n    },\n    {\n      \"name\": \"scroll-region\",\n      \"before\": \"\\\"1\\\\r\\\\n2\\\\r\\\\n3\\\\r\\\\n4\\\\r\\\\n5\\\\u001b[2;4r\\\\u001b[4;1H\\\"\",\n      \"after\": \"\\\"\\\\r\\\\nX\\\"\",\n      \"atAttach\": true,\n      \"afterContinuation\": false,\n      \"canonical\": {\n        \"cols\": 12,\n        \"rows\": 5,\n        \"cursor\": [\n          1,\n          3\n        ],\n        \"baseY\": 0,\n        \"type\": \"normal\",\n        \"lines\": [\n          \"1           \",\n          \"3           \",\n          \"4           \",\n          \"X           \",\n          \"5           \"\n        ],\n        \"modes\": {\n          \"applicationCursorKeysMode\": false,\n          \"applicationKeypadMode\": false,\n          \"bracketedPasteMode\": false,\n          \"insertMode\": false,\n          \"mouseTrackingMode\": \"none\",\n          \"originMode\": false,\n          \"reverseWraparoundMode\": false,\n          \"sendFocusMode\": false,\n          \"synchronizedOutputMode\": false,\n          \"wraparoundMode\": true\n        }\n      },\n      \"replica\": {\n        \"cols\": 12,\n        \"rows\": 5,\n        \"cursor\": [\n          1,\n          4\n        ],\n        \"baseY\": 0,\n        \"type\": \"normal\",\n        \"lines\": [\n          \"1           \",\n          \"2           \",\n          \"3           \",\n          \"4           \",\n          \"X           \"\n        ],\n        \"modes\": {\n          \"applicationCursorKeysMode\": false,\n          \"applicationKeypadMode\": false,\n          \"bracketedPasteMode\": false,\n          \"insertMode\": false,\n          \"mouseTrackingMode\": \"none\",\n          \"originMode\": false,\n          \"reverseWraparoundMode\": false,\n          \"sendFocusMode\": false,\n          \"synchronizedOutputMode\": false,\n          \"wraparoundMode\": true\n        }\n      }\n    },\n    {\n      \"name\": \"custom-tabs\",\n      \"before\": \"\\\"\\\\u001b[3g\\\\u001b[1;4H\\\\u001bH\\\\u001b[H\\\"\",\n      \"after\": \"\\\"\\\\tX\\\"\",\n      \"atAttach\": true,\n      \"afterContinuation\": false,\n      \"canonical\": {\n        \"cols\": 12,\n        \"rows\": 5,\n        \"cursor\": [\n          4,\n          0\n        ],\n        \"baseY\": 0,\n        \"type\": \"normal\",\n        \"lines\": [\n          \"   X        \",\n          \"            \",\n          \"            \",\n          \"            \",\n          \"            \"\n        ],\n        \"modes\": {\n          \"applicationCursorKeysMode\": false,\n          \"applicationKeypadMode\": false,\n          \"bracketedPasteMode\": false,\n          \"insertMode\": false,\n          \"mouseTrackingMode\": \"none\",\n          \"originMode\": false,\n          \"reverseWraparoundMode\": false,\n          \"sendFocusMode\": false,\n          \"synchronizedOutputMode\": false,\n          \"wraparoundMode\": true\n        }\n      },\n      \"replica\": {\n        \"cols\": 12,\n        \"rows\": 5,\n        \"cursor\": [\n          9,\n          0\n        ],\n        \"baseY\": 0,\n        \"type\": \"normal\",\n        \"lines\": [\n          \"        X   \",\n          \"            \",\n          \"            \",\n          \"            \",\n          \"            \"\n        ],\n        \"modes\": {\n          \"applicationCursorKeysMode\": false,\n          \"applicationKeypadMode\": false,\n          \"bracketedPasteMode\": false,\n          \"insertMode\": false,\n          \"mouseTrackingMode\": \"none\",\n          \"originMode\": false,\n          \"reverseWraparoundMode\": false,\n          \"sendFocusMode\": false,\n          \"synchronizedOutputMode\": false,\n          \"wraparoundMode\": true\n        }\n      }\n    },\n    {\n      \"name\": \"alternate\",\n      \"before\": \"\\\"normal\\\\u001b[?1049hALT\\\"\",\n      \"after\": \"\\\"\\\\u001b[?1049lZ\\\"\",\n      \"atAttach\": true,\n      \"afterContinuation\": true,\n      \"canonical\": {\n        \"cols\": 12,\n        \"rows\": 5,\n        \"cursor\": [\n          7,\n          0\n        ],\n        \"baseY\": 0,\n        \"type\": \"normal\",\n        \"lines\": [\n          \"normalZ     \",\n          \"            \",\n          \"            \",\n          \"            \",\n          \"            \"\n        ],\n        \"modes\": {\n          \"applicationCursorKeysMode\": false,\n          \"applicationKeypadMode\": false,\n          \"bracketedPasteMode\": false,\n          \"insertMode\": false,\n          \"mouseTrackingMode\": \"none\",\n          \"originMode\": false,\n          \"reverseWraparoundMode\": false,\n          \"sendFocusMode\": false,\n          \"synchronizedOutputMode\": false,\n          \"wraparoundMode\": true\n        }\n      },\n      \"replica\": {\n        \"cols\": 12,\n        \"rows\": 5,\n        \"cursor\": [\n          7,\n          0\n        ],\n        \"baseY\": 0,\n        \"type\": \"normal\",\n        \"lines\": [\n          \"normalZ     \",\n          \"            \",\n          \"            \",\n          \"            \",\n          \"            \"\n        ],\n        \"modes\": {\n          \"applicationCursorKeysMode\": false,\n          \"applicationKeypadMode\": false,\n          \"bracketedPasteMode\": false,\n          \"insertMode\": false,\n          \"mouseTrackingMode\": \"none\",\n          \"originMode\": false,\n          \"reverseWraparoundMode\": false,\n          \"sendFocusMode\": false,\n          \"synchronizedOutputMode\": false,\n          \"wraparoundMode\": true\n        }\n      }\n    },\n    {\n      \"name\": \"partial-csi\",\n      \"before\": \"\\\"\\\\u001b[31\\\"\",\n      \"after\": \"\\\"mX\\\"\",\n      \"atAttach\": true,\n      \"afterContinuation\": false,\n      \"canonical\": {\n        \"cols\": 12,\n        \"rows\": 5,\n        \"cursor\": [\n          1,\n          0\n        ],\n        \"baseY\": 0,\n        \"type\": \"normal\",\n        \"lines\": [\n          \"X           \",\n          \"            \",\n          \"            \",\n          \"            \",\n          \"            \"\n        ],\n        \"modes\": {\n          \"applicationCursorKeysMode\": false,\n          \"applicationKeypadMode\": false,\n          \"bracketedPasteMode\": false,\n          \"insertMode\": false,\n          \"mouseTrackingMode\": \"none\",\n          \"originMode\": false,\n          \"reverseWraparoundMode\": false,\n          \"sendFocusMode\": false,\n          \"synchronizedOutputMode\": false,\n          \"wraparoundMode\": true\n        }\n      },\n      \"replica\": {\n        \"cols\": 12,\n        \"rows\": 5,\n        \"cursor\": [\n          2,\n          0\n        ],\n        \"baseY\": 0,\n        \"type\": \"normal\",\n        \"lines\": [\n          \"mX          \",\n          \"            \",\n          \"            \",\n          \"            \",\n          \"            \"\n        ],\n        \"modes\": {\n          \"applicationCursorKeysMode\": false,\n          \"applicationKeypadMode\": false,\n          \"bracketedPasteMode\": false,\n          \"insertMode\": false,\n          \"mouseTrackingMode\": \"none\",\n          \"originMode\": false,\n          \"reverseWraparoundMode\": false,\n          \"sendFocusMode\": false,\n          \"synchronizedOutputMode\": false,\n          \"wraparoundMode\": true\n        }\n      }\n    }\n  ]\n}\n",
+    "stderr": ""
+  },
+  "limits": "Foundation PASS is not terminal-engine certification. Tests asserting known failure do not turn X4 green. No performance budgets measured."
+}

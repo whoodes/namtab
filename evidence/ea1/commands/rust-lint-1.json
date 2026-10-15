@@ -1,0 +1,40 @@
+{
+  "input_file_sha256": {
+    "tests/assessment/ghostty-proof.c": "7f6e4a0ba1daf845bd54d39cc7933dd15422a33747cab424cc8bb2b8d78e51cc",
+    "tests/assessment/ghostty-assessment.mjs": "199a592427cb860e8c03d6716c87719c7d707ce824ee3320fbdc8998feb88def",
+    "tests/assessment/xterm-assessment.mjs": "37cf4c1d9d122600e301d906aed4b1e226840a127346a5c68edfd18e37768a22",
+    "tests/assessment/expectations.json": "36b0186836b1c227cc6b5d18b4141ccedb9a757f0c65c8537237ead4e8e41af3",
+    "tests/fixtures/terminal/continuations.json": "f4be9e644749b53fe236b6bed4b61410230c7775221f2633f51f18b9c904999a"
+  },
+  "command": [
+    "cargo",
+    "clippy",
+    "--workspace",
+    "--all-targets",
+    "--locked",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "cwd": ".",
+  "recorded_at": "2026-10-15T17:48:35.848577+00:00",
+  "elapsed_seconds": 3.318,
+  "timeout_seconds": 300,
+  "exit": 101,
+  "verdict": "FAIL",
+  "error": null,
+  "environment_overrides": {
+    "CARGO_HOME": "/home/w/codex-dir/project-x/.cache/cargo",
+    "PIP_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/pip",
+    "XDG_CACHE_HOME": "/home/w/codex-dir/project-x/.cache/xdg",
+    "XDG_DATA_HOME": "/home/w/codex-dir/project-x/.cache/xdg-data",
+    "XDG_STATE_HOME": "/home/w/codex-dir/project-x/.cache/xdg-state",
+    "ZIG_GLOBAL_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/engine-assessment/zig-global",
+    "ZIG_LOCAL_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/engine-assessment/zig-local",
+    "NPM_CONFIG_USERCONFIG": "/dev/null",
+    "NPM_CONFIG_GLOBALCONFIG": "/dev/null"
+  },
+  "stdout": "",
+  "stderr": "    Checking project-x-protocol v0.1.0 (/home/w/codex-dir/project-x/crates/protocol)\n    Checking project-x-domain v0.1.0 (/home/w/codex-dir/project-x/crates/domain)\n   Compiling project-x-engine v0.1.0 (/home/w/codex-dir/project-x/crates/engine)\n    Checking project-x-platform v0.1.0 (/home/w/codex-dir/project-x/crates/platform)\n    Checking project-x-client v0.1.0 (/home/w/codex-dir/project-x/crates/client)\n    Checking project-x-service v0.1.0 (/home/w/codex-dir/project-x/crates/service)\n    Checking project-x-console v0.1.0 (/home/w/codex-dir/project-x/crates/console)\nerror: very complex type used. Consider factoring parts into `type` definitions\n  --> crates/engine/src/main.rs:62:10\n   |\n62 |     ) -> Result<(Option<Frame>, Option<Vec<u8>>, Option<Reply>), Error> {\n   |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   |\n   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.91.0/index.html#type_complexity\n   = note: `-D clippy::type-complexity` implied by `-D warnings`\n   = help: to override `-D warnings` add `#[allow(clippy::type_complexity)]`\n\nerror: could not compile `project-x-engine` (bin \"project-x-engine\") due to 1 previous error\nwarning: build failed, waiting for other jobs to finish...\nerror: could not compile `project-x-engine` (bin \"project-x-engine\" test) due to 1 previous error\n",
+  "output_truncated": false
+}

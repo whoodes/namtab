@@ -1,0 +1,44 @@
+{
+  "input_file_sha256": {
+    "tests/assessment/ghostty-proof.c": "7f6e4a0ba1daf845bd54d39cc7933dd15422a33747cab424cc8bb2b8d78e51cc",
+    "tests/assessment/ghostty-assessment.mjs": "199a592427cb860e8c03d6716c87719c7d707ce824ee3320fbdc8998feb88def",
+    "tests/assessment/xterm-assessment.mjs": "37cf4c1d9d122600e301d906aed4b1e226840a127346a5c68edfd18e37768a22",
+    "tests/assessment/expectations.json": "36b0186836b1c227cc6b5d18b4141ccedb9a757f0c65c8537237ead4e8e41af3",
+    "tests/fixtures/terminal/continuations.json": "f4be9e644749b53fe236b6bed4b61410230c7775221f2633f51f18b9c904999a",
+    "crates/engine/native/boundary.c": "8d874f3f28a84d7b6288abb0d532aa8cd35a30e8133a21a43e3850f6ccb0893f",
+    "crates/engine/native/boundary.h": "cd1272fdeadd20bd22453a14630fb6415105accc49d5f0e266006c64a06303eb",
+    "crates/engine/src/ffi.rs": "f59978263e09537f41d14ca993474b10baa3c5a86be8a9aefca05c02c2ad388a",
+    "crates/engine/src/main.rs": "25470306eae5680b56932ae5d8a8d16c4a200a67d34978062075220b0785cafd",
+    "crates/protocol/src/internal_engine.rs": "7e77e40923eea8ee3e9a980b116a5fe51c57bc1888bfd4e6ce9249b6d34d8a9d",
+    "Cargo.lock": "7156d2082457d9ebbc5da80a943a7b08af3f0a14b3d87a665a540042195bb52d",
+    "evidence/ea1/artifact-pin.json": "c72e012e118a668f7c3872a7265a6f32db0ca5dc145780988dc2786d77eeac45",
+    "tests/ea1/worker_test.py": "14087fe65e6f0189a0f942f702a7306f8bc77895cd3e80a16919b5796065d800",
+    "tests/ea1/ownership_check.py": "0c8a1155c777a07cf69b306d52e0634ac7bbfed58edc64158cd716c487fede9c"
+  },
+  "command": [
+    "python3",
+    "-B",
+    "tests/ea1/ownership_check.py"
+  ],
+  "cwd": ".",
+  "recorded_at": "2026-10-15T17:51:18.400736+00:00",
+  "elapsed_seconds": 0.547,
+  "timeout_seconds": 300,
+  "exit": 0,
+  "verdict": "PASS",
+  "error": null,
+  "environment_overrides": {
+    "XDG_DATA_HOME": "/home/w/codex-dir/project-x/.cache/xdg-data",
+    "CARGO_HOME": "/home/w/codex-dir/project-x/.cache/cargo",
+    "PIP_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/pip",
+    "XDG_CACHE_HOME": "/home/w/codex-dir/project-x/.cache/xdg",
+    "NPM_CONFIG_USERCONFIG": "/dev/null",
+    "NPM_CONFIG_GLOBALCONFIG": "/dev/null",
+    "XDG_STATE_HOME": "/home/w/codex-dir/project-x/.cache/xdg-state",
+    "ZIG_GLOBAL_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/engine-assessment/zig-global",
+    "ZIG_LOCAL_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/engine-assessment/zig-local"
+  },
+  "stdout": "Ownership compiler checks: normal lifetime PASS, cross-thread move rejected, shared access rejected (E0277).\n",
+  "stderr": "",
+  "output_truncated": false
+}

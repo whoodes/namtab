@@ -1,11 +1,14 @@
 # Dependency choices, provenance and supply chain
 
+> Subsequent [EA1 results](21-ea1-native-worker-results.md): experimental Rust/public-C state and reply seams demonstrated; required legacy control aliases **FAIL**. No EA2/dependent application work. Original X4 stays independently red.
+
+
 > Current locked Rust/TS foundation is in 18. The [engine assessment](19-engine-build-adopt-redesign-assessment.md) separately pins official Ghostty source and Zig for a public C proof; these are assessment tools/artifacts, not newly admitted shipping dependencies. ADR E1 recommends them for a gated prototype and changes the proposed shipping engine/runtime choice. Project-license adoption remains pending.
 
 
 [Index](../index.md) · [Repository/workflow](14-repository-and-engineering-practices.md) · [CI gates](16-test-and-ci-strategy.md) · [Exact xterm family](17-xterm-adapter-risk-and-gates.md#exact-research-source-family-and-packaging-gate)
 
-**Proposed broader inventory; only the explicit subset in 18 is installed and locked.** Primary project documentation/repositories below were inspected on 2026-10-15. License labels describe inspected upstream projects; they are not a release-specific transitive clearance. Maturity/replacement costs are qualitative engineering judgments, not measurements. Unknown versions are deliberately not guessed.
+**Proposed broader inventory; only the explicit foundation in 18 plus the EA1 native experiment in 21 is installed/locked.** Primary project documentation/repositories below were inspected on 2026-10-15. License labels describe inspected upstream projects; they are not a release-specific transitive clearance. Maturity/replacement costs are qualitative engineering judgments, not measurements. Unknown versions are deliberately not guessed.
 
 ## Rust TUI choice
 
@@ -78,3 +81,9 @@ Dependency updates are separate, small PRs with lock diff, license/advisory revi
 The official libghostty-vt candidate is pinned to 22fa134a07f5749edd9e92c6bc17d8aaf61843be; C API/codec are explicitly unstable. Official Zig 0.16.0 is locally checksum-verified. The source archive, selected raw source correspondence, compiled libraries and acquired content-addressed package identities are recorded in evidence/engine-assessment/ghostty-source.json, ghostty-source-correspondence.json and zig-tool.json. No dependency source edits were carried. Seven build-acquired package directories live inside the ignored source/zig-pkg cache; SIMD disabled does not mean an empty third-party closure. Root MIT, Unicode tables, build tooling and vendored Wuffs still need release-specific notice/advisory/SBOM review.
 
 These records supplement Cargo/pnpm/Python lockfiles, which are unchanged by this assessment; they are not a complete release SBOM. Ghostty's parent application, native C API and binary snapshot format have different maturity/version namespaces. If adopted, a native worker replaces the separate Node/xterm engine runtime; Electron/React and pinned Node build tooling remain. Revised xterm is an analyzed fallback, not two shipping engines. vte 0.15.0 was source-researched as a reusable lexer option for an owned core, not installed or selected. Exact facts, licenses, hashes and remaining gates are in [19](19-engine-build-adopt-redesign-assessment.md).
+
+## EA1 native experiment pin
+
+The experimental binary links official `libghostty-vt` from evaluated commit `22fa134a07f5749edd9e92c6bc17d8aaf61843be`, C ABI SONAME 0.1.0/development source, built with verified Zig 0.16.0, ReleaseSafe and SIMD disabled. The reviewed source archive and compiler hashes remain in the earlier assessment; `evidence/ea1/artifact-pin.json` additionally pins the actual local library, compiler and 35 installed headers. `build.rs` refuses missing/changed material. `evidence/ea1/provenance.json` verifies header correspondence, the loaded library and worker executable. This source is not admitted as a shipping dependency; its input selection gate fails. The upstream MIT metadata and transitive Zig package/license closure remain as assessed in 19, without release/legal clearance or project-license adoption.
+
+Cargo.lock adds one local package only, reusing existing serde/serde_json and sha2 (build verification); all registry records and pnpm-lock.yaml remain unchanged. No bindgen/libclang or new registry tool is required. Portable/reproducible binary hashes, supported SDK release policy, native notices/SBOM and upgrade/ABI review remain open. A new build must receive an explicit provenance review, not an automatic hash refresh.

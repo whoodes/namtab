@@ -21,6 +21,7 @@ validation:
 nav:
   - "Design index": "index.md"
   - "Engineering evidence":
+      - "EA1 native worker / blocked gate": "engineering/21-ea1-native-worker-results.md"
       - "Workspace organization": "engineering/20-workspace-organization.md"
       - "BUILD / ADOPT / REDESIGN": "engineering/19-engine-build-adopt-redesign-assessment.md"
       - "Foundation and gate results": "engineering/18-foundation-gate-results.md"

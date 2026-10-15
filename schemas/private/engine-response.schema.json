@@ -1,0 +1,295 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Response",
+  "type": "object",
+  "properties": {
+    "error": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/Error"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "frame": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/Frame"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "input_bytes": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "integer",
+        "format": "uint8",
+        "maximum": 255,
+        "minimum": 0
+      }
+    },
+    "profile": {
+      "type": "string"
+    },
+    "reply": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/Reply"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "seq": {
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 0
+    },
+    "stamp": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/Stamp"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "status": {
+      "type": "string"
+    },
+    "version": {
+      "type": "integer",
+      "format": "uint8",
+      "maximum": 255,
+      "minimum": 0
+    }
+  },
+  "required": [
+    "version",
+    "seq",
+    "profile",
+    "status"
+  ],
+  "definitions": {
+    "Cell": {
+      "type": "object",
+      "properties": {
+        "bg": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "fg": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "fg_palette": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint8",
+          "maximum": 255,
+          "minimum": 0
+        },
+        "flags": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "text": {
+          "type": "string"
+        },
+        "underline": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "underline_color": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        },
+        "wide": {
+          "description": "Ghostty public wide kind: narrow=0, wide=1, spacer-tail=2, spacer-head=3.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "text",
+        "wide",
+        "flags",
+        "underline",
+        "fg",
+        "bg"
+      ]
+    },
+    "Error": {
+      "type": "string",
+      "enum": [
+        "malformed",
+        "version",
+        "sequence",
+        "identity",
+        "stale",
+        "lifecycle",
+        "limit",
+        "unsupported",
+        "native",
+        "unknown"
+      ]
+    },
+    "Frame": {
+      "type": "object",
+      "properties": {
+        "alternate": {
+          "type": "boolean"
+        },
+        "cells": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Cell"
+          }
+        },
+        "cols": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "cursor": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "integer",
+            "format": "uint16",
+            "maximum": 65535,
+            "minimum": 0
+          },
+          "maxItems": 2,
+          "minItems": 2
+        },
+        "cursor_blink": {
+          "type": "boolean"
+        },
+        "cursor_style": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "cursor_visible": {
+          "type": "boolean"
+        },
+        "dirty": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "ground": {
+          "type": "boolean"
+        },
+        "modes": {
+          "description": "Private prototype bitset, documented in EA1. Includes sync-output hold.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "password_hint": {
+          "type": "boolean"
+        },
+        "rows": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        }
+      },
+      "required": [
+        "cols",
+        "rows",
+        "cursor_visible",
+        "cursor_blink",
+        "cursor_style",
+        "password_hint",
+        "alternate",
+        "modes",
+        "ground",
+        "dirty",
+        "cells"
+      ]
+    },
+    "Reply": {
+      "type": "object",
+      "properties": {
+        "bytes": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint8",
+            "maximum": 255,
+            "minimum": 0
+          }
+        },
+        "origin": {
+          "type": "string"
+        },
+        "work": {
+          "description": "One batch per work sequence, not one per query or callback. Never byte-dedup.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "work",
+        "origin",
+        "bytes"
+      ]
+    },
+    "Stamp": {
+      "type": "object",
+      "properties": {
+        "geometry": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "incarnation": {
+          "type": "string"
+        },
+        "revision": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "session": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "session",
+        "incarnation",
+        "revision",
+        "geometry"
+      ]
+    }
+  }
+}

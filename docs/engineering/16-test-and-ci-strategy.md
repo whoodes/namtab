@@ -1,5 +1,8 @@
 # Tests, CI lanes and dual-frontend validation
 
+> Subsequent [EA1 results](21-ea1-native-worker-results.md): experimental Rust/public-C state and reply seams demonstrated; required legacy control aliases **FAIL**. No EA2/dependent application work. Original X4 stays independently red.
+
+
 > Current executable subset: Rust unit/properties, generated-wire and synthetic dual-client normalization, headless continuation/query/chunk tests, seeded partitions, static boundaries and strict docs. A check workflow is authored but has not run on a CI provider. X4 is red. The wider lanes below remain requirements; see [evidence](18-foundation-gate-results.md).
 
 
@@ -128,3 +131,9 @@ Passing tests support only the pinned profile and covered failure boundaries. St
 [19](19-engine-build-adopt-redesign-assessment.md) and ADR E1/E2 add separate assessment commands: original X4 independently FAIL; A canonical/cell/replay model PASS; B public C snapshot/key proof PASS at bounded scope; C ownership is analyzed without a toy implementation. Hand-authored independent expectations, attribute checks, oracle mutation rejection, 111 xterm complete-history splits and 86 Ghostty prefix splits supplement the unchanged corpus. Five extra Ghostty state cases and malformed/version/continuation-limit refusals pass. Native grid traversal is an oracle technique, not a renderer benchmark.
 
 `make assessment-bootstrap assessment-build assessment-check` reproduces the proof with exact local sources/tools and append-only command attempts. `make verify` still checks the existing Rust/TS foundation and verifies the legacy negative regression; real frontend/runtime/fault lanes remain unrun. The original standalone engine-gate/CI marker remains red until a reviewed product-gate replacement. A snapshot round trip does not pass crash recovery, capture enforcement, portability or application conformance.
+
+## EA1 local selection lane
+
+`make ea1-build ea1-ownership ea1-provenance ea1-preservation` builds the bounded worker and checks actual wrapper compiler ownership, native artifact/header/source pairing, lock preservation and earlier evidence. `make ea1-test` uses synthetic shared frontend intents and the raw subprocess harness: 13 methods, 12 passing and one failing on three legacy control aliases. Its nonzero result is a blocking selection outcome, not an allowed-failure lane. `make verify` remains a foundation check, with independent original X4 red; it does not execute/certify the EA1 selection test.
+
+The authored workflow keeps original X4 and EA1 as raw failing gates in separate jobs. It has not been executed on a provider. Exact local artifact hashes may differ on another runner; such a mismatch stops before native tests rather than silently changing the pin. Native CI artifact qualification is unresolved. A compiler ownership rejection is positive evidence of the specified negative type property; it is not a substitute for native sanitizers, allocator/reentry faults, hostile-input fuzzing or EA2–EA4. See [21](21-ea1-native-worker-results.md) for the current result matrix and stop decision.

@@ -13,6 +13,7 @@ const metadata = JSON.parse(
 );
 const allowed = {
   protocol: [],
+  engine: ["protocol"],
   domain: [],
   platform: ["domain"],
   service: ["protocol", "domain", "platform"],
@@ -47,6 +48,23 @@ function acyclic(graph) {
   for (const n of graph.keys()) visit(n);
 }
 acyclic(rust);
+for (const p of metadata.packages) {
+  if (p.name === "project-x-engine")
+    assert.ok(
+      p.targets.every((t) => !t.kind.includes("lib")),
+      "Engine must stay binary-only",
+    );
+  if (["project-x-client", "project-x-console"].includes(p.name)) {
+    const contents = await readFile(
+      p.manifest_path.replace("Cargo.toml", "src/lib.rs"),
+      "utf8",
+    );
+    assert.ok(
+      !/internal_engine/u.test(contents),
+      "Client imports private engine namespace",
+    );
+  }
+}
 const js = new Map();
 const permitted = {
   "@project-x/desktop": ["@project-x/protocol", "@project-x/terminal-adapter"],
@@ -88,8 +106,8 @@ for (const root of ["apps", "packages"])
     }
   }
 acyclic(js);
-assert.equal(metadata.packages.length, 6);
+assert.equal(metadata.packages.length, 7);
 assert.equal(js.size, 4);
 console.log(
-  "Boundary checks passed: six Rust crates, four TS packages, allowed edges acyclic. Static checks do not enforce runtime authority.",
+  "Boundary checks passed: seven Rust crates (engine is binary-only EA1), four TS packages, allowed edges acyclic. Static checks do not enforce runtime authority.",
 );

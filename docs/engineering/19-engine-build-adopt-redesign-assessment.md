@@ -1,5 +1,8 @@
 # Engine assessment: build, adopt or redesign
 
+> Historical completed EA0 assessment. Subsequent [EA1](21-ea1-native-worker-results.md) implements the recommended bounded native seam but fails the legacy-control input selection gate. Its result blocks progression; the assessment below retains its original phase facts.
+
+
 [Index](../index.md) · [Prior results](18-foundation-gate-results.md) · [Ownership decision](../adr/0001-engine-ownership-and-presentation.md) · [Continuity decision](../adr/0002-terminal-continuity-and-checkpoints.md)
 
 Date: 2026-10-15. **Completed bounded assessment; no production engine or dependent application implementation.** Verdicts below refer to the tested cases and identified design costs. They do not certify a terminal, frontend, sandbox or recovery system. The original X4 fixtures, oracle and independent failing target are preserved.

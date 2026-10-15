@@ -1,28 +1,30 @@
 # Repository foundation and engineering practices
 
-> Current actual foundation remains six Rust/four TS packages with no live service or frontend. The completed [assessment](19-engine-build-adopt-redesign-assessment.md) and [ADR E1](../adr/0001-engine-ownership-and-presentation.md) revise the future engine target to one native worker and owned rendering. Current reference packages are retained; no new production crate or FFI exception is implemented.
+> Actual: seven Rust/four TS packages, including one binary-only experimental [EA1 worker](21-ea1-native-worker-results.md). No live frontend, broker or PTY exists. The public native seam is bounded; legacy control aliases fail the essential selection gate. Rust unsafe is confined to the worker wrapper. Reference packages remain.
 
 
 [Index](../index.md) · [Dependencies](15-dependencies-and-supply-chain.md) · [Tests/CI](16-test-and-ci-strategy.md) · [Engine boundary](17-xterm-adapter-risk-and-gates.md)
 
-**Accepted-for-design target with a limited implemented subset.** See 18 for the exact actual files and exclusions; this document continues to describe the intended architecture rather than claim a full service/client implementation.
+**Accepted-for-design target with a limited implemented subset.** See 18/20/21 for phase inventories, organization and the current worker limits; this document continues to describe the intended architecture rather than claim a full service/client implementation.
+
+The current worker requires the verified local native artifact before workspace build/checks: run `make assessment-bootstrap assessment-build`, then normal foundation checks. `make ea1-test` remains nonzero for its input selection failure. Another runner/build artifact is not automatically blessed; provenance and portability remain separate gates.
 
 ## Concrete proposed layout and ownership
 
-Use one repository, Cargo + pnpm and one product version. Current foundation: six Rust and four TS packages. Revised target: at most one additional binary-only native engine package (justified unsafe/ABI/process boundary), with desktop + protocol as shipping TS and the old engine-host/terminal-adapter retained as assessment references until deliberately retired. Avoid separate FFI/wrapper/wire/worker microcrates. Rust edition 2024, resolver 3 and compiler 1.91.0 are pinned for the current foundation; that is not shipping-platform certification. [Cargo workspaces](https://doc.rust-lang.org/cargo/reference/workspaces.html)
+Use one repository, Cargo + pnpm and one product version. Current foundation: seven Rust and four TS packages. This includes one experimental binary-only native engine package (justified unsafe/ABI/process boundary), with desktop + protocol as shipping TS and the old engine-host/terminal-adapter retained as assessment references until deliberately retired. Avoid separate FFI/wrapper/wire/worker microcrates. Rust edition 2024, resolver 3 and compiler 1.91.0 are pinned for the current foundation; that is not shipping-platform certification. [Cargo workspaces](https://doc.rust-lang.org/cargo/reference/workspaces.html)
 
 ```text
 project-x/                         TARGET + explicit future entries; see 19 for actual inventory
   Cargo.toml, Cargo.lock, rust-toolchain.toml
   package.json, pnpm-workspace.yaml, pnpm-lock.yaml
   crates/
-    protocol/                      public DTOs; future internal engine DTO namespace; schema export
+    protocol/                      public DTOs; internal engine DTO namespace; schema export
     domain/                        pure lifecycle/evidence/approval/scheduling rules
     platform/                      PTY/process/filesystem/runtime OS adapters
     service/                       supervisor/store; project-x-service + project-x-keeper
     client/                        Rust public IPC client, subscriptions/receipt reconciliation
     console/                       project-x CLI and Ratatui TUI modules, one binary
-    engine/                        FUTURE binary-only native worker, narrow audited FFI module
+    engine/                        EA1 experimental binary-only worker; narrow audited FFI module
   apps/
     desktop/                       Electron main/preload + React renderer; no broker internals
     engine-host/                   current xterm reference/assessment utility; not revised shipping target
@@ -51,14 +53,14 @@ The authorized bootstrap moved the 18 canonical documents into docs/ topic direc
 | Execution maintainer | platform and keeper modules: managed PTY, identity, runtime controls | Frontend event handling or acceptance decisions |
 | Service maintainer | service: domain↔wire mapping, store, admission, private engine/keeper IPC | Giving clients store/PTY FDs; deriving grants from UI state |
 | Client maintainers | client, console and desktop client code: projection/cache and user intent | service/platform/store imports, DB paths, private engine/keeper IPC |
-| Engine maintainer | future native engine worker/public C seam; current xterm assessment adapter + host | Grant creation, filesystem launch authority, UI-specific semantic TUI guesses |
+| Engine maintainer | experimental native engine worker/public C seam; current xterm assessment adapter + host | Grant creation, filesystem launch authority, UI-specific semantic TUI guesses |
 | Test/distribution maintainer | fixtures, system lanes, packaging/provenance | Privileged PR runners, silent dependency downloads in product startup |
 
 One person may fill several roles; responsibilities do not imply six teams. Security, protocol, engine or persistence changes require a second qualified reviewer where available. A solo maintainer explicitly records a delayed self-review plus the required adversarial evidence; that is not an independent audit.
 
 ## Acyclic dependency graph
 
-Arrows mean imports/compile dependencies, not runtime authority. The diagram combines current reference packages with an explicitly future native worker/internal DTO namespace. Actual checks currently enforce the six-Rust/four-TS graph; they do not claim the proposed engine package exists. Private wire DTOs remain a leaf data definition, not policy; no domain→wire dependency is added.
+Arrows mean imports/compile dependencies, not runtime authority. The diagram combines current reference packages with the experimental native worker/internal DTO namespace. Actual checks enforce seven Rust/four TS packages and require a binary-only engine depending only on protocol among application crates. Private wire DTOs remain a leaf data definition, not policy; no domain→wire dependency is added.
 
 ```mermaid
 flowchart TD
@@ -71,8 +73,8 @@ flowchart TD
     Desktop[desktop] --> TSWire[TS protocol + client]
     Desktop --> Adapter[reference terminal-adapter input types]
     Engine[reference TS engine-host] --> AdapterNode[reference terminal-adapter node entry]
-    Native[future native engine worker] --> Wire
-    Wire --> Private[future internal engine DTO namespace]
+    Native[EA1 native engine worker] --> Wire
+    Wire --> Private[internal engine DTO namespace]
     TSWire --> Schema[generated public schema]
     Private --> PrivateSchema[generated private schema]
 ```
@@ -83,7 +85,7 @@ CI uses Cargo metadata and package manifests/import rules to reject forbidden ed
 
 ## JS/TS workspace and build choice
 
-Recommend **pnpm with conventional node_modules**, a single root lockfile and explicit workspace references. Keep a pinned packageManager field/tool checksum and an exact supported Node LTS toolchain; do not assume Corepack or a globally installed manager. Electron has its own embedded runtime; the engine-host uses the separately bundled supported Node. Do not force their version numbers to match. No Nx/Turborepo/custom build graph initially.
+Recommend **pnpm with conventional node_modules**, a single root lockfile and explicit workspace references. Keep a pinned packageManager field/tool checksum and an exact supported Node LTS toolchain; do not assume Corepack or a globally installed manager. Electron has its own embedded runtime; the engine-host is an assessment reference, and the native shipping path would have no separate Node engine runtime. Do not force their version numbers to match. No Nx/Turborepo/custom build graph initially.
 
 | Alternative | Verified capability | Assessment for this repository |
 | --- | --- | --- |
@@ -130,7 +132,7 @@ Bootstrap order is [12](12-prototype-plan.md#foundation-bootstrap-after-separate
 
 ## Native-worker boundary after the assessment
 
-The future engine package may use `deny(unsafe_code)` with one explicitly audited FFI module exception; current crates retain workspace unsafe forbidden. No exception has been added. Validate C enum/struct ABI, ownership/allocator lifetimes, callback reentry/unwind, thread affinity and hostile lengths. The worker depends on wire DTOs only among application crates; service launches/authenticates it through platform operations but does not link the engine into the broker. Desktop/TUI/client cannot import private engine messages or reach that endpoint. It is not a sandbox until runtime/OS controls are verified. Public render-state extraction, Rust FFI and exact-build checkpoint migration remain EA1–EA4 gates.
+The experimental engine uses `deny(unsafe_code)` with one audited `ffi.rs` exception; the six original crates retain workspace unsafe forbidden. Validate C enum/struct ABI, ownership/allocator lifetimes, callback reentry/unwind, thread affinity and hostile lengths. The worker depends on wire DTOs only among application crates; service launches/authenticates it through platform operations but does not link the engine into the broker. Desktop/TUI/client cannot import private engine messages or reach that endpoint. It is not a sandbox until runtime/OS controls are verified. EA1 demonstrates selected public render-state/FFI semantics but fails required legacy control aliases. Complete rendering, checkpoint migration and release adoption remain gated; see 21.
 
 Current local commands and installed versions are in the root README/Makefile; `make assessment-bootstrap assessment-build assessment-check` is a separate bounded research lane. No Cargo/pnpm production dependency, crate or license was added for Ghostty; source/tool provenance supplements lockfiles under evidence/engine-assessment.
 

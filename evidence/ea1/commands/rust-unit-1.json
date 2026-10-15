@@ -1,0 +1,36 @@
+{
+  "input_file_sha256": {
+    "tests/assessment/ghostty-proof.c": "7f6e4a0ba1daf845bd54d39cc7933dd15422a33747cab424cc8bb2b8d78e51cc",
+    "tests/assessment/ghostty-assessment.mjs": "199a592427cb860e8c03d6716c87719c7d707ce824ee3320fbdc8998feb88def",
+    "tests/assessment/xterm-assessment.mjs": "37cf4c1d9d122600e301d906aed4b1e226840a127346a5c68edfd18e37768a22",
+    "tests/assessment/expectations.json": "36b0186836b1c227cc6b5d18b4141ccedb9a757f0c65c8537237ead4e8e41af3",
+    "tests/fixtures/terminal/continuations.json": "f4be9e644749b53fe236b6bed4b61410230c7775221f2633f51f18b9c904999a"
+  },
+  "command": [
+    "cargo",
+    "test",
+    "--workspace",
+    "--locked"
+  ],
+  "cwd": ".",
+  "recorded_at": "2026-10-15T17:48:40.103103+00:00",
+  "elapsed_seconds": 4.209,
+  "timeout_seconds": 300,
+  "exit": 0,
+  "verdict": "PASS",
+  "error": null,
+  "environment_overrides": {
+    "CARGO_HOME": "/home/w/codex-dir/project-x/.cache/cargo",
+    "PIP_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/pip",
+    "XDG_CACHE_HOME": "/home/w/codex-dir/project-x/.cache/xdg",
+    "XDG_DATA_HOME": "/home/w/codex-dir/project-x/.cache/xdg-data",
+    "XDG_STATE_HOME": "/home/w/codex-dir/project-x/.cache/xdg-state",
+    "ZIG_GLOBAL_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/engine-assessment/zig-global",
+    "ZIG_LOCAL_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/engine-assessment/zig-local",
+    "NPM_CONFIG_USERCONFIG": "/dev/null",
+    "NPM_CONFIG_GLOBALCONFIG": "/dev/null"
+  },
+  "stdout": "\nrunning 1 test\ntest tests::gaps_require_snapshot ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 3 tests\ntest tests::prefix_paste_cannot_open_palette ... ok\ntest tests::release_is_not_another_key ... ok\ntest tests::rendering_labels_incomplete_state ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 5 tests\ntest tests::full_storage_does_not_evict_receipts ... ok\ntest tests::reused_id_with_changed_payload_is_conflict ... ok\ntest tests::unknown_never_becomes_retry ... ok\ntest tests::old_generations_never_reserve ... ok\ntest tests::at_most_one_reservation_per_id ... ok\n\ntest result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s\n\n\nrunning 5 tests\ntest tests::geometry_caps_do_not_overflow ... ok\ntest tests::transport_rejects_partial_or_oversized_before_allocation ... ok\ntest tests::exhausted_counters_refuse_before_feed_or_resize ... ok\ntest ffi::tests::detached_frame_survives_owner_drop ... ok\ntest ffi::tests::render_transaction_rejects_mutation_and_drop_handles_partial_iteration ... ok\n\ntest result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s\n\n\nrunning 1 test\ntest tests::bounded_geometry ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 3 tests\ntest tests::unicode_scalar_values_are_lossless_or_rejected ... ok\ntest tests::fixture_and_duplicate_keys ... ok\ntest tests::arbitrary_frames_do_not_panic ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s\n\n\nrunning 2 tests\ntest tests::stale_focus_and_unknown_are_not_writes ... ok\ntest tests::every_view_context_fence_rejects_stale_admission ... ok\n\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+  "stderr": "   Compiling project-x-protocol v0.1.0 (/home/w/codex-dir/project-x/crates/protocol)\n   Compiling project-x-engine v0.1.0 (/home/w/codex-dir/project-x/crates/engine)\n   Compiling project-x-client v0.1.0 (/home/w/codex-dir/project-x/crates/client)\n   Compiling project-x-console v0.1.0 (/home/w/codex-dir/project-x/crates/console)\n   Compiling project-x-service v0.1.0 (/home/w/codex-dir/project-x/crates/service)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.63s\n     Running unittests src/lib.rs (target/debug/deps/project_x_client-23ae03a3c5d62cc4)\n     Running unittests src/lib.rs (target/debug/deps/project_x_console-b0e968f51d704b6a)\n     Running unittests src/main.rs (target/debug/deps/project_x_console-06cf37ec63924eb4)\n     Running unittests src/lib.rs (target/debug/deps/project_x_domain-444b4c1ce4333b98)\n     Running unittests src/main.rs (target/debug/deps/project_x_engine-9e83af318bf65322)\n     Running unittests src/lib.rs (target/debug/deps/project_x_platform-2a99f13fa40568ec)\n     Running unittests src/lib.rs (target/debug/deps/project_x_protocol-e90ac8f8bf514e14)\n     Running unittests src/lib.rs (target/debug/deps/project_x_service-2032959bf9d7a11b)\n   Doc-tests project_x_client\n   Doc-tests project_x_console\n   Doc-tests project_x_domain\n   Doc-tests project_x_platform\n   Doc-tests project_x_protocol\n   Doc-tests project_x_service\n",
+  "output_truncated": false
+}

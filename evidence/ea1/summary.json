@@ -1,0 +1,295 @@
+{
+  "date": "2026-10-15T18:06:35.131069+00:00",
+  "verdict": "FAIL",
+  "stop": "Essential legacy control-alias compatibility gate failed. EA2/dependent product work not started.",
+  "cleanup": {
+    "verdict": "PASS",
+    "before": 143,
+    "after": 152,
+    "record": "evidence/cleanup.json",
+    "checkpoint": "evidence/archive/pre-ea1-20261015T173427Z.tar.gz",
+    "moves": {
+      "scripts/bootstrap-engine-assessment.py": "scripts/assessment/bootstrap.py",
+      "scripts/check-assessment-preservation.py": "scripts/assessment/check-preservation.py",
+      "scripts/assessment-command.py": "scripts/record-command.py"
+    }
+  },
+  "structure": {
+    "rust_packages": 7,
+    "ts_reference_packages": 4,
+    "canonical_docs": 24,
+    "reviewable_files": 220,
+    "removed_paths_only_archived_script_moves": [
+      "scripts/assessment-command.py",
+      "scripts/bootstrap-engine-assessment.py",
+      "scripts/check-assessment-preservation.py"
+    ],
+    "added_paths": [
+      "crates/engine/Cargo.toml",
+      "crates/engine/build.rs",
+      "crates/engine/native/boundary.c",
+      "crates/engine/native/boundary.h",
+      "crates/engine/src/ffi.rs",
+      "crates/engine/src/main.rs",
+      "crates/protocol/examples/export-engine-schema.rs",
+      "crates/protocol/src/internal_engine.rs",
+      "docs/engineering/20-workspace-organization.md",
+      "docs/engineering/21-ea1-native-worker-results.md",
+      "evidence/README.md",
+      "evidence/archive/ea1-intermediate-foundation-checks.json",
+      "evidence/archive/post-cleanup-foundation-checks.json",
+      "evidence/archive/pre-ea1-20261015T173427Z.manifest.json",
+      "evidence/archive/pre-ea1-20261015T173427Z.tar.gz",
+      "evidence/cleanup-commands/cleanup-final-docs-1.json",
+      "evidence/cleanup-commands/cleanup-foundation-1.json",
+      "evidence/cleanup-commands/cleanup-preservation-1.json",
+      "evidence/cleanup.json",
+      "evidence/ea1/artifact-pin.json",
+      "evidence/ea1/commands/build-1.json",
+      "evidence/ea1/commands/build-10.json",
+      "evidence/ea1/commands/build-11.json",
+      "evidence/ea1/commands/build-2.json",
+      "evidence/ea1/commands/build-3.json",
+      "evidence/ea1/commands/build-4.json",
+      "evidence/ea1/commands/build-5.json",
+      "evidence/ea1/commands/build-6.json",
+      "evidence/ea1/commands/build-7.json",
+      "evidence/ea1/commands/build-8.json",
+      "evidence/ea1/commands/build-9.json",
+      "evidence/ea1/commands/final-docs-1.json",
+      "evidence/ea1/commands/final-docs-2.json",
+      "evidence/ea1/commands/final-docs-3.json",
+      "evidence/ea1/commands/final-foundation-1.json",
+      "evidence/ea1/commands/final-foundation-2.json",
+      "evidence/ea1/commands/final-preservation-1.json",
+      "evidence/ea1/commands/final-workspace-check-1.json",
+      "evidence/ea1/commands/original-x4-final-1.json",
+      "evidence/ea1/commands/ownership-1.json",
+      "evidence/ea1/commands/ownership-2.json",
+      "evidence/ea1/commands/ownership-3.json",
+      "evidence/ea1/commands/preservation-1.json",
+      "evidence/ea1/commands/provenance-1.json",
+      "evidence/ea1/commands/provenance-2.json",
+      "evidence/ea1/commands/provenance-3.json",
+      "evidence/ea1/commands/provenance-4.json",
+      "evidence/ea1/commands/rust-lint-1.json",
+      "evidence/ea1/commands/rust-unit-1.json",
+      "evidence/ea1/commands/shared-inputs-1.json",
+      "evidence/ea1/commands/shared-inputs-2.json",
+      "evidence/ea1/commands/shared-inputs-3.json",
+      "evidence/ea1/commands/source-verification-1.json",
+      "evidence/ea1/commands/worker-tests-1.json",
+      "evidence/ea1/commands/worker-tests-2.json",
+      "evidence/ea1/commands/worker-tests-3.json",
+      "evidence/ea1/commands/worker-tests-4.json",
+      "evidence/ea1/commands/worker-tests-5.json",
+      "evidence/ea1/commands/worker-tests-6.json",
+      "evidence/ea1/commands/workspace-check-1.json",
+      "evidence/ea1/continuations.json",
+      "evidence/ea1/keys.json",
+      "evidence/ea1/legacy-control-aliases.json",
+      "evidence/ea1/ownership.json",
+      "evidence/ea1/preservation.json",
+      "evidence/ea1/provenance.json",
+      "evidence/ea1/shared-inputs.json",
+      "evidence/ea1/summary.json",
+      "make/assessment.mk",
+      "make/ea1.mk",
+      "schemas/private/engine-request.schema.json",
+      "schemas/private/engine-response.schema.json",
+      "scripts/assessment/bootstrap.py",
+      "scripts/assessment/check-preservation.py",
+      "scripts/record-command.py",
+      "tests/ea1/ownership_check.py",
+      "tests/ea1/preservation.py",
+      "tests/ea1/provenance.py",
+      "tests/ea1/shared-inputs.mjs",
+      "tests/ea1/worker_test.py"
+    ]
+  },
+  "checks": {
+    "build": {
+      "path": "evidence/ea1/commands/build-11.json",
+      "verdict": "PASS",
+      "exit": 0,
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "-p",
+        "project-x-engine"
+      ]
+    },
+    "ownership": {
+      "path": "evidence/ea1/commands/ownership-3.json",
+      "verdict": "PASS",
+      "exit": 0,
+      "command": [
+        "python3",
+        "-B",
+        "tests/ea1/ownership_check.py"
+      ]
+    },
+    "provenance": {
+      "path": "evidence/ea1/commands/provenance-4.json",
+      "verdict": "PASS",
+      "exit": 0,
+      "command": [
+        "python3",
+        "-B",
+        "tests/ea1/provenance.py"
+      ]
+    },
+    "shared-inputs": {
+      "path": "evidence/ea1/commands/shared-inputs-3.json",
+      "verdict": "PASS",
+      "exit": 0,
+      "command": [
+        "node",
+        "tests/ea1/shared-inputs.mjs"
+      ]
+    },
+    "worker-tests": {
+      "path": "evidence/ea1/commands/worker-tests-6.json",
+      "verdict": "FAIL",
+      "exit": 1,
+      "command": [
+        "python3",
+        "-B",
+        "tests/ea1/worker_test.py"
+      ]
+    },
+    "source-verification": {
+      "path": "evidence/ea1/commands/source-verification-1.json",
+      "verdict": "PASS",
+      "exit": 0,
+      "command": [
+        "python3",
+        "-B",
+        "scripts/assessment/bootstrap.py"
+      ]
+    },
+    "final-workspace-check": {
+      "path": "evidence/ea1/commands/final-workspace-check-1.json",
+      "verdict": "PASS",
+      "exit": 0,
+      "command": [
+        "make",
+        "check"
+      ]
+    },
+    "final-foundation": {
+      "path": "evidence/ea1/commands/final-foundation-2.json",
+      "verdict": "PASS",
+      "exit": 0,
+      "command": [
+        "make",
+        "verify"
+      ]
+    },
+    "original-x4-final": {
+      "path": "evidence/ea1/commands/original-x4-final-1.json",
+      "verdict": "FAIL",
+      "exit": 2,
+      "command": [
+        "make",
+        "engine-gate"
+      ]
+    },
+    "final-docs": {
+      "path": "evidence/ea1/commands/final-docs-3.json",
+      "verdict": "PASS",
+      "exit": 0,
+      "command": [
+        "make",
+        "docs"
+      ]
+    },
+    "final-preservation": {
+      "path": "evidence/ea1/commands/final-preservation-1.json",
+      "verdict": "PASS",
+      "exit": 0,
+      "command": [
+        "python3",
+        "-B",
+        "tests/ea1/preservation.py"
+      ]
+    }
+  },
+  "native_tests": {
+    "methods": 13,
+    "passing_methods": 12,
+    "failing_methods": 1,
+    "failing_subcases": [
+      {
+        "chord": "Ctrl-i",
+        "expected_hex": "09",
+        "actual_hex": "1b5b3130353b3575",
+        "verdict": "FAIL"
+      },
+      {
+        "chord": "Ctrl-m",
+        "expected_hex": "0d",
+        "actual_hex": "1b5b3130393b3575",
+        "verdict": "FAIL"
+      },
+      {
+        "chord": "Ctrl-[",
+        "expected_hex": "1b",
+        "actual_hex": "1b5b39313b3575",
+        "verdict": "FAIL"
+      }
+    ],
+    "continuation_prefix_trials": 86
+  },
+  "foundation": {
+    "checks_passed": 14,
+    "rust_tests_passed": 20,
+    "js_tests_passed": 12,
+    "seeded_partitions_passed": 192,
+    "original_x4_verdict": "FAIL",
+    "original_x4_process_exit": 1
+  },
+  "docs": {
+    "markdown_files": 28,
+    "canonical_pages": 24,
+    "local_links_and_fragments": 402,
+    "strict_mkdocs": "PASS",
+    "test_strategy_original_body_preserved": true,
+    "unique_canonical_titles": true
+  },
+  "provenance": "evidence/ea1/provenance.json",
+  "preservation": "evidence/ea1/preservation.json",
+  "archives_sha256": {
+    "evidence/archive/pre-engine-spec-update.manifest.json": "2432c5069f417e23cff4ffc8e1b664face6ed0b2f159cfcb5747cb88bdf69225",
+    "evidence/archive/pre-engine-assessment-20261015T164051Z.manifest.json": "d38b9f4f5178b886981c30b0ad7246404335d30cdf3bf8589dffa0fa7b8adc75",
+    "evidence/archive/post-cleanup-foundation-checks.json": "f3483f3dcda7b0187ef6666e0cb724549f05d0fb07f11ae8e42abc639183e88f",
+    "evidence/archive/ea1-intermediate-foundation-checks.json": "fbab8bb9f0ac355003c3c88aba59b12abab801c4db9d9dfbcde39159e17a6d7d",
+    "evidence/archive/pre-engine-spec-update.tar.gz": "031e43731a4ca89ff70ef66f4431c4c05a5ec4724de201bbd8ee26cda538ebcc",
+    "evidence/archive/pre-ea1-20261015T173427Z.manifest.json": "62241e460cb010ecdffabc5f71be7e4df957dcbc695c6511384303bf10881fb6",
+    "evidence/archive/pre-ea1-20261015T173427Z.tar.gz": "b9711446f7872a478c8a739e97d68eb25ff7459b88f86afe9ffbd2135b4f3716",
+    "evidence/archive/pre-engine-assessment-20261015T164051Z.tar.gz": "d694e7c4fa1f61a3138df70f9bc00f06906693896004a795839e4f855f479ce1"
+  },
+  "not_run": [
+    "Actual Electron/host TUI rendering, accessibility, IME/layout/host key decoding",
+    "Broker/keeper/PTY dispatch, writer leases/approval/focus enforcement",
+    "Runtime OS sandbox, sanitizer/allocator faults, hostile-input fuzz campaign",
+    "Capture/checkpoint/tail/crash or process recovery",
+    "G6 all-process/many-session latency and resource qualification",
+    "Cross-platform/cross-version/upgrade and CI artifact qualification"
+  ],
+  "recommendation": "Resolve a bounded public encoder legacy-compatibility policy with correct negotiated modes before EA2; no current public fixterms toggle, no private fork/byte substitution/requirement waiver. Reopen alternative/fork selection if this cannot be exposed within budget.",
+  "git": {
+    "branch": "main",
+    "commit_count": 0,
+    "staged_files": [],
+    "remotes": [],
+    "state": "All reviewable files untracked; nothing staged or committed; no license adopted"
+  },
+  "final_review": {
+    "test_strategy_original_body_verified": true,
+    "restart_fence_test": "Fresh parent-supplied incarnation rejects stale zero-revision stamp; worker cannot enforce uniqueness across its own death.",
+    "no_more_application_work": true,
+    "all_command_sessions_finished": true
+  }
+}

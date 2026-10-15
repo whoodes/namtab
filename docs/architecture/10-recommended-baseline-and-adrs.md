@@ -1,6 +1,6 @@
 # Recommended baseline and architecture decisions
 
-> Current decision: [ADR E1](../adr/0001-engine-ownership-and-presentation.md) supersedes the xterm browser-replica/Node-host choice with recommended public libghostty-vt and owned presentation. [ADR E2](../adr/0002-terminal-continuity-and-checkpoints.md) separates continuity/capture/process recovery. The [completed assessment](../engineering/19-engine-build-adopt-redesign-assessment.md) establishes bounded proofs only; shipping qualification and dependent product work remain gated.
+> Current decision: [ADR E1](../adr/0001-engine-ownership-and-presentation.md) supersedes the xterm browser-replica/Node-host choice with recommended public libghostty-vt and owned presentation. [ADR E2](../adr/0002-terminal-continuity-and-checkpoints.md) separates continuity/capture/process recovery. The [completed assessment](../engineering/19-engine-build-adopt-redesign-assessment.md) establishes bounded proofs only; shipping qualification and dependent product work remain gated. Subsequent [EA1](../engineering/21-ea1-native-worker-results.md) implements only the experimental native seam and fails legacy-control aliases.
 
 
 [Index](../index.md) · [Stack evidence](../research/06-technology-distribution-and-compatibility.md) · [Human UX](../ux/11-human-experience-spec.md) · [Ordered prototype plan](../engineering/12-prototype-plan.md)

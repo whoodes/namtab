@@ -1,0 +1,43 @@
+{
+  "input_file_sha256": {
+    "tests/assessment/ghostty-proof.c": "7f6e4a0ba1daf845bd54d39cc7933dd15422a33747cab424cc8bb2b8d78e51cc",
+    "tests/assessment/ghostty-assessment.mjs": "199a592427cb860e8c03d6716c87719c7d707ce824ee3320fbdc8998feb88def",
+    "tests/assessment/xterm-assessment.mjs": "37cf4c1d9d122600e301d906aed4b1e226840a127346a5c68edfd18e37768a22",
+    "tests/assessment/expectations.json": "36b0186836b1c227cc6b5d18b4141ccedb9a757f0c65c8537237ead4e8e41af3",
+    "tests/fixtures/terminal/continuations.json": "f4be9e644749b53fe236b6bed4b61410230c7775221f2633f51f18b9c904999a",
+    "crates/engine/native/boundary.c": "8d874f3f28a84d7b6288abb0d532aa8cd35a30e8133a21a43e3850f6ccb0893f",
+    "crates/engine/native/boundary.h": "cd1272fdeadd20bd22453a14630fb6415105accc49d5f0e266006c64a06303eb",
+    "crates/engine/src/ffi.rs": "f59978263e09537f41d14ca993474b10baa3c5a86be8a9aefca05c02c2ad388a",
+    "crates/engine/src/main.rs": "a26810482920ae9b42c3685a5e9cba7aad428ecf9428148cc1067f4fafaa8616",
+    "crates/protocol/src/internal_engine.rs": "7e77e40923eea8ee3e9a980b116a5fe51c57bc1888bfd4e6ce9249b6d34d8a9d",
+    "Cargo.lock": "7156d2082457d9ebbc5da80a943a7b08af3f0a14b3d87a665a540042195bb52d",
+    "evidence/ea1/artifact-pin.json": "c72e012e118a668f7c3872a7265a6f32db0ca5dc145780988dc2786d77eeac45",
+    "tests/ea1/worker_test.py": "14087fe65e6f0189a0f942f702a7306f8bc77895cd3e80a16919b5796065d800"
+  },
+  "command": [
+    "python3",
+    "-B",
+    "tests/ea1/worker_test.py"
+  ],
+  "cwd": ".",
+  "recorded_at": "2026-10-15T17:49:21.807812+00:00",
+  "elapsed_seconds": 1.267,
+  "timeout_seconds": 300,
+  "exit": 1,
+  "verdict": "FAIL",
+  "error": null,
+  "environment_overrides": {
+    "XDG_DATA_HOME": "/home/w/codex-dir/project-x/.cache/xdg-data",
+    "CARGO_HOME": "/home/w/codex-dir/project-x/.cache/cargo",
+    "PIP_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/pip",
+    "XDG_CACHE_HOME": "/home/w/codex-dir/project-x/.cache/xdg",
+    "NPM_CONFIG_USERCONFIG": "/dev/null",
+    "NPM_CONFIG_GLOBALCONFIG": "/dev/null",
+    "XDG_STATE_HOME": "/home/w/codex-dir/project-x/.cache/xdg-state",
+    "ZIG_GLOBAL_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/engine-assessment/zig-global",
+    "ZIG_LOCAL_CACHE_DIR": "/home/w/codex-dir/project-x/.cache/engine-assessment/zig-local"
+  },
+  "stdout": "",
+  "stderr": "test_character_commits_enhanced_protocol_and_paste_focus_mouse (__main__.Tests) ... ok\ntest_malformed_protocol_and_truncated_transport (__main__.Tests) ... ok\ntest_named_key_families_modes_and_modifiers (__main__.Tests) ... ok\ntest_original_continuations_and_all_prefix_splits (__main__.Tests) ... ok\ntest_output_flood_and_resource_refusals (__main__.Tests) ... ok\ntest_reply_overflow_latches_unknown_and_no_partial_bytes (__main__.Tests) ... ok\ntest_required_legacy_control_aliases (__main__.Tests) ... test_shared_frontend_intents_use_one_encoder (__main__.Tests) ... ok\ntest_shutdown_eof_broken_consumer_and_worker_loss (__main__.Tests) ... ok\ntest_single_reply_owner_exact_stream_no_retries (__main__.Tests) ... ok\ntest_slow_consumer_preserves_frame_boundaries (__main__.Tests) ... ok\ntest_stale_identity_resize_and_shutdown (__main__.Tests) ... ok\ntest_unicode_styles_resize_alternate_and_attach (__main__.Tests) ... ok\n\n======================================================================\nFAIL: test_required_legacy_control_aliases (__main__.Tests) (chord='Ctrl-i')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/w/codex-dir/project-x/tests/ea1/worker_test.py\", line 201, in test_required_legacy_control_aliases\n    with self.subTest(chord=item['chord']):self.assertEqual(item['actual_hex'],item['expected_hex'])\nAssertionError: '1b5b3130353b3575' != '09'\n- 1b5b3130353b3575\n+ 09\n\n\n======================================================================\nFAIL: test_required_legacy_control_aliases (__main__.Tests) (chord='Ctrl-m')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/w/codex-dir/project-x/tests/ea1/worker_test.py\", line 201, in test_required_legacy_control_aliases\n    with self.subTest(chord=item['chord']):self.assertEqual(item['actual_hex'],item['expected_hex'])\nAssertionError: '1b5b3130393b3575' != '0d'\n- 1b5b3130393b3575\n+ 0d\n\n\n======================================================================\nFAIL: test_required_legacy_control_aliases (__main__.Tests) (chord='Ctrl-[')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/w/codex-dir/project-x/tests/ea1/worker_test.py\", line 201, in test_required_legacy_control_aliases\n    with self.subTest(chord=item['chord']):self.assertEqual(item['actual_hex'],item['expected_hex'])\nAssertionError: '1b5b39313b3575' != '1b'\n- 1b5b39313b3575\n+ 1b\n\n\n----------------------------------------------------------------------\nRan 13 tests in 1.208s\n\nFAILED (failures=3)\n",
+  "output_truncated": false
+}

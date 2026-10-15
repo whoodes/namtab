@@ -1,7 +1,7 @@
 {
   "description": "Lock-selected Cargo entries and installed registry metadata; unfetched target licenses unknown. Cargo manifest license extraction handles simple scalar declarations only. No legal clearance, advisory scan, release SBOM or build attestation.",
   "locks": {
-    "Cargo.lock": "15fd6ca90a15ff8ba1f4579fd3b019db1186ba7c5bccd74d764d508b505c3fac",
+    "Cargo.lock": "7156d2082457d9ebbc5da80a943a7b08af3f0a14b3d87a665a540042195bb52d",
     "pnpm-lock.yaml": "448688b057b8276aa826d0d76aa5b1d73e088f8131ff20128701081bdb149ba4",
     "requirements-docs.txt": "e9f6f2bdb4fa8a6d9be9bb9b5d571e5e583e65338b1de9a15c44907503a0d70f"
   },
@@ -514,6 +514,12 @@
     },
     {
       "name": "project-x-domain",
+      "version": "0.1.0",
+      "source": null,
+      "checksum": null
+    },
+    {
+      "name": "project-x-engine",
       "version": "0.1.0",
       "source": null,
       "checksum": null

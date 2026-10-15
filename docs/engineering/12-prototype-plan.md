@@ -1,5 +1,8 @@
 # Ordered prototype plan and decision gates
 
+> Subsequent [EA1 results](21-ea1-native-worker-results.md): experimental Rust/public-C state and reply seams demonstrated; required legacy control aliases **FAIL**. No EA2/dependent application work. Original X4 stays independently red.
+
+
 > Engineering continuation: the completed [assessment](19-engine-build-adopt-redesign-assessment.md) recommends public libghostty-vt plus owned semantic rendering for the next prototype. Original serializer X4 stays failed; canonical A and native snapshot B pass bounded fixtures. EA1–EA4 refine the remaining PP1/PP2/PP3/PP4 gates, not a declaration that they passed. No dependent product implementation occurred.
 
 
@@ -26,7 +29,7 @@ Each result records exact source/package revisions, machine/OS/display/GPU detai
 
 ## PP1: falsifying the default early
 
-The initial xterm exploration and subsequent libghostty-vt assessment are complete at bounded scope; [19](19-engine-build-adopt-redesign-assessment.md) records exact evidence. Next, EA1–EA4 establish a public native seam, both real renderers and recovery/maintenance under ADR E1/E2. Preserve the original X4 oracle and no-capture limits. A private helper, a binary snapshot name or passing six fixtures does not establish a full product API or certification.
+The initial xterm exploration and subsequent libghostty-vt assessment are complete at bounded scope; [19](19-engine-build-adopt-redesign-assessment.md) records exact evidence. EA1 now has a bounded public native seam with a failed legacy-input selection gate (21). Resolve that gate before EA2–EA4 establish real renderers and recovery/maintenance under ADR E1/E2. Preserve the original X4 oracle and no-capture limits. A private helper, a binary snapshot name or passing six fixtures does not establish a full product API or certification.
 
 The exercise must distinguish logical key encoding, human committed text/IME, paste, negotiated mouse reports, terminal replies, raw fallback and UI commands. Cover application cursor/keypad modes, modifiers/function keys, enhanced keyboard negotiation, bracketed paste, Escape timing, Unicode, alternate screen and resize. Replay fixtures with different chunk boundaries; compare canonical/presentation observations at explicit prefixes. A completed write callback, not an arbitrary frame event, establishes the relevant parser frontier. New views must not send duplicate device replies. Human key handling must not require stealing global browser focus for agent actions.
 
@@ -69,7 +72,7 @@ This ordered plan now governs the authorized bootstrap. Its current stopping poi
 7. **Close performance and human gates.** Full PP3/G6 three-mode all-process benchmark and PP8 critical-error tasks, declared fixtures/measurement apparatus and thresholds. No invented latency or small-sample productivity claim.
 8. **Package and review release evidence.** PP7/CI4 verifies both artifacts, offline startup, migration/rollback/logout, SBOM/notices/license-owner decision and complete advertised-profile evidence. Later ports/remote helper/128-session work stay outside this foundation.
 
-The actual six-Rust/four-TS foundation remains bounded. ADR E1 proposes one future native worker package and two shipping TS packages; reference harness packages are not deleted or called production. [14](14-repository-and-engineering-practices.md) owns the target/current distinction. Unit/property/wire tests precede broad integration, and costly matrices expand only with supported claims.
+The actual seven-Rust/four-TS foundation remains bounded, including the experimental EA1 binary worker. ADR E1 proposes two shipping TS packages; reference harness packages are not deleted or called production. [14](14-repository-and-engineering-practices.md) owns the target/current distinction. Unit/property/wire tests precede broad integration, and costly matrices expand only with supported claims.
 
 ## Beyond the first certified baseline
 

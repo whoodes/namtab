@@ -1,0 +1,150 @@
+{
+  "verdict": "PASS",
+  "results": [
+    {
+      "origin": "consoleIntents",
+      "application_cursor": false,
+      "intent": {
+        "kind": "key",
+        "key": "Up",
+        "shift": false,
+        "alt": false,
+        "ctrl": false
+      },
+      "bytes_hex": "1b5b41"
+    },
+    {
+      "origin": "consoleIntents",
+      "application_cursor": false,
+      "intent": {
+        "kind": "key",
+        "key": "Tab",
+        "shift": true,
+        "alt": false,
+        "ctrl": false
+      },
+      "bytes_hex": "1b5b5a"
+    },
+    {
+      "origin": "consoleIntents",
+      "application_cursor": false,
+      "intent": {
+        "kind": "key",
+        "key": "F12",
+        "shift": false,
+        "alt": false,
+        "ctrl": true
+      },
+      "bytes_hex": "1b5b32343b357e"
+    },
+    {
+      "origin": "consoleIntents",
+      "application_cursor": true,
+      "intent": {
+        "kind": "key",
+        "key": "Up",
+        "shift": false,
+        "alt": false,
+        "ctrl": false
+      },
+      "bytes_hex": "1b4f41"
+    },
+    {
+      "origin": "consoleIntents",
+      "application_cursor": true,
+      "intent": {
+        "kind": "key",
+        "key": "Tab",
+        "shift": true,
+        "alt": false,
+        "ctrl": false
+      },
+      "bytes_hex": "1b5b5a"
+    },
+    {
+      "origin": "consoleIntents",
+      "application_cursor": true,
+      "intent": {
+        "kind": "key",
+        "key": "F12",
+        "shift": false,
+        "alt": false,
+        "ctrl": true
+      },
+      "bytes_hex": "1b5b32343b357e"
+    },
+    {
+      "origin": "desktopIntents",
+      "application_cursor": false,
+      "intent": {
+        "kind": "key",
+        "key": "Up",
+        "shift": false,
+        "alt": false,
+        "ctrl": false
+      },
+      "bytes_hex": "1b5b41"
+    },
+    {
+      "origin": "desktopIntents",
+      "application_cursor": false,
+      "intent": {
+        "kind": "key",
+        "key": "Tab",
+        "shift": true,
+        "alt": false,
+        "ctrl": false
+      },
+      "bytes_hex": "1b5b5a"
+    },
+    {
+      "origin": "desktopIntents",
+      "application_cursor": false,
+      "intent": {
+        "kind": "key",
+        "key": "F12",
+        "shift": false,
+        "alt": false,
+        "ctrl": true
+      },
+      "bytes_hex": "1b5b32343b357e"
+    },
+    {
+      "origin": "desktopIntents",
+      "application_cursor": true,
+      "intent": {
+        "kind": "key",
+        "key": "Up",
+        "shift": false,
+        "alt": false,
+        "ctrl": false
+      },
+      "bytes_hex": "1b4f41"
+    },
+    {
+      "origin": "desktopIntents",
+      "application_cursor": true,
+      "intent": {
+        "kind": "key",
+        "key": "Tab",
+        "shift": true,
+        "alt": false,
+        "ctrl": false
+      },
+      "bytes_hex": "1b5b5a"
+    },
+    {
+      "origin": "desktopIntents",
+      "application_cursor": true,
+      "intent": {
+        "kind": "key",
+        "key": "F12",
+        "shift": false,
+        "alt": false,
+        "ctrl": true
+      },
+      "bytes_hex": "1b5b32343b357e"
+    }
+  ],
+  "limits": "Synthetic normalization and one worker contract; no actual frontend connection, focus, screen reader, keyboard or application."
+}

@@ -1,5 +1,5 @@
 {
-  "date": "2026-10-15T17:35:21.781Z",
+  "date": "2026-10-15T18:00:42.109Z",
   "environment": {
     "platform": "linux",
     "release": "6.8.0-138-generic",
@@ -17,7 +17,7 @@
       ],
       "exit": 0,
       "error": null,
-      "elapsed_ms": 69,
+      "elapsed_ms": 70,
       "stdout": "cargo 1.91.0 (ea2d97820 2025-10-10)\n",
       "stderr": ""
     },
@@ -28,7 +28,7 @@
       ],
       "exit": 0,
       "error": null,
-      "elapsed_ms": 78,
+      "elapsed_ms": 74,
       "stdout": "rustc 1.91.0 (f8297e351 2025-10-28)\n",
       "stderr": ""
     },
@@ -39,7 +39,7 @@
       ],
       "exit": 0,
       "error": null,
-      "elapsed_ms": 8,
+      "elapsed_ms": 9,
       "stdout": "v24.21.0\n",
       "stderr": ""
     },
@@ -51,7 +51,7 @@
       ],
       "exit": 0,
       "error": null,
-      "elapsed_ms": 304,
+      "elapsed_ms": 302,
       "stdout": "10.32.1\n",
       "stderr": ""
     },
@@ -62,7 +62,7 @@
       ],
       "exit": 0,
       "error": null,
-      "elapsed_ms": 4,
+      "elapsed_ms": 5,
       "stdout": "Python 3.10.12\n",
       "stderr": ""
     },
@@ -91,8 +91,8 @@
       ],
       "exit": 0,
       "error": null,
-      "elapsed_ms": 324,
-      "stdout": "27 Markdown files, 387 local links/fragments checked, 0 errors.\n",
+      "elapsed_ms": 326,
+      "stdout": "28 Markdown files, 401 local links/fragments checked, 0 errors.\n",
       "stderr": ""
     },
     {
@@ -110,6 +110,7 @@
         "tests/system",
         "tests/fuzz",
         "tests/assessment",
+        "tests/ea1",
         "package.json",
         "tsconfig.json",
         "mkdocs.yml",
@@ -118,7 +119,7 @@
       ],
       "exit": 0,
       "error": null,
-      "elapsed_ms": 868,
+      "elapsed_ms": 897,
       "stdout": "Checking formatting...\nAll matched files use Prettier code style!\n",
       "stderr": ""
     },
@@ -135,8 +136,8 @@
       ],
       "exit": 0,
       "error": null,
-      "elapsed_ms": 460,
-      "stdout": "Scope: all 5 workspace projects\nLockfile is up to date, resolution step is skipped\nAlready up to date\n\nDone in 416ms using pnpm v10.32.1\n",
+      "elapsed_ms": 466,
+      "stdout": "Scope: all 5 workspace projects\nLockfile is up to date, resolution step is skipped\nAlready up to date\n\nDone in 418ms using pnpm v10.32.1\n",
       "stderr": ""
     },
     {
@@ -151,7 +152,7 @@
       ],
       "exit": 0,
       "error": null,
-      "elapsed_ms": 230,
+      "elapsed_ms": 235,
       "stdout": "",
       "stderr": ""
     },
@@ -185,9 +186,9 @@
       ],
       "exit": 0,
       "error": null,
-      "elapsed_ms": 577,
-      "stdout": "\nrunning 1 test\ntest tests::gaps_require_snapshot ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 3 tests\ntest tests::prefix_paste_cannot_open_palette ... ok\ntest tests::release_is_not_another_key ... ok\ntest tests::rendering_labels_incomplete_state ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 5 tests\ntest tests::full_storage_does_not_evict_receipts ... ok\ntest tests::unknown_never_becomes_retry ... ok\ntest tests::reused_id_with_changed_payload_is_conflict ... ok\ntest tests::old_generations_never_reserve ... ok\ntest tests::at_most_one_reservation_per_id ... ok\n\ntest result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 1 test\ntest tests::bounded_geometry ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 3 tests\ntest tests::unicode_scalar_values_are_lossless_or_rejected ... ok\ntest tests::fixture_and_duplicate_keys ... ok\ntest tests::arbitrary_frames_do_not_panic ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s\n\n\nrunning 2 tests\ntest tests::stale_focus_and_unknown_are_not_writes ... ok\ntest tests::every_view_context_fence_rejects_stale_admission ... ok\n\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
-      "stderr": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.14s\n     Running unittests src/lib.rs (target/debug/deps/project_x_client-23ae03a3c5d62cc4)\n     Running unittests src/lib.rs (target/debug/deps/project_x_console-b0e968f51d704b6a)\n     Running unittests src/main.rs (target/debug/deps/project_x_console-06cf37ec63924eb4)\n     Running unittests src/lib.rs (target/debug/deps/project_x_domain-444b4c1ce4333b98)\n     Running unittests src/lib.rs (target/debug/deps/project_x_platform-2a99f13fa40568ec)\n     Running unittests src/lib.rs (target/debug/deps/project_x_protocol-e90ac8f8bf514e14)\n     Running unittests src/lib.rs (target/debug/deps/project_x_service-2032959bf9d7a11b)\n   Doc-tests project_x_client\n   Doc-tests project_x_console\n   Doc-tests project_x_domain\n   Doc-tests project_x_platform\n   Doc-tests project_x_protocol\n   Doc-tests project_x_service\n"
+      "elapsed_ms": 952,
+      "stdout": "\nrunning 1 test\ntest tests::gaps_require_snapshot ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 3 tests\ntest tests::prefix_paste_cannot_open_palette ... ok\ntest tests::release_is_not_another_key ... ok\ntest tests::rendering_labels_incomplete_state ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 5 tests\ntest tests::full_storage_does_not_evict_receipts ... ok\ntest tests::reused_id_with_changed_payload_is_conflict ... ok\ntest tests::unknown_never_becomes_retry ... ok\ntest tests::old_generations_never_reserve ... ok\ntest tests::at_most_one_reservation_per_id ... ok\n\ntest result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 5 tests\ntest tests::geometry_caps_do_not_overflow ... ok\ntest tests::transport_rejects_partial_or_oversized_before_allocation ... ok\ntest ffi::tests::detached_frame_survives_owner_drop ... ok\ntest tests::exhausted_counters_refuse_before_feed_or_resize ... ok\ntest ffi::tests::render_transaction_rejects_mutation_and_drop_handles_partial_iteration ... ok\n\ntest result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s\n\n\nrunning 1 test\ntest tests::bounded_geometry ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 3 tests\ntest tests::unicode_scalar_values_are_lossless_or_rejected ... ok\ntest tests::fixture_and_duplicate_keys ... ok\ntest tests::arbitrary_frames_do_not_panic ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s\n\n\nrunning 2 tests\ntest tests::stale_focus_and_unknown_are_not_writes ... ok\ntest tests::every_view_context_fence_rejects_stale_admission ... ok\n\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+      "stderr": "   Compiling project-x-engine v0.1.0 (/home/w/codex-dir/project-x/crates/engine)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.41s\n     Running unittests src/lib.rs (target/debug/deps/project_x_client-23ae03a3c5d62cc4)\n     Running unittests src/lib.rs (target/debug/deps/project_x_console-b0e968f51d704b6a)\n     Running unittests src/main.rs (target/debug/deps/project_x_console-06cf37ec63924eb4)\n     Running unittests src/lib.rs (target/debug/deps/project_x_domain-444b4c1ce4333b98)\n     Running unittests src/main.rs (target/debug/deps/project_x_engine-9e83af318bf65322)\n     Running unittests src/lib.rs (target/debug/deps/project_x_platform-2a99f13fa40568ec)\n     Running unittests src/lib.rs (target/debug/deps/project_x_protocol-e90ac8f8bf514e14)\n     Running unittests src/lib.rs (target/debug/deps/project_x_service-2032959bf9d7a11b)\n   Doc-tests project_x_client\n   Doc-tests project_x_console\n   Doc-tests project_x_domain\n   Doc-tests project_x_platform\n   Doc-tests project_x_protocol\n   Doc-tests project_x_service\n"
     },
     {
       "name": "bindings-drift",
@@ -199,7 +200,7 @@
       ],
       "exit": 0,
       "error": null,
-      "elapsed_ms": 383,
+      "elapsed_ms": 630,
       "stdout": "",
       "stderr": ""
     },
@@ -213,7 +214,7 @@
       ],
       "exit": 0,
       "error": null,
-      "elapsed_ms": 472,
+      "elapsed_ms": 488,
       "stdout": "\n> project-x@0.1.0 build /home/w/codex-dir/project-x\n> tsc -b && node scripts/copy-generated.mjs\n\n",
       "stderr": ""
     },
@@ -226,8 +227,8 @@
       ],
       "exit": 0,
       "error": null,
-      "elapsed_ms": 128,
-      "stdout": "Boundary checks passed: six Rust crates, four TS packages, allowed edges acyclic. Static checks do not enforce runtime authority.\n",
+      "elapsed_ms": 133,
+      "stdout": "Boundary checks passed: seven Rust crates (engine is binary-only EA1), four TS packages, allowed edges acyclic. Static checks do not enforce runtime authority.\n",
       "stderr": ""
     },
     {
@@ -239,7 +240,7 @@
       ],
       "exit": 0,
       "error": null,
-      "elapsed_ms": 53,
+      "elapsed_ms": 50,
       "stdout": "Sanitized fixture manifest verified (2 payloads).\n",
       "stderr": ""
     },
@@ -253,8 +254,8 @@
       ],
       "exit": 0,
       "error": null,
-      "elapsed_ms": 774,
-      "stdout": "✔ shared wire shape and bounded decimal semantics (11.407143ms)\n✔ synthetic Crossterm and desktop key intents agree (153.119561ms)\n✔ pinned upstream helper handles cursor modes, modifiers, Tab and function keys (0.95632ms)\n✔ helper counterexample: keypad Enter has no application-keypad input (0.307507ms)\n✔ canonical feed-only observations, no UI needed, detached immutable snapshots (18.981904ms)\n✔ two identical query events produce two canonical replies; replicas have no dispatch lane (3.457373ms)\n✔ all byte split positions preserve UTF-8/query/control interpretation (62.00002ms)\n✔ paste mode encoding is separate from key events and embedded boundaries reject (0.659314ms)\n✔ bounded per-feed and reply traffic surface unknown rather than complete (2.287549ms)\n✔ X4 regression: equal screens do not establish safe continuation (20.743541ms)\n✔ Unicode text rejects unpaired surrogates instead of lossy replacement (1.365029ms)\n✔ accepted parser bytes are detached from mutable caller storage (2.250148ms)\nℹ tests 12\nℹ suites 0\nℹ pass 12\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 728.157704\n",
+      "elapsed_ms": 777,
+      "stdout": "✔ shared wire shape and bounded decimal semantics (5.297914ms)\n✔ synthetic Crossterm and desktop key intents agree (152.231658ms)\n✔ pinned upstream helper handles cursor modes, modifiers, Tab and function keys (0.94102ms)\n✔ helper counterexample: keypad Enter has no application-keypad input (0.191404ms)\n✔ canonical feed-only observations, no UI needed, detached immutable snapshots (14.51301ms)\n✔ two identical query events produce two canonical replies; replicas have no dispatch lane (12.083358ms)\n✔ all byte split positions preserve UTF-8/query/control interpretation (61.394315ms)\n✔ paste mode encoding is separate from key events and embedded boundaries reject (0.697015ms)\n✔ bounded per-feed and reply traffic surface unknown rather than complete (2.583056ms)\n✔ X4 regression: equal screens do not establish safe continuation (19.471217ms)\n✔ Unicode text rejects unpaired surrogates instead of lossy replacement (1.843439ms)\n✔ accepted parser bytes are detached from mutable caller storage (2.333249ms)\nℹ tests 12\nℹ suites 0\nℹ pass 12\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 728.9742\n",
       "stderr": ""
     },
     {
@@ -266,7 +267,7 @@
       ],
       "exit": 0,
       "error": null,
-      "elapsed_ms": 1265,
+      "elapsed_ms": 1296,
       "stdout": "192 deterministic parser partition runs passed; seed=0x51a7e, six synthetic cases. No execution replay claim.\n",
       "stderr": ""
     },
@@ -285,7 +286,7 @@
       ],
       "exit": 0,
       "error": null,
-      "elapsed_ms": 147,
+      "elapsed_ms": 150,
       "stdout": "Project X: offline foundation                                         \nX4 failed: no live terminal or process execution                      \n                                                                      \n                                                                      \n",
       "stderr": ""
     },
@@ -301,9 +302,9 @@
       ],
       "exit": 0,
       "error": null,
-      "elapsed_ms": 431,
+      "elapsed_ms": 443,
       "stdout": "",
-      "stderr": "INFO    -  Cleaning site directory\nINFO    -  Building documentation to directory: /home/w/codex-dir/project-x/.artifacts/site\nINFO    -  Documentation built in 0.28 seconds\n"
+      "stderr": "INFO    -  Cleaning site directory\nINFO    -  Building documentation to directory: /home/w/codex-dir/project-x/.artifacts/site\nINFO    -  Documentation built in 0.29 seconds\n"
     }
   ],
   "essential_gate": {
@@ -317,7 +318,7 @@
     ],
     "exit": 1,
     "error": null,
-    "elapsed_ms": 109,
+    "elapsed_ms": 111,
     "stdout": "{\n  \"gate\": \"X4\",\n  \"verdict\": \"FAIL\",\n  \"scope\": \"Necessary-condition headless→serialize→headless continuation, same common parser family; not a desktop/DOM test. Partial CSI is separately an unsafe-boundary case.\",\n  \"results\": [\n    {\n      \"name\": \"plain\",\n      \"before\": \"\\\"hello\\\"\",\n      \"after\": \"\\\" world\\\"\",\n      \"atAttach\": true,\n      \"afterContinuation\": true,\n      \"canonical\": {\n        \"cols\": 12,\n        \"rows\": 5,\n        \"cursor\": [\n          11,\n          0\n        ],\n        \"baseY\": 0,\n        \"type\": \"normal\",\n        \"lines\": [\n          \"hello world \",\n          \"            \",\n          \"            \",\n          \"            \",\n          \"            \"\n        ],\n        \"modes\": {\n          \"applicationCursorKeysMode\": false,\n          \"applicationKeypadMode\": false,\n          \"bracketedPasteMode\": false,\n          \"insertMode\": false,\n          \"mouseTrackingMode\": \"none\",\n          \"originMode\": false,\n          \"reverseWraparoundMode\": false,\n          \"sendFocusMode\": false,\n          \"synchronizedOutputMode\": false,\n          \"wraparoundMode\": true\n        }\n      },\n      \"replica\": {\n        \"cols\": 12,\n        \"rows\": 5,\n        \"cursor\": [\n          11,\n          0\n        ],\n        \"baseY\": 0,\n        \"type\": \"normal\",\n        \"lines\": [\n          \"hello world \",\n          \"            \",\n          \"            \",\n          \"            \",\n          \"            \"\n        ],\n        \"modes\": {\n          \"applicationCursorKeysMode\": false,\n          \"applicationKeypadMode\": false,\n          \"bracketedPasteMode\": false,\n          \"insertMode\": false,\n          \"mouseTrackingMode\": \"none\",\n          \"originMode\": false,\n          \"reverseWraparoundMode\": false,\n          \"sendFocusMode\": false,\n          \"synchronizedOutputMode\": false,\n          \"wraparoundMode\": true\n        }\n      }\n    },\n    {\n      \"name\": \"saved-cursor\",\n      \"before\": \"\\\"\\\\u001b[2;3H\\\\u001b7\\\\u001b[4;7H\\\"\",\n      \"after\": \"\\\"\\\\u001b8X\\\"\",\n      \"atAttach\": true,\n      \"afterContinuation\": false,\n      \"canonical\": {\n        \"cols\": 12,\n        \"rows\": 5,\n        \"cursor\": [\n          3,\n          1\n        ],\n        \"baseY\": 0,\n        \"type\": \"normal\",\n        \"lines\": [\n          \"            \",\n          \"  X         \",\n          \"            \",\n          \"            \",\n          \"            \"\n        ],\n        \"modes\": {\n          \"applicationCursorKeysMode\": false,\n          \"applicationKeypadMode\": false,\n          \"bracketedPasteMode\": false,\n          \"insertMode\": false,\n          \"mouseTrackingMode\": \"none\",\n          \"originMode\": false,\n          \"reverseWraparoundMode\": false,\n          \"sendFocusMode\": false,\n          \"synchronizedOutputMode\": false,\n          \"wraparoundMode\": true\n        }\n      },\n      \"replica\": {\n        \"cols\": 12,\n        \"rows\": 5,\n        \"cursor\": [\n          1,\n          0\n        ],\n        \"baseY\": 0,\n        \"type\": \"normal\",\n        \"lines\": [\n          \"X           \",\n          \"            \",\n          \"            \",\n          \"            \",\n          \"            \"\n        ],\n        \"modes\": {\n          \"applicationCursorKeysMode\": false,\n          \"applicationKeypadMode\": false,\n          \"bracketedPasteMode\": false,\n          \"insertMode\": false,\n          \"mouseTrackingMode\": \"none\",\n          \"originMode\": false,\n          \"reverseWraparoundMode\": false,\n          \"sendFocusMode\": false,\n          \"synchronizedOutputMode\": false,\n          \"wraparoundMode\": true\n        }\n      }\n    },\n    {\n      \"name\": \"scroll-region\",\n      \"before\": \"\\\"1\\\\r\\\\n2\\\\r\\\\n3\\\\r\\\\n4\\\\r\\\\n5\\\\u001b[2;4r\\\\u001b[4;1H\\\"\",\n      \"after\": \"\\\"\\\\r\\\\nX\\\"\",\n      \"atAttach\": true,\n      \"afterContinuation\": false,\n      \"canonical\": {\n        \"cols\": 12,\n        \"rows\": 5,\n        \"cursor\": [\n          1,\n          3\n        ],\n        \"baseY\": 0,\n        \"type\": \"normal\",\n        \"lines\": [\n          \"1           \",\n          \"3           \",\n          \"4           \",\n          \"X           \",\n          \"5           \"\n        ],\n        \"modes\": {\n          \"applicationCursorKeysMode\": false,\n          \"applicationKeypadMode\": false,\n          \"bracketedPasteMode\": false,\n          \"insertMode\": false,\n          \"mouseTrackingMode\": \"none\",\n          \"originMode\": false,\n          \"reverseWraparoundMode\": false,\n          \"sendFocusMode\": false,\n          \"synchronizedOutputMode\": false,\n          \"wraparoundMode\": true\n        }\n      },\n      \"replica\": {\n        \"cols\": 12,\n        \"rows\": 5,\n        \"cursor\": [\n          1,\n          4\n        ],\n        \"baseY\": 0,\n        \"type\": \"normal\",\n        \"lines\": [\n          \"1           \",\n          \"2           \",\n          \"3           \",\n          \"4           \",\n          \"X           \"\n        ],\n        \"modes\": {\n          \"applicationCursorKeysMode\": false,\n          \"applicationKeypadMode\": false,\n          \"bracketedPasteMode\": false,\n          \"insertMode\": false,\n          \"mouseTrackingMode\": \"none\",\n          \"originMode\": false,\n          \"reverseWraparoundMode\": false,\n          \"sendFocusMode\": false,\n          \"synchronizedOutputMode\": false,\n          \"wraparoundMode\": true\n        }\n      }\n    },\n    {\n      \"name\": \"custom-tabs\",\n      \"before\": \"\\\"\\\\u001b[3g\\\\u001b[1;4H\\\\u001bH\\\\u001b[H\\\"\",\n      \"after\": \"\\\"\\\\tX\\\"\",\n      \"atAttach\": true,\n      \"afterContinuation\": false,\n      \"canonical\": {\n        \"cols\": 12,\n        \"rows\": 5,\n        \"cursor\": [\n          4,\n          0\n        ],\n        \"baseY\": 0,\n        \"type\": \"normal\",\n        \"lines\": [\n          \"   X        \",\n          \"            \",\n          \"            \",\n          \"            \",\n          \"            \"\n        ],\n        \"modes\": {\n          \"applicationCursorKeysMode\": false,\n          \"applicationKeypadMode\": false,\n          \"bracketedPasteMode\": false,\n          \"insertMode\": false,\n          \"mouseTrackingMode\": \"none\",\n          \"originMode\": false,\n          \"reverseWraparoundMode\": false,\n          \"sendFocusMode\": false,\n          \"synchronizedOutputMode\": false,\n          \"wraparoundMode\": true\n        }\n      },\n      \"replica\": {\n        \"cols\": 12,\n        \"rows\": 5,\n        \"cursor\": [\n          9,\n          0\n        ],\n        \"baseY\": 0,\n        \"type\": \"normal\",\n        \"lines\": [\n          \"        X   \",\n          \"            \",\n          \"            \",\n          \"            \",\n          \"            \"\n        ],\n        \"modes\": {\n          \"applicationCursorKeysMode\": false,\n          \"applicationKeypadMode\": false,\n          \"bracketedPasteMode\": false,\n          \"insertMode\": false,\n          \"mouseTrackingMode\": \"none\",\n          \"originMode\": false,\n          \"reverseWraparoundMode\": false,\n          \"sendFocusMode\": false,\n          \"synchronizedOutputMode\": false,\n          \"wraparoundMode\": true\n        }\n      }\n    },\n    {\n      \"name\": \"alternate\",\n      \"before\": \"\\\"normal\\\\u001b[?1049hALT\\\"\",\n      \"after\": \"\\\"\\\\u001b[?1049lZ\\\"\",\n      \"atAttach\": true,\n      \"afterContinuation\": true,\n      \"canonical\": {\n        \"cols\": 12,\n        \"rows\": 5,\n        \"cursor\": [\n          7,\n          0\n        ],\n        \"baseY\": 0,\n        \"type\": \"normal\",\n        \"lines\": [\n          \"normalZ     \",\n          \"            \",\n          \"            \",\n          \"            \",\n          \"            \"\n        ],\n        \"modes\": {\n          \"applicationCursorKeysMode\": false,\n          \"applicationKeypadMode\": false,\n          \"bracketedPasteMode\": false,\n          \"insertMode\": false,\n          \"mouseTrackingMode\": \"none\",\n          \"originMode\": false,\n          \"reverseWraparoundMode\": false,\n          \"sendFocusMode\": false,\n          \"synchronizedOutputMode\": false,\n          \"wraparoundMode\": true\n        }\n      },\n      \"replica\": {\n        \"cols\": 12,\n        \"rows\": 5,\n        \"cursor\": [\n          7,\n          0\n        ],\n        \"baseY\": 0,\n        \"type\": \"normal\",\n        \"lines\": [\n          \"normalZ     \",\n          \"            \",\n          \"            \",\n          \"            \",\n          \"            \"\n        ],\n        \"modes\": {\n          \"applicationCursorKeysMode\": false,\n          \"applicationKeypadMode\": false,\n          \"bracketedPasteMode\": false,\n          \"insertMode\": false,\n          \"mouseTrackingMode\": \"none\",\n          \"originMode\": false,\n          \"reverseWraparoundMode\": false,\n          \"sendFocusMode\": false,\n          \"synchronizedOutputMode\": false,\n          \"wraparoundMode\": true\n        }\n      }\n    },\n    {\n      \"name\": \"partial-csi\",\n      \"before\": \"\\\"\\\\u001b[31\\\"\",\n      \"after\": \"\\\"mX\\\"\",\n      \"atAttach\": true,\n      \"afterContinuation\": false,\n      \"canonical\": {\n        \"cols\": 12,\n        \"rows\": 5,\n        \"cursor\": [\n          1,\n          0\n        ],\n        \"baseY\": 0,\n        \"type\": \"normal\",\n        \"lines\": [\n          \"X           \",\n          \"            \",\n          \"            \",\n          \"            \",\n          \"            \"\n        ],\n        \"modes\": {\n          \"applicationCursorKeysMode\": false,\n          \"applicationKeypadMode\": false,\n          \"bracketedPasteMode\": false,\n          \"insertMode\": false,\n          \"mouseTrackingMode\": \"none\",\n          \"originMode\": false,\n          \"reverseWraparoundMode\": false,\n          \"sendFocusMode\": false,\n          \"synchronizedOutputMode\": false,\n          \"wraparoundMode\": true\n        }\n      },\n      \"replica\": {\n        \"cols\": 12,\n        \"rows\": 5,\n        \"cursor\": [\n          2,\n          0\n        ],\n        \"baseY\": 0,\n        \"type\": \"normal\",\n        \"lines\": [\n          \"mX          \",\n          \"            \",\n          \"            \",\n          \"            \",\n          \"            \"\n        ],\n        \"modes\": {\n          \"applicationCursorKeysMode\": false,\n          \"applicationKeypadMode\": false,\n          \"bracketedPasteMode\": false,\n          \"insertMode\": false,\n          \"mouseTrackingMode\": \"none\",\n          \"originMode\": false,\n          \"reverseWraparoundMode\": false,\n          \"sendFocusMode\": false,\n          \"synchronizedOutputMode\": false,\n          \"wraparoundMode\": true\n        }\n      }\n    }\n  ]\n}\n",
     "stderr": ""
   },

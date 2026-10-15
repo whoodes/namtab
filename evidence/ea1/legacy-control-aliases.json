@@ -1,0 +1,24 @@
+{
+  "verdict": "FAIL",
+  "cases": [
+    {
+      "chord": "Ctrl-i",
+      "expected_hex": "09",
+      "actual_hex": "1b5b3130353b3575",
+      "verdict": "FAIL"
+    },
+    {
+      "chord": "Ctrl-m",
+      "expected_hex": "0d",
+      "actual_hex": "1b5b3130393b3575",
+      "verdict": "FAIL"
+    },
+    {
+      "chord": "Ctrl-[",
+      "expected_hex": "1b",
+      "actual_hex": "1b5b39313b3575",
+      "verdict": "FAIL"
+    }
+  ],
+  "requirements": "Legacy control aliases for existing Linux shells/editor navigation, no Kitty/MOK negotiated. Named Tab/Enter/Escape are distinct intents, not a fix."
+}

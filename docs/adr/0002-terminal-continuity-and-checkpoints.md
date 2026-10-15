@@ -2,7 +2,7 @@
 
 [Assessment and recovery matrix](../engineering/19-engine-build-adopt-redesign-assessment.md#continuity-and-capture-contract) · [Capture policy](../architecture/10-recommended-baseline-and-adrs.md#adr-a6-capture-and-retention-defaults)
 
-Date: 2026-10-15. **Accepted-for-design contract; unimplemented.** No universal durable terminal checkpoint or deterministic process replay is promised.
+Date: 2026-10-15. **Accepted-for-design recovery contract; unimplemented.** [EA1](../engineering/21-ea1-native-worker-results.md) tests live-owner observations and worker loss only; it implements no checkpoint/tail or process recovery. No universal durable terminal checkpoint or deterministic process replay is promised.
 
 Late attachment and frontend restart require a fresh bounded presentation from a live canonical owner. They do not require another terminal parser or a disk transcript. Losing the owner is a different event: continued application input stays disabled while interpretation is unknown. No raw-input bypass, automatic old action/reply retry or grant resurrection.
 
