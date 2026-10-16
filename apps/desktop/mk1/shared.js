@@ -81,6 +81,15 @@
       new TextEncoder().encode(value).length <= 107
     );
   }
+  function validArgv(argv) {
+    return (
+      Array.isArray(argv) &&
+      argv.length >= 1 &&
+      argv.length <= 32 &&
+      argv.every((value) => string(value, 4096) && !value.includes("\0")) &&
+      argv[0].length > 0
+    );
+  }
   function validateCommandShape(command) {
     const fields = {
       state: [],
@@ -223,7 +232,10 @@
       screen.lines.length <= screen.rows &&
       screen.lines.every(
         (line) =>
-          string(line, screen.cols) && Array.from(line).every(scalarAllowed),
+          string(line, screen.cols) &&
+          Array.from(line).every(
+            (character) => scalarAllowed(character) || character === "\ufffd",
+          ),
       ) &&
       integer(screen.cursor_col, 0, screen.cols - 1) &&
       integer(screen.cursor_row, 0, screen.rows - 1) &&
@@ -265,7 +277,9 @@
           string(session.name, 4096) &&
           (session.owner === null || string(session.owner, 256)) &&
           integer(session.generation) &&
-          ["running", "exited", "unknown"].includes(session.process) &&
+          ["running", "draining", "exited", "unknown"].includes(
+            session.process,
+          ) &&
           (session.exit_code === null ||
             integer(session.exit_code, -2147483648, 2147483647)) &&
           validateScreen(session.screen),
@@ -398,6 +412,7 @@
     string,
     requestEnvelope,
     validSocketPath,
+    validArgv,
     validateCommandShape,
     textAllowed,
     validateIntent,
