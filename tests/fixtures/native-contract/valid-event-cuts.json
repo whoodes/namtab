@@ -1,0 +1,124 @@
+{
+  "case_id": "valid-event-cuts",
+  "purpose": "N0-01 independent clocks and fact-level review data; not a public observation/frame schema.",
+  "namespace_id": "ns-synthetic",
+  "assumptions": [
+    "References resolve to authorized immutable records in this synthetic namespace.",
+    "Shown records are excerpts of contiguous histories, not permission to skip a missing canonical prefix.",
+    "All arrays and projections remain bounded by a future negotiated profile; these array sizes are example sizes, not adopted maxima.",
+    "session-b incarnation 1 is retired. The cooperative report arrives on an authenticated execution-bound side channel, not through PTY text."
+  ],
+  "observations": [
+    {
+      "observation": {"id": "obs-session-a"},
+      "subject": {"session": {"id": "session-a", "incarnation": "1"}},
+      "processed_frontier": {"session": {"id": "session-a", "incarnation": "1"}, "event_seq": "9"},
+      "source_frontier": {"session": {"id": "session-a", "incarnation": "1"}, "event_seq": "11"},
+      "semantic_revision": "4",
+      "geometry_revision": "1",
+      "profile": {"id": "profile-demo", "revision": "1"},
+      "projection": {"kind": "identity-frontiers-and-profile", "includes_cells_or_modes": false},
+      "capture_policy": "memory-only-bounded",
+      "gaps": {"canonical": [], "capture": []},
+      "completeness": "complete-for-requested-cut",
+      "availability": "available"
+    },
+    {
+      "observation": {"id": "obs-session-b"},
+      "subject": {"session": {"id": "session-b", "incarnation": "2"}},
+      "processed_frontier": {"session": {"id": "session-b", "incarnation": "2"}, "event_seq": "3"},
+      "source_frontier": {"session": {"id": "session-b", "incarnation": "2"}, "event_seq": "3"},
+      "semantic_revision": "2",
+      "geometry_revision": "1",
+      "profile": {"id": "profile-demo", "revision": "1"},
+      "projection": {"kind": "identity-frontiers-and-profile", "includes_cells_or_modes": false},
+      "capture_policy": "memory-only-bounded",
+      "gaps": {"canonical": [], "capture": []},
+      "completeness": "complete-for-requested-cut",
+      "availability": "available"
+    }
+  ],
+  "cross_subject_dependency": {
+    "at": {"session": {"id": "session-b", "incarnation": "2"}, "event_seq": "3"},
+    "references": [
+      {"event": {"session": {"id": "session-a", "incarnation": "1"}, "event_seq": "9"}},
+      {"artifact": {"id": "artifact-result", "revision": "1"}}
+    ],
+    "meaning": "B explicitly selected A/event 9 and artifact-result/revision 1. Local sequence 3 versus 9 does not establish any global order or prove application causation."
+  },
+  "pipe_read_records": [
+    {
+      "at": {"execution": {"id": "exec-streams", "runner": {"id": "runner-demo", "incarnation": "1"}}, "event_seq": "4"},
+      "stream": "stdout",
+      "stream_epoch": "1",
+      "representation": "raw-bytes",
+      "capture_policy": "memory-only-bounded",
+      "gaps": [],
+      "availability": "available",
+      "start": "0",
+      "end": "8"
+    },
+    {
+      "at": {"execution": {"id": "exec-streams", "runner": {"id": "runner-demo", "incarnation": "1"}}, "event_seq": "5"},
+      "stream": "stderr",
+      "stream_epoch": "1",
+      "representation": "raw-bytes",
+      "capture_policy": "memory-only-bounded",
+      "gaps": [],
+      "availability": "available",
+      "start": "0",
+      "end": "4"
+    }
+  ],
+  "pipe_order_limit": "The runner observed stdout then stderr; the program could have written stderr first. Offsets are per stream, not session event numbers.",
+  "facts": [
+    {
+      "kind": "terminal_state",
+      "level": "observed",
+      "subject": {"session": {"id": "session-a", "incarnation": "1"}},
+      "producer": {"kind": "engine", "id": "engine-demo", "incarnation": "1", "schema": "fixture-engine-facts/0.x"},
+      "source": {"session": {"id": "session-a", "incarnation": "1"}, "event_seq": "9"},
+      "value": {"semantic_revision": "4"},
+      "limit": "Only the processed prefix; source events 10 and 11 have not been reduced at this cut."
+    },
+    {
+      "kind": "check_result",
+      "level": "reported",
+      "subject": {"execution": {"id": "exec-streams", "runner": {"id": "runner-demo", "incarnation": "1"}}},
+      "producer": {
+        "kind": "adapter",
+        "id": "adapter-demo",
+        "incarnation": "1",
+        "schema": "fixture-check-report/0.x",
+        "channel": "authenticated-execution-bound",
+        "trust": "cooperative-reporter"
+      },
+      "source": {"adapter_record_id": "adapter-report-1", "execution": {"id": "exec-streams", "runner": {"id": "runner-demo", "incarnation": "1"}}},
+      "value": {"reported_result": "pass"},
+      "limit": "Authenticates the reporter; no independent validation or acceptance is established."
+    },
+    {
+      "kind": "apparent_prompt",
+      "level": "inferred",
+      "subject": {"session": {"id": "session-a", "incarnation": "1"}},
+      "producer": {"kind": "observer", "id": "observer-demo", "incarnation": "1"},
+      "method": "synthetic-pattern/1",
+      "evidence_refs": [{"observation": {"id": "obs-session-a"}, "event": {"session": {"id": "session-a", "incarnation": "1"}, "event_seq": "9"}}],
+      "value": true,
+      "limit": "Cannot establish readiness, process identity, writer authority or approval."
+    },
+    {
+      "kind": "application_widget_focus",
+      "level": "unavailable",
+      "subject": {"session": {"id": "session-a", "incarnation": "1"}},
+      "producer": {"kind": "observer", "id": "observer-demo", "incarnation": "1"},
+      "last_known_reference": {"session": {"id": "session-a", "incarnation": "1"}, "event_seq": "9"},
+      "reason": "Opaque application exposes no authenticated semantic focus."
+    }
+  ],
+  "traceability": {
+    "requirements": ["R02", "R05"],
+    "validation_families": ["V02", "V05"],
+    "status": "Contract example for review; no live session or runtime result."
+  }
+}
