@@ -1,0 +1,170 @@
+{
+  "format": "n0-boundary-review-data/0",
+  "status": "synthetic proposal for independent review; no implementation or gate result",
+  "canonical_contract": "../../../docs/engine/runtime-persistence-security.md",
+  "assumptions": [
+    "No proposed worker, private endpoint or runtime decoder is implemented.",
+    "Case descriptions and private field spellings are review notation, not adopted wire DTOs.",
+    "Future executable tests must independently challenge expectations and record the implementation/runtime/resource tuple."
+  ],
+  "scope": "R02/R14; private framing, peer binding, decoding and typed outcomes",
+  "review_profile": "n0-worker-decode-review/0",
+  "cases": [
+    {
+      "id": "IP01",
+      "setup": "Authenticated private connection with no negotiated assignment",
+      "stimulus": [
+        "Session operation before handshake",
+        "Public or EA1 namespace at private worker endpoint",
+        "Unknown required version/feature/endpoint role"
+      ],
+      "expect": "Reject before assignment/reduction/dispatch; no fallback to another namespace",
+      "evidence": "Raw transport trace plus unchanged canonical state/receipt facts"
+    },
+    {
+      "id": "IP02",
+      "setup": "Four-byte big-endian private payload length; valid synthetic payload",
+      "stimulus": "Every split of a short prefix/payload, empty reads and two coalesced complete frames",
+      "expect": "Exactly one decode per complete frame; no partial-frame operation or split-induced semantic event",
+      "evidence": "Transport-partition integration with fixed operation/event identities"
+    },
+    {
+      "id": "IP03",
+      "setup": "Private payload limit 1048576 bytes",
+      "stimulus": [
+        "Zero length",
+        "Payload length 1048577",
+        "Truncated prefix/body",
+        "Invalid UTF-8 payload"
+      ],
+      "expect": "Reject or close under bounded policy without reduction/dispatch; oversized prefix does not allocate its declared buffer",
+      "evidence": "Allocation instrumentation and raw framing negatives"
+    },
+    {
+      "id": "IP04",
+      "setup": "Duplicate detection before generic maps; decoded key comparison",
+      "raw_json_fragments": [
+        "{\"controller\":\"current\",\"controller\":\"retired\"}",
+        "{\"target\":{\"session\":\"one\",\"session\":\"two\"}}",
+        "{\"session\":\"one\",\"\\u0073ession\":\"two\"}"
+      ],
+      "expect": "Reject every duplicate at every object depth before map/DTO decoding loses it",
+      "evidence": "Raw bytes must reach the future decoder; JSON.parse alone cannot test this"
+    },
+    {
+      "id": "IP05",
+      "setup": "Finite private decoder review tuple; root container counts as depth 1",
+      "boundaries": [
+        {
+          "resource": "payload_bytes",
+          "at": 1048576,
+          "beyond": 1048577
+        },
+        {
+          "resource": "nesting_levels",
+          "at": 16,
+          "beyond": 17
+        },
+        {
+          "resource": "members_per_object",
+          "at": 64,
+          "beyond": 65
+        },
+        {
+          "resource": "elements_per_array",
+          "at": 1024,
+          "beyond": 1025
+        },
+        {
+          "resource": "decoded_utf8_bytes_per_string_including_keys",
+          "at": 65536,
+          "beyond": 65537
+        },
+        {
+          "resource": "charged_transient_bytes_per_frame",
+          "at": 8388608,
+          "beyond": 8388609
+        },
+        {
+          "resource": "outstanding_frames_per_connection",
+          "at": 8,
+          "beyond": 9
+        }
+      ],
+      "expect": "A well-formed at-limit shape still needs semantic/resource admission; reject one-beyond before over-budget allocation/dispatch",
+      "evidence": "Charge actual capacity, receive buffer, key tracking, escaped expansion, DTO copies and checked representation overhead; include aggregate reservations"
+    },
+    {
+      "id": "IP06",
+      "setup": "Escaped long strings/keys, nested arrays and attacker-declared counts",
+      "stimulus": "Small encoded representation demands over-limit expanded strings, collection/allocation work or integer arithmetic",
+      "expect": "Stop at the charged bound with no integer wrap or prevalidation oversized allocation",
+      "evidence": "Peak/transient allocation counters and fail-allocation injection, not schema acceptance alone"
+    },
+    {
+      "id": "IP07",
+      "setup": "Owned runtime directory and service-launched worker",
+      "stimulus": [
+        "Wrong peer identity with same socket path",
+        "Stale socket/symlink replacement",
+        "PID/UID-only authentication",
+        "Bootstrap secret in argv/environment/log/application FD"
+      ],
+      "expect": "Refuse unsafe endpoint/identity and prevent capability leak; same unrestricted UID remains a stated residual limit",
+      "evidence": "Isolated endpoint/launch tests under declared runtime profile; no hostile same-UID isolation claim"
+    },
+    {
+      "id": "IP08",
+      "setup": "New worker/controller assignment for session incarnation B",
+      "stimulus": [
+        "Reply from retired worker incarnation",
+        "Old controller generation",
+        "Result for session incarnation A or foreign stream epoch",
+        "Unassigned session, wrong profile tuple or stale committed cut"
+      ],
+      "expect": "Reject before publishing a frame, applying core mutation or proposing a current reply",
+      "evidence": "Late-result/reconnect fault trace with exact identity/cut comparison"
+    },
+    {
+      "id": "IP09",
+      "setup": "Worker/app launch with explicit inherited-FD allowlist",
+      "stimulus": [
+        "Attempt inherited PTY master/control/store FD",
+        "Unexpected SCM_RIGHTS ancillary descriptor",
+        "JSON integer presented as FD",
+        "Child exec setup failure"
+      ],
+      "expect": "No unintended inherited capability; reject ancillary/number-as-FD paths; report bounded exec failure separately from successful launch",
+      "evidence": "Inspect disposable child/worker FDs and exec status-channel behavior"
+    },
+    {
+      "id": "IP10",
+      "setup": "Schema-valid public request mapped through service to private/core types",
+      "stimulus": [
+        "Exact unsigned-64 overflow decimal string",
+        "Unknown mutation discriminator/field",
+        "Valid shape but stale authority/geometry/profile/cut"
+      ],
+      "expect": "Wire shape does not authorize effects; typed exact-range/core/authority checks refuse at their own boundary",
+      "evidence": "Service/worker mapper negatives plus unchanged last committed state"
+    },
+    {
+      "id": "IP11",
+      "setup": "Operation may already have reached keeper final queue",
+      "stimulus": [
+        "Private transport closes",
+        "Cancellation races a partial write",
+        "Deadline expires after admission"
+      ],
+      "expect": "Typed transport/cancellation stage stays separate from exact-prefix/unknown delivery receipt; no retry/rollback inference",
+      "evidence": "Receipt/keeper interleavings rather than string-matching an error"
+    },
+    {
+      "id": "IP12",
+      "setup": "Malformed payload contains synthetic secret-like text and bootstrap capability marker",
+      "stimulus": "Decode error, timeout and diagnostic logging at every level",
+      "expect": "Only bounded sanitized code/opaque identity/queue metadata; no payload/key echoes, argv/environment or derived Debug dumps",
+      "evidence": "Inspect emitted errors/logs; capture remains separately authorized"
+    }
+  ]
+}

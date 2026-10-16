@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "purpose": "N0-09 synthetic import/IPC/failure review data; no implementation, runtime boundary result, gate or owner-admission claim",
+  "source": "../../../docs/engine/runtime-persistence-security.md#n0-09-boundary-review-and-test-ownership",
+  "provenance": "README.md",
+  "profile": "n0-boundary-review-data/0",
+  "files": [
+    {
+      "path": "imports.json",
+      "sha256": "79e7fe40773e24e4bba1e7663339d3a69e353925a652fd3d605327fb5d8b920d",
+      "origin": "Hand-authored synthetic review data, 2026-10-16; no captured or upstream data",
+      "requirements": [
+        "R14",
+        "R16"
+      ],
+      "validation_families": [
+        "V14",
+        "V16"
+      ]
+    },
+    {
+      "path": "ipc.json",
+      "sha256": "325d9213a8cf51d5eff154a9045851da55d7edea304e0d40c1b85dc720a2a921",
+      "origin": "Hand-authored synthetic review data, 2026-10-16; no captured or upstream data",
+      "requirements": [
+        "R02",
+        "R03",
+        "R14"
+      ],
+      "validation_families": [
+        "V02",
+        "V03",
+        "V14"
+      ]
+    },
+    {
+      "path": "faults.json",
+      "sha256": "b75d848b1a9cbe5e7a44f45117e57eaa04cacdcefcc7ec89480cee82da3bbc51",
+      "origin": "Hand-authored synthetic review data, 2026-10-16; no captured or upstream data",
+      "requirements": [
+        "R03",
+        "R12",
+        "R13",
+        "R14",
+        "R15",
+        "R16"
+      ],
+      "validation_families": [
+        "V03",
+        "V12",
+        "V13",
+        "V14",
+        "V15",
+        "V16"
+      ]
+    }
+  ]
+}

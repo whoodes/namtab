@@ -68,7 +68,11 @@ test("native corpus and earlier native manifests receive static checks only", as
   );
 });
 
-for (const category of ["native-ownership", "native-public"])
+for (const category of [
+  "native-ownership",
+  "native-public",
+  "native-boundaries",
+])
   test(`${category} fixtures cannot disappear as an entire category`, async () =>
     sandbox(async (root) => {
       await rm(join(root, `tests/fixtures/${category}`), { recursive: true });

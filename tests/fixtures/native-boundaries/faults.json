@@ -1,0 +1,98 @@
+{
+  "format": "n0-boundary-review-data/0",
+  "status": "synthetic proposal for independent review; no implementation or gate result",
+  "canonical_contract": "../../../docs/engine/runtime-persistence-security.md",
+  "assumptions": [
+    "No proposed worker, private endpoint or runtime decoder is implemented.",
+    "Case descriptions and private field spellings are review notation, not adopted wire DTOs.",
+    "Future executable tests must independently challenge expectations and record the implementation/runtime/resource tuple."
+  ],
+  "scope": "R03/R12/R13/R15/R16; shared worker, controls, fairness and recovery",
+  "cases": [
+    {
+      "id": "FL01",
+      "setup": "Sessions A and B assigned to one worker; independent managed pipe attempt C",
+      "fault": "Worker crash/OOM or transport loss",
+      "expect": [
+        "Both A/B interpretations become unavailable/unknown; service refuses new dependent admission and requests keeper input/reply fences, claiming an applied fence only after keeper acknowledgment",
+        "Independent observed C exit/stream/receipt facts remain attributed",
+        "Previously delivered A/B effects remain delivered or uncertain; no automatic replay"
+      ],
+      "forbid": "Treating one multiplexed process as per-session fault isolation"
+    },
+    {
+      "id": "FL02",
+      "setup": "Worker is unresponsive during large staged reset/snapshot/query flood",
+      "fault": "Human revoke/stop arrives while the parser cannot respond",
+      "expect": "Reserved service-to-keeper path admits controls independently of worker progress and reports actual fencing/termination/unreachable status",
+      "forbid": "Waiting for parser ack or recording a watchdog timeout as proof that effects stopped"
+    },
+    {
+      "id": "FL03",
+      "setup": "Session A continuously ready with huge output/query/serialization work; B also ready",
+      "fault": "Repeated A work and slow output subscriber",
+      "expect": [
+        "Charged bounded quanta yield while staged mutations stay private",
+        "B is not continuously bypassed; reserved control slots stay available",
+        "No parser bytes/committed control events disappear; slow presentation consumer gets explicit resync/disconnect"
+      ],
+      "forbid": "Claiming measured latency/fairness from a count-only review matrix"
+    },
+    {
+      "id": "FL04",
+      "setup": "Global/session queues, staged/snapshot copies and byte budgets near exhaustion",
+      "fault": "Another frame/session/copy reservation or reply flood",
+      "expect": "Admission/backpressure accounts all reserved bytes/copies before starting; bounded queues and reply reservations preserve core event commit rules",
+      "forbid": "Independent per-limit caps added up as guaranteed simultaneous capacity"
+    },
+    {
+      "id": "FL05",
+      "setup": "Capture sink fails while canonical worker continues receiving every event",
+      "fault": "Storage full or capture write fails",
+      "expect": "Capture is gapped/unavailable; interpretation may remain current if canonical continuity is intact; refuse new evidence reservations and preserve pinned evidence",
+      "forbid": "Calling capture failure proof of parser loss or silently evicting pinned evidence"
+    },
+    {
+      "id": "FL06",
+      "setup": "Canonical bytes/event identity lost or partial mutation cannot be classified",
+      "fault": "Gap, broken invariant or unsafe caught panic",
+      "expect": "Latch affected interpretation unknown, preserve last committed projection as stale, fence every application-input route; no guessed reset",
+      "forbid": "A plausible screen, catch_unwind or fresh UI connection restoring canonical authority"
+    },
+    {
+      "id": "FL07",
+      "setup": "Capture off; worker owner remains alive; a frontend disconnects",
+      "fault": "Late attach/reconnect",
+      "expect": "Fresh presentation plus subsequent deltas at an identified cut; view remains read-only until fresh ownership granted",
+      "forbid": "Requiring durable byte replay or a complete snapshot solely to attach to a live owner"
+    },
+    {
+      "id": "FL08",
+      "setup": "Capture off; canonical worker dies with no independently surviving complete authorized state/tail",
+      "fault": "Attempted recovery from cached presentation or app repaint",
+      "expect": "Interpretation remains unknown; process controls/status remain separately available; new session is an explicit option",
+      "forbid": "Restoring reduction from a visible frame, raw input bypass or reconstructing state from nothing"
+    },
+    {
+      "id": "FL09",
+      "setup": "Authorized exact-version complete checkpoint plus gap-free ordered tail and independent receipt/delivery continuity",
+      "fault": "Restore/replay then fresh live ownership request",
+      "expect": "Validate every identity/profile/codec/quota/cut; replay with no external effects; reconcile keeper/receipts and create fresh authority before live input",
+      "forbid": "Re-emitting historical replies/launches/uncertain writes, rolling receipts back to a terminal snapshot or accepting missing/corrupt/oversized/incompatible state"
+    },
+    {
+      "id": "FL10",
+      "setup": "Worker/service restarts or stale controller reconnects repeatedly",
+      "fault": "Late frame/reply/cancel result or restart storm",
+      "expect": "Retire old incarnation; reconcile explicit assignments/receipts; bound restart/backoff/resources without resurrecting queued grants",
+      "forbid": "A reused PID/session name or recovered token silently revives old authority"
+    },
+    {
+      "id": "FL11",
+      "setup": "Service control audit storage exhausted but keeper is reachable",
+      "fault": "Emergency revoke/stop",
+      "expect": "Future admission is fenced without waiting for a successful audit write; report persistence failure and independently observed remaining effects",
+      "forbid": "Full storage blocking human control or claiming durable audit success"
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "format": "n0-boundary-review-data/0",
+  "status": "synthetic proposal for independent review; no implementation or gate result",
+  "canonical_contract": "../../../docs/engine/runtime-persistence-security.md",
+  "assumptions": [
+    "No proposed worker, private endpoint or runtime decoder is implemented.",
+    "Case descriptions and private field spellings are review notation, not adopted wire DTOs.",
+    "Future executable tests must independently challenge expectations and record the implementation/runtime/resource tuple."
+  ],
+  "scope": "R14/R16; future imports, generated exports and authority seams",
+  "cases": [
+    {
+      "id": "IM01",
+      "setup": "Future terminal package with pure library and worker binary",
+      "probe": "Build intended facade and worker mappings with protocol imported only by the binary",
+      "expect": "Positive build succeeds; library dependencies remain owned pure types and admitted primitives",
+      "forbid": "Counting a failing setup build as a successful forbidden-import test"
+    },
+    {
+      "id": "IM02",
+      "setup": "Positive build from IM01",
+      "probe": [
+        "Library module imports protocol::internal_terminal_n0",
+        "Library reads a clock, opens a socket/file or accepts an OS handle",
+        "Library invokes an output callback or evaluates grants"
+      ],
+      "expect": "Each forbidden seam is rejected by reviewed module/import/dependency enforcement",
+      "forbid": "Hiding OS or policy authority in a generic callback/feature/test-helper path"
+    },
+    {
+      "id": "IM03",
+      "setup": "Both public client dependency graphs and generated schema outputs",
+      "probe": [
+        "Frontend imports a private worker DTO or socket client",
+        "Public schema/types reexport internal_terminal_n0 or internal_engine",
+        "Frontend imports core or reads store/evidence paths/PTY handles"
+      ],
+      "expect": "Reject all private authority/capability exports; public browser-safe projection/input entry remains buildable",
+      "forbid": "Directory or namespace naming alone counted as isolation"
+    },
+    {
+      "id": "IM04",
+      "setup": "Whole future package graph including features, targets and generated files",
+      "probe": [
+        "protocol imports domain or terminal semantic state",
+        "platform imports service",
+        "terminal pure library imports worker facade",
+        "Feature-only edge closes a cycle"
+      ],
+      "expect": "Reject each dependency cycle/forbidden edge across the evaluated build matrix",
+      "forbid": "A top-level single-source regex claimed as complete module enforcement"
+    },
+    {
+      "id": "IM05",
+      "setup": "Two public views attached to one canonical session",
+      "probe": "Dispose/reconnect both caches and inspect mode/reply generation ownership",
+      "expect": "No client mode reducer, parser or application reply dispatch; both consume the canonical committed revision",
+      "forbid": "Rendering or a public frame creates writer authority"
+    },
+    {
+      "id": "IM06",
+      "setup": "New pure library modules/features and platform launch seam",
+      "probe": "Review unsafe declarations/expansions and any syscall/FFI exception",
+      "expect": "Pure library forbids unsafe; unavoidable platform/FFI has independent FD/lifetime/allocator/thread/unwind evidence",
+      "forbid": "Using historical EA1 ffi.rs exception as permission for new unsafe core"
+    },
+    {
+      "id": "IM07",
+      "setup": "Existing foundation before proposed terminal package is added",
+      "probe": "Read Cargo metadata, TS manifests and routine source-test selection",
+      "expect": {
+        "rust_workspace_members": 7,
+        "typescript_packages": 4,
+        "active_source_rust_crates": 6,
+        "historical_workspace_member": "project-x-engine",
+        "historical_routine_lane_exclusion": "Clippy/tests only"
+      },
+      "forbid": "Deleting/excluding the historical crate from workspace membership or relabeling X4/EA1 FAIL as passed"
+    }
+  ]
+}
