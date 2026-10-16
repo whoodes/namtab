@@ -271,6 +271,8 @@
   bind("keyboard", "keydown", (event) => {
     const result = protocol.normalizeKey({
       key: event.key,
+      code: event.code,
+      location: event.location,
       ctrlKey: event.ctrlKey,
       altKey: event.altKey,
       shiftKey: event.shiftKey,

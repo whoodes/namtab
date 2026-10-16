@@ -145,6 +145,52 @@ test("MK1 desktop leaves native copy/paste/meta shortcuts and rejects compositio
     assert.ok(mk1.normalizeKey(event).error);
 });
 
+test("MK1 desktop preserves supported physical keypad identity for canonical encoding", () => {
+  const codes = [
+    ...Array.from({ length: 10 }, (_, i) => String(i)),
+    "Enter",
+    "Add",
+    "Subtract",
+    "Multiply",
+    "Divide",
+    "Decimal",
+    "Comma",
+    "Equal",
+    "Tab",
+    "Space",
+  ];
+  for (const suffix of codes) {
+    const intent = mk1.normalizeKey(
+      key("Enter", {
+        code: `Numpad${suffix}`,
+        location: 3,
+        ctrlKey: true,
+        shiftKey: true,
+      }),
+    ).intent;
+    assert.deepEqual(intent, {
+      kind: "key",
+      key: `Keypad${suffix}`,
+      ctrl: true,
+      alt: false,
+      shift: true,
+    });
+    assert.equal(mk1.validateIntent(intent), true);
+    const envelope = JSON.parse(
+      JSON.stringify(mk1.requestEnvelope(5, { op: "input", intent })),
+    );
+    assert.equal(envelope.operation.intent.key, `Keypad${suffix}`);
+  }
+  assert.ok(
+    mk1.normalizeKey(key("Enter", { location: 3, code: "UnrecognizedNumpad" }))
+      .error,
+  );
+  assert.equal(
+    mk1.normalizeKey(key("Enter", { location: 0, code: "Enter" })).intent.key,
+    "Enter",
+  );
+});
+
 test("MK1 desktop refuses controls, unsupported repertoire and oversized paste before IPC", () => {
   for (const value of [
     "\0",

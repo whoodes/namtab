@@ -8,6 +8,26 @@
   const VERSION = "namtab.mk1/1";
   const MAX_FRAME = 1024 * 1024;
   const MAX_QUEUE = 64;
+  const keypadCodes = Object.freeze(
+    Object.fromEntries([
+      ...Array.from({ length: 10 }, (_, index) => [
+        `Numpad${index}`,
+        `Keypad${index}`,
+      ]),
+      ...[
+        "Enter",
+        "Add",
+        "Subtract",
+        "Multiply",
+        "Divide",
+        "Decimal",
+        "Comma",
+        "Equal",
+        "Tab",
+        "Space",
+      ].map((name) => [`Numpad${name}`, `Keypad${name}`]),
+    ]),
+  );
   const namedKeys = new Set([
     "Enter",
     "Tab",
@@ -24,6 +44,7 @@
     "PageUp",
     "PageDown",
     ...Array.from({ length: 12 }, (_, i) => `F${i + 1}`),
+    ...Object.values(keypadCodes),
   ]);
   const domKeys = {
     ArrowUp: "Up",
@@ -152,7 +173,12 @@
       ].includes(event.key)
     )
       return { native: true };
-    const key = domKeys[event.key] || event.key;
+    if (event.location === 3 && !Object.hasOwn(keypadCodes, event.code))
+      return { error: "Unsupported physical keypad code; nothing was sent." };
+    const key =
+      event.location === 3
+        ? keypadCodes[event.code]
+        : domKeys[event.key] || event.key;
     if (namedKeys.has(key))
       return {
         intent: {
