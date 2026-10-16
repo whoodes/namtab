@@ -97,6 +97,7 @@
       new_endpoint: [],
       select: ["session"],
       focus: ["focused"],
+      pause_input: ["reason"],
       input: ["fence", "intent"],
       create_session: ["name"],
       take_control: ["session", "force"],

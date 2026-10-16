@@ -9,6 +9,7 @@
     selectedSession: null,
     viewEpoch: 0,
     focused: false,
+    inputPaused: true,
   };
   let screenKey = null;
   let artifactKey = null;
@@ -18,6 +19,21 @@
   let acknowledgedFocusEpoch = null;
   let prefixDeadline = null;
   let prefixTimer = null;
+  let localInputPaused = true;
+  let localPauseReason =
+    "Inspect the selected session, then Take input to arm typing.";
+  function refuseInput(message) {
+    localInputPaused = true;
+    localPauseReason = message;
+    acknowledgedFocusEpoch = null;
+    clearPrefix();
+    element("keyboard").disabled = true;
+    notice(
+      message + " Input paused: inspect the session and Take input again.",
+    );
+    send({ op: "pause_input", reason: message });
+    return { ok: false, error: message };
+  }
   function clearPrefix() {
     prefixDeadline = null;
     clearTimeout(prefixTimer);
@@ -202,7 +218,9 @@
       owner &&
       value?.process === "running" &&
       value.screen.input_known &&
-      !next.snapshot?.degraded;
+      !next.snapshot?.degraded &&
+      !next.inputPaused &&
+      !localInputPaused;
     text(
       "owner",
       value
@@ -227,11 +245,28 @@
             : "Focus to send keys",
     );
     element("keyboard").disabled = !canInput;
+    element("input-pause").hidden = !next.inputPaused && !localInputPaused;
+    text(
+      "input-pause",
+      "Typing paused. " +
+        (next.inputPauseReason ||
+          localPauseReason ||
+          "Inspect the session, then Take input to rearm."),
+    );
     if (focusAfterTake && canInput) {
       focusAfterTake = false;
       element("keyboard").focus();
     }
-    element("take").disabled = !next.connected || !value || owner;
+    element("take").disabled =
+      !next.connected ||
+      !value ||
+      (owner && !next.inputPaused && !localInputPaused);
+    text(
+      "take",
+      owner && (next.inputPaused || localInputPaused)
+        ? "Inspect / Rearm input"
+        : "Take input",
+    );
     element("force").disabled = !next.connected || !value || owner;
     element("release").disabled = !next.connected || !owner;
     element("resize").disabled = !next.connected || !owner;
@@ -277,6 +312,9 @@
         ...(op === "take_control" ? { force } : {}),
       });
       if (result.ok && op === "take_control") {
+        if (!result.result?.rearmed) return;
+        localInputPaused = false;
+        localPauseReason = null;
         focusAfterTake = true;
         if (!element("keyboard").disabled) {
           focusAfterTake = false;
@@ -312,7 +350,12 @@
     if (!element("keyboard").disabled && !window.getSelection()?.toString())
       element("keyboard").focus();
   });
-  function sendIntent(intent) {
+  async function sendIntent(intent) {
+    if (state.inputPaused || localInputPaused)
+      return {
+        ok: false,
+        error: "Input is paused until explicit inspection and Take input.",
+      };
     const fence = protocol.captureFence(
       state.snapshot,
       state.selectedSession,
@@ -328,10 +371,18 @@
         document.activeElement === element("keyboard"),
       )
     ) {
-      notice("Wait for terminal focus to be acknowledged; nothing was sent.");
-      return;
+      return refuseInput(
+        "Application input was refused because focus or the selected session is not acknowledged.",
+      );
     }
-    send({ op: "input", fence, intent });
+    const result = await send({ op: "input", fence, intent });
+    if (!result.ok || result.result?.state !== "applied") {
+      localInputPaused = true;
+      localPauseReason =
+        "Application input was refused or delivery is uncertain. Inspect the session and receipt.";
+      element("keyboard").disabled = true;
+    }
+    return result;
   }
   bind("keyboard", "keydown", (event) => {
     const description = {
@@ -360,7 +411,7 @@
         );
         prefixTimer = setTimeout(() => {
           clearPrefix();
-          notice("UI prefix timed out; nothing was sent.");
+          refuseInput("UI prefix timed out; nothing was sent.");
         }, 1500);
       } else if (route.kind === "leave") {
         clearPrefix();
@@ -375,14 +426,14 @@
       } else {
         prefixDeadline = route.prefixDeadline;
         if (prefixDeadline === null) clearPrefix();
-        if (route.notice) notice(route.notice);
+        if (route.notice) refuseInput(route.notice);
       }
       return;
     }
     const result = protocol.normalizeKey(description);
     if (result.native) return;
     event.preventDefault();
-    if (result.error) notice(result.error);
+    if (result.error) refuseInput(result.error);
     else sendIntent(result.intent);
   });
   bind("keyboard", "paste", (event) => {
@@ -392,20 +443,20 @@
       prefixDeadline,
     );
     clearPrefix();
-    if (result.consumed) notice(result.notice);
-    else if (result.error) notice(result.error);
+    if (result.consumed) refuseInput(result.notice);
+    else if (result.error) refuseInput(result.error);
     else sendIntent(result.intent);
   });
   bind("keyboard", "beforeinput", (event) => {
     event.preventDefault();
     if (event.inputType !== "insertFromPaste")
-      notice(
+      refuseInput(
         "Composition, drop and virtual-keyboard text input are not supported in MK1; nothing was sent.",
       );
   });
   bind("keyboard", "compositionstart", (event) => {
     event.preventDefault();
-    notice("IME composition is unsupported in MK1; nothing was sent.");
+    refuseInput("IME composition is unsupported in MK1; nothing was sent.");
   });
   bind("keyboard", "input", () => {
     element("keyboard").value = "";
