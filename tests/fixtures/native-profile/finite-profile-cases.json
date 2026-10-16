@@ -282,6 +282,85 @@
         "focus": false,
         "reply_hex": []
       }
+    },
+    {
+      "id": "overflow-ignore-non-ascii-continuation",
+      "geometry": {
+        "rows": 3,
+        "columns": 8
+      },
+      "before_cut_hex": "1b5b313233343536",
+      "at_cut_projection": {
+        "parser_state": "csi-ignore",
+        "pending_utf8_hex": ""
+      },
+      "after_cut_hex": "c3a96d58",
+      "expected_projection": {
+        "rows": [
+          "X       ",
+          "        ",
+          "        "
+        ],
+        "cursor": [
+          1,
+          2
+        ],
+        "reply_hex": []
+      },
+      "review_note": "Sixth digit enters ignore. UTF-8-looking bytes remain discarded until CSI final m; only X paints. This is a P-policy oracle, not executed output."
+    },
+    {
+      "id": "syntax-ignore-non-ascii-continuation",
+      "geometry": {
+        "rows": 3,
+        "columns": 8
+      },
+      "before_cut_hex": "1b5b313a",
+      "at_cut_projection": {
+        "parser_state": "csi-ignore",
+        "pending_utf8_hex": ""
+      },
+      "after_cut_hex": "c3a96d58",
+      "expected_projection": {
+        "rows": [
+          "X       ",
+          "        ",
+          "        "
+        ],
+        "cursor": [
+          1,
+          2
+        ],
+        "reply_hex": []
+      },
+      "review_note": "Unsupported colon syntax enters ignore; same non-ASCII precedence as resource overflow."
+    },
+    {
+      "id": "alternate-save-slot-reinitialized",
+      "geometry": {
+        "rows": 3,
+        "columns": 8
+      },
+      "before_cut_hex": "1b5b3f31303439681b5b323b33481b371b5b3f313034396c",
+      "after_cut_hex": "1b5b3f31303439681b3858",
+      "expected_projection": {
+        "active_buffer": "alternate",
+        "rows": [
+          "X       ",
+          "        ",
+          "        "
+        ],
+        "cursor": [
+          1,
+          2
+        ],
+        "save_slot_cursor": [
+          1,
+          1
+        ],
+        "reply_hex": []
+      },
+      "review_note": "A previous alternate DECSC slot does not survive exit and new alternate entry."
     }
   ],
   "input_cases": [
