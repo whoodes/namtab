@@ -52,6 +52,16 @@ def git_metadata(path):
     return {"head": command("rev-parse", "HEAD"), "dirty_paths": command("status", "--short", "--untracked-files=no").splitlines()}
 
 
+def pending_pidfds(descriptors, timeout):
+    """Wait for every retained process, not only the first readiness event."""
+    pending = list(descriptors)
+    deadline = time.monotonic() + timeout
+    while pending and (remaining := deadline - time.monotonic()) > 0:
+        ready = select.select(pending, [], [], remaining)[0]
+        pending = [descriptor for descriptor in pending if descriptor not in ready]
+    return pending
+
+
 class Connection:
     """One endpoint, ordered requests, explicit close/resume, no input retries."""
 
@@ -255,6 +265,9 @@ class Journey:
             if parent in visited:
                 continue
             visited.add(parent)
+            parent_fd = self.owned_pidfds.get(parent)
+            if parent_fd is not None and select.select([parent_fd], [], [], 0)[0]:
+                continue
             try:
                 tasks = list(Path(f"/proc/{parent}/task").iterdir())
             except FileNotFoundError:
@@ -279,6 +292,12 @@ class Journey:
                     descriptor = os.pidfd_open(pid)
                     stat = Path(f"/proc/{pid}/stat").read_text().rsplit(")", 1)[1].split()
                     if int(stat[1]) != parent:
+                        os.close(descriptor)
+                        continue
+                    # If this verified ancestor died during discovery, its
+                    # numeric PID could now refer elsewhere. Do not adopt any
+                    # child of that number, even when the PPid field matches.
+                    if parent_fd is not None and select.select([parent_fd], [], [], 0)[0]:
                         os.close(descriptor)
                         continue
                     previous = self.owned_pidfds.get(pid)
@@ -520,15 +539,13 @@ class Journey:
             except ProcessLookupError:
                 pass
         descriptors = list(self.owned_pidfds.values())
-        terminated = select.select(descriptors, [], [], 1)[0] if descriptors else []
-        remaining = [descriptor for descriptor in descriptors if descriptor not in terminated]
+        remaining = pending_pidfds(descriptors, 1)
         for descriptor in remaining:
             try:
                 signal.pidfd_send_signal(descriptor, signal.SIGKILL)
             except ProcessLookupError:
                 pass
-        killed = select.select(remaining, [], [], 1)[0] if remaining else []
-        unexited = len(remaining) - len(killed)
+        unexited = len(pending_pidfds(remaining, 1))
         if self.process and self.process.poll() is None:
             self.process.terminate()
             try:
