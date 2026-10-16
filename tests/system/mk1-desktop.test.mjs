@@ -323,6 +323,28 @@ test("MK1 screen projection is immutable text with a bounded separate cursor", (
   );
 });
 
+test("MK1 display accepts the core replacement marker but never accepts it as input", () => {
+  const replacement = { ...screen(), lines: ["safe \ufffd", ""] };
+  assert.equal(mk1.validateScreen(replacement), true);
+  assert.equal(mk1.projectScreen(replacement).lines[0], "safe \ufffd  ");
+  assert.equal(mk1.textAllowed("\ufffd"), false);
+  assert.equal(mk1.validateIntent({ kind: "text", text: "\ufffd" }), false);
+  assert.ok(mk1.normalizeKey(key("\ufffd")).error);
+  assert.ok(mk1.normalizePaste("\ufffd").error);
+  for (const value of ["\u202e", "\x1b", "界", "☃"])
+    assert.equal(mk1.validateScreen({ ...screen(), lines: [value] }), false);
+});
+
+test("MK1 draining PTY sessions remain observable with known exit but reject input", () => {
+  const observed = snapshot();
+  observed.sessions[0].process = "draining";
+  observed.sessions[0].exit_code = 7;
+  assert.equal(mk1.validateSnapshot(observed), true);
+  const fence = mk1.captureFence(observed, "shell-1", 4);
+  assert.equal(mk1.inputFenceValid(fence, observed, "shell-1", 4, true), false);
+  assert.equal(mk1.projectScreen(observed.sessions[0].screen).lines.length, 2);
+});
+
 test("MK1 response checks reject malformed canonical data before renderer delivery", () => {
   const valid = {
     id: 7,
