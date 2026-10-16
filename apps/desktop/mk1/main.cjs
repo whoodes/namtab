@@ -181,7 +181,7 @@ function createWindow(publicSocketPath) {
       viewEpoch++;
       connection.clearQueuedInputs();
       publish();
-      return;
+      return { viewEpoch, focused };
     }
     if (!connection.ready || !snapshot)
       throw new Error("Input frozen until connected and observed");

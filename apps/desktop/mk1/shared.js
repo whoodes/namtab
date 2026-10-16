@@ -223,6 +223,84 @@
       };
     return { intent: { kind: "paste", text } };
   }
+  function routeUiKey(event, prefixDeadline, now) {
+    const prefixKey =
+      !event.isComposing &&
+      event.ctrlKey &&
+      !event.altKey &&
+      !event.metaKey &&
+      !event.shiftKey &&
+      event.location !== 3 &&
+      event.key.toLowerCase() === "g";
+    const modifier = [
+      "Shift",
+      "Control",
+      "Alt",
+      "AltGraph",
+      "Meta",
+      "CapsLock",
+      "NumLock",
+    ].includes(event.key);
+    if (prefixDeadline !== null) {
+      if (now >= prefixDeadline)
+        return {
+          kind: "consume",
+          prefixDeadline: null,
+          notice: "UI prefix timed out; nothing was sent.",
+        };
+      if (modifier) return { kind: "consume", prefixDeadline };
+      if (
+        event.key === "Escape" &&
+        !event.altKey &&
+        !event.metaKey &&
+        !event.isComposing
+      )
+        return { kind: "leave", prefixDeadline: null };
+      if (prefixKey)
+        return {
+          kind: "literal",
+          prefixDeadline: null,
+          intent: {
+            kind: "key",
+            key: "g",
+            ctrl: true,
+            alt: false,
+            shift: false,
+          },
+        };
+      return {
+        kind: "consume",
+        prefixDeadline: null,
+        notice:
+          "Unknown UI prefix key; nothing was sent. Ctrl+G then Escape returns to controls.",
+      };
+    }
+    if (prefixKey) return { kind: "prefix", prefixDeadline: now + 1500 };
+    return { kind: "normal", prefixDeadline: null };
+  }
+  function routeUiPaste(text, prefixDeadline) {
+    if (prefixDeadline !== null)
+      return {
+        consumed: true,
+        notice: "Paste consumed by the UI prefix; nothing was sent.",
+      };
+    return normalizePaste(text);
+  }
+  function focusReady(
+    acknowledgedEpoch,
+    viewEpoch,
+    focused,
+    documentFocused,
+    keyboardActive,
+  ) {
+    return (
+      integer(acknowledgedEpoch) &&
+      acknowledgedEpoch === viewEpoch &&
+      focused === true &&
+      documentFocused === true &&
+      keyboardActive === true
+    );
+  }
   function validateScreen(screen) {
     return (
       record(screen) &&
@@ -418,6 +496,9 @@
     validateIntent,
     normalizeKey,
     normalizePaste,
+    routeUiKey,
+    routeUiPaste,
+    focusReady,
     validateScreen,
     validateSnapshot,
     validateResponse,

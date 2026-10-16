@@ -205,6 +205,66 @@ test("MK1 desktop preserves supported physical keypad identity for canonical enc
   );
 });
 
+test("MK1 UI prefix returns keyboard focus without leaking unknown or timed-out keys", () => {
+  const ctrlG = key("g", { ctrlKey: true });
+  const armed = mk1.routeUiKey(ctrlG, null, 10);
+  assert.deepEqual(armed, { kind: "prefix", prefixDeadline: 1510 });
+  assert.deepEqual(mk1.routeUiKey(key("Escape"), armed.prefixDeadline, 20), {
+    kind: "leave",
+    prefixDeadline: null,
+  });
+  const literal = mk1.routeUiKey(ctrlG, armed.prefixDeadline, 20);
+  assert.deepEqual(literal.intent, {
+    kind: "key",
+    key: "g",
+    ctrl: true,
+    alt: false,
+    shift: false,
+  });
+  for (const event of [
+    key("x"),
+    key("v", { ctrlKey: true }),
+    key("ArrowUp"),
+    key("a", { isComposing: true }),
+  ]) {
+    const consumed = mk1.routeUiKey(event, armed.prefixDeadline, 20);
+    assert.equal(consumed.kind, "consume");
+    assert.equal(consumed.prefixDeadline, null);
+    assert.equal(consumed.intent, undefined);
+  }
+  const expired = mk1.routeUiKey(key("x"), armed.prefixDeadline, 1510);
+  assert.equal(expired.kind, "consume");
+  assert.equal(expired.intent, undefined);
+  assert.deepEqual(mk1.routeUiKey(key("Control"), armed.prefixDeadline, 20), {
+    kind: "consume",
+    prefixDeadline: 1510,
+  });
+  assert.equal(
+    mk1.routeUiKey(key("g", { ctrlKey: true, shiftKey: true }), null, 10).kind,
+    "normal",
+  );
+  assert.equal(mk1.routeUiPaste("safe", armed.prefixDeadline).consumed, true);
+  assert.equal(
+    mk1.routeUiPaste("safe", armed.prefixDeadline).intent,
+    undefined,
+  );
+  assert.deepEqual(mk1.routeUiPaste("safe", null), {
+    intent: { kind: "paste", text: "safe" },
+  });
+});
+
+test("MK1 UI input waits for the exact focus acknowledgement and active keyboard", () => {
+  assert.equal(mk1.focusReady(4, 4, true, true, true), true);
+  assert.equal(mk1.focusReady(null, 4, true, true, true), false);
+  assert.equal(mk1.focusReady(3, 4, true, true, true), false);
+  for (const values of [
+    [false, true, true],
+    [true, false, true],
+    [true, true, false],
+  ])
+    assert.equal(mk1.focusReady(4, 4, ...values), false);
+});
+
 test("MK1 desktop refuses controls, unsupported repertoire and oversized paste before IPC", () => {
   for (const value of [
     "\0",
