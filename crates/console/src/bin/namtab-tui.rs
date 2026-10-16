@@ -100,15 +100,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut last_poll = Instant::now();
     let mut command_form: Option<String> = None;
     let mut review = false;
+    let mut review_state = ReviewState::default();
+    let mut dirty = true;
     loop {
         if online && last_poll.elapsed() >= Duration::from_millis(75) {
             match observe(&mut client) {
                 Ok(s) => {
-                    snapshot = s;
+                    dirty |= replace_snapshot(&mut snapshot, s);
                     selected = selected.min(snapshot.sessions.len().saturating_sub(1));
                 }
                 Err(_) => {
                     online = false;
+                    dirty = true;
                     notice="DISCONNECTED: last observed only; effects of last operation may be unknown. Ctrl-G c reconnects, never replays.".into();
                 }
             }
@@ -116,28 +119,44 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         if prefix.is_some_and(|t| t.elapsed() > Duration::from_secs(2)) {
             prefix = None;
+            dirty = true;
             notice = "Prefix expired; no application input sent.".into();
         }
-        terminal.draw(|f| {
-            render(
-                f,
-                &View {
-                    snapshot: &snapshot,
-                    endpoint: &client.endpoint,
-                    selected,
-                    online,
-                    notice: &notice,
-                    form: command_form.as_deref(),
-                    review,
-                },
-            )
-        })?;
+        if dirty {
+            terminal.draw(|f| {
+                render(
+                    f,
+                    &View {
+                        snapshot: &snapshot,
+                        endpoint: &client.endpoint,
+                        selected,
+                        online,
+                        notice: &notice,
+                        form: command_form.as_deref(),
+                        review,
+                        review_state: &review_state,
+                    },
+                )
+            })?;
+            dirty = false;
+        }
         if !event::poll(Duration::from_millis(15))? {
             continue;
         }
         let e = event::read()?;
+        dirty = true;
+        if refuse_prefixed_paste(&mut prefix, &e) {
+            notice = "Paste refused: UI prefix canceled; no application input sent.".into();
+            continue;
+        }
         if let Some(form) = command_form.as_mut() {
-            if let Event::Key(k) = e {
+            if let Event::Paste(text) = &e {
+                if !append_form(form, text) {
+                    notice = "Paste refused: argv form exceeds 8192 UTF-8 bytes.".into();
+                } else {
+                    notice = "Paste inserted only in argv form; Enter explicitly runs.".into();
+                }
+            } else if let Event::Key(k) = e {
                 if k.kind == KeyEventKind::Release {
                     continue;
                 }
@@ -167,8 +186,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     KeyCode::Char(c)
                         if k.modifiers.is_empty() || k.modifiers == KeyModifiers::SHIFT =>
                     {
-                        if form.len() < 8192 {
-                            form.push(c);
+                        if !append_form(form, c.encode_utf8(&mut [0; 4])) {
+                            notice =
+                                "Character refused: argv form exceeds 8192 UTF-8 bytes.".into();
                         }
                     }
                     _ => {}
@@ -199,7 +219,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         let name = format!("shell-{}",snapshot.sessions.len()+1);
                         send(&mut client,Op::CreateSession { name },&mut notice,&mut online);
                     }
-                    KeyCode::Char('a') => command_form = Some(r#"["/usr/bin/printf","hello from managed argv\n"]"#.into()),
+                    KeyCode::Char('a') => {
+                        command_form = Some(r#"["/usr/bin/printf","hello from managed argv\n"]"#.into());
+                        notice = "Edit literal argv; Enter submits once, Esc cancels.".into();
+                    }
                     KeyCode::Char('c') if !online => {
                         let resume = client.resume.clone();
                         let next = client.next_id();
@@ -228,7 +251,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 prefix = Some(Instant::now());
                 notice = "UI prefix…".into();
             } else if review {
-                notice = "Task review focus: Ctrl-G b returns to application input.".into();
+                let page = usize::from(terminal.size()?.height.saturating_sub(12).max(1));
+                if !review_state.navigate(k, &snapshot, page) {
+                    notice = "Task review: Tab selects task; Up/Down/Page scroll. Ctrl-G b returns to application input.".into();
+                }
             } else if let Some(intent) = intent(k) {
                 if let Some(s) = snapshot.sessions.get(selected) {
                     application(&mut client, s, intent, &mut notice, &mut online);
@@ -255,7 +281,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         if online {
             match observe(&mut client) {
-                Ok(s) => snapshot = s,
+                Ok(s) => {
+                    dirty |= replace_snapshot(&mut snapshot, s);
+                }
                 Err(_) => {
                     online = false;
                     notice = "Connection lost; no mutation is retried.".into();
@@ -275,6 +303,145 @@ struct View<'a> {
     notice: &'a str,
     form: Option<&'a str>,
     review: bool,
+    review_state: &'a ReviewState,
+}
+
+fn replace_snapshot(current: &mut Snapshot, next: Snapshot) -> bool {
+    if *current == next {
+        false
+    } else {
+        *current = next;
+        true
+    }
+}
+
+fn refuse_prefixed_paste(prefix: &mut Option<Instant>, event: &Event) -> bool {
+    matches!(event, Event::Paste(_)) && prefix.take().is_some()
+}
+
+fn append_form(form: &mut String, text: &str) -> bool {
+    if form
+        .len()
+        .checked_add(text.len())
+        .is_none_or(|size| size > 8192)
+    {
+        return false;
+    }
+    form.push_str(text);
+    true
+}
+
+#[derive(Default)]
+struct ReviewState {
+    selected: usize,
+    scroll: usize,
+}
+
+impl ReviewState {
+    fn navigate(&mut self, key: KeyEvent, snapshot: &Snapshot, page: usize) -> bool {
+        if key.kind == KeyEventKind::Release
+            || key.modifiers.intersects(
+                KeyModifiers::CONTROL
+                    | KeyModifiers::ALT
+                    | KeyModifiers::SUPER
+                    | KeyModifiers::HYPER
+                    | KeyModifiers::META,
+            )
+        {
+            return false;
+        }
+        let count = snapshot.attempts.len();
+        match key.code {
+            KeyCode::Tab | KeyCode::BackTab => {
+                if count != 0 {
+                    self.selected = if key.code == KeyCode::BackTab {
+                        (self.selected.min(count - 1) + count - 1) % count
+                    } else {
+                        (self.selected + 1) % count
+                    };
+                }
+                self.scroll = 0;
+                return true;
+            }
+            _ => {}
+        }
+        let maximum = review_text(snapshot, self.selected)
+            .lines()
+            .count()
+            .saturating_sub(page);
+        self.scroll = match key.code {
+            KeyCode::Up => self.scroll.saturating_sub(1),
+            KeyCode::Down => self.scroll.saturating_add(1).min(maximum),
+            KeyCode::PageUp => self.scroll.saturating_sub(page),
+            KeyCode::PageDown => self.scroll.saturating_add(page).min(maximum),
+            _ => return false,
+        };
+        true
+    }
+}
+
+fn label(s: &str) -> String {
+    safe(s).replace('\n', "\\n").replace('\t', "\\t")
+}
+
+fn review_text(snapshot: &Snapshot, selected: usize) -> String {
+    let mut text =
+        String::from("Input disabled | Tab/Shift-Tab: task | Up/Down/PageUp/PageDown: scroll\n");
+    let attempt = snapshot.attempts.get(selected);
+    if let Some(a) = attempt {
+        text.push_str(&format!(
+            "Status: {} {} | exit {:?}{}\n",
+            label(&a.id),
+            label(&a.state),
+            a.exit_code,
+            if a.truncated { " | truncated" } else { "" },
+        ));
+    } else {
+        text.push_str("No managed task yet. Ctrl-G a opens literal argv.\n");
+    }
+    text.push_str("Artifacts (all explicit task associations):\n");
+    if snapshot.artifacts.is_empty() {
+        text.push_str("None registered.\n");
+    }
+    for a in &snapshot.artifacts {
+        text.push_str(&format!(
+            "{} [{}] {} | revision {} | {}\n",
+            label(&a.id),
+            label(&a.task),
+            label(&a.path),
+            label(&a.revision),
+            if a.stale {
+                "STALE review"
+            } else if a.validated_revision.is_some() {
+                "manually reviewed"
+            } else {
+                "unreviewed"
+            },
+        ));
+    }
+    if let Some(a) = attempt {
+        text.push_str(&format!(
+            "\nstdout:\n{}\nstderr:\n{}",
+            safe(&a.stdout),
+            safe(&a.stderr)
+        ));
+    }
+    text
+}
+
+fn newest_receipt(snapshot: &Snapshot) -> String {
+    snapshot.receipts.first().map_or_else(
+        || "No mutations by this endpoint".into(),
+        |r| {
+            format!(
+                "Receipt {}: {} {} — {}",
+                r.id,
+                label(&r.operation),
+                label(&r.state),
+                label(&r.detail)
+            )
+        },
+    )
 }
 fn render(f: &mut ratatui::Frame<'_>, view: &View<'_>) {
     let areas = Layout::vertical([
@@ -313,54 +480,28 @@ fn render(f: &mut ratatui::Frame<'_>, view: &View<'_>) {
         areas[0],
     );
     if view.review {
-        let attempts = view
-            .snapshot
-            .attempts
-            .iter()
-            .map(|a| {
+        let selected = view.review_state.selected;
+        let title = view.snapshot.attempts.get(selected).map_or_else(
+            || "Task review: no managed task".into(),
+            |attempt| {
                 format!(
-                    "{} {}: {} exit {:?}{}\nstdout: {}\nstderr: {}",
-                    safe(&a.id),
-                    safe(&a.task),
-                    safe(&a.state),
-                    a.exit_code,
-                    if a.truncated { " [truncated]" } else { "" },
-                    safe(&a.stdout),
-                    safe(&a.stderr)
+                    "Task review {}/{}: {} | line {}",
+                    selected + 1,
+                    view.snapshot.attempts.len(),
+                    label(&attempt.task),
+                    view.review_state.scroll + 1,
                 )
-            })
-            .collect::<Vec<_>>()
-            .join("\n");
-        let artifacts = view
-            .snapshot
-            .artifacts
-            .iter()
-            .map(|a| {
-                format!(
-                    "{} {} revision {} {}",
-                    safe(&a.id),
-                    safe(&a.path),
-                    safe(&a.revision),
-                    if a.stale {
-                        "STALE review"
-                    } else if a.validated_revision.is_some() {
-                        "manually reviewed"
-                    } else {
-                        "unreviewed"
-                    }
-                )
-            })
+            },
+        );
+        let text = review_text(view.snapshot, selected);
+        let visible = text
+            .lines()
+            .skip(view.review_state.scroll)
+            .take(usize::from(areas[1].height.saturating_sub(2)))
             .collect::<Vec<_>>()
             .join("\n");
         f.render_widget(
-            Paragraph::new(format!(
-                "{attempts}\nArtifacts (explicit associations):\n{artifacts}"
-            ))
-            .block(
-                Block::default()
-                    .borders(Borders::ALL)
-                    .title("Task review — application input disabled"),
-            ),
+            Paragraph::new(visible).block(Block::default().borders(Borders::ALL).title(title)),
             areas[1],
         );
     } else if let Some(s) = view.snapshot.sessions.get(view.selected) {
@@ -417,18 +558,7 @@ fn render(f: &mut ratatui::Frame<'_>, view: &View<'_>) {
         })
         .collect::<Vec<_>>()
         .join("\n");
-    let receipt = view.snapshot.receipts.last().map_or_else(
-        || "No mutations by this endpoint".into(),
-        |r| {
-            format!(
-                "Receipt {}: {} {} — {}",
-                r.id,
-                safe(&r.operation),
-                safe(&r.state),
-                safe(&r.detail)
-            )
-        },
-    );
+    let receipt = newest_receipt(view.snapshot);
     f.render_widget(
         Paragraph::new(format!("{tasks}\n{receipt}")).block(
             Block::default()
@@ -437,7 +567,7 @@ fn render(f: &mut ratatui::Frame<'_>, view: &View<'_>) {
         ),
         areas[2],
     );
-    let bottom = view.form.map_or_else(||format!("{}\nCtrl-G: t takeover | l release | Tab next | n shell | a argv | b review | r resize | c reconnect | q detach",safe(view.notice)),|s|format!("Managed argv JSON (Enter runs; Esc cancels):\n{}",safe(s)));
+    let bottom = view.form.map_or_else(||format!("{}\nCtrl-G: t takeover | l release | Tab session | n shell | a argv | b review | r resize | c reconnect | q detach",safe(view.notice)),|s|format!("Managed argv JSON (Enter runs; Esc cancels; max 8192 bytes):\n{}\n{}",safe(s),safe(view.notice)));
     f.render_widget(Paragraph::new(bottom), areas[3]);
 }
 fn observe(c: &mut Client) -> io::Result<Snapshot> {
@@ -538,6 +668,85 @@ fn intent(k: KeyEvent) -> Option<Intent> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    fn fixture() -> Snapshot {
+        Snapshot {
+            version: p::VERSION.into(),
+            epoch: "synthetic-test".into(),
+            endpoint: "human".into(),
+            sessions: vec![],
+            attempts: vec![
+                p::Attempt {
+                    id: "attempt1".into(),
+                    task: "first-task".into(),
+                    state: "exited".into(),
+                    exit_code: Some(0),
+                    stdout: "LONG_FIRST_STREAM\n".repeat(200),
+                    stderr: String::new(),
+                    truncated: false,
+                },
+                p::Attempt {
+                    id: "attempt2".into(),
+                    task: "second-task".into(),
+                    state: "exited".into(),
+                    exit_code: Some(7),
+                    stdout: "SECOND_OUT".into(),
+                    stderr: "SECOND_ERR".into(),
+                    truncated: false,
+                },
+            ],
+            artifacts: vec![p::Artifact {
+                id: "artifact1".into(),
+                task: "second-task".into(),
+                path: "review.txt".into(),
+                revision: "sha256:synthetic".into(),
+                validated_revision: Some("sha256:previous".into()),
+                stale: true,
+            }],
+            receipts: [20, 10]
+                .map(|id| p::Receipt {
+                    endpoint: "human".into(),
+                    id,
+                    operation: "input".into(),
+                    state: "applied".into(),
+                    detail: "accepted by local PTY".into(),
+                    delivered_bytes: 1,
+                })
+                .to_vec(),
+            degraded: None,
+        }
+    }
+    fn review_frame(snapshot: &Snapshot, state: &ReviewState) -> String {
+        let mut terminal = Terminal::new(ratatui::backend::TestBackend::new(120, 38)).unwrap();
+        terminal
+            .draw(|f| {
+                render(
+                    f,
+                    &View {
+                        snapshot,
+                        endpoint: "human",
+                        selected: 0,
+                        online: true,
+                        notice: "Task review: application input disabled",
+                        form: None,
+                        review: true,
+                        review_state: state,
+                    },
+                )
+            })
+            .unwrap();
+        let buffer = terminal.backend().buffer();
+        (0..38)
+            .map(|row| {
+                (0..120)
+                    .map(|col| buffer[(col, row)].symbol())
+                    .collect::<String>()
+            })
+            .collect::<Vec<_>>()
+            .join("\n")
+    }
+    fn key(code: KeyCode) -> KeyEvent {
+        KeyEvent::new(code, KeyModifiers::NONE)
+    }
     #[test]
     fn controls_and_consumed_shift_stay_semantic() {
         let k = KeyEvent::new(KeyCode::Char('A'), KeyModifiers::SHIFT);
@@ -545,5 +754,113 @@ mod tests {
         let k = KeyEvent::new(KeyCode::Char('c'), KeyModifiers::CONTROL);
         assert!(matches!(intent(k), Some(Intent::Key { ctrl: true, .. })));
         assert_eq!(safe("\x1b[31m\u{202e}"), "?[31m?");
+    }
+    #[test]
+    fn prefix_paste_is_consumed_without_application_input() {
+        let mut prefix = Some(Instant::now());
+        let paste = Event::Paste("echo SHOULD_NOT_EXECUTE\n".into());
+        let application = if refuse_prefixed_paste(&mut prefix, &paste) {
+            None
+        } else {
+            Some(Intent::Paste {
+                text: "unexpected".into(),
+            })
+        };
+        assert_eq!(application, None);
+        assert!(prefix.is_none());
+        assert!(!refuse_prefixed_paste(&mut prefix, &paste));
+        prefix = Some(Instant::now());
+        assert!(!refuse_prefixed_paste(
+            &mut prefix,
+            &Event::Key(key(KeyCode::Tab))
+        ));
+        assert!(prefix.is_some());
+    }
+    #[test]
+    fn newest_receipt_uses_newest_first_contract_order() {
+        let text = newest_receipt(&fixture());
+        assert!(text.starts_with("Receipt 20:"));
+        assert!(!text.contains("Receipt 10:"));
+    }
+    #[test]
+    fn review_switch_reaches_second_task_and_artifacts_before_long_streams() {
+        let snapshot = fixture();
+        let mut state = ReviewState::default();
+        let first = review_frame(&snapshot, &state);
+        assert!(first.contains("Task review 1/2: first-task"));
+        assert!(first.contains("review.txt"));
+        assert!(first.contains("STALE review"));
+        assert!(
+            review_text(&snapshot, 0).find("Artifacts").unwrap()
+                < review_text(&snapshot, 0).find("stdout:").unwrap()
+        );
+        assert!(state.navigate(key(KeyCode::PageDown), &snapshot, 20));
+        assert_eq!(state.scroll, 20);
+        assert!(review_frame(&snapshot, &state).contains("Task review 1/2: first-task"));
+        assert!(state.navigate(key(KeyCode::Down), &snapshot, 20));
+        assert_eq!(state.scroll, 21);
+        assert!(state.navigate(key(KeyCode::Up), &snapshot, 20));
+        assert_eq!(state.scroll, 20);
+        assert!(state.navigate(key(KeyCode::PageUp), &snapshot, 20));
+        assert_eq!(state.scroll, 0);
+        state.scroll = 100;
+        assert!(state.navigate(key(KeyCode::Tab), &snapshot, 20));
+        assert_eq!(state.selected, 1);
+        assert_eq!(state.scroll, 0);
+        let second = review_frame(&snapshot, &state);
+        for label in [
+            "Task review 2/2: second-task",
+            "review.txt",
+            "SECOND_OUT",
+            "SECOND_ERR",
+            "exit Some(7)",
+        ] {
+            assert!(second.contains(label), "missing {label}");
+        }
+    }
+    #[test]
+    fn review_scroll_is_not_limited_to_u16_paragraph_offsets() {
+        let mut snapshot = fixture();
+        snapshot.attempts[0].stdout = "\n".repeat(64_000);
+        snapshot.attempts[0].stderr = format!("{}TAIL_AFTER_128K_LINES", "\n".repeat(64_000));
+        let state = ReviewState {
+            selected: 0,
+            scroll: 128_000,
+        };
+        assert!(review_frame(&snapshot, &state).contains("TAIL_AFTER_128K_LINES"));
+    }
+    #[test]
+    fn unchanged_observations_do_not_invalidate_idle_rendering() {
+        let mut snapshot = fixture();
+        let identical = snapshot.clone();
+        assert!(!replace_snapshot(&mut snapshot, identical));
+        let mut changed = snapshot.clone();
+        changed.attempts[1].stdout.push_str("new output");
+        assert!(replace_snapshot(&mut snapshot, changed.clone()));
+        assert_eq!(snapshot, changed);
+        assert!(!replace_snapshot(&mut snapshot, changed));
+    }
+    #[test]
+    fn argv_form_append_is_utf8_byte_bounded_and_atomic() {
+        let mut form = "x".repeat(8191);
+        assert!(!append_form(&mut form, "é"));
+        assert_eq!(form.len(), 8191);
+        assert!(append_form(&mut form, "x"));
+        assert_eq!(form.len(), 8192);
+        assert!(!append_form(&mut form, "\n[\"/bin/true\"]"));
+        assert_eq!(form.len(), 8192);
+    }
+    #[test]
+    fn review_controls_do_not_accept_application_keys_or_modified_navigation() {
+        let snapshot = fixture();
+        let mut state = ReviewState::default();
+        assert!(!state.navigate(key(KeyCode::Char('z')), &snapshot, 20));
+        assert!(!state.navigate(
+            KeyEvent::new(KeyCode::Up, KeyModifiers::CONTROL),
+            &snapshot,
+            20
+        ));
+        assert_eq!(state.scroll, 0);
+        assert_eq!(state.selected, 0);
     }
 }
