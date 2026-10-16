@@ -10,6 +10,7 @@ const {
   validateIntent,
   validateCommandShape,
   validSocketPath,
+  validArgv,
   inputFenceValid,
 } = require("./shared.js");
 
@@ -245,17 +246,9 @@ function createWindow(publicSocketPath) {
         name: checkedString(command.name, 128, "session name"),
       };
     else if (command.op === "run") {
-      if (
-        !Array.isArray(command.argv) ||
-        command.argv.length < 1 ||
-        command.argv.length > 64 ||
-        command.argv.some(
-          (value) => !string(value, 4096) || value.includes("\0"),
-        ) ||
-        command.argv[0].length === 0
-      )
+      if (!validArgv(command.argv))
         throw new Error(
-          "argv must be a JSON array of 1–64 strings without NUL; executable must be nonempty",
+          "argv must be a JSON array of 1–32 strings without NUL; executable must be nonempty",
         );
       fields = {
         op: "run",

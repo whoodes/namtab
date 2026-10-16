@@ -89,6 +89,20 @@ test("MK1 desktop refuses Linux socket paths before an opaque transport failure"
     assert.equal(mk1.validSocketPath(value), false);
 });
 
+test("MK1 desktop argv validation matches the bounded managed-process admission", () => {
+  assert.equal(mk1.validArgv(["/usr/bin/printf", "hello\\n"]), true);
+  assert.equal(mk1.validArgv(Array(32).fill("x")), true);
+  for (const value of [
+    [],
+    Array(33).fill("x"),
+    [""],
+    ["x", 1],
+    ["x", "a\0b"],
+    ["x", "a".repeat(4097)],
+  ])
+    assert.equal(mk1.validArgv(value), false);
+});
+
 test("MK1 desktop keeps layout-consumed text distinct from modified keys", () => {
   assert.deepEqual(mk1.normalizeKey(key("£", { shiftKey: true })), {
     intent: { kind: "text", text: "£" },

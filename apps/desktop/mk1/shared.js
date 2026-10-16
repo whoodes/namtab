@@ -81,6 +81,15 @@
       new TextEncoder().encode(value).length <= 107
     );
   }
+  function validArgv(argv) {
+    return (
+      Array.isArray(argv) &&
+      argv.length >= 1 &&
+      argv.length <= 32 &&
+      argv.every((value) => string(value, 4096) && !value.includes("\0")) &&
+      argv[0].length > 0
+    );
+  }
   function validateCommandShape(command) {
     const fields = {
       state: [],
@@ -398,6 +407,7 @@
     string,
     requestEnvelope,
     validSocketPath,
+    validArgv,
     validateCommandShape,
     textAllowed,
     validateIntent,
