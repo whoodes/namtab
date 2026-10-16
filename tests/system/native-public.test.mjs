@@ -65,6 +65,24 @@ test("both-client matrix executes shape expectations only", () => {
   }
 });
 
+test("empty tagged variants preserve positive shapes and reject extra fields", () => {
+  const cases = new Map(
+    read("intent-cases.json").cases.map((item) => [item.id, item]),
+  );
+  for (const id of [
+    "active-grid-extra-field",
+    "default-color-extra-field",
+    "direct-session-extra-field",
+  ]) {
+    const item = cases.get(id);
+    const valid = structuredClone(examples[item.base]);
+    if (id === "direct-session-extra-field")
+      valid.body.request.context.route = { kind: "direct_session" };
+    assert.ok(validate(valid), id + " positive shape failed");
+    assert.equal(validate(variant(item)), false, id + " accepted extra fields");
+  }
+});
+
 test("unknown facts are absent; known false remains a typed fact", () => {
   const original = examples["input-key"].body.request.intent.facts;
   for (const name of [

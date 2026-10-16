@@ -25,7 +25,7 @@
     },
     {
       "path": "intent-cases.json",
-      "sha256": "782753dfecb06b9d001431b14fd7e5aa910c72f393342aab2c9c0e06751bbbd0",
+      "sha256": "57277bbc595c07f6c10289cd65d81083eebcc4bdcc81166fe23e6a2e3601a1ed",
       "origin": "Hand-authored synthetic data, 2026-10-16; no captured or upstream data",
       "requirements": [
         "R10",

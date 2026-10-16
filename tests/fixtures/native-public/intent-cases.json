@@ -1018,6 +1018,85 @@
       ],
       "expected_shape": false,
       "review_requirement": "Unavailable has no value and cannot become an inferred readiness/grant."
+    },
+    {
+      "id": "active-grid-extra-field",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "subscribe",
+      "changes": [
+        {
+          "path": [
+            "body",
+            "start",
+            "projection"
+          ],
+          "value": {
+            "kind": "active_grid",
+            "unexpected_probe": true
+          }
+        }
+      ],
+      "expected_shape": false,
+      "review_requirement": "Empty tagged public variants reject extra fields in both strict Ajv and raw Serde without dropping them."
+    },
+    {
+      "id": "default-color-extra-field",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "snapshot-page-one",
+      "changes": [
+        {
+          "path": [
+            "body",
+            "page",
+            "rows",
+            0,
+            "cells",
+            0,
+            "style",
+            "foreground"
+          ],
+          "value": {
+            "kind": "default",
+            "unexpected_probe": true
+          }
+        }
+      ],
+      "expected_shape": false,
+      "review_requirement": "Empty tagged public variants reject extra fields in both strict Ajv and raw Serde without dropping them."
+    },
+    {
+      "id": "direct-session-extra-field",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "input-key",
+      "changes": [
+        {
+          "path": [
+            "body",
+            "request",
+            "context",
+            "route"
+          ],
+          "value": {
+            "kind": "direct_session",
+            "binding": {
+              "view_id": "view-one",
+              "mapping_revision": "1",
+              "focus_generation": "2"
+            }
+          }
+        }
+      ],
+      "expected_shape": false,
+      "review_requirement": "Empty tagged public variants reject extra fields in both strict Ajv and raw Serde without dropping them."
     }
   ]
 }

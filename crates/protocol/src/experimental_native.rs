@@ -104,7 +104,7 @@ pub struct FrameStamp {
 #[derive(Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 pub enum Color {
-    Default,
+    Default {},
     Indexed { index: u8 },
     Rgb { red: u8, green: u8, blue: u8 },
 }
@@ -274,7 +274,7 @@ pub struct Credit {
 #[derive(Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 pub enum Projection {
-    ActiveGrid,
+    ActiveGrid {},
     History {
         buffer: BufferRef,
         first_row_id: Id,
@@ -413,7 +413,7 @@ pub struct ViewBinding {
 #[derive(Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 pub enum InputRoute {
-    DirectSession,
+    DirectSession {},
     View { binding: ViewBinding },
 }
 #[derive(Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
@@ -735,6 +735,37 @@ mod tests {
         );
         assert_ne!(duplicate, encoded);
         assert!(serde_json::from_str::<Envelope>(&duplicate).is_err());
+    }
+
+    #[test]
+    fn empty_tagged_variants_reject_raw_unknown_and_duplicate_unknown_fields() {
+        // Positive first; the empty-struct Rust forms preserve the original wire JSON.
+        let fixture = examples();
+        let mut direct = fixture["examples"]["input-key"].clone();
+        direct["body"]["request"]["context"]["route"] = json!({"kind":"direct_session"});
+        for (value, tag) in [
+            (fixture["examples"]["subscribe"].clone(), "active_grid"),
+            (fixture["examples"]["snapshot-page-one"].clone(), "default"),
+            (direct, "direct_session"),
+        ] {
+            let original = serde_json::to_string(&value).unwrap();
+            let decoded: Envelope = serde_json::from_str(&original).unwrap();
+            assert_eq!(serde_json::to_value(decoded).unwrap(), value);
+            let needle = format!("\"kind\":\"{tag}\"");
+            for extra in [
+                "\"unexpected_probe\":true",
+                "\"unexpected_probe\":true,\"unexpected_probe\":false",
+                "\"binding\":{\"view_id\":\"view-one\",\"mapping_revision\":\"1\",\"focus_generation\":\"2\"}",
+            ] {
+                // Do not parse the malformed raw string into a Value first: that erases duplicates.
+                let raw = original.replacen(&needle, &format!("{needle},{extra}"), 1);
+                assert_ne!(raw, original);
+                assert!(
+                    serde_json::from_str::<Envelope>(&raw).is_err(),
+                    "{tag} silently accepted extra fields"
+                );
+            }
+        }
     }
 
     #[test]
