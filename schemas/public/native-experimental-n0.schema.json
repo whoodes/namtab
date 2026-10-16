@@ -1,0 +1,1734 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Envelope",
+  "type": "object",
+  "properties": {
+    "body": {
+      "$ref": "#/definitions/Message"
+    },
+    "namespace": {
+      "$ref": "#/definitions/Namespace"
+    },
+    "version": {
+      "$ref": "#/definitions/Version"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "namespace",
+    "version",
+    "body"
+  ],
+  "definitions": {
+    "ApprovalBinding": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "not_required"
+            },
+            "policy_revision": {
+              "$ref": "#/definitions/Revision"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "policy_revision"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "approval": {
+              "$ref": "#/definitions/RecordRef"
+            },
+            "kind": {
+              "type": "string",
+              "const": "required"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "approval"
+          ]
+        }
+      ]
+    },
+    "BufferKind": {
+      "type": "string",
+      "enum": [
+        "primary",
+        "alternate"
+      ]
+    },
+    "BufferRef": {
+      "type": "object",
+      "properties": {
+        "generation": {
+          "$ref": "#/definitions/Revision"
+        },
+        "kind": {
+          "$ref": "#/definitions/BufferKind"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "generation"
+      ]
+    },
+    "Cell": {
+      "type": "object",
+      "properties": {
+        "occupancy": {
+          "$ref": "#/definitions/Occupancy"
+        },
+        "style": {
+          "$ref": "#/definitions/Style"
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 16
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "text",
+        "occupancy",
+        "style"
+      ]
+    },
+    "ClaimKind": {
+      "type": "string",
+      "enum": [
+        "interpretation",
+        "activity"
+      ]
+    },
+    "CloseReason": {
+      "type": "string",
+      "enum": [
+        "canceled",
+        "disconnected",
+        "denied",
+        "retired"
+      ]
+    },
+    "Color": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "default"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "index": {
+              "type": "integer",
+              "maximum": 255,
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "indexed"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "index"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "blue": {
+              "type": "integer",
+              "maximum": 255,
+              "minimum": 0
+            },
+            "green": {
+              "type": "integer",
+              "maximum": 255,
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "rgb"
+            },
+            "red": {
+              "type": "integer",
+              "maximum": 255,
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "red",
+            "green",
+            "blue"
+          ]
+        }
+      ]
+    },
+    "Completeness": {
+      "type": "string",
+      "enum": [
+        "complete_for_selection",
+        "partial"
+      ]
+    },
+    "Counter": {
+      "description": "Canonical decimal shape only; semantic validation must also enforce <= u64::MAX.",
+      "type": "string",
+      "maxLength": 20,
+      "minLength": 1,
+      "pattern": "^(0|[1-9][0-9]*)$"
+    },
+    "Coverage": {
+      "type": "object",
+      "properties": {
+        "capture_policy": {
+          "$ref": "#/definitions/RecordRef"
+        },
+        "completeness": {
+          "$ref": "#/definitions/Completeness"
+        },
+        "gaps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/RowGap"
+          },
+          "maxItems": 8
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "completeness",
+        "capture_policy",
+        "gaps"
+      ]
+    },
+    "Credit": {
+      "type": "object",
+      "properties": {
+        "bytes": {
+          "type": "integer",
+          "maximum": 1048576,
+          "minimum": 0
+        },
+        "pages": {
+          "type": "integer",
+          "maximum": 8,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "pages",
+        "bytes"
+      ]
+    },
+    "Cursor": {
+      "type": "object",
+      "properties": {
+        "blink": {
+          "type": "boolean"
+        },
+        "column": {
+          "type": "integer",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "row": {
+          "type": "integer",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "shape": {
+          "$ref": "#/definitions/CursorShape"
+        },
+        "visible": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "row",
+        "column",
+        "visible",
+        "blink",
+        "shape"
+      ]
+    },
+    "CursorShape": {
+      "type": "string",
+      "enum": [
+        "block",
+        "underline",
+        "bar"
+      ]
+    },
+    "Deadline": {
+      "type": "object",
+      "properties": {
+        "clock_origin_id": {
+          "$ref": "#/definitions/Id"
+        },
+        "ticks": {
+          "$ref": "#/definitions/Counter"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "clock_origin_id",
+        "ticks"
+      ]
+    },
+    "EvidenceRef": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "session_event"
+            },
+            "sequence": {
+              "$ref": "#/definitions/Counter"
+            },
+            "session": {
+              "$ref": "#/definitions/SessionRef"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "session",
+            "sequence"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "control_record"
+            },
+            "record": {
+              "$ref": "#/definitions/RecordRef"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "record"
+          ]
+        }
+      ]
+    },
+    "Fact": {
+      "type": "object",
+      "properties": {
+        "evidence": {
+          "$ref": "#/definitions/FactEvidence"
+        },
+        "subject": {
+          "$ref": "#/definitions/SessionRef"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "subject",
+        "evidence"
+      ]
+    },
+    "FactEvidence": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "claim": {
+              "$ref": "#/definitions/SessionClaim"
+            },
+            "level": {
+              "type": "string",
+              "const": "observed"
+            },
+            "producer": {
+              "$ref": "#/definitions/Producer"
+            },
+            "schema": {
+              "$ref": "#/definitions/Id"
+            },
+            "source": {
+              "$ref": "#/definitions/EvidenceRef"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "level",
+            "claim",
+            "producer",
+            "schema",
+            "source"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "channel_id": {
+              "$ref": "#/definitions/Id"
+            },
+            "claim": {
+              "$ref": "#/definitions/SessionClaim"
+            },
+            "level": {
+              "type": "string",
+              "const": "reported"
+            },
+            "producer": {
+              "$ref": "#/definitions/Producer"
+            },
+            "schema": {
+              "$ref": "#/definitions/Id"
+            },
+            "source": {
+              "$ref": "#/definitions/EvidenceRef"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "level",
+            "claim",
+            "producer",
+            "channel_id",
+            "schema",
+            "source"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "claim": {
+              "$ref": "#/definitions/SessionClaim"
+            },
+            "evidence": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/EvidenceRef"
+              },
+              "maxItems": 8,
+              "minItems": 1
+            },
+            "level": {
+              "type": "string",
+              "const": "inferred"
+            },
+            "method": {
+              "$ref": "#/definitions/Id"
+            },
+            "producer": {
+              "$ref": "#/definitions/Producer"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "level",
+            "claim",
+            "producer",
+            "method",
+            "evidence"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "claim": {
+              "$ref": "#/definitions/ClaimKind"
+            },
+            "last_known": {
+              "$ref": "#/definitions/Id"
+            },
+            "level": {
+              "type": "string",
+              "const": "unavailable"
+            },
+            "reason": {
+              "$ref": "#/definitions/UnavailableReason"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "level",
+            "claim",
+            "reason"
+          ]
+        }
+      ]
+    },
+    "FrameDelta": {
+      "type": "object",
+      "properties": {
+        "base": {
+          "$ref": "#/definitions/FrameStamp"
+        },
+        "facts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Fact"
+          },
+          "maxItems": 16
+        },
+        "presentation": {
+          "$ref": "#/definitions/Presentation"
+        },
+        "replace_rows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/RowReplacement"
+          },
+          "maxItems": 32
+        },
+        "resume_cursor": {
+          "$ref": "#/definitions/Id"
+        },
+        "subscription_id": {
+          "$ref": "#/definitions/Id"
+        },
+        "target": {
+          "$ref": "#/definitions/FrameStamp"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "subscription_id",
+        "base",
+        "target",
+        "replace_rows",
+        "presentation",
+        "facts",
+        "resume_cursor"
+      ]
+    },
+    "FrameStamp": {
+      "type": "object",
+      "properties": {
+        "buffer": {
+          "$ref": "#/definitions/BufferRef"
+        },
+        "capability_revision": {
+          "$ref": "#/definitions/Revision"
+        },
+        "geometry": {
+          "$ref": "#/definitions/Geometry"
+        },
+        "mode_revision": {
+          "$ref": "#/definitions/Revision"
+        },
+        "observation_id": {
+          "$ref": "#/definitions/Id"
+        },
+        "policy": {
+          "$ref": "#/definitions/PolicyTuple"
+        },
+        "processed_frontier": {
+          "$ref": "#/definitions/Counter"
+        },
+        "semantic_revision": {
+          "$ref": "#/definitions/Revision"
+        },
+        "session": {
+          "$ref": "#/definitions/SessionRef"
+        },
+        "source_frontier": {
+          "$ref": "#/definitions/Counter"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "session",
+        "observation_id",
+        "semantic_revision",
+        "processed_frontier",
+        "source_frontier",
+        "geometry",
+        "buffer",
+        "policy",
+        "mode_revision",
+        "capability_revision"
+      ]
+    },
+    "Geometry": {
+      "type": "object",
+      "properties": {
+        "columns": {
+          "type": "integer",
+          "maximum": 500,
+          "minimum": 2
+        },
+        "revision": {
+          "$ref": "#/definitions/Revision"
+        },
+        "rows": {
+          "type": "integer",
+          "maximum": 200,
+          "minimum": 2
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "revision",
+        "rows",
+        "columns"
+      ]
+    },
+    "Id": {
+      "type": "string",
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "InputContext": {
+      "type": "object",
+      "properties": {
+        "approval": {
+          "$ref": "#/definitions/ApprovalBinding"
+        },
+        "context": {
+          "$ref": "#/definitions/RecordRef"
+        },
+        "deadline": {
+          "$ref": "#/definitions/Deadline"
+        },
+        "endpoint_capability_revision": {
+          "$ref": "#/definitions/Revision"
+        },
+        "endpoint_generation": {
+          "$ref": "#/definitions/Revision"
+        },
+        "endpoint_id": {
+          "$ref": "#/definitions/Id"
+        },
+        "expected": {
+          "$ref": "#/definitions/FrameStamp"
+        },
+        "grant": {
+          "$ref": "#/definitions/RecordRef"
+        },
+        "helper_epoch": {
+          "$ref": "#/definitions/Revision"
+        },
+        "protection_revision": {
+          "$ref": "#/definitions/Revision"
+        },
+        "receipt_profile": {
+          "$ref": "#/definitions/RecordRef"
+        },
+        "route": {
+          "$ref": "#/definitions/InputRoute"
+        },
+        "writer_generation": {
+          "$ref": "#/definitions/Revision"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "receipt_profile",
+        "endpoint_id",
+        "endpoint_generation",
+        "endpoint_capability_revision",
+        "helper_epoch",
+        "writer_generation",
+        "expected",
+        "route",
+        "protection_revision",
+        "grant",
+        "context",
+        "approval",
+        "deadline"
+      ]
+    },
+    "InputIntent": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "action": {
+              "$ref": "#/definitions/KeyAction"
+            },
+            "facts": {
+              "$ref": "#/definitions/KeyFacts"
+            },
+            "kind": {
+              "type": "string",
+              "const": "send_key"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "action",
+            "facts"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "commit_text"
+            },
+            "text": {
+              "type": "string",
+              "maxLength": 8192
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "text"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "fallback": {
+              "$ref": "#/definitions/PasteFallback"
+            },
+            "kind": {
+              "type": "string",
+              "const": "paste"
+            },
+            "newlines": {
+              "$ref": "#/definitions/NewlinePolicy"
+            },
+            "text": {
+              "type": "string",
+              "maxLength": 8192
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "text",
+            "newlines",
+            "fallback"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "gained": {
+              "type": "boolean"
+            },
+            "kind": {
+              "type": "string",
+              "const": "focus_report"
+            },
+            "view": {
+              "$ref": "#/definitions/ViewBinding"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "view",
+            "gained"
+          ]
+        }
+      ]
+    },
+    "InputRequest": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "$ref": "#/definitions/InputContext"
+        },
+        "intent": {
+          "$ref": "#/definitions/InputIntent"
+        },
+        "key": {
+          "$ref": "#/definitions/MutationKey"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "key",
+        "context",
+        "intent"
+      ]
+    },
+    "InputRoute": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "direct_session"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "binding": {
+              "$ref": "#/definitions/ViewBinding"
+            },
+            "kind": {
+              "type": "string",
+              "const": "view"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "binding"
+          ]
+        }
+      ]
+    },
+    "KeyAction": {
+      "type": "string",
+      "enum": [
+        "press",
+        "repeat",
+        "release"
+      ]
+    },
+    "KeyFacts": {
+      "type": "object",
+      "properties": {
+        "composing": {
+          "type": "boolean"
+        },
+        "consumed_modifiers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Modifier"
+          },
+          "maxItems": 5
+        },
+        "layout_id": {
+          "$ref": "#/definitions/Id"
+        },
+        "logical": {
+          "$ref": "#/definitions/LogicalKey"
+        },
+        "modifiers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Modifier"
+          },
+          "maxItems": 5
+        },
+        "phase": {
+          "$ref": "#/definitions/KeyAction"
+        },
+        "physical_code": {
+          "$ref": "#/definitions/Id"
+        }
+      },
+      "additionalProperties": false
+    },
+    "LogicalKey": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "key": {
+              "$ref": "#/definitions/NamedKey"
+            },
+            "kind": {
+              "type": "string",
+              "const": "named"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "key"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "character"
+            },
+            "text": {
+              "type": "string",
+              "maxLength": 1,
+              "minLength": 1
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "text"
+          ]
+        }
+      ]
+    },
+    "Message": {
+      "description": "Read correlation is not a mutation identity. Input requests use the issued key above.",
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "limits": {
+              "$ref": "#/definitions/ReceiptLimits"
+            },
+            "message": {
+              "type": "string",
+              "const": "receipt_profile_proposal"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "message",
+            "limits"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "correlation_id": {
+              "$ref": "#/definitions/Id"
+            },
+            "credit": {
+              "$ref": "#/definitions/Credit"
+            },
+            "message": {
+              "type": "string",
+              "const": "subscribe"
+            },
+            "session": {
+              "$ref": "#/definitions/SessionRef"
+            },
+            "start": {
+              "$ref": "#/definitions/SubscriptionStart"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "message",
+            "correlation_id",
+            "session",
+            "start",
+            "credit"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "cursor": {
+              "$ref": "#/definitions/Id"
+            },
+            "message": {
+              "type": "string",
+              "const": "read_page"
+            },
+            "subscription_id": {
+              "$ref": "#/definitions/Id"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "message",
+            "subscription_id",
+            "cursor"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "credit": {
+              "$ref": "#/definitions/Credit"
+            },
+            "message": {
+              "type": "string",
+              "const": "grant_credit"
+            },
+            "subscription_id": {
+              "$ref": "#/definitions/Id"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "message",
+            "subscription_id",
+            "credit"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string",
+              "const": "cancel_subscription"
+            },
+            "subscription_id": {
+              "$ref": "#/definitions/Id"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "message",
+            "subscription_id"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string",
+              "const": "snapshot_page"
+            },
+            "page": {
+              "$ref": "#/definitions/SnapshotPage"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "message",
+            "page"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string",
+              "const": "observation_unavailable"
+            },
+            "projection": {
+              "$ref": "#/definitions/Projection"
+            },
+            "reason": {
+              "$ref": "#/definitions/UnavailableReason"
+            },
+            "session": {
+              "$ref": "#/definitions/SessionRef"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "message",
+            "session",
+            "projection",
+            "reason"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "delta": {
+              "$ref": "#/definitions/FrameDelta"
+            },
+            "message": {
+              "type": "string",
+              "const": "frame_delta"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "message",
+            "delta"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string",
+              "const": "resync_required"
+            },
+            "reason": {
+              "$ref": "#/definitions/ResyncReason"
+            },
+            "subscription_id": {
+              "$ref": "#/definitions/Id"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "message",
+            "subscription_id",
+            "reason"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string",
+              "const": "subscription_closed"
+            },
+            "reason": {
+              "$ref": "#/definitions/CloseReason"
+            },
+            "subscription_id": {
+              "$ref": "#/definitions/Id"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "message",
+            "subscription_id",
+            "reason"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string",
+              "const": "input"
+            },
+            "request": {
+              "$ref": "#/definitions/InputRequest"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "message",
+            "request"
+          ]
+        }
+      ]
+    },
+    "Modifier": {
+      "type": "string",
+      "enum": [
+        "shift",
+        "alt",
+        "control",
+        "meta",
+        "alt_graph"
+      ]
+    },
+    "MutationKey": {
+      "type": "object",
+      "properties": {
+        "authority_epoch": {
+          "$ref": "#/definitions/Revision"
+        },
+        "namespace_id": {
+          "$ref": "#/definitions/Id"
+        },
+        "request_namespace_id": {
+          "$ref": "#/definitions/Id"
+        },
+        "request_seq": {
+          "$ref": "#/definitions/Revision"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "namespace_id",
+        "request_namespace_id",
+        "authority_epoch",
+        "request_seq"
+      ]
+    },
+    "NamedKey": {
+      "type": "string",
+      "enum": [
+        "Up",
+        "Down",
+        "Left",
+        "Right",
+        "Tab",
+        "Enter",
+        "Escape",
+        "Backspace",
+        "Home",
+        "End",
+        "PageUp",
+        "PageDown",
+        "Insert",
+        "Delete",
+        "F1",
+        "F2",
+        "F3",
+        "F4",
+        "F5",
+        "F6",
+        "F7",
+        "F8",
+        "F9",
+        "F10",
+        "F11",
+        "F12",
+        "KeypadEnter",
+        "Keypad0",
+        "Keypad1",
+        "Keypad2",
+        "Keypad3",
+        "Keypad4",
+        "Keypad5",
+        "Keypad6",
+        "Keypad7",
+        "Keypad8",
+        "Keypad9",
+        "KeypadAdd",
+        "KeypadSubtract",
+        "KeypadMultiply",
+        "KeypadDivide",
+        "KeypadDecimal"
+      ]
+    },
+    "Namespace": {
+      "type": "string",
+      "enum": [
+        "namtab.native.experimental.n0"
+      ]
+    },
+    "NewlinePolicy": {
+      "type": "string",
+      "enum": [
+        "preserve",
+        "lf_from_crlf_v1"
+      ]
+    },
+    "Occupancy": {
+      "type": "string",
+      "enum": [
+        "single",
+        "wide_lead",
+        "wide_tail"
+      ]
+    },
+    "PasteFallback": {
+      "type": "string",
+      "enum": [
+        "reject",
+        "explicit_unbracketed"
+      ]
+    },
+    "PolicyTuple": {
+      "type": "object",
+      "properties": {
+        "engine_revision": {
+          "$ref": "#/definitions/Id"
+        },
+        "profile": {
+          "$ref": "#/definitions/RecordRef"
+        },
+        "reflow_policy": {
+          "$ref": "#/definitions/Id"
+        },
+        "text_policy": {
+          "$ref": "#/definitions/Id"
+        },
+        "unicode_data": {
+          "$ref": "#/definitions/Id"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "engine_revision",
+        "profile",
+        "text_policy",
+        "reflow_policy"
+      ]
+    },
+    "Presentation": {
+      "type": "object",
+      "properties": {
+        "cursor": {
+          "$ref": "#/definitions/Cursor"
+        }
+      },
+      "additionalProperties": false
+    },
+    "PresentationRow": {
+      "type": "object",
+      "properties": {
+        "cells": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Cell"
+          },
+          "maxItems": 500,
+          "minItems": 2
+        },
+        "revision": {
+          "$ref": "#/definitions/Revision"
+        },
+        "row_id": {
+          "$ref": "#/definitions/Id"
+        },
+        "soft_wrapped": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "row_id",
+        "revision",
+        "soft_wrapped",
+        "cells"
+      ]
+    },
+    "Producer": {
+      "type": "object",
+      "properties": {
+        "component_id": {
+          "$ref": "#/definitions/Id"
+        },
+        "incarnation": {
+          "$ref": "#/definitions/Revision"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "component_id",
+        "incarnation"
+      ]
+    },
+    "Projection": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "active_grid"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "buffer": {
+              "$ref": "#/definitions/BufferRef"
+            },
+            "first_row_id": {
+              "$ref": "#/definitions/Id"
+            },
+            "kind": {
+              "type": "string",
+              "const": "history"
+            },
+            "limit": {
+              "type": "integer",
+              "maximum": 1000,
+              "minimum": 1
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "buffer",
+            "first_row_id",
+            "limit"
+          ]
+        }
+      ]
+    },
+    "ReceiptLimits": {
+      "type": "object",
+      "properties": {
+        "clock_unit": {
+          "$ref": "#/definitions/Id"
+        },
+        "max_binding_bytes": {
+          "type": "integer",
+          "maximum": 4294967295,
+          "minimum": 1
+        },
+        "max_sequence": {
+          "$ref": "#/definitions/Revision"
+        },
+        "namespace_lifetime_ticks": {
+          "$ref": "#/definitions/Counter"
+        },
+        "namespace_records_per_principal": {
+          "type": "integer",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "namespace_records_total": {
+          "type": "integer",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "profile": {
+          "$ref": "#/definitions/RecordRef"
+        },
+        "receipt_slots_per_principal": {
+          "type": "integer",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "receipt_slots_total": {
+          "type": "integer",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "retention_after_decision_ticks": {
+          "$ref": "#/definitions/Counter"
+        },
+        "volatile_bindings_per_principal": {
+          "type": "integer",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "volatile_bindings_total": {
+          "type": "integer",
+          "maximum": 65535,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "max_sequence",
+        "namespace_lifetime_ticks",
+        "retention_after_decision_ticks",
+        "namespace_records_per_principal",
+        "namespace_records_total",
+        "receipt_slots_per_principal",
+        "receipt_slots_total",
+        "volatile_bindings_per_principal",
+        "volatile_bindings_total",
+        "max_binding_bytes",
+        "clock_unit"
+      ]
+    },
+    "RecordRef": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/Id"
+        },
+        "revision": {
+          "$ref": "#/definitions/Revision"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "revision"
+      ]
+    },
+    "ResyncReason": {
+      "type": "string",
+      "enum": [
+        "missing_base",
+        "presentation_gap",
+        "expired_cursor",
+        "policy_changed",
+        "target_replaced",
+        "credit_exhausted"
+      ]
+    },
+    "Revision": {
+      "description": "Nonzero canonical decimal shape only; exact u64 validation remains unimplemented.",
+      "type": "string",
+      "maxLength": 20,
+      "minLength": 1,
+      "pattern": "^[1-9][0-9]*$"
+    },
+    "RowGap": {
+      "type": "object",
+      "properties": {
+        "end": {
+          "$ref": "#/definitions/Counter"
+        },
+        "reason": {
+          "$ref": "#/definitions/UnavailableReason"
+        },
+        "start": {
+          "$ref": "#/definitions/Counter"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "start",
+        "end",
+        "reason"
+      ]
+    },
+    "RowReplacement": {
+      "type": "object",
+      "properties": {
+        "index": {
+          "type": "integer",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "row": {
+          "$ref": "#/definitions/PresentationRow"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "index",
+        "row"
+      ]
+    },
+    "SessionClaim": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "interpretation"
+            },
+            "known": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "known"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "activity"
+            },
+            "text": {
+              "type": "string",
+              "maxLength": 256
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "text"
+          ]
+        }
+      ]
+    },
+    "SessionRef": {
+      "type": "object",
+      "properties": {
+        "incarnation": {
+          "$ref": "#/definitions/Revision"
+        },
+        "namespace_id": {
+          "$ref": "#/definitions/Id"
+        },
+        "session_id": {
+          "$ref": "#/definitions/Id"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "namespace_id",
+        "session_id",
+        "incarnation"
+      ]
+    },
+    "SnapshotPage": {
+      "type": "object",
+      "properties": {
+        "coverage": {
+          "$ref": "#/definitions/Coverage"
+        },
+        "facts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Fact"
+          },
+          "maxItems": 16
+        },
+        "next_cursor": {
+          "$ref": "#/definitions/Id"
+        },
+        "page_id": {
+          "$ref": "#/definitions/Id"
+        },
+        "presentation": {
+          "$ref": "#/definitions/Presentation"
+        },
+        "projection": {
+          "$ref": "#/definitions/Projection"
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PresentationRow"
+          },
+          "maxItems": 32
+        },
+        "snapshot_id": {
+          "$ref": "#/definitions/Id"
+        },
+        "stamp": {
+          "$ref": "#/definitions/FrameStamp"
+        },
+        "start_row": {
+          "$ref": "#/definitions/Counter"
+        },
+        "subscription_id": {
+          "$ref": "#/definitions/Id"
+        },
+        "total_rows": {
+          "$ref": "#/definitions/Counter"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "subscription_id",
+        "snapshot_id",
+        "stamp",
+        "page_id",
+        "projection",
+        "start_row",
+        "total_rows",
+        "coverage",
+        "rows",
+        "presentation",
+        "facts"
+      ]
+    },
+    "Style": {
+      "type": "object",
+      "properties": {
+        "background": {
+          "$ref": "#/definitions/Color"
+        },
+        "flags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StyleFlag"
+          },
+          "maxItems": 8
+        },
+        "foreground": {
+          "$ref": "#/definitions/Color"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "foreground",
+        "background",
+        "flags"
+      ]
+    },
+    "StyleFlag": {
+      "type": "string",
+      "enum": [
+        "bold",
+        "faint",
+        "italic",
+        "underline",
+        "blink",
+        "inverse",
+        "conceal",
+        "strike"
+      ]
+    },
+    "SubscriptionStart": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "current_snapshot"
+            },
+            "projection": {
+              "$ref": "#/definitions/Projection"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "projection"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "base": {
+              "$ref": "#/definitions/FrameStamp"
+            },
+            "cursor": {
+              "$ref": "#/definitions/Id"
+            },
+            "kind": {
+              "type": "string",
+              "const": "resume"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "cursor",
+            "base"
+          ]
+        }
+      ]
+    },
+    "UnavailableReason": {
+      "type": "string",
+      "enum": [
+        "denied",
+        "expired",
+        "capture_gap",
+        "state_unknown"
+      ]
+    },
+    "Version": {
+      "type": "string",
+      "enum": [
+        "n0-06-draft-1"
+      ]
+    },
+    "ViewBinding": {
+      "type": "object",
+      "properties": {
+        "focus_generation": {
+          "$ref": "#/definitions/Revision"
+        },
+        "mapping_revision": {
+          "$ref": "#/definitions/Revision"
+        },
+        "view_id": {
+          "$ref": "#/definitions/Id"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "view_id",
+        "mapping_revision",
+        "focus_generation"
+      ]
+    }
+  }
+}

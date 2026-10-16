@@ -1,0 +1,70 @@
+{
+  "format": "n0-06-review-data-1",
+  "status": "Protocol review sequences only; no live subscription, transport, timing or page-assembly oracle executed",
+  "mappings": [
+    "DF01",
+    "DF04",
+    "V16"
+  ],
+  "cases": [
+    {
+      "id": "immutable-two-page-snapshot",
+      "examples": [
+        "subscribe",
+        "snapshot-page-one",
+        "read-page",
+        "snapshot-page-two",
+        "frame-delta"
+      ],
+      "requirement": "Both clients assemble exactly rows0..2 of snapshot-one with one stamp, then apply the complete exact-base delta atomically. No one-page claim of full grid."
+    },
+    {
+      "id": "zero-credit-pause",
+      "examples": [
+        "grant-credit"
+      ],
+      "requirement": "With zero pages or zero bytes available, publish no presentation page/delta; bounded control notices use a separately reserved control allowance. Replenishment cannot exceed negotiated outstanding caps."
+    },
+    {
+      "id": "snapshot-larger-than-credit",
+      "examples": [
+        "snapshot-page-one"
+      ],
+      "requirement": "Before sending, charge complete UTF-8 encoded envelope bytes and one page. If a single page cannot fit, refuse/reduce page under the same snapshot binding; never exceed credit or truncate it."
+    },
+    {
+      "id": "gap-resync",
+      "examples": [
+        "frame-delta",
+        "resync",
+        "subscribe"
+      ],
+      "requirement": "Missing exactbase, dropped presentation frame, expired cursor, replaced target or policy/buffer/geometry drift invalidates pending assembly; request current snapshot. No output-parser gap can be repaired by resnapshot."
+    },
+    {
+      "id": "cancel-and-disconnect",
+      "examples": [
+        "cancel",
+        "closed",
+        "resume"
+      ],
+      "requirement": "Cancel releases retained pages/cursors after closure and fences further publication. Already received frames remain historical. Disconnect closes subscription; resumed read authenticates, authorizes and verifies exact cursor/base or resnapshots, without restoring writer ownership or retrying input."
+    },
+    {
+      "id": "wrong-page-binding",
+      "examples": [
+        "snapshot-page-one",
+        "snapshot-page-two"
+      ],
+      "requirement": "Reject a page with another snapshot/stamp/session, overlapping/missing rows, duplicate row IDs, wrong active width, changed total or inconsistent metadata. Discard incomplete assembly on expiration; never display it as a full snapshot."
+    },
+    {
+      "id": "immutable-not-restorable",
+      "examples": [
+        "snapshot-page-one",
+        "snapshot-page-two"
+      ],
+      "requirement": "Presentation includes active cells and authorized cursor/facts only; inactive buffer/parser continuations/receipts/grants are absent. It is not complete semantic state, evidence of OS readiness, or an import/recovery image."
+    }
+  ]
+}

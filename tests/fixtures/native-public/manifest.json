@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "purpose": "N0-06 public schema shape fixtures and unexecuted semantic review requirements; no runtime or owner admission acceptance",
+  "source": "../../../docs/engine/native-contract.md#n0-06-experimental-public-projections-and-intents",
+  "provenance": "README.md",
+  "files": [
+    {
+      "path": "examples.json",
+      "sha256": "21d2c2c8f7548a45d82420e6c81007939cc42e0f55ea2b03717a3cec83b96059",
+      "origin": "Hand-authored synthetic data, 2026-10-16; no captured or upstream data",
+      "requirements": [
+        "R10",
+        "R16"
+      ],
+      "validation_families": [
+        "V10",
+        "V16"
+      ],
+      "frontend_cases": [
+        "DF01",
+        "DF02",
+        "DF03",
+        "DF04"
+      ]
+    },
+    {
+      "path": "intent-cases.json",
+      "sha256": "782753dfecb06b9d001431b14fd7e5aa910c72f393342aab2c9c0e06751bbbd0",
+      "origin": "Hand-authored synthetic data, 2026-10-16; no captured or upstream data",
+      "requirements": [
+        "R10",
+        "R16"
+      ],
+      "validation_families": [
+        "V10",
+        "V16"
+      ],
+      "frontend_cases": [
+        "DF01",
+        "DF02",
+        "DF03",
+        "DF04"
+      ]
+    },
+    {
+      "path": "subscription-cases.json",
+      "sha256": "a401179cf604014d3a1957a542a9d969d794b29a44f6d9fb9d2be77a195eccde",
+      "origin": "Hand-authored synthetic data, 2026-10-16; no captured or upstream data",
+      "requirements": [
+        "R10",
+        "R16"
+      ],
+      "validation_families": [
+        "V10",
+        "V16"
+      ],
+      "frontend_cases": [
+        "DF01",
+        "DF02",
+        "DF03",
+        "DF04"
+      ]
+    }
+  ]
+}

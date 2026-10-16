@@ -1,0 +1,1023 @@
+{
+  "format": "n0-06-static-cases-1",
+  "status": "expected_shape is executable; all semantic_expectation/hex/focus/encoding claims are unexecuted review requirements",
+  "profile": "px-dev-text-0",
+  "mappings": [
+    "DF01",
+    "DF02",
+    "DF03",
+    "DF04",
+    "V10",
+    "V16"
+  ],
+  "cases": [
+    {
+      "id": "ctrl-i",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "input-key",
+      "changes": [
+        {
+          "path": [
+            "body",
+            "request",
+            "intent",
+            "facts"
+          ],
+          "value": {
+            "logical": {
+              "kind": "character",
+              "text": "i"
+            },
+            "modifiers": [
+              "control"
+            ]
+          }
+        }
+      ],
+      "expected_shape": true,
+      "review_requirement": "Explicit Send key and native-agent intents preserve the requested chord; canonical classic encoder aliases the named key.",
+      "semantic_expectation": "admit_only_if_all_fences_hold",
+      "expected_hex": "09",
+      "paired_named_key": "Tab",
+      "also_native_agent": true
+    },
+    {
+      "id": "named-tab",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "input-key",
+      "changes": [
+        {
+          "path": [
+            "body",
+            "request",
+            "intent",
+            "facts",
+            "logical"
+          ],
+          "value": {
+            "kind": "named",
+            "key": "Tab"
+          }
+        }
+      ],
+      "expected_shape": true,
+      "review_requirement": "Legacy outer bytes establish this conservative logical intent, with no physical chord claim.",
+      "semantic_expectation": "admit_only_if_all_fences_hold",
+      "expected_hex": "09"
+    },
+    {
+      "id": "ctrl-m",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "input-key",
+      "changes": [
+        {
+          "path": [
+            "body",
+            "request",
+            "intent",
+            "facts"
+          ],
+          "value": {
+            "logical": {
+              "kind": "character",
+              "text": "m"
+            },
+            "modifiers": [
+              "control"
+            ]
+          }
+        }
+      ],
+      "expected_shape": true,
+      "review_requirement": "Explicit Send key and native-agent intents preserve the requested chord; canonical classic encoder aliases the named key.",
+      "semantic_expectation": "admit_only_if_all_fences_hold",
+      "expected_hex": "0d",
+      "paired_named_key": "Enter",
+      "also_native_agent": true
+    },
+    {
+      "id": "named-enter",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "input-key",
+      "changes": [
+        {
+          "path": [
+            "body",
+            "request",
+            "intent",
+            "facts",
+            "logical"
+          ],
+          "value": {
+            "kind": "named",
+            "key": "Enter"
+          }
+        }
+      ],
+      "expected_shape": true,
+      "review_requirement": "Legacy outer bytes establish this conservative logical intent, with no physical chord claim.",
+      "semantic_expectation": "admit_only_if_all_fences_hold",
+      "expected_hex": "0d"
+    },
+    {
+      "id": "ctrl-bracket",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "input-key",
+      "changes": [
+        {
+          "path": [
+            "body",
+            "request",
+            "intent",
+            "facts"
+          ],
+          "value": {
+            "logical": {
+              "kind": "character",
+              "text": "["
+            },
+            "modifiers": [
+              "control"
+            ]
+          }
+        }
+      ],
+      "expected_shape": true,
+      "review_requirement": "Explicit Send key and native-agent intents preserve the requested chord; canonical classic encoder aliases the named key.",
+      "semantic_expectation": "admit_only_if_all_fences_hold",
+      "expected_hex": "1b",
+      "paired_named_key": "Escape",
+      "also_native_agent": true
+    },
+    {
+      "id": "named-escape",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "input-key",
+      "changes": [
+        {
+          "path": [
+            "body",
+            "request",
+            "intent",
+            "facts",
+            "logical"
+          ],
+          "value": {
+            "kind": "named",
+            "key": "Escape"
+          }
+        }
+      ],
+      "expected_shape": true,
+      "review_requirement": "Legacy outer bytes establish this conservative logical intent, with no physical chord claim.",
+      "semantic_expectation": "admit_only_if_all_fences_hold",
+      "expected_hex": "1b"
+    },
+    {
+      "id": "host-prefix-quote",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "input-key",
+      "changes": [
+        {
+          "path": [
+            "body",
+            "request",
+            "intent",
+            "facts"
+          ],
+          "value": {
+            "logical": {
+              "kind": "character",
+              "text": "g"
+            },
+            "modifiers": [
+              "control"
+            ]
+          }
+        }
+      ],
+      "expected_shape": true,
+      "review_requirement": "TUI double Ctrl-G and desktop Send key produce one Ctrl-G request; host prefix bytes are never CommitText.",
+      "semantic_expectation": "admit_only_if_all_fences_hold",
+      "expected_hex": "07",
+      "host_events": [
+        "prefix_ctrl_g",
+        "prefix_ctrl_g"
+      ],
+      "desktop_action": "Send key Ctrl-G"
+    },
+    {
+      "id": "agent-direct-session",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "input-key",
+      "changes": [
+        {
+          "path": [
+            "body",
+            "request",
+            "context",
+            "route"
+          ],
+          "value": {
+            "kind": "direct_session"
+          }
+        }
+      ],
+      "expected_shape": true,
+      "review_requirement": "Native agent uses the same admitted intent without human focus or UI dispatch.",
+      "semantic_expectation": "admit_only_if_all_fences_hold",
+      "also_native_agent": true
+    },
+    {
+      "id": "known-false-composition",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "input-key",
+      "changes": [
+        {
+          "path": [
+            "body",
+            "request",
+            "intent",
+            "facts",
+            "composing"
+          ],
+          "value": false
+        }
+      ],
+      "expected_shape": true,
+      "review_requirement": "Known false is a fact; omission remains unknown.",
+      "semantic_expectation": "not_asserted"
+    },
+    {
+      "id": "consumed-shift",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "input-key",
+      "changes": [
+        {
+          "path": [
+            "body",
+            "request",
+            "intent",
+            "facts"
+          ],
+          "value": {
+            "logical": {
+              "kind": "character",
+              "text": "^"
+            },
+            "modifiers": [
+              "control",
+              "shift"
+            ],
+            "consumed_modifiers": [
+              "shift"
+            ],
+            "composing": false
+          }
+        }
+      ],
+      "expected_shape": true,
+      "review_requirement": "Known consumed Shift is removed once; no US physical layout is inferred.",
+      "semantic_expectation": "admit_only_if_all_fences_hold",
+      "expected_hex": "1e"
+    },
+    {
+      "id": "wrong-focus",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "input-key",
+      "changes": [
+        {
+          "path": [
+            "body",
+            "request",
+            "context",
+            "route",
+            "binding",
+            "focus_generation"
+          ],
+          "value": "2"
+        }
+      ],
+      "expected_shape": true,
+      "review_requirement": "With current focus_generation=3, refuse stale view-derived input before writing.",
+      "semantic_expectation": "refuse_stale_context",
+      "expected_hex": ""
+    },
+    {
+      "id": "stale-observation",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "input-key",
+      "changes": [
+        {
+          "path": [
+            "body",
+            "request",
+            "context",
+            "expected",
+            "semantic_revision"
+          ],
+          "value": "2"
+        }
+      ],
+      "expected_shape": true,
+      "review_requirement": "With current semantic_revision=3, refuse exact-observation input before writing.",
+      "semantic_expectation": "refuse_stale_context",
+      "expected_hex": ""
+    },
+    {
+      "id": "missing-logical-fact",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "input-key",
+      "changes": [
+        {
+          "path": [
+            "body",
+            "request",
+            "intent",
+            "facts",
+            "logical"
+          ],
+          "remove": true
+        }
+      ],
+      "expected_shape": true,
+      "review_requirement": "No logical key may be guessed from absent or physical-only information.",
+      "semantic_expectation": "refuse_unsupported_capability",
+      "expected_hex": ""
+    },
+    {
+      "id": "unknown-all-facts",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "input-key",
+      "changes": [
+        {
+          "path": [
+            "body",
+            "request",
+            "intent",
+            "facts"
+          ],
+          "value": {}
+        }
+      ],
+      "expected_shape": true,
+      "review_requirement": "Absence is not false/unmodified/a physical press; no representable key is established.",
+      "semantic_expectation": "refuse_unsupported_capability",
+      "expected_hex": ""
+    },
+    {
+      "id": "unsupported-release",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "input-key",
+      "changes": [
+        {
+          "path": [
+            "body",
+            "request",
+            "intent",
+            "action"
+          ],
+          "value": "release"
+        }
+      ],
+      "expected_shape": true,
+      "review_requirement": "The shared DTO can preserve requested release; px-dev-text-0 refuses it before writing.",
+      "semantic_expectation": "refuse_unsupported_capability",
+      "expected_hex": ""
+    },
+    {
+      "id": "unsupported-ctrl-tab",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "input-key",
+      "changes": [
+        {
+          "path": [
+            "body",
+            "request",
+            "intent",
+            "facts",
+            "modifiers"
+          ],
+          "value": [
+            "control"
+          ]
+        }
+      ],
+      "expected_shape": true,
+      "review_requirement": "The private dev profile cannot encode Ctrl-Tab; never drop Control.",
+      "semantic_expectation": "refuse_unsupported_capability",
+      "expected_hex": ""
+    },
+    {
+      "id": "text-hidden-control",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "input-text",
+      "changes": [
+        {
+          "path": [
+            "body",
+            "request",
+            "intent",
+            "text"
+          ],
+          "value": "a\u001bb"
+        }
+      ],
+      "expected_shape": true,
+      "review_requirement": "CommitText containing ESC is semantically invalid; not hidden raw input.",
+      "semantic_expectation": "refuse_invalid_request",
+      "expected_hex": ""
+    },
+    {
+      "id": "text-byte-overflow",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "input-text",
+      "changes": [
+        {
+          "path": [
+            "body",
+            "request",
+            "intent",
+            "text"
+          ],
+          "value": "ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé"
+        }
+      ],
+      "expected_shape": true,
+      "review_requirement": "8192-character schema bound does not enforce 8192 UTF-8 bytes; refuse 8194 bytes before writing.",
+      "semantic_expectation": "refuse_resource_exhausted",
+      "expected_hex": ""
+    },
+    {
+      "id": "paste-delimiter",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "input-paste",
+      "changes": [
+        {
+          "path": [
+            "body",
+            "request",
+            "intent",
+            "text"
+          ],
+          "value": "a\u001b[201~b"
+        }
+      ],
+      "expected_shape": true,
+      "review_requirement": "Embedded bracketed-paste end delimiter is refused by the finite input profile.",
+      "semantic_expectation": "refuse_invalid_request",
+      "expected_hex": ""
+    },
+    {
+      "id": "paste-mode-off",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "input-paste",
+      "changes": [],
+      "expected_shape": true,
+      "review_requirement": "When current bracketed-paste mode is off and fallback=reject, refuse without silent unbracketed fallback.",
+      "semantic_expectation": "refuse_unsupported_capability",
+      "expected_hex": "",
+      "assumed_modes": {
+        "bracketed_paste": false
+      }
+    },
+    {
+      "id": "focus-mode-off",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "input-focus",
+      "changes": [],
+      "expected_shape": true,
+      "review_requirement": "When canonical focus reporting is off, FocusReport is unsupported; a product focus change sends no such report.",
+      "semantic_expectation": "refuse_unsupported_capability",
+      "expected_hex": "",
+      "assumed_modes": {
+        "focus_reporting": false
+      }
+    },
+    {
+      "id": "paste-positive",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "input-paste",
+      "changes": [],
+      "expected_shape": true,
+      "review_requirement": "Inner bracketed-paste mode supplies wrappers once and recorded CRLF transformation; no implicit Enter.",
+      "semantic_expectation": "admit_only_if_all_fences_hold",
+      "expected_hex": "1b5b3230307e610a621b5b3230317e",
+      "assumed_modes": {
+        "bracketed_paste": true
+      }
+    },
+    {
+      "id": "focus-positive",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "input-focus",
+      "changes": [],
+      "expected_shape": true,
+      "review_requirement": "Protocol focus hint remains separately admitted; it neither selects a product view nor grants a writer.",
+      "semantic_expectation": "admit_only_if_all_fences_hold",
+      "expected_hex": "1b5b49",
+      "assumed_modes": {
+        "focus_reporting": true
+      }
+    },
+    {
+      "id": "text-positive",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "input-text",
+      "changes": [],
+      "expected_shape": true,
+      "review_requirement": "Commit exactly one text operation with no synthetic physical keys.",
+      "semantic_expectation": "admit_only_if_all_fences_hold",
+      "expected_hex": "636166c3a9"
+    },
+    {
+      "id": "delta-wrong-base",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "frame-delta",
+      "changes": [
+        {
+          "path": [
+            "body",
+            "delta",
+            "base",
+            "semantic_revision"
+          ],
+          "value": "2"
+        }
+      ],
+      "expected_shape": true,
+      "review_requirement": "Client holding revision3 cannot apply base2; discard pending delta and request current immutable snapshot.",
+      "semantic_expectation": "resync_required"
+    },
+    {
+      "id": "delta-geometry-drift",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "frame-delta",
+      "changes": [
+        {
+          "path": [
+            "body",
+            "delta",
+            "target",
+            "geometry",
+            "revision"
+          ],
+          "value": "2"
+        }
+      ],
+      "expected_shape": true,
+      "review_requirement": "Geometry/buffer/policy identity change requires a snapshot, never guessed row repair.",
+      "semantic_expectation": "resync_required"
+    },
+    {
+      "id": "processed-ahead-of-source",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "snapshot-page-one",
+      "changes": [
+        {
+          "path": [
+            "body",
+            "page",
+            "stamp",
+            "processed_frontier"
+          ],
+          "value": "13"
+        }
+      ],
+      "expected_shape": true,
+      "review_requirement": "A processed frontier cannot exceed source12 in this session sequence.",
+      "semantic_expectation": "refuse_invalid_observation"
+    },
+    {
+      "id": "u64-overflow",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "input-key",
+      "changes": [
+        {
+          "path": [
+            "body",
+            "request",
+            "key",
+            "request_seq"
+          ],
+          "value": "18446744073709551616"
+        }
+      ],
+      "expected_shape": true,
+      "review_requirement": "Canonical20digit shape is not u64 range validation; semantic decoder must refuse overflow.",
+      "semantic_expectation": "refuse_invalid_request"
+    },
+    {
+      "id": "incomplete-grid-row",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "snapshot-page-one",
+      "changes": [
+        {
+          "path": [
+            "body",
+            "page",
+            "rows",
+            0,
+            "cells"
+          ],
+          "value": [
+            {
+              "text": "a",
+              "occupancy": "single",
+              "style": {
+                "foreground": {
+                  "kind": "default"
+                },
+                "background": {
+                  "kind": "default"
+                },
+                "flags": []
+              }
+            },
+            {
+              "text": "b",
+              "occupancy": "single",
+              "style": {
+                "foreground": {
+                  "kind": "default"
+                },
+                "background": {
+                  "kind": "default"
+                },
+                "flags": []
+              }
+            }
+          ]
+        }
+      ],
+      "expected_shape": true,
+      "review_requirement": "Four-column active-grid row cannot contain only two cells; static schema does not compare geometry.",
+      "semantic_expectation": "refuse_invalid_observation"
+    },
+    {
+      "id": "namespace-confusion",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "input-key",
+      "changes": [
+        {
+          "path": [
+            "namespace"
+          ],
+          "value": "project-x.public.v1"
+        }
+      ],
+      "expected_shape": false,
+      "review_requirement": "Do not reinterpret historical public-v1 as this draft."
+    },
+    {
+      "id": "ea1-worker-op",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "input-key",
+      "changes": [
+        {
+          "path": [
+            "body",
+            "request",
+            "intent"
+          ],
+          "value": {
+            "op": "encode",
+            "input": {
+              "kind": "key",
+              "key": "Tab"
+            }
+          }
+        }
+      ],
+      "expected_shape": false,
+      "review_requirement": "Private worker shapes never become public app intents."
+    },
+    {
+      "id": "ui-as-app-input",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "input-key",
+      "changes": [
+        {
+          "path": [
+            "body",
+            "request",
+            "intent"
+          ],
+          "value": {
+            "kind": "open_palette"
+          }
+        }
+      ],
+      "expected_shape": false,
+      "review_requirement": "Product UI commands are outside InputIntent and have zero managed bytes."
+    },
+    {
+      "id": "generic-control-bypass",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "input-key",
+      "changes": [
+        {
+          "path": [
+            "body",
+            "request",
+            "intent"
+          ],
+          "value": {
+            "kind": "control",
+            "method": "approve"
+          }
+        }
+      ],
+      "expected_shape": false,
+      "review_requirement": "Native launch/decision/signal controls require their future separate typed authority API."
+    },
+    {
+      "id": "unknown-key-field",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "input-key",
+      "changes": [
+        {
+          "path": [
+            "body",
+            "request",
+            "intent",
+            "facts",
+            "guessed_layout"
+          ],
+          "value": "US"
+        }
+      ],
+      "expected_shape": false,
+      "review_requirement": "Unknown input facts are rejected rather than used as guessed authority."
+    },
+    {
+      "id": "null-composition",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "input-key",
+      "changes": [
+        {
+          "path": [
+            "body",
+            "request",
+            "intent",
+            "facts",
+            "composing"
+          ],
+          "value": null
+        }
+      ],
+      "expected_shape": false,
+      "review_requirement": "Unknown facts must be absent; false remains representable."
+    },
+    {
+      "id": "numeric-counter",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "input-key",
+      "changes": [
+        {
+          "path": [
+            "body",
+            "request",
+            "key",
+            "request_seq"
+          ],
+          "value": 1
+        }
+      ],
+      "expected_shape": false,
+      "review_requirement": "Counters and revisions are decimal strings, never JSON numbers."
+    },
+    {
+      "id": "zero-revision",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "input-key",
+      "changes": [
+        {
+          "path": [
+            "body",
+            "request",
+            "context",
+            "writer_generation"
+          ],
+          "value": "0"
+        }
+      ],
+      "expected_shape": false,
+      "review_requirement": "Nonzero generations cannot use the empty event cut0."
+    },
+    {
+      "id": "leading-zero",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "input-key",
+      "changes": [
+        {
+          "path": [
+            "body",
+            "request",
+            "context",
+            "writer_generation"
+          ],
+          "value": "02"
+        }
+      ],
+      "expected_shape": false,
+      "review_requirement": "Canonical decimal strings have no leading zero."
+    },
+    {
+      "id": "unknown-version",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "input-key",
+      "changes": [
+        {
+          "path": [
+            "version"
+          ],
+          "value": "n1"
+        }
+      ],
+      "expected_shape": false,
+      "review_requirement": "Unsupported public versions are explicit failures."
+    },
+    {
+      "id": "invalid-id",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "input-key",
+      "changes": [
+        {
+          "path": [
+            "body",
+            "request",
+            "context",
+            "endpoint_id"
+          ],
+          "value": "/private/socket"
+        }
+      ],
+      "expected_shape": false,
+      "review_requirement": "Opaque public IDs are never private endpoint paths."
+    },
+    {
+      "id": "credit-one-beyond",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "grant-credit",
+      "changes": [
+        {
+          "path": [
+            "body",
+            "credit",
+            "pages"
+          ],
+          "value": 9
+        }
+      ],
+      "expected_shape": false,
+      "review_requirement": "Proposed static profile caps individual/total page grants at8; summation remains semantic."
+    },
+    {
+      "id": "unavailable-invented-value",
+      "clients": [
+        "host_tui",
+        "electron"
+      ],
+      "base": "snapshot-page-one",
+      "changes": [
+        {
+          "path": [
+            "body",
+            "page",
+            "facts",
+            3,
+            "evidence",
+            "value"
+          ],
+          "value": "ready"
+        }
+      ],
+      "expected_shape": false,
+      "review_requirement": "Unavailable has no value and cannot become an inferred readiness/grant."
+    }
+  ]
+}
