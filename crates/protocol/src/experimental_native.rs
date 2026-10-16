@@ -499,6 +499,10 @@ pub enum NamedKey {
     KeypadMultiply,
     KeypadDivide,
     KeypadDecimal,
+    KeypadComma,
+    KeypadEqual,
+    KeypadTab,
+    KeypadSpace,
 }
 #[derive(Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
@@ -733,6 +737,24 @@ mod tests {
             let command: ViewCommand = serde_json::from_value(value.clone()).unwrap();
             assert_eq!(serde_json::to_value(command).unwrap(), *value);
         }
+    }
+
+    #[test]
+    fn finite_keypad_identities_and_known_repeat_preserve_intent() {
+        for key in ["KeypadComma", "KeypadEqual", "KeypadTab", "KeypadSpace"] {
+            let mut value = examples()["examples"]["input-key"].clone();
+            value["body"]["request"]["intent"]["facts"]["logical"]["key"] = json!(key);
+            let raw = serde_json::to_string(&value).unwrap();
+            let decoded: Envelope = serde_json::from_str(&raw).unwrap();
+            assert_eq!(serde_json::to_value(decoded).unwrap(), value);
+        }
+        let mut value = examples()["examples"]["input-key"].clone();
+        value["body"]["request"]["key"]["request_seq"] = json!("2");
+        value["body"]["request"]["intent"]["action"] = json!("repeat");
+        value["body"]["request"]["intent"]["facts"]["phase"] = json!("repeat");
+        let raw = serde_json::to_string(&value).unwrap();
+        let decoded: Envelope = serde_json::from_str(&raw).unwrap();
+        assert_eq!(serde_json::to_value(decoded).unwrap(), value);
     }
 
     #[test]
