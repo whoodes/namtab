@@ -10,7 +10,10 @@ import sys
 ROOT = Path(__file__).resolve().parent.parent
 RUNTIME = ROOT / '.artifacts/mk1'
 SOCKET = RUNTIME / 'socket'
-BIN = ROOT / 'target/debug'
+TARGET = Path(os.environ.get('CARGO_TARGET_DIR', ROOT / 'target'))
+if not TARGET.is_absolute():
+    TARGET = ROOT / TARGET
+BIN = TARGET / 'debug'
 ELECTRON = ROOT / '.tools/electron/44.8.0/runtime/electron'
 ELECTRON_SHA = '447dc011502a0a5ab4da365d3004646c86aee4eb03aa1643cdf672c7491b64cd'
 PACKAGES = ['terminal', 'platform', 'service', 'client', 'console']
@@ -24,6 +27,8 @@ def main():
     if len(sys.argv) != 2 or sys.argv[1] not in ['build', 'daemon', 'tui', 'desktop', 'agent', 'terminfo']:
         raise SystemExit('usage: python3 scripts/mk1.py build|daemon|tui|desktop|agent|terminfo')
     command = sys.argv[1]
+    if os.environ.get("CARGO_BUILD_TARGET"):
+        raise SystemExit("MK1 launches native Linux binaries; clear CARGO_BUILD_TARGET. Cross-target launch is unsupported.")
     os.environ['CARGO_HOME'] = str(ROOT / '.cache/cargo')
     if command == 'build':
         args = ['cargo', 'build', '--locked']

@@ -2,6 +2,7 @@ import { spawnSync } from "node:child_process";
 import { readFile, writeFile, mkdir, readdir } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 import os from "node:os";
+import { resolve } from "node:path";
 const root = new URL("../", import.meta.url).pathname;
 const version = (
   await readFile(new URL("../.node-version", import.meta.url), "utf8")
@@ -60,6 +61,11 @@ const systemTests = (await readdir(root + "tests/system"))
   .sort()
   .map((name) => "tests/system/" + name);
 if (systemTests.length === 0) throw new Error("No system test files found");
+const binaryDirectory = resolve(
+  root,
+  env.CARGO_TARGET_DIR || "target",
+  "debug",
+);
 const realRun = root + ".artifacts/mk1-ci-" + randomUUID();
 const steps = [
   [
@@ -129,7 +135,7 @@ const steps = [
       "-B",
       "tests/mk1/e2e.py",
       "--bin-dir",
-      root + "target/debug",
+      binaryDirectory,
       "--terminfo",
       root + ".artifacts/terminfo",
       "--artifacts",
@@ -143,7 +149,7 @@ const steps = [
       "-B",
       "tests/mk1/agents.py",
       "--bin-dir",
-      root + "target/debug",
+      binaryDirectory,
       "--terminfo",
       root + ".artifacts/terminfo",
       "--artifacts",

@@ -6,7 +6,7 @@ MK1 is the first hands-on human-feel slice. The commands below use real local pr
 
 ## Prepare and launch
 
-Run from the repository root on this Ubuntu x86_64 VM. Existing prerequisites are the pinned Rust 1.91.0 toolchain, Python 3.10+, Node/pnpm for repository checks, `tic` from ncurses for the private terminfo entry, and the separately verified Electron 44.8.0 Linux runtime. Nothing installs a global terminfo entry or starts a network server.
+Run from the repository root on this Ubuntu x86_64 VM. Existing prerequisites are the pinned Rust 1.91.0 toolchain, Python 3.10+, Node/pnpm for repository checks, `tic` from ncurses for the private terminfo entry, and the separately verified Electron 44.8.0 Linux runtime. Nothing installs a global terminfo entry or starts a network server. Native build/launch helpers respect `CARGO_TARGET_DIR`; cross-target execution is explicitly unsupported.
 
 ```sh
 cd /home/w/codex-dir/project-x

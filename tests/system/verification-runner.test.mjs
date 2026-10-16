@@ -13,7 +13,7 @@ import { spawnSync } from "node:child_process";
 
 // Execute the real runner with disposable command stubs: no native artifact or
 // dependency setup is needed to test selection, reports and failure propagation.
-function verify(args, failure = "") {
+function verify(args, failure = "", extraEnv = {}) {
   mkdirSync(".artifacts", { recursive: true });
   const root = resolve(mkdtempSync(".artifacts/verification-runner-"));
   for (const dir of ["scripts", "tests/system", "bin", ".venv-docs/bin"])
@@ -46,6 +46,7 @@ if ((process.env.VERIFY_TEST_FAILURE === "check" && bin === "cargo" && args[0] =
         ...process.env,
         PATH: root + "/bin:" + process.env.PATH,
         VERIFY_TEST_FAILURE: failure,
+        ...extraEnv,
       },
       encoding: "utf8",
       timeout: 15000,
@@ -166,4 +167,18 @@ test("a failed two-agent coordination journey fails the active lane", () => {
     report.checks.find((c) => c.name === "strict-mkdocs").verdict,
     "PASS",
   );
+});
+
+test("real journey binaries follow Cargo's native target directory", () => {
+  const { result, report } = verify(["--source-foundation"], "", {
+    CARGO_TARGET_DIR: ".artifacts/isolated-target",
+  });
+  assert.equal(result.status, 0, result.stderr);
+  for (const name of ["mk1-real-journeys", "mk1-two-agent-journeys"]) {
+    const command = report.checks.find((c) => c.name === name).command;
+    assert.match(
+      command[command.indexOf("--bin-dir") + 1],
+      /\/\.artifacts\/isolated-target\/debug$/u,
+    );
+  }
 });
