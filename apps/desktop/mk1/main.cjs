@@ -72,6 +72,7 @@ function createWindow(publicSocketPath) {
   let viewEpoch = 0;
   let status = "Disconnected";
   let notice = "Capture is off. Input and observations remain in RAM.";
+  let noticeKind = "info";
   const localUrl = pathToFileURL(path.join(__dirname, "index.html")).href;
   const isolatedSession = session.fromPartition(`mk1-${process.pid}`, {
     cache: false,
@@ -122,8 +123,10 @@ function createWindow(publicSocketPath) {
         viewEpoch,
         status,
         notice,
+        noticeKind,
         queued: connection.queue.length + (connection.pending ? 1 : 0),
         inputPaused: connection.inputPaused,
+        inputPauseRevision: connection.inputPauseRevision,
         inputPauseReason: connection.inputPauseReason,
       });
   }
@@ -166,6 +169,7 @@ function createWindow(publicSocketPath) {
         selectedSession = null;
         notice =
           "A new endpoint cannot restore old owner state or settle unknown input delivery.";
+        noticeKind = "warning";
       }
       connection.connect(command.op === "new_endpoint");
       return;
@@ -187,9 +191,9 @@ function createWindow(publicSocketPath) {
       return { viewEpoch, focused };
     }
     if (command.op === "pause_input") {
-      connection.pauseInput(
-        checkedString(command.reason, 8192, "input pause reason"),
-      );
+      notice = checkedString(command.reason, 8192, "input pause reason");
+      noticeKind = "warning";
+      connection.pauseInput(notice);
       return;
     }
     if (!connection.ready || !snapshot)
@@ -389,6 +393,7 @@ function createWindow(publicSocketPath) {
           "Application input was refused. Inspect the session and receipt, then Take input again.",
         );
       notice = String(error.message || "Operation refused");
+      noticeKind = "warning";
       publish();
       return { ok: false, error: notice };
     }
@@ -422,9 +427,14 @@ function createWindow(publicSocketPath) {
         fenceFocus();
       }
     }
-    if (response.receipt)
+    if (response.receipt) {
       notice = `Receipt ${response.receipt.id}: ${response.receipt.state}. ${response.receipt.detail}`;
-    if (!response.ok) notice = response.error || "Backend refused request";
+      noticeKind = response.receipt.state === "applied" ? "info" : "warning";
+    }
+    if (!response.ok) {
+      notice = response.error || "Backend refused request";
+      noticeKind = "warning";
+    }
     publish();
   });
   connection.on("ready", publish);

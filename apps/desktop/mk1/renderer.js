@@ -60,8 +60,10 @@
     const next = protocol.safeText(value);
     if (element(id).textContent !== next) element(id).textContent = next;
   }
-  function notice(message) {
+  function notice(message, urgent = true) {
     text("notice", message);
+    element("attention").hidden = !urgent;
+    text("attention", urgent ? message : "");
   }
   async function send(command) {
     const result = await api.dispatch(command);
@@ -91,7 +93,26 @@
   function renderTask() {
     const selected = task();
     const supported = state.snapshot?.capabilities?.includes("shared_tasks_v1");
-    text("task-heading", selected?.task || "Choose or define a task");
+    const empty = !!supported && (state.snapshot.tasks?.length || 0) === 0;
+    const definition = element("define-task-tools");
+    const host = element(
+      empty ? "empty-task-composer" : "task-definition-sidebar",
+    );
+    if (definition.parentElement !== host) {
+      host.append(definition);
+      definition.open = empty;
+    }
+    element("activity").hidden =
+      empty &&
+      !state.snapshot.sessions.length &&
+      !state.snapshot.attempts.length;
+    text(
+      "task-heading",
+      selected?.task ||
+        (supported
+          ? "Define the first shared task"
+          : "Shared tasks unavailable"),
+    );
     text(
       "task-goal",
       selected?.goal ||
@@ -290,7 +311,7 @@
         return row;
       }),
     );
-    notice(next.notice);
+    notice(next.notice, next.noticeKind === "warning");
     element("reconnect").disabled =
       next.connected || next.status === "Connecting…";
     element("new-endpoint").disabled =
@@ -325,6 +346,10 @@
     );
     const value = session();
     const owner = value?.owner === next.endpoint;
+    if (value && next.inputPaused && next.inputPauseRevision > 0) {
+      element("attention").hidden = false;
+      text("attention", "Typing paused. " + next.inputPauseReason);
+    }
     const canInput =
       next.connected &&
       owner &&
