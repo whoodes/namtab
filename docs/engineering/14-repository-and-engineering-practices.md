@@ -2,13 +2,13 @@
 
 [Index](../index.md) · [Dependencies](15-dependencies-and-supply-chain.md) · [Tests/CI](16-test-and-ci-strategy.md) · [Target runtime modules](../engine/runtime-persistence-security.md#module-and-process-design)
 
-**Actual foundation versus proposed product.** Current source has seven Rust/four TS workspace packages. The active-source CI lane covers six Rust crates, excluding only the historical binary-only `project-x-engine` from active Clippy/tests; the worker remains a workspace member and historical source/gates remain intact. No live frontend, full broker or PTY runtime exists. [E4](../adr/0004-owned-agent-native-engine.md) chooses owned semantics; [runtime](../engine/runtime-persistence-security.md#module-and-process-design) owns the target graph. This page owns repository layout, actual dependency checks, schema/workflow/release policy.
+**Actual foundation versus proposed product.** Current source has eight Rust/four TS workspace packages. The active-source CI lane covers seven Rust crates, excluding only the historical binary-only `project-x-engine` from active Clippy/tests; the worker remains a workspace member and historical source/gates remain intact. The owned finite core/worker and real Linux PTY/managed primitives have targeted tests; there is no integrated live product yet. [E4](../adr/0004-owned-agent-native-engine.md) chooses owned semantics; [runtime](../engine/runtime-persistence-security.md#module-and-process-design) owns the target graph. This page owns repository layout, actual dependency checks, schema/workflow/release policy.
 
 The historical worker requires the evaluated local artifact for workspace builds; [EA1 reproduction](21-ea1-native-worker-results.md#results-and-reproduction) records preparation and limits. Its raw selection gate remains FAIL. A different runner/artifact is not automatically qualified. Current commands/prerequisites are in root README and Makefile; historical reports preserve their exact earlier tuples.
 
 ## Concrete proposed layout and ownership
 
-Use one repository, Cargo + pnpm and one product version. Current foundation: seven Rust and four TS packages. This includes one experimental binary-only native engine package (justified unsafe/ABI/process boundary), with desktop + protocol as shipping TS and the old engine-host/terminal-adapter retained as assessment references until deliberately retired. Avoid separate FFI/wrapper/wire/worker microcrates. Rust edition 2024, resolver 3 and compiler 1.91.0 are pinned for the current foundation; that is not shipping-platform certification. [Cargo workspaces](https://doc.rust-lang.org/cargo/reference/workspaces.html)
+Use one repository, Cargo + pnpm and one product version. Current foundation: eight Rust and four TS packages. This includes one experimental binary-only native engine package (justified unsafe/ABI/process boundary), with desktop + protocol as shipping TS and the old engine-host/terminal-adapter retained as assessment references until deliberately retired. Avoid separate FFI/wrapper/wire/worker microcrates. Rust edition 2024, resolver 3 and compiler 1.91.0 are pinned for the current foundation; that is not shipping-platform certification. [Cargo workspaces](https://doc.rust-lang.org/cargo/reference/workspaces.html)
 
 ```text
 project-x/                         TARGET with explicit future entries; actual manifests are authoritative
@@ -22,7 +22,7 @@ project-x/                         TARGET with explicit future entries; actual m
     client/                        Rust public IPC client, subscriptions/receipt reconciliation
     console/                       project-x CLI and Ratatui TUI modules, one binary
     engine/                        preserved EA1 experimental binary-only worker; historical failed gate
-    terminal/                      FUTURE owned pure core + worker binary; not created in this phase
+    terminal/                      owned finite pure core + private worker; MK1 tests, not full qualification
   apps/
     desktop/                       Electron main/preload + React renderer; no broker internals
     engine-host/                   current xterm reference/assessment utility; not revised shipping target
@@ -42,7 +42,7 @@ project-x/                         TARGET with explicit future entries; actual m
   docs/adr/                        current ownership ADR + retained historical decisions
 ```
 
-The current [E4 module target](../engine/runtime-persistence-security.md#module-and-process-design) adds one future owned library/worker package, not FFI/wrapper microcrates. The graph/checks below describe all seven current Rust workspace packages, including the historical worker, and four TS packages; the six-crate active-source test selection is a separate coverage boundary. Future implementation must explicitly extend import checks while preserving old gates. New contract semantics live in the engine campaign; no Cargo/pnpm dependency changes occur here.
+The current [E4 module target](../engine/runtime-persistence-security.md#module-and-process-design) now has one owned library/worker package, not FFI/wrapper microcrates. The graph/checks below describe all eight current Rust workspace packages, including the historical worker, and four TS packages; the seven-crate active-source test selection is a separate coverage boundary. Future implementation must explicitly extend import checks while preserving old gates. New contract semantics live in the engine campaign; the MK1 platform adds only the existing pinned rustix instance and its explicitly reviewed public features.
 
 The authorized bootstrap moved the 18 canonical documents into docs/ topic directories, rewrote relative links and added strict MkDocs navigation. evidence/docs-migration.json preserves the old→new map and original/migration hashes; there are no divergent design copies. Do not create an empty directory for every proposed module. Rust service integration tests live with the service; shared fixtures live under tests, not another application crate. CLI and TUI share the client and invocation model but have separate command routing/output. A CLI JSON invocation must not initialize raw mode or a full-screen TUI.
 
@@ -60,7 +60,7 @@ One person may fill several roles; responsibilities do not imply six teams. Secu
 
 ## Acyclic dependency graph
 
-Arrows mean imports/compile dependencies, not runtime authority. The diagram combines current reference packages with the experimental native worker/internal DTO namespace. Actual import checks enforce seven Rust/four TS workspace packages and require a binary-only historical engine depending only on protocol among application crates. Six Rust crates participate in active-source Clippy/tests; this does not change membership or qualify the historical worker. Private wire DTOs remain a leaf data definition, not policy; no domain→wire dependency is added.
+Arrows mean imports/compile dependencies, not runtime authority. The diagram combines current reference packages with the experimental native worker/internal DTO namespace. Actual import checks enforce eight Rust/four TS workspace packages and require a binary-only historical engine depending only on protocol among application crates. Seven Rust crates participate in active-source Clippy/tests; this does not change membership or qualify the historical worker. Private wire DTOs remain a leaf data definition, not policy; no domain→wire dependency is added.
 
 ```mermaid
 flowchart TD
@@ -70,6 +70,7 @@ flowchart TD
     Service --> Domain[domain]
     Service --> Platform[platform]
     Platform --> Domain
+    Terminal[terminal: owned pure library + private worker]
     Desktop[desktop] --> TSWire[TS protocol + client]
     Desktop --> Adapter[reference terminal-adapter input types]
     Engine[reference TS engine-host] --> AdapterNode[reference terminal-adapter node entry]

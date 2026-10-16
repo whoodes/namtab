@@ -588,6 +588,7 @@ name = "project-x-platform"
 version = "0.1.0"
 dependencies = [
  "project-x-domain",
+ "rustix",
 ]
 
 [[package]]
