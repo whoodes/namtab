@@ -16,6 +16,7 @@ import datetime
 import hashlib
 import json
 import math
+import os
 from pathlib import Path
 import sys
 import threading
@@ -55,6 +56,12 @@ class Agents(Journey):
                 "adjustable": time.get_clock_info("perf_counter").adjustable,
                 "resolution_seconds": time.get_clock_info("perf_counter").resolution,
             },
+            "host_context": {
+                "cpu_count": os.cpu_count(),
+                "memory_bytes": os.sysconf("SC_PHYS_PAGES") * os.sysconf("SC_PAGE_SIZE"),
+                "load_average_at_start": os.getloadavg(),
+                "load_limit": "Shared VM load is recorded, not controlled; quiet refers only to the other PTY.",
+            },
             "workload": {
                 "rpc_samples_per_metric_per_phase": SAMPLES,
                 "phases": ["quiet", "other-pty-finite-output"],
@@ -66,7 +73,7 @@ class Agents(Journey):
                 "concurrency": "observer + real TUI + two scripted agent endpoints; one RPC at a time on each connection",
             },
             "measurement_limits": [
-                "Small empirical samples on this VM, including required receipt fsync; no achieved SLO, comparative speed or tail-confidence claim",
+                "Host load is uncontrolled; quiet means the other PTY is idle, not an idle VM. Small empirical samples on this VM, including required receipt fsync; no achieved SLO, comparative speed or tail-confidence claim",
                 "End-to-end local RPC response timing includes test-client overhead and live TUI polling; not model, OS input-to-photon, renderer or CPU timing",
                 "No GUI, accessibility, broad compatibility, hostile same-UID isolation or production qualification",
                 "Screen/stream/frame bounds are checked at public observations; no claim that every private queue was instrumented",
@@ -328,8 +335,9 @@ class Agents(Journey):
                 values = [sample["elapsed_ns"] for sample in rows]
                 if values:
                     summaries.append({"phase": phase, "metric": metric, "n": len(values), "all_responses_ok": all(sample["ok"] for sample in rows), "min_ns": min(values), "p50_ns": percentile(values, .5), "p95_ns": percentile(values, .95), "p99_ns": percentile(values, .99), "max_ns": max(values), "method": "nearest-rank empirical percentile; N=30 is not a tail distribution guarantee"})
+        self.record["host_context"]["load_average_at_end"] = os.getloadavg()
         self.record["latency_summaries"] = summaries
-        (self.artifacts / "rpc-samples.json").write_text(json.dumps({"clock": self.record["clock"], "workload": self.record["workload"], "limits": self.record["measurement_limits"], "samples": self.samples, "summaries": summaries}, indent=2) + "\n")
+        (self.artifacts / "rpc-samples.json").write_text(json.dumps({"clock": self.record["clock"], "host_context": self.record["host_context"], "workload": self.record["workload"], "limits": self.record["measurement_limits"], "samples": self.samples, "summaries": summaries}, indent=2) + "\n")
 
     def run(self):
         status = "fail"
