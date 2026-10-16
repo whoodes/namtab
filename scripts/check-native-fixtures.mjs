@@ -662,6 +662,7 @@ export async function checkNativeFixtures(root = process.cwd()) {
     "native-receipts",
     "native-ownership",
     "native-public",
+    "native-boundaries",
     "native-state",
     "native-profile",
     "native-provenance",
