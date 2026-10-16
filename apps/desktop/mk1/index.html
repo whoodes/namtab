@@ -21,6 +21,11 @@
       <div class="connection">
         <strong id="connection">Connecting…</strong
         ><span id="endpoint">No endpoint</span>
+        <span
+          id="agent-status"
+          title="Protocol role declarations and transport state"
+          >Declared agent endpoints: unobserved</span
+        >
       </div>
       <button id="reconnect" type="button">Reconnect live endpoint</button>
       <button
@@ -91,7 +96,8 @@ Connect to observe a real session.</pre
           Keys go to the selected session only while this field is focused. Tab
           and application shortcuts go to the terminal. Ctrl+V pastes;
           Ctrl+Shift+C copies selected text. Paste requires the application's
-          bracketed-paste mode.
+          bracketed-paste mode. Ctrl+G then Escape returns to session controls;
+          Ctrl+G twice sends literal Ctrl+G. Unknown prefix keys are discarded.
         </p>
         <form id="resize-form" class="toolbar">
           <label

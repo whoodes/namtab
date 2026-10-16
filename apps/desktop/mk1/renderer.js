@@ -14,6 +14,30 @@
   let artifactKey = null;
   let taskCounter = 1;
   let focusAfterTake = false;
+  let focusRequest = 0;
+  let acknowledgedFocusEpoch = null;
+  let prefixDeadline = null;
+  let prefixTimer = null;
+  function clearPrefix() {
+    prefixDeadline = null;
+    clearTimeout(prefixTimer);
+    prefixTimer = null;
+  }
+  async function acknowledgeFocus(focused) {
+    const request = ++focusRequest;
+    acknowledgedFocusEpoch = null;
+    clearPrefix();
+    const response = await send({ op: "focus", focused });
+    if (
+      request === focusRequest &&
+      focused &&
+      response.ok &&
+      response.result?.focused &&
+      document.hasFocus() &&
+      document.activeElement === element("keyboard")
+    )
+      acknowledgedFocusEpoch = response.result.viewEpoch;
+  }
   function text(id, value) {
     const next = protocol.safeText(value);
     if (element(id).textContent !== next) element(id).textContent = next;
@@ -120,6 +144,10 @@
       !state.connected || !file || !element("reviewed").checked;
   }
   function render(next) {
+    if (next.viewEpoch !== state.viewEpoch || !next.connected) {
+      clearPrefix();
+      acknowledgedFocusEpoch = null;
+    }
     state = next;
     text(
       "connection",
@@ -130,6 +158,15 @@
       next.endpoint
         ? `Endpoint ${next.endpoint} · epoch ${next.epoch || "pending"}`
         : "No endpoint",
+    );
+    const declaredAgents = next.snapshot?.endpoints.filter(
+      (endpoint) => endpoint.role === "agent",
+    );
+    text(
+      "agent-status",
+      declaredAgents
+        ? `${next.connected ? "" : "Last observed · "}Declared agent endpoints: ${declaredAgents.filter((endpoint) => endpoint.connected).length} connected / ${declaredAgents.length} retained`
+        : "Declared agent endpoints: unobserved",
     );
     notice(next.notice);
     element("reconnect").disabled =
@@ -178,9 +215,12 @@
       "focus-status",
       !canInput
         ? "Input frozen"
-        : next.focused
+        : next.focused && acknowledgedFocusEpoch === next.viewEpoch
           ? "Sending to this session"
-          : "Focus to send keys",
+          : document.activeElement === element("keyboard") &&
+              document.hasFocus()
+            ? "Waiting for focus acknowledgement"
+            : "Focus to send keys",
     );
     element("keyboard").disabled = !canInput;
     if (focusAfterTake && canInput) {
@@ -254,22 +294,43 @@
       rows: Number(element("rows").value),
     });
   });
-  bind("keyboard", "focus", () => send({ op: "focus", focused: true }));
-  bind("keyboard", "blur", () => send({ op: "focus", focused: false }));
+  bind("keyboard", "focus", () => acknowledgeFocus(true));
+  bind("keyboard", "blur", () => acknowledgeFocus(false));
+  window.addEventListener("blur", () => acknowledgeFocus(false));
+  window.addEventListener("focus", () => {
+    if (
+      document.activeElement === element("keyboard") &&
+      !element("keyboard").disabled
+    )
+      acknowledgeFocus(true);
+  });
+  bind("terminal-scroll", "click", () => {
+    if (!element("keyboard").disabled && !window.getSelection()?.toString())
+      element("keyboard").focus();
+  });
   function sendIntent(intent) {
     const fence = protocol.captureFence(
       state.snapshot,
       state.selectedSession,
       state.viewEpoch,
     );
-    if (!fence || !state.focused) {
+    if (
+      !fence ||
+      !protocol.focusReady(
+        acknowledgedFocusEpoch,
+        state.viewEpoch,
+        state.focused,
+        document.hasFocus(),
+        document.activeElement === element("keyboard"),
+      )
+    ) {
       notice("Wait for terminal focus to be acknowledged; nothing was sent.");
       return;
     }
     send({ op: "input", fence, intent });
   }
   bind("keyboard", "keydown", (event) => {
-    const result = protocol.normalizeKey({
+    const description = {
       key: event.key,
       code: event.code,
       location: event.location,
@@ -279,7 +340,42 @@
       metaKey: event.metaKey,
       isComposing: event.isComposing,
       altGraph: event.getModifierState("AltGraph"),
-    });
+    };
+    const route = protocol.routeUiKey(
+      description,
+      prefixDeadline,
+      performance.now(),
+    );
+    if (route.kind !== "normal") {
+      event.preventDefault();
+      if (route.kind === "prefix") {
+        clearPrefix();
+        prefixDeadline = route.prefixDeadline;
+        notice(
+          "UI prefix: Escape returns to controls; Ctrl+G sends literal Ctrl+G. Other next keys are discarded.",
+        );
+        prefixTimer = setTimeout(() => {
+          clearPrefix();
+          notice("UI prefix timed out; nothing was sent.");
+        }, 1500);
+      } else if (route.kind === "leave") {
+        clearPrefix();
+        element("keyboard").blur();
+        element("sessions").focus();
+        notice(
+          "Keyboard focus returned to session controls; no application bytes sent.",
+        );
+      } else if (route.kind === "literal") {
+        clearPrefix();
+        sendIntent(route.intent);
+      } else {
+        prefixDeadline = route.prefixDeadline;
+        if (prefixDeadline === null) clearPrefix();
+        if (route.notice) notice(route.notice);
+      }
+      return;
+    }
+    const result = protocol.normalizeKey(description);
     if (result.native) return;
     event.preventDefault();
     if (result.error) notice(result.error);
@@ -287,10 +383,13 @@
   });
   bind("keyboard", "paste", (event) => {
     event.preventDefault();
-    const result = protocol.normalizePaste(
+    const result = protocol.routeUiPaste(
       event.clipboardData?.getData("text/plain") || "",
+      prefixDeadline,
     );
-    if (result.error) notice(result.error);
+    clearPrefix();
+    if (result.consumed) notice(result.notice);
+    else if (result.error) notice(result.error);
     else sendIntent(result.intent);
   });
   bind("keyboard", "beforeinput", (event) => {
