@@ -37,9 +37,9 @@ stress:
 	node tests/fuzz/chunk-corpus.mjs
 verify:
 	node scripts/verify.mjs
-# Intentionally exits nonzero for the current essential X4 failure.
+# Historical candidate reproduction; raw FAIL stays nonzero, not an owned-engine gate.
 engine-gate:
-	node tests/system/engine-probe.mjs --require-pass
+	node scripts/run-x4.mjs --require-pass
 provenance:
 	node scripts/verify-provenance.mjs
 format:

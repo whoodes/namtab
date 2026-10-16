@@ -1,4 +1,4 @@
-name: Foundation checks (not product certification)
+name: Foundation and historical candidate checks
 on:
   pull_request:
   workflow_dispatch:
@@ -6,6 +6,7 @@ permissions:
   contents: read
 jobs:
   foundation:
+    name: Foundation contracts and raw historical X4
     runs-on: ubuntu-22.04
     timeout-minutes: 20
     steps:
@@ -20,12 +21,13 @@ jobs:
         run: make assessment-bootstrap assessment-build
       - name: Existing foundation contracts
         run: make verify
-      - name: Essential engine gate (currently blocking by design)
+      - name: Historical X4 selection (raw FAIL retained)
         run: make engine-gate
   # No publication, artifact uploads, credentials, privileged runners or blanket script permits.
-  # The red gate is intentional until an explicit reviewed engine decision replaces it.
+  # Raw historical failures remain visible; they are not owned-engine NG gates.
 
   ea1:
+    name: Historical EA1 ownership and raw selection
     runs-on: ubuntu-22.04
     timeout-minutes: 20
     steps:
@@ -38,5 +40,5 @@ jobs:
         run: make bootstrap install assessment-bootstrap assessment-build
       - name: Bounded native ownership and provenance
         run: make ea1-build ea1-ownership ea1-provenance
-      - name: EA1 selection gate (currently FAIL on legacy control aliases)
+      - name: Historical EA1 selection (raw FAIL on legacy control aliases)
         run: make ea1-test
