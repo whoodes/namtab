@@ -6,7 +6,7 @@ permissions:
   contents: read
 jobs:
   foundation:
-    name: Foundation contracts and raw historical X4
+    name: Foundation contracts
     runs-on: ubuntu-22.04
     timeout-minutes: 20
     steps:
@@ -21,10 +21,21 @@ jobs:
         run: make assessment-bootstrap assessment-build
       - name: Existing foundation contracts
         run: make verify
-      - name: Historical X4 selection (raw FAIL retained)
-        run: make engine-gate
   # No publication, artifact uploads, credentials, privileged runners or blanket script permits.
   # Raw historical failures remain visible; they are not owned-engine NG gates.
+
+  historical-x4:
+    name: Historical X4 selection (raw)
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Locked historical reference dependencies
+        run: make bootstrap install
+      - name: Raw historical selection remains nonzero
+        run: make engine-gate
 
   ea1:
     name: Historical EA1 ownership and raw selection

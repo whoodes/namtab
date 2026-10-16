@@ -76,7 +76,7 @@ const steps = [
       "tsconfig.json",
       "mkdocs.yml",
       "pnpm-workspace.yaml",
-      ".github/workflows/checks.yml",
+      ".github",
     ],
   ],
   [
