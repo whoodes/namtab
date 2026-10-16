@@ -20,24 +20,27 @@ For a new development checkout, these project-local setup targets acquire pinned
 
 ```sh
 make bootstrap docs-install install
-make assessment-bootstrap assessment-build
+make foundation-verify
 ```
 
-Rust must already be available through rustup/the selected toolchain. Full workspace checks also require the historical native artifact to match the [reviewed EA1 pin](docs/engineering/21-ea1-native-worker-results.md#results-and-reproduction). Missing or different bytes stop the build; do not refresh provenance hashes automatically. Cached setup and checks were exercised locally; a fresh host/build path is not thereby qualified.
+Rust must already be available through rustup/the selected toolchain. This active-source path needs no historical native artifact. For optional full-workspace reproduction, the native worker requires the [original reviewed EA1 artifact pin](docs/engineering/21-ea1-native-worker-results.md#results-and-reproduction):
 
 ```sh
+make assessment-bootstrap assessment-build
 make check test stress docs
 make verify
 ```
 
-These run format/Clippy, Rust properties/unit tests, JS contracts/types, generated bindings/schema drift, boundaries, fixtures, seeded partition stress, and strict MkDocs/local links. `make verify` aggregates the foundation checks and records the historical X4 failure separately. Reports go to fresh ignored `.artifacts/verification/` and `.artifacts/x4-runs/` paths. `make foundation-verify` is the owner-approved **Active-source foundation** CI lane: it excludes only the historical native worker from Cargo Clippy/tests, checking all six active Rust crates and the other foundation checks. Together with **PR issue and commit policy**, it is required for merge eligibility; separately visible historical X4/EA1 failures are approved nonblocking exceptions. This does not establish a full-workspace or runtime pass. See [CI artifact policy](docs/engineering/16-test-and-ci-strategy.md#ci-artifact-diagnosis-and-lane-separation).
+Rebuilding the historical source can produce different library bytes and stop full-workspace checks before worker tests; do not refresh provenance hashes automatically. Cached original-artifact checks were exercised locally; a fresh native build/host is not thereby qualified.
+
+These run format/Clippy, Rust properties/unit tests, JS contracts/types, generated bindings/schema drift, boundaries, fixtures, seeded partition stress, and strict MkDocs/local links. `make verify` aggregates the full-workspace foundation checks, including the historical native worker in Cargo Clippy/tests; it does not run a separate historical qualification step. Reports go to fresh ignored `.artifacts/verification/` paths. `make foundation-verify` is the owner-approved **Active-source foundation** CI lane: it excludes only the historical native worker from Cargo Clippy/tests, checking all six active Rust crates and the other foundation checks. Together with **PR issue and commit policy**, it is required for merge eligibility. Routine CI retains the X4 continuation regressions and evidence-preservation guards; historical X4/EA1 qualification jobs are retired from routine CI. This does not establish a full-workspace or runtime pass. See [CI artifact policy](docs/engineering/16-test-and-ci-strategy.md#ci-artifact-diagnosis-and-lane-separation).
 
 ```sh
 make engine-gate
 make ea1-ownership ea1-provenance ea1-preservation ea1-test
 ```
 
-The two raw selection commands intentionally exit nonzero: X4 cannot reconstruct complete continuation state; EA1 fails three required legacy aliases. The ownership/provenance/preservation checks are distinct passing checks. EA1 run reports go to ignored `evidence/ea1-runs/<id>`; original source, fixtures, archives and results stay unchanged. Do not invoke historical report-writing scripts directly or mistake an expected-failure regression check for certification. See [test/CI policy](docs/engineering/16-test-and-ci-strategy.md) and the [evidence map](evidence/README.md).
+These manual reproduction paths preserve the recorded failures: X4 cannot reconstruct complete continuation state; EA1 on the original artifact fails three required legacy aliases. Removing routine jobs does not change either recorded **FAIL**. Recorded ownership/provenance passes concern that original artifact; a fresh build can fail its byte-hash pin before those checks or alias behavior run. Preservation checks need no native build. Raw X4 reports go to ignored `.artifacts/x4-runs/`; EA1 run reports go to ignored `evidence/ea1-runs/<id>`. Original source, fixtures, archives and results stay unchanged. Do not invoke historical report-writing scripts directly or mistake an expected-failure regression check for certification. See [test/CI policy](docs/engineering/16-test-and-ci-strategy.md) and the [evidence map](evidence/README.md).
 
 ## Roadmap and documentation
 
