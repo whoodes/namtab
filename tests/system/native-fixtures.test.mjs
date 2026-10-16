@@ -60,13 +60,24 @@ test("native corpus and earlier native manifests receive static checks only", as
   assert.equal(result.state_cases, 26);
   assert.equal(result.input_cases, 24);
   assert.equal(result.transport_partitions_checked, 879);
-  assert(result.local_payload_digests_verified >= 16);
+  assert(result.local_payload_digests_verified >= 20);
   assert.equal(result.static_oracle_data, "PASS");
   assert.equal(
     result.engine_state_continuation_key_reply_conformance,
     "NOT RUN",
   );
 });
+
+test("merged ownership fixtures cannot disappear as an entire category", async () =>
+  sandbox(async (root) => {
+    await rm(join(root, "tests/fixtures/native-ownership"), {
+      recursive: true,
+    });
+    await assert.rejects(
+      checkNativeFixtures(root),
+      /missing native fixture directory: native-ownership/,
+    );
+  }));
 
 test("short transport enumeration contains every contiguous partition", () => {
   assert.deepEqual([...shortPartitions("01")], [["01"]]);

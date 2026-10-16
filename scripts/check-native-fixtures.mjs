@@ -660,6 +660,7 @@ export async function checkNativeFixtures(root = process.cwd()) {
   for (const name of [
     "native-contract",
     "native-receipts",
+    "native-ownership",
     "native-state",
     "native-profile",
     "native-provenance",
