@@ -759,7 +759,20 @@ impl Broker {
             .collect::<Vec<_>>();
         receipts.sort_by_key(|receipt| std::cmp::Reverse(receipt.id));
         receipts.truncate(16);
-        Ok(Snapshot { version: wire::VERSION.into(), epoch: self.epoch.clone(), endpoint: endpoint.into(), sessions: state.sessions.values().map(|value| value.view.clone()).collect(), attempts, artifacts: state.artifacts.values().cloned().collect(), receipts, degraded: state.degraded.clone().or_else(|| Some(if self.config.terminfo.is_some() { "same_uid_developer_host_unenforced_not_sandbox_capture_off_private_terminfo" } else { "same_uid_developer_host_unenforced_not_sandbox_capture_off_term_dumb" }.into())) })
+        Ok(Snapshot {
+            version: wire::VERSION.into(),
+            epoch: self.epoch.clone(),
+            endpoint: endpoint.into(),
+            sessions: state
+                .sessions
+                .values()
+                .map(|value| value.view.clone())
+                .collect(),
+            attempts,
+            artifacts: state.artifacts.values().cloned().collect(),
+            receipts,
+            degraded: state.degraded.clone(),
+        })
     }
 }
 fn safe_output(bytes: &[u8]) -> (String, bool) {

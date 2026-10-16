@@ -358,10 +358,12 @@ fn explicit_artifact_revision_changes_make_validation_stale() {
 #[test]
 fn worker_loss_fences_input_but_preserves_independent_process_facts() {
     let mut h = Harness::new();
+    assert!(h.broker.snapshot(&h.human).unwrap().degraded.is_none());
     h.shell();
     h.broker.worker.stop();
     h.broker.fence_worker();
     let snapshot = h.broker.snapshot(&h.human).unwrap();
+    assert!(snapshot.degraded.is_some());
     assert!(!snapshot.sessions[0].screen.input_known);
     assert!(snapshot.sessions[0].owner.is_none());
     assert_eq!(snapshot.sessions[0].process, "running");
