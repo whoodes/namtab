@@ -54,7 +54,7 @@
     },
     {
       "path": "reply-traces.json",
-      "sha256": "18d87db1d30dfe6b187e325b750cbb054ff1ba4686da4b2475568f6d8f821c64",
+      "sha256": "0916c63c396ec92ee0d1d630c2c47189d8b3834782607257fd4cbd0e60571fe2",
       "origin": "Hand-authored synthetic contract review data, 2026-10-16; no captured or upstream data",
       "requirements": [
         "R03",

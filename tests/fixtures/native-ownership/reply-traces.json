@@ -51,6 +51,18 @@
         },
         {
           "order": "3",
+          "event": "The event-2 restricted reply crosses the final queue with matching fences; its committed event reservations are drained before any later output event starts.",
+          "expected": {
+            "reply_ids_dispatched": [
+              "session-a:1:2:1"
+            ],
+            "delivery": "full",
+            "event_2_reply_reservations_remaining": "0",
+            "frontend_response_allowed": false
+          }
+        },
+        {
+          "order": "4",
           "event": "Event 3 independently contains identical live query 1b5b356e.",
           "expected": {
             "new_reply_id": "session-a:1:3:1",
@@ -59,15 +71,15 @@
           }
         },
         {
-          "order": "4",
-          "event": "Both restricted reply operations cross the one final queue with matching fences.",
+          "order": "5",
+          "event": "The event-3 restricted reply crosses the same final queue with matching fences and its reservations are released.",
           "expected": {
             "reply_ids_dispatched": [
-              "session-a:1:2:1",
               "session-a:1:3:1"
             ],
             "effects_per_query": "1",
-            "frontend_response_allowed": false
+            "frontend_response_allowed": false,
+            "event_2_already_dispatched": true
           }
         }
       ]
