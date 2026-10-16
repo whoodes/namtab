@@ -1250,7 +1250,11 @@
         "KeypadSubtract",
         "KeypadMultiply",
         "KeypadDivide",
-        "KeypadDecimal"
+        "KeypadDecimal",
+        "KeypadComma",
+        "KeypadEqual",
+        "KeypadTab",
+        "KeypadSpace"
       ]
     },
     "Namespace": {

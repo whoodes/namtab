@@ -150,6 +150,38 @@ test("empty tagged variants preserve positive shapes and reject extra fields", (
   }
 });
 
+test("finite keypad identities and repeat remain representable in both clients", () => {
+  const cases = new Map(
+    read("intent-cases.json").cases.map((item) => [item.id, item]),
+  );
+  for (const key of [
+    "KeypadComma",
+    "KeypadEqual",
+    "KeypadTab",
+    "KeypadSpace",
+  ]) {
+    for (const mode of ["numeric", "application"]) {
+      const item = cases.get(key + "-" + mode);
+      assert.deepEqual(item.clients, ["host_tui", "electron"]);
+      assert.equal(item.also_native_agent, true);
+      const value = variant(item);
+      assert.equal(value.body.request.intent.facts.logical.key, key);
+      assert.ok(validate(value), ajv.errorsText(validate.errors));
+    }
+  }
+  const repeat = variant(cases.get("known-repeat"));
+  assert.ok(validate(repeat), ajv.errorsText(validate.errors));
+  assert.equal(repeat.body.request.intent.action, "repeat");
+  assert.equal(repeat.body.request.intent.facts.phase, "repeat");
+  assert.notEqual(
+    repeat.body.request.key.request_seq,
+    examples["input-key"].body.request.key.request_seq,
+  );
+  const invalid = structuredClone(examples["input-key"]);
+  invalid.body.request.intent.facts.logical.key = "UnknownKeypadIdentity";
+  assert.equal(validate(invalid), false);
+});
+
 test("unknown facts are absent; known false remains a typed fact", () => {
   const original = examples["input-key"].body.request.intent.facts;
   for (const name of [
