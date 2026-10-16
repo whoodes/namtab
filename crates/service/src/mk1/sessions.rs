@@ -1,5 +1,7 @@
 //! Canonical worker orchestration and sole final PTY write boundary.
 use super::*;
+use std::sync::MutexGuard;
+use std::time::Instant;
 impl Broker {
     pub(super) fn owner(
         session: &LiveSession,
@@ -32,8 +34,10 @@ impl Broker {
             return Err("not_input".into());
         };
         let (generation, revision, mode_revision) = (*generation, *revision, *mode_revision);
+        let deadline = Instant::now() + Duration::from_millis(250);
         {
             let state = self.state.lock().unwrap();
+            let state = self.wait_human_cut(state, endpoint, operation, deadline)?;
             let value = state.sessions.get(session).ok_or("unknown_session")?;
             Self::owner(value, endpoint, generation)?;
             Self::fresh(
@@ -61,7 +65,8 @@ impl Broker {
         if bytes.len() > platform::MAX_WRITE_BYTES {
             return Err("encoded_input_exceeds_single_write_capacity".into());
         }
-        let mut state = self.state.lock().unwrap();
+        let state = self.state.lock().unwrap();
+        let mut state = self.wait_human_cut(state, endpoint, operation, deadline)?;
         if state.degraded.is_some() {
             return Err("broker_degraded_before_final_write".into());
         }
@@ -114,6 +119,50 @@ impl Broker {
             delivered,
             "accepted_by_local_pty_not_application_completion".into(),
         ))
+    }
+    fn wait_human_cut<'a>(
+        &'a self,
+        mut state: MutexGuard<'a, State>,
+        endpoint: &str,
+        operation: &Op,
+        deadline: Instant,
+    ) -> Result<MutexGuard<'a, State>, String> {
+        let Op::Input {
+            session,
+            generation,
+            mode_revision,
+            policy: InputPolicy::HumanLive,
+            ..
+        } = operation
+        else {
+            return Ok(state);
+        };
+        if state.endpoints[endpoint].role != Role::Human {
+            return Ok(state);
+        }
+        loop {
+            let value = state.sessions.get(session).ok_or("unknown_session")?;
+            Self::owner(value, endpoint, *generation)?;
+            if value.view.screen.mode_revision != *mode_revision {
+                return Err("mode_revision_stale".into());
+            }
+            if state.degraded.is_some() || self.worker.failed() {
+                return Err("broker_degraded_before_final_write".into());
+            }
+            let remaining = deadline.saturating_duration_since(Instant::now());
+            if remaining.is_zero() {
+                return Err("human_live_prewrite_deadline_zero_effect".into());
+            }
+            if value.pending_output == 0 {
+                return Ok(state);
+            }
+            #[cfg(test)]
+            self.human_waiters.fetch_add(1, Ordering::Release);
+            let (next, _) = self.changed.wait_timeout(state, remaining).unwrap();
+            #[cfg(test)]
+            self.human_waiters.fetch_sub(1, Ordering::Release);
+            state = next;
+        }
     }
     pub(super) fn fresh(
         value: &LiveSession,
@@ -322,6 +371,7 @@ impl Broker {
                             };
                             value.publish(frame);
                             value.pending_output = value.pending_output.saturating_sub(1);
+                            self.changed.notify_all();
                             if !replies.is_empty() {
                                 let delivered = value.writer.write_once(&replies);
                                 let (status, extent) = match delivered {
@@ -380,6 +430,7 @@ impl Broker {
                         value.view.owner = None;
                         value.view.generation += 1;
                     }
+                    self.changed.notify_all();
                 }
                 Err(_) => {
                     if let Some(value) = self.state.lock().unwrap().sessions.get_mut(&id) {
@@ -456,6 +507,7 @@ impl Broker {
         }
         value.publish(frame);
         value.pending_output = value.pending_output.saturating_sub(1);
+        self.changed.notify_all();
         Ok((
             "applied".into(),
             0,
