@@ -51,3 +51,16 @@ format:
 # Separate experimental engine assessment from foundation checks.
 include make/assessment.mk
 include make/ea1.mk
+
+# Bounded hands-on prototype; no install, publication or historical qualification.
+.PHONY: mk1-build mk1-daemon mk1-tui mk1-desktop mk1-agent
+mk1-build:
+	python3 -B scripts/mk1.py build
+mk1-daemon:
+	python3 -B scripts/mk1.py daemon
+mk1-tui:
+	python3 -B scripts/mk1.py tui
+mk1-desktop:
+	python3 -B scripts/mk1.py desktop
+mk1-agent:
+	python3 -B scripts/mk1.py agent

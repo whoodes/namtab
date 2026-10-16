@@ -2,7 +2,7 @@
 
 [Index](../index.md) · [Scope](../engine/index.md) · [Canonical delivery plan](../engine/delivery-and-validation.md#ordered-milestones)
 
-**MK1 engineering authorized; broader qualification remains planned.** The [MK1 admission](mk1-scope-and-admission.md) owns the first hands-on stopping point; finite core/worker and Linux process primitives are implemented with targeted tests, not a usable integrated app yet. The only current engineering sequence is [N0–N5 / NG0–NG4](../engine/delivery-and-validation.md#ordered-milestones), with deliverables, dependencies, success/stop criteria, staffing and open questions in that owner document. This page preserves earlier entrypoints without maintaining another plan.
+**MK1 engineering authorized; broader qualification remains planned.** The [MK1 admission](mk1-scope-and-admission.md) owns the first hands-on stopping point; finite core/worker and Linux process primitives are implemented with targeted tests, the [MK1 quickstart](mk1-quickstart.md) owns actual local launch and finite limits, without claiming full NG1. The only current engineering sequence is [N0–N5 / NG0–NG4](../engine/delivery-and-validation.md#ordered-milestones), with deliverables, dependencies, success/stop criteria, staffing and open questions in that owner document. This page preserves earlier entrypoints without maintaining another plan.
 
 ## Order and stopping rules
 

@@ -30,9 +30,10 @@ const args = process.argv.slice(2);
 appendFileSync("commands.jsonl", JSON.stringify({ bin, args }) + "\\n");
 console.log("stub " + bin);
 if ((process.env.VERIFY_TEST_FAILURE === "check" && bin === "cargo" && args[0] === "test") ||
+    (process.env.VERIFY_TEST_FAILURE === "journey" && args.includes("tests/mk1/e2e.py")) ||
     (process.env.VERIFY_TEST_FAILURE === "version" && bin === "rustc")) process.exitCode = 1;
 `;
-  for (const name of ["cargo", "rustc", "node", "git"])
+  for (const name of ["cargo", "rustc", "node", "git", "python3"])
     writeFileSync(root + "/bin/" + name, stub, { mode: 0o755 });
   writeFileSync(root + "/.venv-docs/bin/python", stub, { mode: 0o755 });
   const result = spawnSync(
@@ -92,6 +93,20 @@ test("both verification scopes retain Cargo coverage and all discovered system t
       report.checks.find((c) => c.name === "synthetic-contracts").command,
       ["node", "--test", ...files],
     );
+    const launch = report.checks.findIndex(
+      (c) => c.name === "mk1-launch-build",
+    );
+    const journey = report.checks.findIndex(
+      (c) => c.name === "mk1-real-journeys",
+    );
+    assert.ok(launch >= 0 && journey > launch);
+    assert.deepEqual(report.checks[launch].command, [
+      "python3",
+      "-B",
+      "scripts/mk1.py",
+      "build",
+    ]);
+    assert.ok(report.checks[journey].command.includes("tests/mk1/e2e.py"));
     assert.ok(report.checks.every((c) => c.verdict === "PASS"));
     assert.equal(Object.hasOwn(report, "essential_gate"), false);
     assert.equal(
@@ -120,4 +135,17 @@ test("foundation check or tool version failure still fails verification and reta
       );
     }
   }
+});
+
+test("a failed real MK1 journey fails the active lane without erasing other checks", () => {
+  const { result, report } = verify(["--source-foundation"], "journey");
+  assert.equal(result.status, 1, result.stderr);
+  assert.equal(
+    report.checks.find((c) => c.name === "mk1-real-journeys").verdict,
+    "FAIL",
+  );
+  assert.equal(
+    report.checks.find((c) => c.name === "strict-mkdocs").verdict,
+    "PASS",
+  );
 });

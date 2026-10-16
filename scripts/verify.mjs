@@ -60,6 +60,7 @@ const systemTests = (await readdir(root + "tests/system"))
   .sort()
   .map((name) => "tests/system/" + name);
 if (systemTests.length === 0) throw new Error("No system test files found");
+const realRun = root + ".artifacts/mk1-ci-" + randomUUID();
 const steps = [
   [
     "repository-local-links",
@@ -119,6 +120,21 @@ const steps = [
     "cargo",
     ["test", "--workspace", ...scopeArgs, "--locked"],
   ],
+  ["mk1-launch-build", "python3", ["-B", "scripts/mk1.py", "build"]],
+  [
+    "mk1-real-journeys",
+    "python3",
+    [
+      "-B",
+      "tests/mk1/e2e.py",
+      "--bin-dir",
+      root + "target/debug",
+      "--terminfo",
+      root + ".artifacts/terminfo",
+      "--artifacts",
+      realRun,
+    ],
+  ],
   ["bindings-drift", "node", ["scripts/generate-bindings.mjs", "--check"]],
   ["typescript-build", "node", [".tools/pnpm/package/bin/pnpm.cjs", "build"]],
   ["dependency-boundaries", "node", ["scripts/check-boundaries.mjs"]],
@@ -162,7 +178,7 @@ const report = {
     memory_bytes: os.totalmem(),
     os_release: await readFile("/etc/os-release", "utf8"),
     display:
-      "No display/IME/screen-reader or live outer-terminal experiment performed; headless synthetic tests only.",
+      "Includes a headless real Linux PTY/host-TUI journey; no Electron display, IME, screen-reader or human visual qualification in this runner.",
   },
   versions,
   property_seed: env.PROPTEST_RNG_SEED,
