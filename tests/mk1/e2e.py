@@ -256,14 +256,24 @@ class Journey:
                 continue
             visited.add(parent)
             try:
-                values = Path(f"/proc/{parent}/task/{parent}/children").read_text().split()
+                tasks = list(Path(f"/proc/{parent}/task").iterdir())
             except FileNotFoundError:
                 continue
+            values = set()
+            # Linux lists children under the spawning thread, not necessarily
+            # the main thread. The broker launches processes from RPC threads.
+            for task in tasks:
+                try:
+                    values.update((task / "children").read_text().split())
+                except FileNotFoundError:
+                    continue
             for value in values:
                 pid = int(value)
                 if pid in self.owned_pidfds:
-                    pending.append(pid)
-                    continue
+                    previous = self.owned_pidfds[pid]
+                    if not select.select([previous], [], [], 0)[0]:
+                        pending.append(pid)
+                        continue
                 descriptor = None
                 try:
                     descriptor = os.pidfd_open(pid)
@@ -271,6 +281,9 @@ class Journey:
                     if int(stat[1]) != parent:
                         os.close(descriptor)
                         continue
+                    previous = self.owned_pidfds.get(pid)
+                    if previous is not None:
+                        os.close(previous)
                     self.owned_pidfds[pid] = descriptor
                     pending.append(pid)
                 except (FileNotFoundError, ProcessLookupError):
