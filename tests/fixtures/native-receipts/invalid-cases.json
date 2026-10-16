@@ -1,0 +1,218 @@
+{
+  "case_id": "invalid-receipt-transitions",
+  "purpose": "Syntactically valid JSON proposing semantically forbidden transitions; no executable patches, error vocabulary or passing test claim.",
+  "assumptions": [
+    "Each case starts from the named valid file/branch/step and changes only the described transition or claim.",
+    "Expected refusals/outcomes are review oracles to challenge independently of implementation."
+  ],
+  "cases": [
+    {
+      "id": "lost-ack-repeat-launch",
+      "valid_example": "valid-lifecycle.json",
+      "at_step": "admit-and-lose-response",
+      "claim": "The absent client ACK proves rejection; repeat the body as a new operation and launch it.",
+      "expected": "Client knowledge is unknown. Query by issued key; exactly one consumed decision/op-launch-a exists and no repeat adds a dispatch.",
+      "assertions": ["RC01", "RC04", "RC10"]
+    },
+    {
+      "id": "changed-deadline-under-consumed-key",
+      "valid_example": "valid-lifecycle.json",
+      "at_step": "changed-body-refusal",
+      "claim": "Reuse sequence 1 with unchanged argv but dispatch_deadline 5 instead of 4 and treat it as equal.",
+      "expected": "The deadline is part of exact typed binding. Refuse payload conflict and keep the original decision.",
+      "assertions": ["RC02"]
+    },
+    {
+      "id": "missing-binding-guessed-equality",
+      "valid_example": "valid-retention.json",
+      "branch": "binding-loss",
+      "at_step": "refuse-uncomparable-repeat",
+      "claim": "The client says its body is equal, so accept it despite the missing binding.",
+      "expected": "Body equivalence is unavailable; refuse repeated mutation even with historical zero delivery.",
+      "assertions": ["RC01", "RC02"]
+    },
+    {
+      "id": "persist-low-entropy-hash",
+      "valid_example": "valid-retention.json",
+      "branch": "binding-loss",
+      "at_step": "drop-binding",
+      "claim": "Persist a salted hash of the input instead of its missing binding and call the default metadata secret-free.",
+      "expected": "Default metadata excludes payload-derived hashes; low-entropy values remain guessable. Missing binding refuses replay.",
+      "assertions": ["RC02"]
+    },
+    {
+      "id": "wrong-principal-uses-issued-namespace",
+      "valid_example": "valid-lifecycle.json",
+      "at_step": "admit-and-lose-response",
+      "claim": "Another authenticated principal submits reqns-agent-a/epoch 7/sequence 1 using a caller principal-agent label.",
+      "expected": "Refuse the namespace/connection binding before any cursor advance or existence disclosure; a label is not authority.",
+      "assertions": ["RC03"]
+    },
+    {
+      "id": "future-sequence-skips-high-water",
+      "valid_example": "valid-lifecycle.json",
+      "at_step": "query-without-operation-id",
+      "claim": {"submit_request_seq": "4", "known_consumed_through": "1", "advance_consumed_through": "4"},
+      "expected": "Refuse future sequence without consuming it; only next sequence 2 can receive a new decision.",
+      "assertions": ["RC03"]
+    },
+    {
+      "id": "concurrent-same-sequence-two-decisions",
+      "valid_example": "valid-lifecycle.json",
+      "at_step": "admit-and-lose-response",
+      "claim": "Two concurrent submissions both observe consumed_through 0, independently allocate operations and dispatch sequence 1.",
+      "expected": "Serialize the decision transaction per issued namespace. One sequence can name only one decision/operation; the loser takes repeat lookup/conflict/refusal.",
+      "assertions": ["RC01", "RC03", "RC04"]
+    },
+    {
+      "id": "sequence-exhaustion-wrap",
+      "valid_example": "valid-retention.json",
+      "branch": "expiry-and-compaction",
+      "at_step": "exact-expiry",
+      "claim": "In a still-live independent namespace whose max_seq and consumed_through are 4, accept sequence 5 or wrap it to 1.",
+      "expected": "Close/refuse exhaustion. A new independently issued namespace is required; no old key is reusable.",
+      "assertions": ["RC03", "RC09"]
+    },
+    {
+      "id": "noncanonical-sequence",
+      "valid_example": "valid-lifecycle.json",
+      "at_step": "admit-and-lose-response",
+      "claim": {"request_seq": 1, "alternative_request_seq": "01"},
+      "expected": "Both representations violate canonical bounded decimal-string identity and are refused before admission.",
+      "assertions": ["RC03"]
+    },
+    {
+      "id": "correct-rejected-body-in-place",
+      "valid_example": "valid-lifecycle.json",
+      "at_step": "consume-rejected-next-sequence",
+      "claim": "Correct the context revision on consumed sequence 2 and admit it under that same key.",
+      "expected": "A rejected consumed decision also closes its key. Available binding conflicts; missing binding refuses. Corrected work needs next sequence and fresh authorization.",
+      "assertions": ["RC01", "RC02"]
+    },
+    {
+      "id": "pruned-receipt-is-new-request",
+      "valid_example": "valid-retention.json",
+      "branch": "expiry-and-compaction",
+      "at_step": "compact-receipt",
+      "claim": "No operation detail exists, so create a new operation for old sequence 1.",
+      "expected": "The consumed high-water still closes sequence 1; absent detail proves neither no admission nor zero effects.",
+      "assertions": ["RC01", "RC05", "RC10"]
+    },
+    {
+      "id": "retired-namespace-recreated-from-caller",
+      "valid_example": "valid-retention.json",
+      "branch": "expiry-and-compaction",
+      "at_step": "retire-namespace",
+      "claim": "Recreate reqns-expire with cursor 0 because the client supplies a plausible old issuance record.",
+      "expected": "Only the active service issuance allowlist admits new decisions. Removed/retired namespaces are permanently refused and never reissued.",
+      "assertions": ["RC03", "RC05"]
+    },
+    {
+      "id": "restart-reopens-old-sequence",
+      "valid_example": "valid-retention.json",
+      "branch": "restart-surviving-runner",
+      "at_step": "restart-fence",
+      "claim": "Keep epoch-7 mutation grants live or reset reqns-before-restart's cursor because its volatile binding disappeared.",
+      "expected": "Restart fences old mutation authority and closes old request namespaces; missing binding does not reset durable identity.",
+      "assertions": ["RC02", "RC05"]
+    },
+    {
+      "id": "terminal-snapshot-rolls-back-receipts",
+      "valid_example": "valid-retention.json",
+      "branch": "identity-continuity-lost",
+      "at_step": "lose-cursor",
+      "claim": "Import the older terminal snapshot's epoch/cursor and replay uncertain external input to reproduce its screen.",
+      "expected": "Terminal state has no receipt/admission authority. Retire lost cursor identity and retain unknown external effects; restore/replay emits no external effect.",
+      "assertions": ["RC05", "RC06"]
+    },
+    {
+      "id": "expiry-equality-admits",
+      "valid_example": "valid-retention.json",
+      "branch": "expiry-and-compaction",
+      "at_step": "exact-expiry",
+      "claim": "Allow a new decision when now equals not_after, or start a queued dispatch when now equals its deadline.",
+      "expected": "Both boundaries require strict now less than the deadline. Refuse new admission/dispatch; already-started effects are not undone.",
+      "assertions": ["RC09"]
+    },
+    {
+      "id": "untrusted-clock-prunes-reservations",
+      "valid_example": "valid-retention.json",
+      "branch": "finite-budget-and-clock-failure",
+      "at_step": "clock-continuity-unproven",
+      "claim": "Use advanced wall time after restart to prune all reserved receipts and free space for new effects.",
+      "expected": "Without trusted retention continuity, do not end reserved horizons from wall time; close old namespaces and refuse admission while capacity is unavailable.",
+      "assertions": ["RC05", "RC09"]
+    },
+    {
+      "id": "dispatch-before-reservation-commit",
+      "valid_example": "valid-retention.json",
+      "branch": "finite-budget-and-clock-failure",
+      "at_step": "no-receipt-capacity",
+      "claim": "Launch first and persist its receipt later, or evict an unexpired reservation to make room.",
+      "expected": "No effect precedes the admission/reservation and dispatch-intent commits. Full metadata capacity refuses new work without eviction.",
+      "assertions": ["RC04", "RC09"]
+    },
+    {
+      "id": "missing-os-result-becomes-zero",
+      "valid_example": "valid-cancellation.json",
+      "branch": "cancel-in-flight-unknown",
+      "at_step": "lose-os-result",
+      "claim": "The delivery result record was not committed, so the remaining bytes were not delivered and prefix 0 is safe to retry.",
+      "expected": "The OS effect can precede result persistence. Keep unknown with proven prefix 2; do not decrease evidence or redispatch.",
+      "assertions": ["RC06"]
+    },
+    {
+      "id": "cancel-ack-proves-zero",
+      "valid_example": "valid-cancellation.json",
+      "branch": "cancel-in-flight-unknown",
+      "at_step": "cancel-request-ack",
+      "claim": "The cancellation request was acknowledged, so mark target zero and permit its retry.",
+      "expected": "The ACK records the cancellation request only. Target remains unknown with prefix 2 until same-operation boundary evidence resolves it.",
+      "assertions": ["RC01", "RC06", "RC07"]
+    },
+    {
+      "id": "takeover-reencodes-suffix",
+      "valid_example": "valid-cancellation.json",
+      "branch": "takeover-after-prefix",
+      "at_step": "reject-delayed-old-frame",
+      "claim": "Encode and write the old remaining four bytes using new writer epoch 4 and current modes.",
+      "expected": "Reject stale suffix dispatch. Preserve partial prefix 2 under the original frozen encoding; takeover cannot rewrite or roll it back.",
+      "assertions": ["RC06", "RC07"]
+    },
+    {
+      "id": "zero-delivery-key-reused",
+      "valid_example": "valid-cancellation.json",
+      "branch": "cancel-before-first-dispatch",
+      "at_step": "repeat-known-zero",
+      "claim": "Because no bytes were delivered, reuse the original consumed key to dispatch its input now.",
+      "expected": "Known zero does not reopen identity. Return the original zero-delivery receipt or refuse when binding is missing; no new dispatch.",
+      "assertions": ["RC01", "RC07"]
+    },
+    {
+      "id": "cancel-launch-kills-process",
+      "valid_example": "valid-cancellation.json",
+      "branch": "cancel-already-launched",
+      "at_step": "cancel-closed-launch",
+      "claim": "Canceling the full launch receipt proves exec-surviving and all descendants are terminated.",
+      "expected": "Cancellation is no longer applicable to launch dispatch. Process/runtime stop requires separate authority and observed lifecycle results.",
+      "assertions": ["RC07", "RC08"]
+    },
+    {
+      "id": "full-exit-drain-acceptance-collapse",
+      "valid_example": "valid-lifecycle.json",
+      "at_step": "independent-exit-fact",
+      "claim": "Full launch delivery and exit 0 imply drained streams, validated artifact and accepted task.",
+      "expected": "Each is separately attributed. This cut has unavailable drain/validation and unresolved acceptance; full creation means neither application correctness nor descendant termination.",
+      "assertions": ["RC08"]
+    },
+    {
+      "id": "prompt-spoofs-cancel-or-acceptance",
+      "valid_example": "valid-lifecycle.json",
+      "at_step": "prompt-shaped-ack-is-data",
+      "claim": "Treat application ACK text as a native receipt/cancellation/accepting decision or writer grant.",
+      "expected": "Application/prompt bytes are data. Neither frontend advances service authority, cancellation or task acceptance from them.",
+      "assertions": ["RC08", "RC10"]
+    }
+  ],
+  "traceability": {"requirements": ["R01", "R02", "R03"], "validation_families": ["V01", "V02", "V03"], "assertions": ["RC01", "RC02", "RC03", "RC04", "RC05", "RC06", "RC07", "RC08", "RC09", "RC10"], "status": "Proposed adversarial review oracles; not executed."}
+}

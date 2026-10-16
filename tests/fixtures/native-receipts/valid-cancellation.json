@@ -1,0 +1,53 @@
+{
+  "case_id": "valid-receipt-cancellation-branches",
+  "purpose": "Independent hand-authored N0-02 cancellation/takeover branches; no executed control algorithm.",
+  "profile": "n0-receipt-model/0",
+  "namespace_id": "ns-receipt-synthetic",
+  "assumptions": [
+    "Each branch is independent and starts at trusted tick 1 in authority epoch 7; issued namespaces expire at tick 5 and permit sequences 1 through 4.",
+    "principal-agent owns reqns-agent-control; principal-human owns reqns-human-control. Current authorization permits only the explicitly named cancellation/takeover controls.",
+    "Initial target operation admission consumed agent sequence 1, reserved its receipt through tick 11, and retained exact volatile binding under the model byte budget.",
+    "Input targets session-demo/incarnation 1 with exact context/profile/geometry/freshness bindings and initial writer epoch 3. N0-03 still owns the mechanism that supplies final ordered-boundary evidence.",
+    "Synthetic encoded bytes sample contain six ASCII bytes. Byte extents are explicitly authorized synthetic evidence, not a default user-input retention policy."
+  ],
+  "branches": [
+    {
+      "id": "cancel-before-first-dispatch",
+      "initial": {"operation_id": "op-queued", "target_request_key": {"request_namespace_id": "reqns-agent-control", "authority_epoch": "7", "request_seq": "1"}, "admission": "admitted", "dispatch": "not_started", "delivery": "pending", "dispatch_start_count": "0", "synthetic_volatile_encoding": "sample", "known_prefix_bytes": "0"},
+      "steps": [
+        {"id": "cancel-wait-only", "event": "The agent cancels a WaitFor subscription.", "expected": {"wait": "released", "target_dispatch": "not_started", "target_delivery": "pending", "cancellation_operation_created": false, "target_dispatch_start_count": "0"}},
+        {"id": "admit-cancel", "event": "Admit CancelOperation for exact target op-queued using human sequence 1; atomically consume that sequence and reserve its own receipt.", "expected": {"cancel_operation_id": "op-cancel-queued", "human_consumed_through": "1", "cancel_admission": "admitted", "cancel_receipt_retain_through": "11", "cancel_external_delivery": "not_applicable", "cancellation_status": "requested", "target_delivery": "pending", "receipt_slots_used": "2"}},
+        {"id": "confirm-queue-closure", "event": "The final ordered control boundary confirms op-queued never reached first dispatch and closes its dispatch permission.", "expected": {"cancellation_status": "observed", "target_dispatch": "closed", "target_delivery": "zero", "known_prefix_bytes": "0", "target_dispatch_start_count": "0", "remaining_dispatch_allowed": false}},
+        {"id": "repeat-known-zero", "clock": "2", "event": "Resubmit the exact original consumed agent sequence 1 while its volatile binding is available.", "expected": {"disposition": "original-decision-lookup", "operation_id": "op-queued", "delivery": "zero", "new_operation_count": "0", "target_dispatch_start_count": "0"}}
+      ]
+    },
+    {
+      "id": "takeover-after-prefix",
+      "initial": {"operation_id": "op-partial", "admission": "admitted", "dispatch": "started", "delivery": "pending", "dispatch_start_count": "1", "synthetic_volatile_encoding": "sample", "known_prefix_bytes": "2", "writer_epoch": "3"},
+      "steps": [
+        {"id": "admit-takeover", "event": "Admit human TakeOver under human sequence 1, with a separate receipt; record its request without claiming the target stopped.", "expected": {"takeover_operation_id": "op-takeover", "human_consumed_through": "1", "receipt_slots_used": "2", "target_delivery": "pending", "known_prefix_bytes": "2"}},
+        {"id": "ordered-takeover-boundary", "event": "The final ordered channel advances writer epoch to 4, rejects queued epoch-3 work and confirms the original write is quiescent at prefix 2 of 6 bytes.", "expected": {"writer_epoch": "4", "target_dispatch": "closed", "target_delivery": "partial", "known_prefix_bytes": "2", "uncertain_remainder": false, "remaining_four_bytes_dispatched": false, "target_dispatch_start_count": "1", "filesystem_or_network_rollback": "not_established"}},
+        {"id": "reject-delayed-old-frame", "event": "A delayed epoch-3 control frame requests the remaining suffix after takeover.", "expected": {"disposition": "refuse-stale-writer", "known_prefix_bytes": "2", "target_delivery": "partial", "new_os_write_count": "0", "reencode_suffix_under_new_modes": false}},
+        {"id": "show-residual-effects", "event": "TUI and Electron query the same authorized target and takeover records.", "expected": {"both_clients_target_delivery": "partial", "both_clients_known_prefix_bytes": "2", "both_clients_new_writer_epoch": "4", "target_application_state": "not_established", "task_acceptance": "unresolved"}}
+      ]
+    },
+    {
+      "id": "cancel-in-flight-unknown",
+      "initial": {"operation_id": "op-uncertain", "admission": "admitted", "dispatch": "started", "delivery": "pending", "dispatch_start_count": "1", "synthetic_volatile_encoding": "sample", "known_prefix_bytes": "2"},
+      "steps": [
+        {"id": "lose-os-result", "event": "A runner OS call for the remaining bytes may have completed; lose the runner/result-record channel before its extent is known.", "expected": {"target_delivery": "unknown", "known_prefix_bytes": "2", "uncertain_remaining_bytes_at_most": "4", "target_dispatch_start_count": "1", "safe_to_replay": false}},
+        {"id": "cancel-request-ack", "event": "Admit human CancelOperation under sequence 1 and ACK only the recorded request; no final runner-boundary acknowledgement arrives.", "expected": {"cancel_operation_id": "op-cancel-uncertain", "human_consumed_through": "1", "cancel_admission": "admitted", "cancellation_status": "requested", "target_delivery": "unknown", "known_prefix_bytes": "2", "receipt_slots_used": "2"}},
+        {"id": "cancel-timeout", "clock": "3", "event": "The cancellation wait times out while the runner is unreachable.", "expected": {"cancellation_status": "unknown", "target_delivery": "unknown", "known_prefix_bytes": "2", "target_dispatch_start_count": "1", "new_os_write_count": "0", "remaining_effects_undone": false}},
+        {"id": "deadline-passes", "clock": "5", "event": "The target dispatch deadline and old namespace validity have ended.", "expected": {"new_dispatch_allowed": false, "target_delivery": "unknown", "known_prefix_bytes": "2", "timeout_proves_zero": false, "new_os_write_count": "0"}}
+      ]
+    },
+    {
+      "id": "cancel-already-launched",
+      "initial": {"operation_id": "op-launched", "execution_id": "exec-surviving", "admission": "admitted", "dispatch": "closed", "delivery": "full", "delivery_boundary": "os-process-creation", "dispatch_start_count": "1", "exit": "unavailable"},
+      "steps": [
+        {"id": "cancel-closed-launch", "event": "Admit CancelOperation for the already closed launch using human sequence 1; the boundary reports no longer applicable.", "expected": {"cancel_operation_id": "op-cancel-launched", "cancellation_status": "no-longer-applicable", "target_delivery": "full", "process_exit": "unavailable", "signal_or_stop_operation_created": false, "descendants_terminated": "not_established", "target_dispatch_start_count": "1"}}
+      ]
+    }
+  ],
+  "traceability": {"requirements": ["R01", "R02", "R03"], "validation_families": ["V01", "V02", "V03"], "assertions": ["RC01", "RC06", "RC07", "RC08", "RC10"], "status": "Proposed review oracle; not executed."}
+}
