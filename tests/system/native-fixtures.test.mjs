@@ -68,16 +68,15 @@ test("native corpus and earlier native manifests receive static checks only", as
   );
 });
 
-test("merged ownership fixtures cannot disappear as an entire category", async () =>
-  sandbox(async (root) => {
-    await rm(join(root, "tests/fixtures/native-ownership"), {
-      recursive: true,
-    });
-    await assert.rejects(
-      checkNativeFixtures(root),
-      /missing native fixture directory: native-ownership/,
-    );
-  }));
+for (const category of ["native-ownership", "native-public"])
+  test(`${category} fixtures cannot disappear as an entire category`, async () =>
+    sandbox(async (root) => {
+      await rm(join(root, `tests/fixtures/${category}`), { recursive: true });
+      await assert.rejects(
+        checkNativeFixtures(root),
+        new RegExp(`missing native fixture directory: ${category}`),
+      );
+    }));
 
 test("short transport enumeration contains every contiguous partition", () => {
   assert.deepEqual([...shortPartitions("01")], [["01"]]);

@@ -1,0 +1,122 @@
+{
+  "format": "n0-06-review-data-1",
+  "status": "Protocol review sequences only; no live subscription, transport, timing or page-assembly oracle executed",
+  "mappings": [
+    "DF01",
+    "DF04",
+    "V16"
+  ],
+  "cases": [
+    {
+      "id": "immutable-two-page-snapshot",
+      "examples": [
+        "subscribe",
+        "opened",
+        "snapshot-page-one",
+        "read-page",
+        "snapshot-page-two",
+        "frame-delta"
+      ],
+      "requirement": "Both clients assemble exactly rows0..2 of snapshot-one with one stamp, then apply the complete exact-base delta atomically. No one-page claim of full grid."
+    },
+    {
+      "id": "zero-credit-pause",
+      "examples": [
+        "subscribe-zero-credit",
+        "opened-zero-credit",
+        "grant-credit-zero"
+      ],
+      "requirement": "With zero pages or bytes, SubscriptionOpened still echoes read-zero-credit and assigns subscription-zero-credit from reserved control allowance before any presentation. The client can grant credit to that exact stream; no page/delta is published until both dimensions permit it."
+    },
+    {
+      "id": "snapshot-larger-than-credit",
+      "examples": [
+        "snapshot-page-one"
+      ],
+      "requirement": "Before sending, charge complete UTF-8 encoded envelope bytes and one page. If a single page cannot fit, refuse/reduce page under the same snapshot binding; never exceed credit or truncate it."
+    },
+    {
+      "id": "gap-resync",
+      "examples": [
+        "frame-delta",
+        "resync",
+        "subscribe"
+      ],
+      "requirement": "Missing exactbase, dropped presentation frame, expired cursor, replaced target or policy/buffer/geometry drift invalidates pending assembly; request current snapshot. No output-parser gap can be repaired by resnapshot."
+    },
+    {
+      "id": "cancel-and-disconnect",
+      "examples": [
+        "cancel",
+        "closed",
+        "resume",
+        "opened-resume"
+      ],
+      "requirement": "Cancel releases retained pages/cursors after closure and fences further publication. Already received frames remain historical. Disconnect closes subscription; resumed read authenticates, authorizes and verifies exact cursor/base or resnapshots, without restoring writer ownership or retrying input. Resume has a fresh connection-scoped correlation and a new opened subscription binding before data; stale responses from the old connection are ignored, never replayed into the new mapping."
+    },
+    {
+      "id": "wrong-page-binding",
+      "examples": [
+        "snapshot-page-one",
+        "snapshot-page-two"
+      ],
+      "requirement": "Reject a page with another snapshot/stamp/session, overlapping/missing rows, duplicate row IDs, wrong active width, changed total or inconsistent metadata. Discard incomplete assembly on expiration; never display it as a full snapshot."
+    },
+    {
+      "id": "immutable-not-restorable",
+      "examples": [
+        "snapshot-page-one",
+        "snapshot-page-two"
+      ],
+      "requirement": "Presentation includes active cells and authorized cursor/facts only; inactive buffer/parser continuations/receipts/grants are absent. It is not complete semantic state, evidence of OS readiness, or an import/recovery image."
+    },
+    {
+      "id": "concurrent-same-projection-openings",
+      "examples": [
+        "subscribe",
+        "subscribe-zero-credit",
+        "opened-zero-credit",
+        "opened",
+        "grant-credit-zero"
+      ],
+      "requirement": "Two outstanding requests select the same session and active-grid projection. Openings may return in reverse request order; only echoed correlation binds each distinct service subscription. Zero-credit opening is control traffic, so its stream can receive a grant or cancellation without a first page. No subscriber implementation or ordering oracle is executed."
+    },
+    {
+      "id": "zero-credit-preopen-refusal",
+      "examples": [
+        "subscribe-denied",
+        "subscribe-refused"
+      ],
+      "requirement": "Initial refusal echoes read-denied through reserved control allowance even at zero presentation credit, allocates no active subscription ID and publishes no ObservationUnavailable/page. Its Unauthorized code belongs to the existing read error family, not a mutation decision."
+    },
+    {
+      "id": "zero-credit-cancel-after-opening",
+      "examples": [
+        "subscribe-zero-credit",
+        "opened-zero-credit",
+        "cancel-zero",
+        "closed-zero"
+      ],
+      "requirement": "The client learns its stream ID before any presentation and can cancel it while credit remains zero. Closure uses reserved control allowance and fences that stream; no writer/decision authority is implied."
+    },
+    {
+      "id": "active-unavailability-is-routed",
+      "examples": [
+        "subscribe-history",
+        "opened-history",
+        "unavailable"
+      ],
+      "requirement": "After the history selection is opened and mapped, later expiry identifies subscription-history and its resolved selection. Initial unavailable selection instead uses correlated SubscribeRefused, not an unallocated active ID or a guessed projection."
+    },
+    {
+      "id": "duplicate-correlation-and-reconnect",
+      "examples": [
+        "subscribe",
+        "opened",
+        "resume",
+        "opened-resume"
+      ],
+      "requirement": "Correlations are scoped to one authenticated connection and are not reused there. A duplicate outstanding correlation is a protocol error: do not replace the first request or create another stream. This is not mutation idempotence. Connection read-control admission/tracking is bounded; insufficient capacity refuses or closes before creating an unreportable stream. Old-connection openings/refusals cannot satisfy new-connection requests, even if their strings match."
+    }
+  ]
+}

@@ -105,3 +105,69 @@ if (process.argv.includes("--check")) {
 } else {
   await writeFile(responseFile, responseRaw);
 }
+
+// N0 public design seam: separate schema/type outputs, no runtime admission validator.
+// Reject unknown integer formats rather than globally disabling strict Ajv checks.
+function nativeIntegerProfile(node) {
+  if (Array.isArray(node)) {
+    for (const child of node) nativeIntegerProfile(child);
+  } else if (node && typeof node === "object") {
+    if (node.format?.startsWith("uint")) {
+      const bounds = { uint8: 255, uint16: 65535, uint32: 4294967295 };
+      const maximum = bounds[node.format];
+      if (
+        maximum === undefined ||
+        node.type !== "integer" ||
+        node.minimum < 0 ||
+        node.maximum > maximum ||
+        node.minimum === undefined ||
+        node.maximum === undefined
+      )
+        throw new Error("Native integer schema profile changed");
+      delete node.format;
+    }
+    for (const child of Object.values(node)) nativeIntegerProfile(child);
+  }
+}
+for (const [argument, name, stem] of [
+  [undefined, "NativeN0Envelope", "native-experimental-n0"],
+  ["view", "NativeN0ViewCommand", "native-experimental-n0-view"],
+]) {
+  const nativeSchema = JSON.parse(
+    execFileSync(
+      "cargo",
+      [
+        "run",
+        "--quiet",
+        "--locked",
+        "-p",
+        "project-x-protocol",
+        "--example",
+        "export-native-schema",
+        ...(argument ? ["--", argument] : []),
+      ],
+      { encoding: "utf8" },
+    ),
+  );
+  nativeIntegerProfile(nativeSchema);
+  // Prove this narrowly normalized draft remains within the existing Ajv subset.
+  new Ajv({ strict: true }).compile(nativeSchema);
+  const nativeTypes = await compile(nativeSchema, name, {
+    bannerComment:
+      "/* Generated N0 design DTOs; do not edit. No admission or runtime API. */",
+    // Bounds live in the schema. Avoid expanding bounded arrays into hundreds of tuples.
+    ignoreMinAndMaxItems: true,
+  });
+  for (const [file, data] of Object.entries({
+    ["schemas/public/" + stem + ".schema.json"]:
+      JSON.stringify(nativeSchema, null, 2) + "\n",
+    ["packages/protocol/src/" + stem + ".generated.ts"]: nativeTypes,
+  })) {
+    if (process.argv.includes("--check")) {
+      if ((await readFile(file, "utf8")) !== data)
+        throw new Error("Generated drift: " + file);
+    } else {
+      await writeFile(file, data);
+    }
+  }
+}

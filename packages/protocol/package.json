@@ -4,7 +4,9 @@
   "version": "0.1.0",
   "type": "module",
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./dist/index.js",
+    "./experimental-native-n0": "./dist/native-experimental-n0.generated.js",
+    "./experimental-native-n0/view": "./dist/native-experimental-n0-view.generated.js"
   },
   "dependencies": {
     "ajv": "8.17.1"

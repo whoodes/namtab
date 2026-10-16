@@ -1,0 +1,1439 @@
+{
+  "format": "n0-06-examples-1",
+  "status": "Synthetic shape examples only; not negotiated/admitted requests or runtime evidence",
+  "examples": {
+    "receipt-model": {
+      "namespace": "namtab.native.experimental.n0",
+      "version": "n0-06-draft-1",
+      "body": {
+        "message": "receipt_profile_proposal",
+        "limits": {
+          "profile": {
+            "id": "n0-receipt-model-0",
+            "revision": "1"
+          },
+          "max_sequence": "4",
+          "namespace_lifetime_ticks": "5",
+          "retention_after_decision_ticks": "10",
+          "namespace_records_per_principal": 2,
+          "namespace_records_total": 4,
+          "receipt_slots_per_principal": 4,
+          "receipt_slots_total": 8,
+          "volatile_bindings_per_principal": 4,
+          "volatile_bindings_total": 8,
+          "max_binding_bytes": 1024,
+          "clock_unit": "injected-model-tick"
+        }
+      }
+    },
+    "subscribe": {
+      "namespace": "namtab.native.experimental.n0",
+      "version": "n0-06-draft-1",
+      "body": {
+        "message": "subscribe",
+        "correlation_id": "read-one",
+        "session": {
+          "namespace_id": "ns-synthetic",
+          "session_id": "session-one",
+          "incarnation": "1"
+        },
+        "start": {
+          "kind": "current_snapshot",
+          "projection": {
+            "kind": "active_grid"
+          }
+        },
+        "credit": {
+          "pages": 2,
+          "bytes": 65536
+        }
+      }
+    },
+    "snapshot-page-one": {
+      "namespace": "namtab.native.experimental.n0",
+      "version": "n0-06-draft-1",
+      "body": {
+        "message": "snapshot_page",
+        "page": {
+          "subscription_id": "subscription-one",
+          "snapshot_id": "snapshot-one",
+          "stamp": {
+            "session": {
+              "namespace_id": "ns-synthetic",
+              "session_id": "session-one",
+              "incarnation": "1"
+            },
+            "observation_id": "observation-one",
+            "semantic_revision": "3",
+            "processed_frontier": "10",
+            "source_frontier": "12",
+            "geometry": {
+              "revision": "1",
+              "rows": 2,
+              "columns": 4
+            },
+            "buffer": {
+              "kind": "primary",
+              "generation": "1"
+            },
+            "policy": {
+              "engine_revision": "n0-owned-design-only",
+              "profile": {
+                "id": "px-dev-text-0",
+                "revision": "1"
+              },
+              "text_policy": "dev-latin1-width-1",
+              "reflow_policy": "crop-no-reflow-1"
+            },
+            "mode_revision": "2",
+            "capability_revision": "1"
+          },
+          "page_id": "page-one",
+          "projection": {
+            "kind": "active_grid"
+          },
+          "start_row": "0",
+          "total_rows": "2",
+          "rows": [
+            {
+              "row_id": "row-one",
+              "revision": "1",
+              "soft_wrapped": false,
+              "cells": [
+                {
+                  "text": "a",
+                  "occupancy": "single",
+                  "style": {
+                    "foreground": {
+                      "kind": "default"
+                    },
+                    "background": {
+                      "kind": "default"
+                    },
+                    "flags": []
+                  }
+                },
+                {
+                  "text": "b",
+                  "occupancy": "single",
+                  "style": {
+                    "foreground": {
+                      "kind": "default"
+                    },
+                    "background": {
+                      "kind": "default"
+                    },
+                    "flags": []
+                  }
+                },
+                {
+                  "text": " ",
+                  "occupancy": "single",
+                  "style": {
+                    "foreground": {
+                      "kind": "default"
+                    },
+                    "background": {
+                      "kind": "default"
+                    },
+                    "flags": []
+                  }
+                },
+                {
+                  "text": " ",
+                  "occupancy": "single",
+                  "style": {
+                    "foreground": {
+                      "kind": "default"
+                    },
+                    "background": {
+                      "kind": "default"
+                    },
+                    "flags": []
+                  }
+                }
+              ]
+            }
+          ],
+          "presentation": {
+            "cursor": {
+              "row": 0,
+              "column": 2,
+              "visible": true,
+              "blink": false,
+              "shape": "block"
+            }
+          },
+          "facts": [
+            {
+              "subject": {
+                "namespace_id": "ns-synthetic",
+                "session_id": "session-one",
+                "incarnation": "1"
+              },
+              "evidence": {
+                "level": "observed",
+                "claim": {
+                  "kind": "interpretation",
+                  "known": true
+                },
+                "producer": {
+                  "component_id": "component-engine",
+                  "incarnation": "1"
+                },
+                "schema": "engine-fact-1",
+                "source": {
+                  "kind": "session_event",
+                  "session": {
+                    "namespace_id": "ns-synthetic",
+                    "session_id": "session-one",
+                    "incarnation": "1"
+                  },
+                  "sequence": "10"
+                }
+              }
+            },
+            {
+              "subject": {
+                "namespace_id": "ns-synthetic",
+                "session_id": "session-one",
+                "incarnation": "1"
+              },
+              "evidence": {
+                "level": "reported",
+                "claim": {
+                  "kind": "activity",
+                  "text": "synthetic adapter reports work"
+                },
+                "producer": {
+                  "component_id": "adapter-fixture",
+                  "incarnation": "1"
+                },
+                "channel_id": "channel-authenticated-synthetic",
+                "schema": "adapter-activity-1",
+                "source": {
+                  "kind": "control_record",
+                  "record": {
+                    "id": "report-one",
+                    "revision": "1"
+                  }
+                }
+              }
+            },
+            {
+              "subject": {
+                "namespace_id": "ns-synthetic",
+                "session_id": "session-one",
+                "incarnation": "1"
+              },
+              "evidence": {
+                "level": "inferred",
+                "claim": {
+                  "kind": "activity",
+                  "text": "screen resembles an idle prompt"
+                },
+                "producer": {
+                  "component_id": "heuristic-fixture",
+                  "incarnation": "1"
+                },
+                "method": "synthetic-prompt-heuristic-1",
+                "evidence": [
+                  {
+                    "kind": "session_event",
+                    "session": {
+                      "namespace_id": "ns-synthetic",
+                      "session_id": "session-one",
+                      "incarnation": "1"
+                    },
+                    "sequence": "10"
+                  }
+                ]
+              }
+            },
+            {
+              "subject": {
+                "namespace_id": "ns-synthetic",
+                "session_id": "session-one",
+                "incarnation": "1"
+              },
+              "evidence": {
+                "level": "unavailable",
+                "claim": "activity",
+                "reason": "expired",
+                "last_known": "fact-old"
+              }
+            }
+          ],
+          "next_cursor": "cursor-page-two",
+          "coverage": {
+            "completeness": "complete_for_selection",
+            "capture_policy": {
+              "id": "memory-only-bounded",
+              "revision": "1"
+            },
+            "gaps": []
+          }
+        }
+      }
+    },
+    "snapshot-page-two": {
+      "namespace": "namtab.native.experimental.n0",
+      "version": "n0-06-draft-1",
+      "body": {
+        "message": "snapshot_page",
+        "page": {
+          "subscription_id": "subscription-one",
+          "snapshot_id": "snapshot-one",
+          "stamp": {
+            "session": {
+              "namespace_id": "ns-synthetic",
+              "session_id": "session-one",
+              "incarnation": "1"
+            },
+            "observation_id": "observation-one",
+            "semantic_revision": "3",
+            "processed_frontier": "10",
+            "source_frontier": "12",
+            "geometry": {
+              "revision": "1",
+              "rows": 2,
+              "columns": 4
+            },
+            "buffer": {
+              "kind": "primary",
+              "generation": "1"
+            },
+            "policy": {
+              "engine_revision": "n0-owned-design-only",
+              "profile": {
+                "id": "px-dev-text-0",
+                "revision": "1"
+              },
+              "text_policy": "dev-latin1-width-1",
+              "reflow_policy": "crop-no-reflow-1"
+            },
+            "mode_revision": "2",
+            "capability_revision": "1"
+          },
+          "page_id": "page-two",
+          "projection": {
+            "kind": "active_grid"
+          },
+          "start_row": "1",
+          "total_rows": "2",
+          "rows": [
+            {
+              "row_id": "row-two",
+              "revision": "1",
+              "soft_wrapped": false,
+              "cells": [
+                {
+                  "text": " ",
+                  "occupancy": "single",
+                  "style": {
+                    "foreground": {
+                      "kind": "default"
+                    },
+                    "background": {
+                      "kind": "default"
+                    },
+                    "flags": []
+                  }
+                },
+                {
+                  "text": " ",
+                  "occupancy": "single",
+                  "style": {
+                    "foreground": {
+                      "kind": "default"
+                    },
+                    "background": {
+                      "kind": "default"
+                    },
+                    "flags": []
+                  }
+                },
+                {
+                  "text": " ",
+                  "occupancy": "single",
+                  "style": {
+                    "foreground": {
+                      "kind": "default"
+                    },
+                    "background": {
+                      "kind": "default"
+                    },
+                    "flags": []
+                  }
+                },
+                {
+                  "text": " ",
+                  "occupancy": "single",
+                  "style": {
+                    "foreground": {
+                      "kind": "default"
+                    },
+                    "background": {
+                      "kind": "default"
+                    },
+                    "flags": []
+                  }
+                }
+              ]
+            }
+          ],
+          "presentation": {
+            "cursor": {
+              "row": 0,
+              "column": 2,
+              "visible": true,
+              "blink": false,
+              "shape": "block"
+            }
+          },
+          "facts": [
+            {
+              "subject": {
+                "namespace_id": "ns-synthetic",
+                "session_id": "session-one",
+                "incarnation": "1"
+              },
+              "evidence": {
+                "level": "observed",
+                "claim": {
+                  "kind": "interpretation",
+                  "known": true
+                },
+                "producer": {
+                  "component_id": "component-engine",
+                  "incarnation": "1"
+                },
+                "schema": "engine-fact-1",
+                "source": {
+                  "kind": "session_event",
+                  "session": {
+                    "namespace_id": "ns-synthetic",
+                    "session_id": "session-one",
+                    "incarnation": "1"
+                  },
+                  "sequence": "10"
+                }
+              }
+            },
+            {
+              "subject": {
+                "namespace_id": "ns-synthetic",
+                "session_id": "session-one",
+                "incarnation": "1"
+              },
+              "evidence": {
+                "level": "reported",
+                "claim": {
+                  "kind": "activity",
+                  "text": "synthetic adapter reports work"
+                },
+                "producer": {
+                  "component_id": "adapter-fixture",
+                  "incarnation": "1"
+                },
+                "channel_id": "channel-authenticated-synthetic",
+                "schema": "adapter-activity-1",
+                "source": {
+                  "kind": "control_record",
+                  "record": {
+                    "id": "report-one",
+                    "revision": "1"
+                  }
+                }
+              }
+            },
+            {
+              "subject": {
+                "namespace_id": "ns-synthetic",
+                "session_id": "session-one",
+                "incarnation": "1"
+              },
+              "evidence": {
+                "level": "inferred",
+                "claim": {
+                  "kind": "activity",
+                  "text": "screen resembles an idle prompt"
+                },
+                "producer": {
+                  "component_id": "heuristic-fixture",
+                  "incarnation": "1"
+                },
+                "method": "synthetic-prompt-heuristic-1",
+                "evidence": [
+                  {
+                    "kind": "session_event",
+                    "session": {
+                      "namespace_id": "ns-synthetic",
+                      "session_id": "session-one",
+                      "incarnation": "1"
+                    },
+                    "sequence": "10"
+                  }
+                ]
+              }
+            },
+            {
+              "subject": {
+                "namespace_id": "ns-synthetic",
+                "session_id": "session-one",
+                "incarnation": "1"
+              },
+              "evidence": {
+                "level": "unavailable",
+                "claim": "activity",
+                "reason": "expired",
+                "last_known": "fact-old"
+              }
+            }
+          ],
+          "coverage": {
+            "completeness": "complete_for_selection",
+            "capture_policy": {
+              "id": "memory-only-bounded",
+              "revision": "1"
+            },
+            "gaps": []
+          }
+        }
+      }
+    },
+    "frame-delta": {
+      "namespace": "namtab.native.experimental.n0",
+      "version": "n0-06-draft-1",
+      "body": {
+        "message": "frame_delta",
+        "delta": {
+          "subscription_id": "subscription-one",
+          "base": {
+            "session": {
+              "namespace_id": "ns-synthetic",
+              "session_id": "session-one",
+              "incarnation": "1"
+            },
+            "observation_id": "observation-one",
+            "semantic_revision": "3",
+            "processed_frontier": "10",
+            "source_frontier": "12",
+            "geometry": {
+              "revision": "1",
+              "rows": 2,
+              "columns": 4
+            },
+            "buffer": {
+              "kind": "primary",
+              "generation": "1"
+            },
+            "policy": {
+              "engine_revision": "n0-owned-design-only",
+              "profile": {
+                "id": "px-dev-text-0",
+                "revision": "1"
+              },
+              "text_policy": "dev-latin1-width-1",
+              "reflow_policy": "crop-no-reflow-1"
+            },
+            "mode_revision": "2",
+            "capability_revision": "1"
+          },
+          "target": {
+            "session": {
+              "namespace_id": "ns-synthetic",
+              "session_id": "session-one",
+              "incarnation": "1"
+            },
+            "observation_id": "observation-two",
+            "semantic_revision": "4",
+            "processed_frontier": "11",
+            "source_frontier": "12",
+            "geometry": {
+              "revision": "1",
+              "rows": 2,
+              "columns": 4
+            },
+            "buffer": {
+              "kind": "primary",
+              "generation": "1"
+            },
+            "policy": {
+              "engine_revision": "n0-owned-design-only",
+              "profile": {
+                "id": "px-dev-text-0",
+                "revision": "1"
+              },
+              "text_policy": "dev-latin1-width-1",
+              "reflow_policy": "crop-no-reflow-1"
+            },
+            "mode_revision": "2",
+            "capability_revision": "1"
+          },
+          "replace_rows": [
+            {
+              "index": 0,
+              "row": {
+                "row_id": "row-one",
+                "revision": "2",
+                "soft_wrapped": false,
+                "cells": [
+                  {
+                    "text": "a",
+                    "occupancy": "single",
+                    "style": {
+                      "foreground": {
+                        "kind": "default"
+                      },
+                      "background": {
+                        "kind": "default"
+                      },
+                      "flags": []
+                    }
+                  },
+                  {
+                    "text": "b",
+                    "occupancy": "single",
+                    "style": {
+                      "foreground": {
+                        "kind": "default"
+                      },
+                      "background": {
+                        "kind": "default"
+                      },
+                      "flags": []
+                    }
+                  },
+                  {
+                    "text": "c",
+                    "occupancy": "single",
+                    "style": {
+                      "foreground": {
+                        "kind": "default"
+                      },
+                      "background": {
+                        "kind": "default"
+                      },
+                      "flags": []
+                    }
+                  },
+                  {
+                    "text": " ",
+                    "occupancy": "single",
+                    "style": {
+                      "foreground": {
+                        "kind": "default"
+                      },
+                      "background": {
+                        "kind": "default"
+                      },
+                      "flags": []
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "presentation": {
+            "cursor": {
+              "row": 0,
+              "column": 2,
+              "visible": true,
+              "blink": false,
+              "shape": "block"
+            }
+          },
+          "facts": [
+            {
+              "subject": {
+                "namespace_id": "ns-synthetic",
+                "session_id": "session-one",
+                "incarnation": "1"
+              },
+              "evidence": {
+                "level": "observed",
+                "claim": {
+                  "kind": "interpretation",
+                  "known": true
+                },
+                "producer": {
+                  "component_id": "component-engine",
+                  "incarnation": "1"
+                },
+                "schema": "engine-fact-1",
+                "source": {
+                  "kind": "session_event",
+                  "session": {
+                    "namespace_id": "ns-synthetic",
+                    "session_id": "session-one",
+                    "incarnation": "1"
+                  },
+                  "sequence": "10"
+                }
+              }
+            },
+            {
+              "subject": {
+                "namespace_id": "ns-synthetic",
+                "session_id": "session-one",
+                "incarnation": "1"
+              },
+              "evidence": {
+                "level": "reported",
+                "claim": {
+                  "kind": "activity",
+                  "text": "synthetic adapter reports work"
+                },
+                "producer": {
+                  "component_id": "adapter-fixture",
+                  "incarnation": "1"
+                },
+                "channel_id": "channel-authenticated-synthetic",
+                "schema": "adapter-activity-1",
+                "source": {
+                  "kind": "control_record",
+                  "record": {
+                    "id": "report-one",
+                    "revision": "1"
+                  }
+                }
+              }
+            },
+            {
+              "subject": {
+                "namespace_id": "ns-synthetic",
+                "session_id": "session-one",
+                "incarnation": "1"
+              },
+              "evidence": {
+                "level": "inferred",
+                "claim": {
+                  "kind": "activity",
+                  "text": "screen resembles an idle prompt"
+                },
+                "producer": {
+                  "component_id": "heuristic-fixture",
+                  "incarnation": "1"
+                },
+                "method": "synthetic-prompt-heuristic-1",
+                "evidence": [
+                  {
+                    "kind": "session_event",
+                    "session": {
+                      "namespace_id": "ns-synthetic",
+                      "session_id": "session-one",
+                      "incarnation": "1"
+                    },
+                    "sequence": "10"
+                  }
+                ]
+              }
+            },
+            {
+              "subject": {
+                "namespace_id": "ns-synthetic",
+                "session_id": "session-one",
+                "incarnation": "1"
+              },
+              "evidence": {
+                "level": "unavailable",
+                "claim": "activity",
+                "reason": "expired",
+                "last_known": "fact-old"
+              }
+            }
+          ],
+          "resume_cursor": "cursor-after-delta"
+        }
+      }
+    },
+    "input-key": {
+      "namespace": "namtab.native.experimental.n0",
+      "version": "n0-06-draft-1",
+      "body": {
+        "message": "input",
+        "request": {
+          "key": {
+            "namespace_id": "ns-synthetic",
+            "request_namespace_id": "request-namespace-one",
+            "authority_epoch": "7",
+            "request_seq": "1"
+          },
+          "context": {
+            "receipt_profile": {
+              "id": "public-input-fixture-proposal",
+              "revision": "1"
+            },
+            "endpoint_id": "endpoint-one",
+            "helper_epoch": "1",
+            "writer_generation": "2",
+            "expected": {
+              "session": {
+                "namespace_id": "ns-synthetic",
+                "session_id": "session-one",
+                "incarnation": "1"
+              },
+              "observation_id": "observation-one",
+              "semantic_revision": "3",
+              "processed_frontier": "10",
+              "source_frontier": "12",
+              "geometry": {
+                "revision": "1",
+                "rows": 2,
+                "columns": 4
+              },
+              "buffer": {
+                "kind": "primary",
+                "generation": "1"
+              },
+              "policy": {
+                "engine_revision": "n0-owned-design-only",
+                "profile": {
+                  "id": "px-dev-text-0",
+                  "revision": "1"
+                },
+                "text_policy": "dev-latin1-width-1",
+                "reflow_policy": "crop-no-reflow-1"
+              },
+              "mode_revision": "2",
+              "capability_revision": "1"
+            },
+            "route": {
+              "kind": "view",
+              "binding": {
+                "view_id": "view-one",
+                "mapping_revision": "1",
+                "focus_generation": "3"
+              }
+            },
+            "protection_revision": "1",
+            "grant": {
+              "id": "grant-one",
+              "revision": "1"
+            },
+            "context": {
+              "id": "context-one",
+              "revision": "1"
+            },
+            "approval": {
+              "kind": "not_required",
+              "policy_revision": "1"
+            },
+            "deadline": {
+              "clock_origin_id": "clock-synthetic",
+              "ticks": "4"
+            },
+            "endpoint_generation": "1",
+            "endpoint_capability_revision": "1"
+          },
+          "intent": {
+            "kind": "send_key",
+            "action": "press",
+            "facts": {
+              "logical": {
+                "kind": "named",
+                "key": "Tab"
+              },
+              "modifiers": []
+            }
+          }
+        }
+      }
+    },
+    "input-text": {
+      "namespace": "namtab.native.experimental.n0",
+      "version": "n0-06-draft-1",
+      "body": {
+        "message": "input",
+        "request": {
+          "key": {
+            "namespace_id": "ns-synthetic",
+            "request_namespace_id": "request-namespace-one",
+            "authority_epoch": "7",
+            "request_seq": "1"
+          },
+          "context": {
+            "receipt_profile": {
+              "id": "public-input-fixture-proposal",
+              "revision": "1"
+            },
+            "endpoint_id": "endpoint-one",
+            "helper_epoch": "1",
+            "writer_generation": "2",
+            "expected": {
+              "session": {
+                "namespace_id": "ns-synthetic",
+                "session_id": "session-one",
+                "incarnation": "1"
+              },
+              "observation_id": "observation-one",
+              "semantic_revision": "3",
+              "processed_frontier": "10",
+              "source_frontier": "12",
+              "geometry": {
+                "revision": "1",
+                "rows": 2,
+                "columns": 4
+              },
+              "buffer": {
+                "kind": "primary",
+                "generation": "1"
+              },
+              "policy": {
+                "engine_revision": "n0-owned-design-only",
+                "profile": {
+                  "id": "px-dev-text-0",
+                  "revision": "1"
+                },
+                "text_policy": "dev-latin1-width-1",
+                "reflow_policy": "crop-no-reflow-1"
+              },
+              "mode_revision": "2",
+              "capability_revision": "1"
+            },
+            "route": {
+              "kind": "view",
+              "binding": {
+                "view_id": "view-one",
+                "mapping_revision": "1",
+                "focus_generation": "3"
+              }
+            },
+            "protection_revision": "1",
+            "grant": {
+              "id": "grant-one",
+              "revision": "1"
+            },
+            "context": {
+              "id": "context-one",
+              "revision": "1"
+            },
+            "approval": {
+              "kind": "not_required",
+              "policy_revision": "1"
+            },
+            "deadline": {
+              "clock_origin_id": "clock-synthetic",
+              "ticks": "4"
+            },
+            "endpoint_generation": "1",
+            "endpoint_capability_revision": "1"
+          },
+          "intent": {
+            "kind": "commit_text",
+            "text": "café"
+          }
+        }
+      }
+    },
+    "input-paste": {
+      "namespace": "namtab.native.experimental.n0",
+      "version": "n0-06-draft-1",
+      "body": {
+        "message": "input",
+        "request": {
+          "key": {
+            "namespace_id": "ns-synthetic",
+            "request_namespace_id": "request-namespace-one",
+            "authority_epoch": "7",
+            "request_seq": "1"
+          },
+          "context": {
+            "receipt_profile": {
+              "id": "public-input-fixture-proposal",
+              "revision": "1"
+            },
+            "endpoint_id": "endpoint-one",
+            "helper_epoch": "1",
+            "writer_generation": "2",
+            "expected": {
+              "session": {
+                "namespace_id": "ns-synthetic",
+                "session_id": "session-one",
+                "incarnation": "1"
+              },
+              "observation_id": "observation-one",
+              "semantic_revision": "3",
+              "processed_frontier": "10",
+              "source_frontier": "12",
+              "geometry": {
+                "revision": "1",
+                "rows": 2,
+                "columns": 4
+              },
+              "buffer": {
+                "kind": "primary",
+                "generation": "1"
+              },
+              "policy": {
+                "engine_revision": "n0-owned-design-only",
+                "profile": {
+                  "id": "px-dev-text-0",
+                  "revision": "1"
+                },
+                "text_policy": "dev-latin1-width-1",
+                "reflow_policy": "crop-no-reflow-1"
+              },
+              "mode_revision": "2",
+              "capability_revision": "1"
+            },
+            "route": {
+              "kind": "view",
+              "binding": {
+                "view_id": "view-one",
+                "mapping_revision": "1",
+                "focus_generation": "3"
+              }
+            },
+            "protection_revision": "1",
+            "grant": {
+              "id": "grant-one",
+              "revision": "1"
+            },
+            "context": {
+              "id": "context-one",
+              "revision": "1"
+            },
+            "approval": {
+              "kind": "not_required",
+              "policy_revision": "1"
+            },
+            "deadline": {
+              "clock_origin_id": "clock-synthetic",
+              "ticks": "4"
+            },
+            "endpoint_generation": "1",
+            "endpoint_capability_revision": "1"
+          },
+          "intent": {
+            "kind": "paste",
+            "text": "a\r\nb",
+            "newlines": "lf_from_crlf_v1",
+            "fallback": "reject"
+          }
+        }
+      }
+    },
+    "input-focus": {
+      "namespace": "namtab.native.experimental.n0",
+      "version": "n0-06-draft-1",
+      "body": {
+        "message": "input",
+        "request": {
+          "key": {
+            "namespace_id": "ns-synthetic",
+            "request_namespace_id": "request-namespace-one",
+            "authority_epoch": "7",
+            "request_seq": "1"
+          },
+          "context": {
+            "receipt_profile": {
+              "id": "public-input-fixture-proposal",
+              "revision": "1"
+            },
+            "endpoint_id": "endpoint-one",
+            "helper_epoch": "1",
+            "writer_generation": "2",
+            "expected": {
+              "session": {
+                "namespace_id": "ns-synthetic",
+                "session_id": "session-one",
+                "incarnation": "1"
+              },
+              "observation_id": "observation-one",
+              "semantic_revision": "3",
+              "processed_frontier": "10",
+              "source_frontier": "12",
+              "geometry": {
+                "revision": "1",
+                "rows": 2,
+                "columns": 4
+              },
+              "buffer": {
+                "kind": "primary",
+                "generation": "1"
+              },
+              "policy": {
+                "engine_revision": "n0-owned-design-only",
+                "profile": {
+                  "id": "px-dev-text-0",
+                  "revision": "1"
+                },
+                "text_policy": "dev-latin1-width-1",
+                "reflow_policy": "crop-no-reflow-1"
+              },
+              "mode_revision": "2",
+              "capability_revision": "1"
+            },
+            "route": {
+              "kind": "view",
+              "binding": {
+                "view_id": "view-one",
+                "mapping_revision": "1",
+                "focus_generation": "3"
+              }
+            },
+            "protection_revision": "1",
+            "grant": {
+              "id": "grant-one",
+              "revision": "1"
+            },
+            "context": {
+              "id": "context-one",
+              "revision": "1"
+            },
+            "approval": {
+              "kind": "not_required",
+              "policy_revision": "1"
+            },
+            "deadline": {
+              "clock_origin_id": "clock-synthetic",
+              "ticks": "4"
+            },
+            "endpoint_generation": "1",
+            "endpoint_capability_revision": "1"
+          },
+          "intent": {
+            "kind": "focus_report",
+            "view": {
+              "view_id": "view-one",
+              "mapping_revision": "1",
+              "focus_generation": "3"
+            },
+            "gained": true
+          }
+        }
+      }
+    },
+    "read-page": {
+      "namespace": "namtab.native.experimental.n0",
+      "version": "n0-06-draft-1",
+      "body": {
+        "message": "read_page",
+        "subscription_id": "subscription-one",
+        "cursor": "cursor-page-two"
+      }
+    },
+    "grant-credit": {
+      "namespace": "namtab.native.experimental.n0",
+      "version": "n0-06-draft-1",
+      "body": {
+        "message": "grant_credit",
+        "subscription_id": "subscription-one",
+        "credit": {
+          "pages": 1,
+          "bytes": 32768
+        }
+      }
+    },
+    "cancel": {
+      "namespace": "namtab.native.experimental.n0",
+      "version": "n0-06-draft-1",
+      "body": {
+        "message": "cancel_subscription",
+        "subscription_id": "subscription-one"
+      }
+    },
+    "closed": {
+      "namespace": "namtab.native.experimental.n0",
+      "version": "n0-06-draft-1",
+      "body": {
+        "message": "subscription_closed",
+        "subscription_id": "subscription-one",
+        "reason": "canceled"
+      }
+    },
+    "resync": {
+      "namespace": "namtab.native.experimental.n0",
+      "version": "n0-06-draft-1",
+      "body": {
+        "message": "resync_required",
+        "subscription_id": "subscription-one",
+        "reason": "presentation_gap"
+      }
+    },
+    "resume": {
+      "namespace": "namtab.native.experimental.n0",
+      "version": "n0-06-draft-1",
+      "body": {
+        "message": "subscribe",
+        "correlation_id": "read-two",
+        "session": {
+          "namespace_id": "ns-synthetic",
+          "session_id": "session-one",
+          "incarnation": "1"
+        },
+        "start": {
+          "kind": "resume",
+          "cursor": "cursor-after-delta",
+          "base": {
+            "session": {
+              "namespace_id": "ns-synthetic",
+              "session_id": "session-one",
+              "incarnation": "1"
+            },
+            "observation_id": "observation-two",
+            "semantic_revision": "4",
+            "processed_frontier": "11",
+            "source_frontier": "12",
+            "geometry": {
+              "revision": "1",
+              "rows": 2,
+              "columns": 4
+            },
+            "buffer": {
+              "kind": "primary",
+              "generation": "1"
+            },
+            "policy": {
+              "engine_revision": "n0-owned-design-only",
+              "profile": {
+                "id": "px-dev-text-0",
+                "revision": "1"
+              },
+              "text_policy": "dev-latin1-width-1",
+              "reflow_policy": "crop-no-reflow-1"
+            },
+            "mode_revision": "2",
+            "capability_revision": "1"
+          }
+        },
+        "credit": {
+          "pages": 1,
+          "bytes": 32768
+        }
+      }
+    },
+    "unavailable": {
+      "namespace": "namtab.native.experimental.n0",
+      "version": "n0-06-draft-1",
+      "body": {
+        "message": "observation_unavailable",
+        "session": {
+          "namespace_id": "ns-synthetic",
+          "session_id": "session-one",
+          "incarnation": "1"
+        },
+        "projection": {
+          "kind": "history",
+          "buffer": {
+            "kind": "primary",
+            "generation": "1"
+          },
+          "first_row_id": "row-retained",
+          "limit": 32
+        },
+        "reason": "expired",
+        "subscription_id": "subscription-history"
+      }
+    },
+    "opened": {
+      "namespace": "namtab.native.experimental.n0",
+      "version": "n0-06-draft-1",
+      "body": {
+        "message": "subscription_opened",
+        "correlation_id": "read-one",
+        "subscription_id": "subscription-one",
+        "session": {
+          "namespace_id": "ns-synthetic",
+          "session_id": "session-one",
+          "incarnation": "1"
+        },
+        "projection": {
+          "kind": "active_grid"
+        }
+      }
+    },
+    "subscribe-zero-credit": {
+      "namespace": "namtab.native.experimental.n0",
+      "version": "n0-06-draft-1",
+      "body": {
+        "message": "subscribe",
+        "correlation_id": "read-zero-credit",
+        "session": {
+          "namespace_id": "ns-synthetic",
+          "session_id": "session-one",
+          "incarnation": "1"
+        },
+        "start": {
+          "kind": "current_snapshot",
+          "projection": {
+            "kind": "active_grid"
+          }
+        },
+        "credit": {
+          "pages": 0,
+          "bytes": 0
+        }
+      }
+    },
+    "opened-zero-credit": {
+      "namespace": "namtab.native.experimental.n0",
+      "version": "n0-06-draft-1",
+      "body": {
+        "message": "subscription_opened",
+        "correlation_id": "read-zero-credit",
+        "subscription_id": "subscription-zero-credit",
+        "session": {
+          "namespace_id": "ns-synthetic",
+          "session_id": "session-one",
+          "incarnation": "1"
+        },
+        "projection": {
+          "kind": "active_grid"
+        }
+      }
+    },
+    "grant-credit-zero": {
+      "namespace": "namtab.native.experimental.n0",
+      "version": "n0-06-draft-1",
+      "body": {
+        "message": "grant_credit",
+        "subscription_id": "subscription-zero-credit",
+        "credit": {
+          "pages": 1,
+          "bytes": 32768
+        }
+      }
+    },
+    "cancel-zero": {
+      "namespace": "namtab.native.experimental.n0",
+      "version": "n0-06-draft-1",
+      "body": {
+        "message": "cancel_subscription",
+        "subscription_id": "subscription-zero-credit"
+      }
+    },
+    "closed-zero": {
+      "namespace": "namtab.native.experimental.n0",
+      "version": "n0-06-draft-1",
+      "body": {
+        "message": "subscription_closed",
+        "subscription_id": "subscription-zero-credit",
+        "reason": "canceled"
+      }
+    },
+    "subscribe-denied": {
+      "namespace": "namtab.native.experimental.n0",
+      "version": "n0-06-draft-1",
+      "body": {
+        "message": "subscribe",
+        "correlation_id": "read-denied",
+        "session": {
+          "namespace_id": "ns-synthetic",
+          "session_id": "session-one",
+          "incarnation": "1"
+        },
+        "start": {
+          "kind": "current_snapshot",
+          "projection": {
+            "kind": "active_grid"
+          }
+        },
+        "credit": {
+          "pages": 0,
+          "bytes": 0
+        }
+      }
+    },
+    "subscribe-refused": {
+      "namespace": "namtab.native.experimental.n0",
+      "version": "n0-06-draft-1",
+      "body": {
+        "message": "subscribe_refused",
+        "correlation_id": "read-denied",
+        "reason": "unauthorized"
+      }
+    },
+    "opened-resume": {
+      "namespace": "namtab.native.experimental.n0",
+      "version": "n0-06-draft-1",
+      "body": {
+        "message": "subscription_opened",
+        "correlation_id": "read-two",
+        "subscription_id": "subscription-resumed",
+        "session": {
+          "namespace_id": "ns-synthetic",
+          "session_id": "session-one",
+          "incarnation": "1"
+        },
+        "projection": {
+          "kind": "active_grid"
+        }
+      }
+    },
+    "subscribe-history": {
+      "namespace": "namtab.native.experimental.n0",
+      "version": "n0-06-draft-1",
+      "body": {
+        "message": "subscribe",
+        "correlation_id": "read-history",
+        "session": {
+          "namespace_id": "ns-synthetic",
+          "session_id": "session-one",
+          "incarnation": "1"
+        },
+        "start": {
+          "kind": "current_snapshot",
+          "projection": {
+            "kind": "history",
+            "buffer": {
+              "kind": "primary",
+              "generation": "1"
+            },
+            "first_row_id": "row-retained",
+            "limit": 32
+          }
+        },
+        "credit": {
+          "pages": 0,
+          "bytes": 0
+        }
+      }
+    },
+    "opened-history": {
+      "namespace": "namtab.native.experimental.n0",
+      "version": "n0-06-draft-1",
+      "body": {
+        "message": "subscription_opened",
+        "correlation_id": "read-history",
+        "subscription_id": "subscription-history",
+        "session": {
+          "namespace_id": "ns-synthetic",
+          "session_id": "session-one",
+          "incarnation": "1"
+        },
+        "projection": {
+          "kind": "history",
+          "buffer": {
+            "kind": "primary",
+            "generation": "1"
+          },
+          "first_row_id": "row-retained",
+          "limit": 32
+        }
+      }
+    }
+  },
+  "view_commands": [
+    {
+      "command": "select_view",
+      "endpoint_id": "endpoint-one",
+      "expected": {
+        "view_id": "view-one",
+        "mapping_revision": "1",
+        "focus_generation": "3"
+      }
+    },
+    {
+      "command": "open_palette",
+      "endpoint_id": "endpoint-one",
+      "expected": {
+        "view_id": "view-one",
+        "mapping_revision": "1",
+        "focus_generation": "3"
+      }
+    }
+  ]
+}

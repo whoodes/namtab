@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ViewCommand",
+  "description": "Local product UI plane only. Not an InputIntent or native control operation.",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "command": {
+          "type": "string",
+          "const": "select_view"
+        },
+        "endpoint_id": {
+          "$ref": "#/definitions/Id"
+        },
+        "expected": {
+          "$ref": "#/definitions/ViewBinding"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "command",
+        "endpoint_id",
+        "expected"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "command": {
+          "type": "string",
+          "const": "open_palette"
+        },
+        "endpoint_id": {
+          "$ref": "#/definitions/Id"
+        },
+        "expected": {
+          "$ref": "#/definitions/ViewBinding"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "command",
+        "endpoint_id",
+        "expected"
+      ]
+    }
+  ],
+  "definitions": {
+    "Id": {
+      "type": "string",
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "Revision": {
+      "description": "Nonzero canonical decimal shape only; exact u64 validation remains unimplemented.",
+      "type": "string",
+      "maxLength": 20,
+      "minLength": 1,
+      "pattern": "^[1-9][0-9]*$"
+    },
+    "ViewBinding": {
+      "type": "object",
+      "properties": {
+        "focus_generation": {
+          "$ref": "#/definitions/Revision"
+        },
+        "mapping_revision": {
+          "$ref": "#/definitions/Revision"
+        },
+        "view_id": {
+          "$ref": "#/definitions/Id"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "view_id",
+        "mapping_revision",
+        "focus_generation"
+      ]
+    }
+  }
+}
