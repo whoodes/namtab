@@ -37,7 +37,7 @@ Admission permits private prototype use of this reviewed-purpose dependency tupl
 
 ## GUI fact and engineering checkpoints
 
-A disposable **real on-screen** Electron 44.8.0 window loaded and painted on this VM with sandbox, context isolation and web security enabled, Node integration disabled; it closed with exit 0. Default Wayland prevented X11 `xwininfo` identification. This proves launch feasibility, **not** the application, input, IME or accessibility. Exact commands, checksum/provenance limits and own-window screenshot are in ignored `.artifacts/mk1-start-20261016T213422Z/desktop-preflight.{md,json}`; no security bypass was used.
+A disposable **real on-screen** Electron 44.8.0 window loaded and painted on this VM with sandbox, context isolation and web security enabled, Node integration disabled; it closed with exit 0. X11 `xwininfo` identification failed; Wayland selection is inferred, not independently compositor-verified. This proves launch feasibility, **not** the application, input, IME or accessibility. Exact commands, checksum/provenance limits and own-window screenshot are in ignored `.artifacts/mk1-start-20261016T213422Z/desktop-preflight.{md,json}`; no security bypass was used.
 
 1. Implement/test bounded owned core and real PTY/managed-process seam independently; keep source-only CI covering all new owned code.
 2. Join them through one supervisor/worker authority and explicit MK1 wire. Test stale ownership, partial/unknown delivery, reply ownership, floods and lifecycle before exposing application input.
