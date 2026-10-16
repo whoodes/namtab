@@ -2,6 +2,7 @@
 /// N0 public design DTOs only; no decoder, admission or dispatch implementation.
 pub mod experimental_native;
 pub mod internal_engine;
+pub mod mk1;
 
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};

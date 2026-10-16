@@ -10,3 +10,4 @@ workspace = true
 
 [dependencies]
 project-x-protocol = { path = "../protocol" }
+serde_json.workspace = true
