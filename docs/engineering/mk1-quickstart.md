@@ -44,7 +44,7 @@ TUI controls use **Ctrl-G followed by**:
 | `q` | Detach the TUI; leave the daemon/session running |
 | Ctrl-G | Send a literal application Ctrl-G; prefix timeout/unknown commands send no application input |
 
-In TUI task review, Tab selects the next managed attempt; Up/Down and PageUp/PageDown scroll its evidence. Task state, exact launch endpoint/request, revision-bound instructions and explicit artifact references precede bounded stdout/stderr. The TUI displays shared contracts read-only; define them through the portal or typed CLI. This is a small review view, not a full diff/search workflow.
+In TUI task review, Tab selects the next managed attempt; Up/Down and PageUp/PageDown scroll its evidence. Task state, exact launch endpoint/request, revision-bound instructions and explicit artifact references precede bounded stdout/stderr. The TUI displays the contract bound to the selected attempt read-only; a contract without an attempt is not listed here. Define contracts through the portal or typed CLI. This is a small review view, not a full diff/search workflow.
 
 Outer host terminals lose some physical key/layout/modifier distinctions and have Escape ambiguity. The TUI refuses unavailable facts instead of reconstructing them. The desktop knows more browser key identities but is not full IME, accessibility or layout qualification.
 
