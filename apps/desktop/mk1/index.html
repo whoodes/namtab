@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'none'; img-src 'none'; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
+    />
+    <title>Namtab MK1</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="shared.js" defer></script>
+    <script src="renderer.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <div>
+        <h1>Namtab <span>MK1</span></h1>
+        <p>Hands-on terminal prototype</p>
+      </div>
+      <div class="connection">
+        <strong id="connection">Connecting…</strong
+        ><span id="endpoint">No endpoint</span>
+      </div>
+      <button id="reconnect" type="button">Reconnect live endpoint</button>
+      <button
+        id="new-endpoint"
+        type="button"
+        title="Old owner state and uncertain delivery cannot be restored by a new endpoint"
+      >
+        New endpoint
+      </button>
+    </header>
+    <p id="notice" class="notice" role="status" aria-live="polite">
+      Capture off. Waiting for the public endpoint.
+    </p>
+    <p id="degraded" class="warning" role="alert" hidden></p>
+    <main>
+      <section aria-labelledby="terminal-heading">
+        <div class="section-heading">
+          <h2 id="terminal-heading">Interactive session</h2>
+          <span id="process">No session</span>
+        </div>
+        <div class="toolbar">
+          <label
+            >Session
+            <select id="sessions" aria-label="Session"></select
+          ></label>
+          <button id="take" type="button">Take input</button>
+          <button
+            id="force"
+            type="button"
+            title="Explicit human takeover does not cancel earlier side effects"
+          >
+            Force human takeover
+          </button>
+          <button id="release" type="button">Release input</button>
+        </div>
+        <form id="create-form" class="toolbar">
+          <label
+            >New session
+            <input
+              id="session-name"
+              value="shell"
+              maxlength="128"
+              autocomplete="off"
+              required
+          /></label>
+          <button type="submit">Create clean Bash</button>
+        </form>
+        <p id="owner">Input owner: none</p>
+        <div id="terminal-scroll">
+          <pre id="screen" aria-label="Canonical terminal screen">
+Connect to observe a real session.</pre
+          >
+        </div>
+        <label class="input-label" for="keyboard"
+          >Terminal keyboard <span id="focus-status">Input frozen</span></label
+        >
+        <input
+          id="keyboard"
+          type="text"
+          autocomplete="off"
+          spellcheck="false"
+          autocapitalize="off"
+          aria-describedby="input-help"
+          placeholder="Take input, then focus here to type"
+          disabled
+        />
+        <p id="input-help" class="hint">
+          Keys go to the selected session only while this field is focused. Tab
+          and application shortcuts go to the terminal. Ctrl+V pastes;
+          Ctrl+Shift+C copies selected text. Paste requires the application's
+          bracketed-paste mode.
+        </p>
+        <form id="resize-form" class="toolbar">
+          <label
+            >Columns
+            <input
+              id="cols"
+              type="number"
+              min="1"
+              max="160"
+              value="80"
+              required
+          /></label>
+          <label
+            >Rows
+            <input id="rows" type="number" min="1" max="48" value="24" required
+          /></label>
+          <button id="resize" type="submit">Apply geometry</button>
+        </form>
+        <p id="screen-status" class="hint">No canonical observation</p>
+      </section>
+      <section aria-labelledby="task-heading">
+        <div class="section-heading">
+          <h2 id="task-heading">Managed process</h2>
+          <span id="task-status">No attempt</span>
+        </div>
+        <form id="run-form">
+          <label
+            >Task label
+            <input
+              id="task-name"
+              value="desktop-task-1"
+              maxlength="128"
+              autocomplete="off"
+              required
+          /></label>
+          <label
+            >Direct argv, as a JSON array
+            <textarea id="argv" rows="3" spellcheck="false" required>
+["/usr/bin/printf", "hello\n"]</textarea
+            >
+          </label>
+          <button id="run" type="submit">Run argv</button>
+        </form>
+        <label
+          >Attempt
+          <select id="attempts" aria-label="Managed attempt"></select
+        ></label>
+        <h3>stdout</h3>
+        <pre id="stdout" class="stream"></pre>
+        <h3>stderr</h3>
+        <pre id="stderr" class="stream"></pre>
+        <h3>Artifact revisions</h3>
+        <form id="artifact-form" class="toolbar">
+          <label
+            >Workspace path
+            <input
+              id="artifact-path"
+              autocomplete="off"
+              placeholder="relative/project/file"
+              required
+          /></label>
+          <button id="observe-artifact" type="submit">Observe revision</button>
+        </form>
+        <label
+          >Artifact
+          <select id="artifacts" aria-label="Artifact revision"></select
+        ></label>
+        <p id="artifact-status" class="hint">No artifact observed</p>
+        <label class="review"
+          ><input id="reviewed" type="checkbox" /> I reviewed this exact file
+          revision outside this view.</label
+        >
+        <button id="validate" type="button">Mark revision reviewed</button>
+      </section>
+    </main>
+    <section class="receipts" aria-labelledby="receipts-heading">
+      <h2 id="receipts-heading">Operation receipts</h2>
+      <form id="receipt-form" class="toolbar">
+        <label
+          >Own receipt ID
+          <input id="receipt-id" type="number" min="1" step="1" required
+        /></label>
+        <button type="submit">Look up retained receipt</button>
+      </form>
+      <p class="hint">
+        Applied input means bytes accepted by the local PTY write. It does not
+        mean the application understood or completed the action. Disconnect
+        freezes input; uncertain mutations are never replayed.
+      </p>
+      <div id="receipts" class="receipt-list"></div>
+    </section>
+    <footer>
+      MK1: monochrome, width-one ASCII and Latin-1 excluding soft hyphen.
+      Unsupported text and modes refuse. No IME, general Unicode, rich-terminal
+      compatibility, or accessibility qualification. Capture off; no terminal
+      history is saved.
+    </footer>
+  </body>
+</html>
