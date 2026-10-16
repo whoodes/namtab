@@ -1,0 +1,103 @@
+{
+  "version": 1,
+  "purpose": "N0-02 synthetic receipt contract review data; no runtime/schema adoption or passing model/gate claim.",
+  "source": "../../../docs/engine/native-contract.md#receipt-admission-retention-and-reconciliation",
+  "provenance": "README.md",
+  "profile": "n0-receipt-model/0",
+  "draft_base_commit": "7f0a09608e91b1500f97ad408fc24ca50fd91f99",
+  "files": [
+    {
+      "path": "valid-lifecycle.json",
+      "sha256": "34033c67ad714e4c1250ffd70a36704356532d0aea907327f55eef9cb285ff62",
+      "origin": "Hand-authored synthetic contract review data, 2026-10-16; no captured or upstream data",
+      "requirements": [
+        "R01",
+        "R02"
+      ],
+      "validation_families": [
+        "V01",
+        "V02"
+      ],
+      "assertions": [
+        "RC01",
+        "RC02",
+        "RC04",
+        "RC08",
+        "RC10"
+      ]
+    },
+    {
+      "path": "valid-retention.json",
+      "sha256": "4a6287b0bafc1b437384b45f5512d6718d158da29856a3844d5a8ce03b6202cd",
+      "origin": "Hand-authored synthetic contract review data, 2026-10-16; no captured or upstream data",
+      "requirements": [
+        "R01",
+        "R02"
+      ],
+      "validation_families": [
+        "V01",
+        "V02",
+        "V03"
+      ],
+      "assertions": [
+        "RC01",
+        "RC02",
+        "RC03",
+        "RC04",
+        "RC05",
+        "RC06",
+        "RC09",
+        "RC10"
+      ]
+    },
+    {
+      "path": "valid-cancellation.json",
+      "sha256": "56b63b4002036bba548b7896569dd4e7baa7e896e339903a07b95e1b760d37f9",
+      "origin": "Hand-authored synthetic contract review data, 2026-10-16; no captured or upstream data",
+      "requirements": [
+        "R01",
+        "R02",
+        "R03"
+      ],
+      "validation_families": [
+        "V01",
+        "V02",
+        "V03"
+      ],
+      "assertions": [
+        "RC01",
+        "RC06",
+        "RC07",
+        "RC08",
+        "RC10"
+      ]
+    },
+    {
+      "path": "invalid-cases.json",
+      "sha256": "056a008b826cb9c836b9674e51f6108e2feff9a1c86d9b139d0af9e60831234d",
+      "origin": "Hand-authored synthetic contract review data, 2026-10-16; no captured or upstream data",
+      "requirements": [
+        "R01",
+        "R02",
+        "R03"
+      ],
+      "validation_families": [
+        "V01",
+        "V02",
+        "V03"
+      ],
+      "assertions": [
+        "RC01",
+        "RC02",
+        "RC03",
+        "RC04",
+        "RC05",
+        "RC06",
+        "RC07",
+        "RC08",
+        "RC09",
+        "RC10"
+      ]
+    }
+  ]
+}
