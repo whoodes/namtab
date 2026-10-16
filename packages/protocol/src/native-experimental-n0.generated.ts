@@ -282,7 +282,11 @@ export type NamedKey =
   | "KeypadSubtract"
   | "KeypadMultiply"
   | "KeypadDivide"
-  | "KeypadDecimal";
+  | "KeypadDecimal"
+  | "KeypadComma"
+  | "KeypadEqual"
+  | "KeypadTab"
+  | "KeypadSpace";
 export type PasteFallback = "reject" | "explicit_unbracketed";
 export type NewlinePolicy = "preserve" | "lf_from_crlf_v1";
 export type Namespace = "namtab.native.experimental.n0";
