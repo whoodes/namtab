@@ -65,6 +65,9 @@
         "processed_frontier": {"execution": {"id": "exec-a", "runner": {"id": "runner-demo", "incarnation": "1"}}, "event_seq": "4"},
         "completeness": "complete-for-requested-cut",
         "capture_policy": "memory-only-bounded",
+        "projection": {"kind": "process-and-stream-status", "max_facts": "4"},
+        "gaps": {"canonical": [], "capture": []},
+        "availability": "available",
         "facts": [
           {
             "kind": "child_exit",
@@ -79,7 +82,7 @@
             "level": "observed",
             "producer": {"kind": "runner", "id": "runner-demo", "incarnation": "1", "schema": "fixture-runner-facts/0.x"},
             "source": {"execution": {"id": "exec-a", "runner": {"id": "runner-demo", "incarnation": "1"}}, "event_seq": "2"},
-            "value": {"stream": "stdout", "stream_epoch": "1", "start": "0", "end": "13", "representation": "raw-bytes", "availability": "available"},
+            "value": {"stream": "stdout", "stream_epoch": "1", "start": "0", "end": "13", "representation": "raw-bytes", "capture_policy": "memory-only-bounded", "gaps": [], "availability": "available"},
             "subject": {"execution": {"id": "exec-a", "runner": {"id": "runner-demo", "incarnation": "1"}}}
           },
           {
@@ -123,6 +126,10 @@
             "stream_epoch": "1",
             "start": "0",
             "end": "13",
+            "representation": "raw-bytes",
+            "capture_policy": "memory-only-bounded",
+            "gaps": [],
+            "availability": "available",
             "completeness": "complete-for-range"
           }
         ]

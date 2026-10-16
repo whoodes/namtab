@@ -6,7 +6,7 @@
   "files": [
     {
       "path": "valid-managed-workflow.json",
-      "sha256": "630809968465cd5c9061e6f00f3b4ad71c478bbb15d1c85dc955feca54779389",
+      "sha256": "cbc5fbdda0434c3c5cd6c9d21d23adff2ee4e75c602a521d6a1491f084a714da",
       "origin": "Hand-authored synthetic contract data, 2026-10-16; no captured or upstream data",
       "requirements": [
         "R01",
@@ -19,7 +19,7 @@
     },
     {
       "path": "valid-event-cuts.json",
-      "sha256": "ca692c93c87c0180ebdcb7f2243d00c80280267b555e5afcfe5c322c7e1eec91",
+      "sha256": "bc7e0e6c1a23242db763299a9739de983b0c5f987d725e83524755755712488e",
       "origin": "Hand-authored synthetic contract data, 2026-10-16; no captured or upstream data",
       "requirements": [
         "R02",
@@ -41,6 +41,19 @@
       ],
       "validation_families": [
         "V01",
+        "V02",
+        "V05"
+      ]
+    },
+    {
+      "path": "valid-task-acceptance.json",
+      "sha256": "dd582dc0215e4fa14a8bc06775762969c3db1d35130e484e836ff48342b792be",
+      "origin": "Hand-authored synthetic contract data, 2026-10-16; no captured or upstream data",
+      "requirements": [
+        "R02",
+        "R05"
+      ],
+      "validation_families": [
         "V02",
         "V05"
       ]

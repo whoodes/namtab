@@ -17,6 +17,9 @@
       "semantic_revision": "4",
       "geometry_revision": "1",
       "profile": {"id": "profile-demo", "revision": "1"},
+      "projection": {"kind": "identity-frontiers-and-profile", "includes_cells_or_modes": false},
+      "capture_policy": "memory-only-bounded",
+      "gaps": {"canonical": [], "capture": []},
       "completeness": "complete-for-requested-cut",
       "availability": "available"
     },
@@ -28,6 +31,9 @@
       "semantic_revision": "2",
       "geometry_revision": "1",
       "profile": {"id": "profile-demo", "revision": "1"},
+      "projection": {"kind": "identity-frontiers-and-profile", "includes_cells_or_modes": false},
+      "capture_policy": "memory-only-bounded",
+      "gaps": {"canonical": [], "capture": []},
       "completeness": "complete-for-requested-cut",
       "availability": "available"
     }
@@ -45,6 +51,10 @@
       "at": {"execution": {"id": "exec-streams", "runner": {"id": "runner-demo", "incarnation": "1"}}, "event_seq": "4"},
       "stream": "stdout",
       "stream_epoch": "1",
+      "representation": "raw-bytes",
+      "capture_policy": "memory-only-bounded",
+      "gaps": [],
+      "availability": "available",
       "start": "0",
       "end": "8"
     },
@@ -52,6 +62,10 @@
       "at": {"execution": {"id": "exec-streams", "runner": {"id": "runner-demo", "incarnation": "1"}}, "event_seq": "5"},
       "stream": "stderr",
       "stream_epoch": "1",
+      "representation": "raw-bytes",
+      "capture_policy": "memory-only-bounded",
+      "gaps": [],
+      "availability": "available",
       "start": "0",
       "end": "4"
     }

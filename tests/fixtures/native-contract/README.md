@@ -3,6 +3,7 @@
 These JSON files are hand-authored synthetic examples for the [authoritative native contract](../../../docs/engine/native-contract.md#n0-01-review-examples-and-follow-on-seams), drafted on 2026-10-16 for issue 7. This directory owns example provenance and integrity only; it is not another specification, executable harness, generated protocol schema or engine implementation.
 
 - `valid-managed-workflow.json` describes a pipe execution, bounded observation, exact artifact registration and deferred review. Its source binding is an initial snapshot, not proven sealed input. The command is fictional and is never executed.
+- `valid-task-acceptance.json` separates definition revisions from lifecycle revisions through acceptance and a later definition edit.
 - `valid-event-cuts.json` describes independent session cuts, explicit dependencies, pipe observation limits and the four fact levels.
 - `invalid-cases.json` contains valid JSON describing forbidden semantic changes/claims against those examples. Its prose expectations are proposed review oracles, not passing runtime tests or a new error vocabulary.
 
