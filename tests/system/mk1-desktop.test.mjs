@@ -788,3 +788,32 @@ test("MK1 shared task activity exposes exact launch origin and receipt reference
     "legacy daemon observations remain usable",
   );
 });
+
+test("MK1 All attempts keeps unregistered activity accessible after defining a same-label contract", () => {
+  const revision = "sha256:" + "a".repeat(64);
+  const contract = { task: "shared-label", revision };
+  const attempts = [
+    { id: "unregistered", task: "shared-label", task_revision: null },
+    { id: "bound", task: "shared-label", task_revision: revision },
+    {
+      id: "other-revision",
+      task: "shared-label",
+      task_revision: "sha256:" + "b".repeat(64),
+    },
+    { id: "other-label", task: "other", task_revision: null },
+  ];
+  const before = structuredClone(attempts);
+  assert.deepEqual(
+    mk1.attemptsForTask(attempts, undefined).map((value) => value.id),
+    attempts.map((value) => value.id),
+  );
+  assert.deepEqual(
+    mk1.attemptsForTask(attempts, contract).map((value) => value.id),
+    ["bound"],
+  );
+  assert.deepEqual(
+    mk1.attemptsForTask(attempts, undefined).map((value) => value.id),
+    ["unregistered", "bound", "other-revision", "other-label"],
+  );
+  assert.deepEqual(attempts, before);
+});

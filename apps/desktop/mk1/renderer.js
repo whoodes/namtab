@@ -94,6 +94,7 @@
     const selected = task();
     const supported = state.snapshot?.capabilities?.includes("shared_tasks_v1");
     const empty = !!supported && (state.snapshot.tasks?.length || 0) === 0;
+    const all = !!supported && !empty && !selected;
     const definition = element("define-task-tools");
     const host = element(
       empty ? "empty-task-composer" : "task-definition-sidebar",
@@ -109,16 +110,20 @@
     text(
       "task-heading",
       selected?.task ||
-        (supported
-          ? "Define the first shared task"
-          : "Shared tasks unavailable"),
+        (all
+          ? "All attempts / unregistered"
+          : supported
+            ? "Define the first shared task"
+            : "Shared tasks unavailable"),
     );
     text(
       "task-goal",
       selected?.goal ||
-        (supported
-          ? "Share an immutable goal and expected artifacts with connected typed clients. No model is started by this app."
-          : "This daemon has no shared-task capability. Existing shell and attempt activity remain available."),
+        (all
+          ? "Showing all retained attempts. Unregistered labels do not bind an attempt to a task contract."
+          : supported
+            ? "Share an immutable goal and expected artifacts with connected typed clients. No model is started by this app."
+            : "This daemon has no shared-task capability. Existing shell and attempt activity remain available."),
     );
     text(
       "task-expectations",
@@ -134,11 +139,9 @@
       "task-revision",
       selected ? selected.revision : "No contract observed",
     );
-    const attempts = (state.snapshot?.attempts || []).filter(
-      (value) =>
-        !selected ||
-        (value.task === selected.task &&
-          value.task_revision === selected.revision),
+    const attempts = protocol.attemptsForTask(
+      state.snapshot?.attempts || [],
+      selected,
     );
     options(
       "attempts",
@@ -326,11 +329,15 @@
     );
     options(
       "tasks",
-      (next.snapshot?.tasks || []).map((value) => ({
-        ...value,
-        id: value.task,
-      })),
-      (value) => value.task,
+      [
+        { id: "", label: "All attempts / unregistered" },
+        ...(next.snapshot?.tasks || []).map((value) => ({
+          ...value,
+          id: value.task,
+          label: value.task,
+        })),
+      ],
+      (value) => value.label,
       selectedTask,
     );
     if (

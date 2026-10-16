@@ -101,6 +101,14 @@
     const argv = ["/bin/bash", "--noprofile", "--norc", "-c", command];
     return validArgv(argv) ? argv : null;
   }
+  function attemptsForTask(attempts, contract) {
+    return attempts.filter(
+      (value) =>
+        !contract ||
+        (value.task === contract.task &&
+          value.task_revision === contract.revision),
+    );
+  }
   function validTaskDefinition(task, goal, paths) {
     return (
       typeof task === "string" &&
@@ -591,6 +599,7 @@
     validSocketPath,
     validArgv,
     shellCommandArgv,
+    attemptsForTask,
     validTaskDefinition,
     validateCommandShape,
     textAllowed,
