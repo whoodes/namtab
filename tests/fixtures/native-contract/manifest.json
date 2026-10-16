@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "purpose": "N0-01 synthetic contract review data; no schema/runtime adoption or passing gate claim.",
+  "source": "../../../docs/engine/native-contract.md#n0-01-review-examples-and-follow-on-seams",
+  "provenance": "README.md",
+  "files": [
+    {
+      "path": "valid-managed-workflow.json",
+      "sha256": "630809968465cd5c9061e6f00f3b4ad71c478bbb15d1c85dc955feca54779389",
+      "origin": "Hand-authored synthetic contract data, 2026-10-16; no captured or upstream data",
+      "requirements": [
+        "R01",
+        "R02"
+      ],
+      "validation_families": [
+        "V01",
+        "V02"
+      ]
+    },
+    {
+      "path": "valid-event-cuts.json",
+      "sha256": "ca692c93c87c0180ebdcb7f2243d00c80280267b555e5afcfe5c322c7e1eec91",
+      "origin": "Hand-authored synthetic contract data, 2026-10-16; no captured or upstream data",
+      "requirements": [
+        "R02",
+        "R05"
+      ],
+      "validation_families": [
+        "V02",
+        "V05"
+      ]
+    },
+    {
+      "path": "invalid-cases.json",
+      "sha256": "b8455a46601e12a548349e6eab8d0ea833cfa8b198b9604e6de810824c389aeb",
+      "origin": "Hand-authored synthetic contract data, 2026-10-16; no captured or upstream data",
+      "requirements": [
+        "R01",
+        "R02",
+        "R05"
+      ],
+      "validation_families": [
+        "V01",
+        "V02",
+        "V05"
+      ]
+    }
+  ]
+}

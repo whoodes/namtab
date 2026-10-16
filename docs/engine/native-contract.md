@@ -2,23 +2,45 @@
 
 [Campaign](index.md) · [Core](compatibility-and-core.md) · [Runtime and recovery](runtime-persistence-security.md) · [Human journeys](frontend-contracts.md)
 
-**Proposed native contract for product v1; unimplemented, private experimental wire version pending N0.** The existing small domain/protocol tests are useful foundations, not this API's completed implementation. Source rationale: research S02–S05, S15–S19, S31–S32. Policy rules below are namtab decisions.
+**Proposed native contract for product v1; unimplemented, private experimental wire version pending N0.** The identity, event-cut and fact rules below are the N0-01 contract draft for [issue 7](https://github.com/whoodes/namtab/issues/7), not NG0 acceptance or N1 implementation evidence. The existing small domain/protocol tests are useful foundations, not this API's completed implementation. Source rationale: research S02–S05, S15–S19, S31–S32. Policy rules below are namtab decisions.
 
 ## Objects and authority
 
 | Object | Identity / lifetime | Meaning and authority |
 | --- | --- | --- |
-| Principal | Authenticated connection binding + principal ID + capability generation | Human, agent or adapter role. A display name/process title is not identity. Capabilities narrow operations, sessions, data, runtime/context, retention and expiry. |
-| Workspace/context | Context ID + revision + runtime profile + source/artifact revision | Filesystem/worktree and environment contract. A Git worktree isolates edits, not processes or secrets. Shared writable contexts require an explicit coordination policy. |
-| Task / attempt | Task ID; unique attempt ID; dependency revision | Work objective versus one execution attempt. Attempt status is a domain decision with supporting facts, not a terminal prompt guess. |
-| Session | Session ID + incarnation + interpretation profile | Continuity of an interactive compatibility surface. Several tasks may reference it; no exclusive task ownership is inferred from screen position. |
-| Process execution | Execution ID + runner incarnation + OS handle identity | A managed `argv` execution may use pipes or a fresh PTY. Child status and stream observations are facts within the runner's visibility. |
-| Operation | Principal-scoped request ID + canonical payload binding + authority epoch | One requested mutation. Reusing an ID with different data conflicts. Transport retry is not permission to repeat an uncertain effect. |
-| Observation | Session/incarnation + event frontier + semantic/geometry/profile revisions + completeness | Immutable view of what the engine has processed. It does not prove the application will remain in that state. |
-| Artifact / validation | Authorized object identity + exact content/context revision + producer attempt + evidence range | An exit code is not artifact correctness. A later edit invalidates revision-bound validation; a truncated range cannot be cited as complete. |
+| Principal | Namespace-qualified principal ID + authenticated connection binding + capability generation | Human, agent or adapter role. A display name/process title is not identity. Capabilities narrow operations, sessions, data, runtime/context, retention and expiry. Reconnecting authenticates again; a caller-supplied principal field cannot bind the connection. |
+| Workspace/context | Stable context ID + immutable record revision; source manifest and runtime-policy revisions are explicit bindings | Creating or replacing an owned context gets a new ID; changing its recorded configuration creates a revision. A path/worktree name never selects a historical context. Deletion retires the ID. A Git worktree isolates edits, not processes or secrets. Shared writable contexts require an explicit coordination policy. |
+| Task | Stable task ID + immutable task revision | Revision binds acceptance requirements, selected dependencies, budget and state. Changes append a revision; acceptance remains attached to its reviewed revision. [Product 02](../product/02-work-evidence-and-coordination.md#state-and-acceptance) owns the state machine. |
+| Attempt | New attempt ID per execution attempt + record revision + pinned task/context/dependency revisions | Retry creates another attempt ID, including after unknown/canceled work. An attempt can own several managed executions and refer to several sessions. Its result is separate from process exit and human task acceptance. |
+| Session | Stable session ID + incarnation + interpretation/profile revisions | Continuity of one interactive compatibility surface. A new backing interaction target or unproven continuity retires the old incarnation. Several tasks may reference it; no exclusive task ownership is inferred from screen position. |
+| Process execution | New execution ID per admitted managed launch + runner ID/incarnation + private OS handle identity | Identity is fixed before launch; launch failure still has that execution ID. Repeating argv gets a new execution ID. Pipes or a fresh PTY are selected at creation. PID, cwd and prompt do not identify it. Child status and stream observations are facts within the runner's visibility. |
+| Operation | Service-issued operation ID + authenticated request identity/binding + authority epoch | One admitted mutation and its reconciliation record, independent of whether it has a session event. The request identity belongs to its authenticated principal/issued namespace. Reusing it with different data conflicts. Exact admission/retention rules belong to N0-02. |
+| Observation | Immutable observation ID + typed subject + event cut + semantic/geometry/profile revisions + completeness | A captured projection of what the authorized component has processed. Re-reading its ID returns that cut or unavailable, never a newer view under the same ID. It does not prove the application will remain in that state. |
+| Artifact / validation | Artifact ID + immutable content revision; validation ID + exact subject/context/check/evidence bindings | A new edit/publication produces a new artifact revision; immutable revision identity is separate from its authorized content digest. Validation cannot silently follow latest. Producer attempt/execution and capture ranges remain inspectable. An exit code is not artifact correctness. |
+| Decision | Decision-request ID + revision + exact review subject; recorded decision ID + authenticated disposition | Pending, superseded and recorded dispositions are explicit records. A changed task/artifact/validation selection needs a new current review; historical decisions remain historical. Acceptance is a domain transition, and permission grants have their separate broker lifecycle. |
 | View / writer lease | Endpoint/view IDs; focus generation; writer and sizing epochs | Focus identifies a human interaction destination; authority permits a bounded action. Native agents address sessions explicitly and never acquire desktop focus implicitly. |
 
-Keep causal relationships explicit: operation → admission → runner delivery → stream events → observation → validation decision. Use session-local increasing event numbers and service authority epochs; do not fabricate a globally ordered clock across independent sessions. Cross-session dependencies cite explicit frontiers/artifact revisions. Wall time is diagnostic; expiry uses a defined trusted clock boundary and is invalidated across service restart when continuity cannot be established.
+### Reference, revision and lifetime rules
+
+An object identity is `(namespace_id, object kind, id)`. The service issues an opaque namespace and IDs; namespaces are never reassigned after store reset/clone or loss of identity continuity. A verified restart may retain the namespace, while issuing a fresh **authority epoch** before admitting mutations. An authority epoch fences grants/control; it does not rename historical objects or prove process continuity. IDs are nonsecret locators, not bearer capabilities. Authorization is checked on every dereference, including historical reads, without revealing denied objects' existence.
+
+The draft identity bound is 1–128 ASCII bytes matching `[A-Za-z0-9][A-Za-z0-9._:-]*` for namespace/object IDs. Clients treat the entire value as opaque, including the readable synthetic labels below. Revisions, incarnations, epochs, event numbers and byte offsets use canonical unsigned decimal strings (`0` or a nonzero digit followed by digits, at most 20 digits and at most `18446744073709551615`), never JSON numbers. Revisions/incarnations begin at `1`; event/byte cuts may be `0`. Exhaustion refuses further allocation rather than wrapping or reusing identity. N0-06 must carry these identity semantics into a separately versioned public schema; these examples do not adopt an existing public-v1 or EA1 namespace.
+
+References in an envelope inherit its `namespace_id` unless they explicitly name another namespace; their field/type identifies object kind. They must include the exact revision or incarnation when binding a mutation, validation, dependency or evidence subject. A current-state read uses an explicit `selection: "current"`; it must return the resolved reference. Omitting a revision is not permission to follow latest. A revision identifies an immutable record and is ordered only within that object; it is not a content hash or another object's clock. Record revisions, terminal semantic revisions, geometry revisions and interpretation/profile versions are separate typed fields.
+
+Sessions keep their incarnation across frontend attach/detach and a verified live-owner reconnect. Replacing a shell/PTY, restarting a session or losing target/interpretation continuity without a valid reconciliation retires that incarnation; any replacement gets a strictly new one and fresh ownership. Unknown interpretation fences application input while recovery is evaluated; it is not cured by incrementing a counter. Exact state/tail recovery and surviving-runner reconciliation are governed by [runtime recovery](runtime-persistence-security.md#precise-v1-recovery-contract), and are not implemented by this draft. Runner incarnation changes whenever that runner is replaced; a surviving process may be associated again only by verified stable OS-handle evidence, never by PID reuse. A new launch always gets a new execution ID.
+
+Deleting a context, session or artifact does not retarget its references to a replacement at the same path/name. Retained authorized metadata may expose a tombstone with `availability: "deleted"`; missing/expired/restricted content is explicitly unavailable. A live execution's historical context binding survives as metadata to the extent retention permits. Context deletion neither proves that execution stopped nor automatically grants a new launch there. New work requires a live authorized context revision; inspection of unavailable historical inputs cannot certify an exact consumed source. Current context configuration alone cannot prove sealed inputs: [Product 02's binding levels](../product/02-work-evidence-and-coordination.md#revision-bound-validation) apply.
+
+### Ordered event cuts and causal references
+
+Keep causal relationships explicit: operation → admission → runner delivery → stream events → observation → validation decision. Every interactive session incarnation has one increasing event sequence, assigned by its canonical runner/keeper ordering boundary to output reads, delivery records, acknowledged geometry and state-relevant controls. An event reference includes session ID, incarnation and sequence; `0` is the empty prefix. An observation's `processed_frontier` is the contiguous prefix reduced by the engine, and may lag a separately identified `source_frontier`. Both cuts must name the same session/incarnation, with processed no later than source in that local sequence. An exact processed cut does not include unread output, application-internal state or an atomic view of the OS. Event numbers never restart within an incarnation; duplicate delivery of a record keeps its original identity.
+
+Managed pipe work needs no session. Its event scope is the execution ID plus runner ID/incarnation, with an execution-local service observation sequence. `stdout` and `stderr` have independent stream epochs and half-open byte ranges `[start, end)`; their observed interleaving cannot prove the program's cross-stream write order. A PTY has one merged `pty` stream, not recoverable stdout/stderr attribution. Stream epoch changes retire offsets from the old stream. Byte offsets, event sequence and semantic revision measure different things and are never substituted for one another.
+
+Each observation/range declares the projection and completeness **for that requested range/cut**, capture policy, gaps and availability. A retained prefix can be complete for its range while later output remains undrained. A missing canonical event cannot be skipped to advance the processed frontier; interpretation becomes unknown. A capture-only gap can coexist with a current live interpretation, but the missing bytes are unavailable evidence. Slow presentation consumers can resnapshot; neither frontend repairs a canonical gap locally. N0-06 owns frame base/target, paging/credit and resync envelopes.
+
+Cross-session or cross-execution dependence cites a bounded list of explicit event cuts, operation records, or artifact/context revisions. Resolving a reference proves the stated record/prefix exists under its availability/trust limits; a causal edge means that dependency was selected, not that an observed redraw was caused by an earlier input. Unavailable references remain unresolved and cannot satisfy an inspectable-evidence requirement. Cyclic dependency selections conflict under [Product 02](../product/02-work-evidence-and-coordination.md#dependencies-and-coordination). There is no comparison between session A/event `9` and session B/event `3`, nor between two objects' revision numbers. Wall time is diagnostic, not a global event clock or a causal fence. Expiry uses the separately defined trusted clock boundary and is invalidated across service restart when continuity cannot be established.
 
 One mediated application-input writer per interactive session; separate readers can observe with data grants. The canonical terminal reply lane has its own restricted authority and ordering. A human override atomically advances the writer epoch and rejects queued old-epoch input before dispatch. It does not retract already written bytes, revoke external credentials, stop all descendants or undo filesystem/network effects.
 
@@ -28,7 +50,8 @@ Use a small typed protocol, not an arbitrary remote object graph:
 
 | Operation family | Required intent | Result and limits |
 | --- | --- | --- |
-| `CreateTask`, `StartAttempt`, `RunProcess` | Context revision; argv array; cwd/env policy; pipe/PTY choice; output/capture and runtime profile | Immediate execution/operation IDs; later started/exited/drained evidence. A shell command string is a separately authorized explicit shell execution, never inferred from argv. |
+| `CreateTask`, `StartAttempt` | Objective/acceptance and selected dependency revisions; expected task/context revisions and attempt limits | Task/attempt and operation IDs; later domain transitions. Task/attempt identity exists independently of a shell or process launch. |
+| `RunProcess` | Task/attempt/context revisions; argv array; cwd/env policy; pipe/PTY choice; output/capture and runtime profile | Immediate execution/operation IDs; later started/exited/drained evidence. A shell command string is a separately authorized explicit shell execution, never inferred from argv. |
 | `CreateInteractiveSession` | Shell/program argv; declared compatibility profile; geometry; runtime and capture policies | Session identity and negotiated capabilities. Existing-shell keystrokes are not equivalent to creating a managed process. |
 | `Observe`, `Subscribe`, `ReadRange` | Explicit session or execution; requested projection; base/event cursor; data grant | Snapshot/delta/range plus completeness, gaps and availability. Credit-bounded; a stale cursor requests a new snapshot, not a guessed delta application. |
 | `AcquireWriter`, `ReleaseWriter`, `TakeOver`, `Resize` | Expected epochs/context; endpoint; sizing policy where relevant | New epoch or typed rejection. UI attach/detach does not kill work. |
@@ -36,28 +59,37 @@ Use a small typed protocol, not an arbitrary remote object graph:
 | `ViewCommand`, `ReadSelection` | Explicit endpoint/view, mapping/focus generation, bounded UI operation or identified range | Separate UI/observation/export capability; no application bytes, writer acquisition or implicit clipboard permission. Product focus changes are not terminal focus reports. |
 | `QueryOperation` | Prior operation ID/namespace; read authority | Reconcile retained delivery/outcome metadata without resubmitting; expired or unavailable facts stay unknown. |
 | `CancelOperation`, `SignalExecution`, `StopRuntime` | Target operation/execution/runtime identity, scope, escalation policy and grant | Cancellation requested/observed/no-longer-applicable/unknown. Process stop needs separate OS observations. |
-| `RegisterArtifact`, `RecordValidation`, `RequestDecision` | Authorized immutable object/evidence/context binding | Inspectable provenance, freshness and decision state. Arbitrary process output cannot invoke these methods. |
+| `RegisterArtifact`, `RecordValidation`, `RequestDecision`, `RecordDecision` | Authorized immutable object/evidence/context binding; expected request/subject revisions for a disposition | Inspectable provenance, freshness and decision state. Decision identity comes from the authenticated control channel. Arbitrary process output cannot invoke these methods or create grants. |
 
 Long operations return a handle and publish status; waiting does not hold a writer lease or event-loop thread unnecessarily. `WaitFor` predicates are narrowly typed (specific execution exit, observed frontier, artifact revision, explicit adapter event), with timeout/cancellation. No generic “wait until terminal ready” predicate claims application readiness. Input context binds session/incarnation, host/helper and service authority epoch, endpoint/writer generation, observation and freshness policy, geometry/buffer generation, mode/profile/capability revision, known prompt/protection revision, action/approval reference, deadline and request ID. View-derived requests also bind mapping/focus generation; direct session input never requires human focus. Absent fields are not wildcard authority. Capabilities separately state representability, negotiation, authorization and endpoint limits.
 
 Input batches are bounded sequences of operations, not atomic TUI transactions. Revalidate each not-yet-started event; fix its encoding before the first byte and never re-encode a partial suffix under changed modes. A takeover may discard the remaining suffix, leaving application state uncertain.
 
-Illustrative shape, **not** an implemented wire schema or stable method spelling:
+Illustrative managed launch shape, **not** an implemented wire schema or stable method spelling. All reference IDs inherit the envelope namespace:
 
 ```json
 {
-  "protocol": "px-native/0.x",
-  "request_id": "principal-A:request-17",
-  "operation": "run_process",
-  "task": "task-4",
-  "attempt": "attempt-9",
-  "expected": { "context": "ctx-2", "revision": "31", "authority_epoch": "7" },
-  "execution": { "argv": ["tool", "--check"], "io": "pipes", "profile": "host-approved" },
-  "output_policy": "bounded-memory"
+  "namespace_id": "ns-synthetic",
+  "request_ref": "request-launch-1",
+  "method": "RunProcess",
+  "expected_authority_epoch": "7",
+  "task": { "id": "task-check", "revision": "1" },
+  "attempt": { "id": "attempt-a", "revision": "1" },
+  "context": { "id": "ctx-demo", "revision": "3" },
+  "process": {
+    "argv": ["fixture-check", "--format", "json"],
+    "cwd_policy": "context-root",
+    "env_policy": "declared-nonsecret-fixture",
+    "runtime_profile": "host-approved",
+    "io": "pipes",
+    "capture_policy": "memory-only-bounded"
+  }
 }
 ```
 
 Authentication/capabilities come from the connection, not a caller-supplied principal label. An admitted response supplies an operation/execution ID and receipt cursor; later events bind exit, stdout/stderr ranges and drain status. The service resolves an authorized cwd/env/runtime policy from the context. A human can open a terminal for that context separately; no shell line or ANSI prompt is needed to identify the managed execution.
+
+`Observe` selects an exact execution/runner or session/incarnation and a bounded projection; it returns a resolved subject, observation ID, processed cut and individually attributed facts. `RegisterArtifact` records an authorized immutable object revision, its producer attempt/execution, actual context/source binding and evidence references; it does not make a validation pass. `RequestDecision` selects exact task/artifact/validation revisions and creates a pending review record. `RecordDecision` requires an authenticated authorized disposition and expected pending-request/subject revisions; a stale selection conflicts instead of accepting a changed subject. None of these operations requires writing shell bytes or detecting a prompt. Product 02 owns validation quality, currentness and task acceptance; permission approval remains a separate broker operation.
 
 Receipt facts form a progression with branching uncertainty:
 
@@ -87,7 +119,28 @@ Every status carries one of:
 - **Inferred:** prompt detection, OCR, likely TUI selection, apparent readiness or causal attribution. Record method and evidence, never elevate to permission or OS fact.
 - **Unavailable/unknown:** capture denied, retention gap, state lost, output not drained, stale geometry or unreachable runner. These are valid results.
 
+The fact discriminator is mandatory per claim, not a label inherited from a whole transcript. Each available fact records its typed subject, producer component identity/incarnation, source event/range or authenticated control record, and relevant schema/method version. Cooperative reports also identify the authenticated producer channel/schema and its trust limits; inference names its method and underlying evidence. `unavailable` supplies a reason and last-known reference where authorized, with no invented value. Absence of an exit fact means unknown, not exit code zero. A fact can remain attributed while its supporting content becomes unavailable; inspectability and truth are separate properties.
+
+Observation by the runner establishes, for example, that bytes were read or a child exit was observed at its OS boundary. Observation by the service establishes that an authenticated decision was recorded, not that the decision's claims about arbitrary files are correct. An authenticated adapter's `check_passed` remains **reported** unless a separately authorized validator supplies its own exact-input evidence. A digest establishes identity of the authorized retained representation, not its correctness. Output text/OSC resembling JSON methods, principal names, approval messages or native event names remains application data. It cannot create a managed execution ID, upgrade a report to an observed OS fact, grant authority, or accept a task. Prompt detection remains inferred even when a heuristic is usually right.
+
 Native structured output uses a separately authenticated, bounded side channel, associated with an execution/attempt and constrained event schemas. It can supply domain-specific data without reverse parsing ANSI. It cannot change the supervisor's permissions or self-certify an artifact's acceptance. OSC prompt markers use the weaker compatibility hint path even if they resemble native event names.
+
+### N0-01 review examples and follow-on seams
+
+The small repository fixture `tests/fixtures/native-contract/valid-managed-workflow.json` covers `RunProcess`, `Observe`, `RegisterArtifact`, `RequestDecision` and an authenticated `RecordDecision` that defers acceptance. It deliberately labels source binding as an initial snapshot, leaves validation absent, and keeps process exit separate from stream drain and acceptance. `tests/fixtures/native-contract/valid-event-cuts.json` covers independent sessions, pipe-stream observation order, explicit cross-subject dependencies and all four fact levels. `tests/fixtures/native-contract/invalid-cases.json` challenges identity/incarnation/context binding, stale artifact subjects, false global ordering, prompt authority and invented completeness. Each invalid case is syntactically valid JSON describing a semantically forbidden claim or change to a named valid example.
+
+These are hand-authored **contract data for review**, with assumptions recorded in each file; no runtime reads them and no public schema is adopted. Provenance/privacy and integrity belong to `tests/fixtures/native-contract/README.md` and its local `manifest.json`, under the existing [fixture/artifact policy](../engineering/16-test-and-ci-strategy.md#sanitized-fixtures-and-ci-artifact-security). The original shared fixture manifest and historical records remain unchanged. JSON parsing and document-link checks establish only data/document consistency. Future executable assertions must independently challenge these expectations; they must not copy the examples into an implementation and call that validation.
+
+| Issue 7 acceptance / traceability | Review evidence and future falsification |
+| --- | --- |
+| Concrete object IDs, incarnations and revisions; R02 / V02 | Object/reference rules plus managed example; reject old runner/session incarnations, deleted-context substitution and changed revision subjects in invalid cases. |
+| Per-session ordering and cross-session references; R02 / V02 | Event-cut example; a later local number or wall time cannot satisfy an absent dependency or imply cross-stream write order. |
+| Observed/reported/inferred/unavailable; R05 / V05 | Fact examples and prompt-spoof/unavailable-value cases; neither client may turn these into a writer grant or accepted task. |
+| Typed launch/observe/artifact/decision independent of shell bytes; R01 / V01 | Managed example has no interactive session, shell line or prompt; exit, drain, artifact identity, validation and disposition stay distinct. |
+
+N0-02 ([issue 8](https://github.com/whoodes/namtab/issues/8)) must resolve issued request namespaces/sequences, payload-conflict binding, receipt reservation/retention, expiry/restart, cancellation and delivery-unknown transitions; `request_ref` and admitted operation IDs here assume that seam without selecting its algorithm. N0-03 ([issue 9](https://github.com/whoodes/namtab/issues/9)) must resolve endpoint-bound writer generations, protected input and first-write/takeover races; the identity rules supply targets, not a lease implementation. N0-06 ([issue 12](https://github.com/whoodes/namtab/issues/12)) must resolve the namespaced generated public wire version, frame base/target and bounds/credit/resync plus both clients' input/intent fixtures. The method/field spellings here are illustrative, and existing EA1/public-v1 types are unchanged. These follow-on outcomes and an owner review are required before NG0; this draft alone does not close those issues.
+
+Agents, the host TUI and Electron all consume the same authorized identities, resolved revisions, fact levels and availability. Opening a frontend view changes neither execution attribution nor task acceptance. Both clients must show an undrained or unavailable result as such, keep historical context/review bindings visible, and request current authorized projections after reconnect rather than treating a cached screen as authority. The [frontend integration contract](frontend-contracts.md#one-model-two-useful-clients) owns projection/rendering; N0-06 supplies its reviewed wire examples.
 
 ## Observe–act–observe, races and human override
 
