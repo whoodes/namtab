@@ -46,8 +46,8 @@
     },
     {
       "id": "csi-total-length",
-      "recipe": "The 512-byte CSI ceiling is defensive: with <=64 decimal fields of <=5 digits, <=63 separators, <=1 prefix and <=2 intermediates, a well-formed dev CSI has at most 389 bytes including introducer/final.",
-      "requirement": "Do not fabricate a well-formed 512-byte case that violates earlier syntax/count bounds. Feed >512 ignored bytes under malformed syntax to verify constant-state discard; future syntax expansion must independently test a newly reachable total bound."
+      "recipe": "CSI + 509 interleaved NUL bytes + A is exactly 512 bytes; CSI + 510 NUL bytes + A is 513. Follow each with X. Split each stream at every byte, including before its final A; keeper events stay <=512 bytes.",
+      "requirement": "NUL is ignored without ending CSI and still counts toward total length. The exact-bound omitted-parameter CUU executes once; the 513-byte sequence overflows on final A, consumes that final without CUU, and X paints normally. Choose initial cursor below row 1 to distinguish the outcomes; prior interleaved controls are never rolled back."
     },
     {
       "id": "geometry",

@@ -413,7 +413,7 @@
       ],
       "proposed_requirements_after": [
         "64 fields are syntactically within the field bound, but SGR values include 1 only after default zeros; X is bold.",
-        "The 512-total-byte ceiling is unreachable for well-formed dev syntax under the earlier bounds; review the malformed long-run requirement separately."
+        "This field-bound case does not approach the independent total-byte cap. Interleaved C0 bytes can reach that cap without exceeding parameter syntax bounds; review csi-total-length separately."
       ]
     }
   ]

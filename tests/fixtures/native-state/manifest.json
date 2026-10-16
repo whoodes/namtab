@@ -6,7 +6,7 @@
   "files": [
     {
       "path": "continuations.json",
-      "sha256": "4374d3575e3c18c6f35d41f84f59348232967c60f0d7a151271a46a58081d996",
+      "sha256": "5746f87f6f2b24a0601dfbb88a3c072b488af14025976b86b38ddae9de820000",
       "origin": "Hand-authored synthetic review data, 2026-10-16; no captured or upstream data",
       "requirements": [
         "R07",
@@ -44,7 +44,7 @@
     },
     {
       "path": "bounds-and-recovery.json",
-      "sha256": "253633727b7b6bc837ca595e841029051ac5f5e20ce80f5e2a3e2cd68d8dbc29",
+      "sha256": "be2d8ec1dd02d7d7e6ee01ba76d0f2b679c33a460c7a101019fe3bbfcaacb900",
       "origin": "Hand-authored synthetic review data, 2026-10-16; no captured or upstream data",
       "requirements": [
         "R07",
