@@ -1,0 +1,79 @@
+{
+  "case_id": "valid-receipt-retention-branches",
+  "purpose": "Independent hand-authored N0-02 branches; no runtime, schema or executed model-test result.",
+  "profile": "n0-receipt-model/0",
+  "namespace_id": "ns-receipt-synthetic",
+  "assumptions": [
+    "Each branch has an independent clock/ledger and exact authorized subject/context/profile preconditions.",
+    "Initial consumed sequence 1 refers to an atomically admitted operation with a reserved receipt; no body/hash was persisted.",
+    "All queries use current read authorization. A refused repeated mutation never adds a dispatch.",
+    "No branch adopts receipt metadata from a terminal snapshot or recreates an issued namespace from caller-supplied text."
+  ],
+  "branches": [
+    {
+      "id": "binding-loss",
+      "initial": {"authority_epoch": "7", "clock": "2", "request_namespace_id": "reqns-binding", "not_after": "5", "consumed_through": "1", "operation_id": "op-binding", "receipt_retain_through": "11", "delivery": "zero", "dispatch": "closed", "dispatch_start_count": "0", "volatile_binding": "available"},
+      "steps": [
+        {"id": "drop-binding", "event": "Revoke payload-binding retention while retaining safe decision metadata and high-water.", "expected": {"volatile_binding": "missing", "durable_payload_or_payload_hash": "absent", "consumed_through": "1"}},
+        {"id": "refuse-uncomparable-repeat", "event": "Submit sequence 1 with a claimed equal body.", "expected": {"disposition": "refuse-missing-binding", "body_equivalence": "unavailable", "dispatch_start_count": "0", "new_operation_count": "0"}},
+        {"id": "query-known-zero", "event": "Query the issued key without a body.", "expected": {"operation_id": "op-binding", "delivery": "zero", "meaning": "Known zero is historical evidence, not permission to replay a consumed key."}}
+      ]
+    },
+    {
+      "id": "restart-surviving-runner",
+      "initial": {"authority_epoch": "7", "clock": "2", "request_namespace_id": "reqns-before-restart", "not_after": "5", "consumed_through": "1", "operation_id": "op-before-restart", "dispatch": "started", "delivery": "unknown", "dispatch_start_count": "1", "receipt_retain_through": "11"},
+      "steps": [
+        {"id": "restart-fence", "event": "Service restarts; verify identity ledger, issue authority epoch 8, close every epoch-7 request namespace, and reconcile/fence the old controller before new dispatch.", "expected": {"authority_epoch": "8", "old_namespace_admission": "closed", "volatile_binding": "missing", "dispatch_start_count": "1", "delivery": "unknown", "old_mutation_grants": "inactive"}},
+        {"id": "old-epoch-repeat", "event": "Submit the original epoch-7 key and body.", "expected": {"disposition": "refuse-old-epoch-or-closed-namespace", "new_operation_count": "0", "dispatch_start_count": "1"}},
+        {"id": "current-authorized-query", "event": "Query by the epoch-7 issued key using epoch-8 current read authority and no old mutation grant/body.", "expected": {"operation_id": "op-before-restart", "delivery": "unknown", "dispatch_start_count": "1"}},
+        {"id": "runner-record-reconciles", "event": "A verified surviving runner/incarnation supplies its committed same-operation full OS-creation record; the service did not resend the launch.", "expected": {"operation_id": "op-before-restart", "dispatch": "closed", "delivery": "full", "delivery_boundary": "os-process-creation", "dispatch_start_count": "1", "new_os_creation_count": "0", "process_exit": "unavailable"}},
+        {"id": "new-epoch-namespace", "event": "Issue reqns-after-restart under epoch 8 with trusted new clock origin. It is a different namespace, not a reset of the old one.", "expected": {"new_request_namespace_id": "reqns-after-restart", "first_seq": "1", "consumed_through": "0", "old_namespace_admission": "closed", "old_operation_delivery": "full"}}
+      ]
+    },
+    {
+      "id": "expiry-and-compaction",
+      "initial": {"authority_epoch": "7", "clock": "4", "request_namespace_id": "reqns-expire", "not_after": "5", "consumed_through": "1", "operation_id": "op-expire", "dispatch": "closed", "delivery": "full", "dispatch_start_count": "1", "receipt_retain_through": "11"},
+      "steps": [
+        {"id": "exact-expiry", "clock": "5", "event": "Submit next sequence 2 exactly at namespace not_after.", "expected": {"disposition": "refuse-expired", "consumed_through": "1", "new_dispatch_count": "0", "historical_receipt_query": "available"}},
+        {"id": "clock-backward", "event": "Untrusted wall time moves backward to appear before expiry.", "expected": {"namespace_admission": "closed", "dispatch_start_count": "1", "meaning": "Wall time cannot reopen the trusted expired namespace."}},
+        {"id": "compact-receipt", "clock": "12", "event": "After the reserved horizon ends, prune the operation detail but retain the namespace high-water.", "expected": {"consumed_through": "1", "query_detail": "unavailable", "historical_full_record_rewritten_as_zero": false, "repeat_sequence_1": "refused", "new_operation_count": "0"}},
+        {"id": "retire-namespace", "clock": "12", "event": "Retire reqns-expire and remove its cursor record from the active issuance registry.", "expected": {"namespace_registry_entry": "absent", "namespace_identity_reissuable": false, "any_sequence_under_old_namespace": "refused", "old_receipt_availability_proves_no_effect": false}}
+      ]
+    },
+    {
+      "id": "identity-continuity-lost",
+      "initial": {"authority_epoch": "7", "request_namespace_id": "reqns-lost-cursor", "consumed_through": "1", "operation_id": "op-lost-cursor", "delivery": "unknown"},
+      "steps": [
+        {"id": "lose-cursor", "event": "Receipt/cursor storage is corrupt; an older terminal snapshot shows a plausible screen and epoch 7.", "expected": {"old_namespace_admission": "retired", "cursor_reconstructed_as_zero": false, "snapshot_supplies_dispatch_authority": false, "delivery": "unknown"}},
+        {"id": "lose-object-namespace", "event": "Object-namespace identity continuity also cannot be established after store replacement.", "expected": {"new_namespace_id": "ns-receipt-replacement", "old_namespace_reassigned": false, "old_key_admission": "refused", "old_effects_undone": false}}
+      ]
+    },
+    {
+      "id": "finite-budget-and-clock-failure",
+      "initial": {"authority_epoch": "7", "request_namespace_id": "reqns-budget", "consumed_through": "0", "principal_receipt_slots_used": "4", "principal_receipt_slots_limit": "4", "receipt_slots_used": "8", "receipt_slots_limit": "8", "unexpired_reserved_slots": "8"},
+      "steps": [
+        {"id": "no-receipt-capacity", "event": "Submit next sequence 1; no reserved slot is free.", "expected": {"disposition": "refuse-before-admission", "consumed_through": "0", "new_dispatch_count": "0", "reserved_receipts_evicted": "0"}},
+        {"id": "clock-continuity-unproven", "event": "Restart cannot establish the retention clock continuity.", "expected": {"old_namespace_admission": "closed", "unexpired_reservations_pruned_from_wall_time": "0", "new_admission_while_slots_unavailable": "refused", "durable_payload_or_payload_hash": "absent"}}
+      ]
+    },
+    {
+      "id": "nonconsuming-preflight-and-independent-principals",
+      "initial": {
+        "authority_epoch": "7",
+        "clock": "1",
+        "not_after": "5",
+        "principal_a": {"authenticated_id": "principal-agent-a", "request_namespaces": ["reqns-a1", "reqns-a2"], "consumed_through_a1": "0", "receipt_slots_used": "0"},
+        "principal_b": {"authenticated_id": "principal-agent-b", "request_namespaces": ["reqns-b1"], "consumed_through_b1": "0", "receipt_slots_used": "0"},
+        "receipt_slots_used": "0"
+      },
+      "steps": [
+        {"id": "wrong-owner-does-not-consume", "event": "Principal A supplies reqns-b1/sequence 1 or an unauthenticated caller supplies that key.", "expected": {"disposition": "refuse-before-ledger-mutation", "consumed_through_b1": "0", "receipt_slots_used": "0", "new_dispatch_count": "0", "denied_object_existence_disclosed": false}},
+        {"id": "gap-does-not-consume", "event": "Principal A submits reqns-a1/sequence 3 before sequence 1.", "expected": {"disposition": "refuse-future-sequence", "consumed_through_a1": "0", "receipt_slots_used": "0", "waiting_for_gap_queue_created": false}},
+        {"id": "other-principal-can-admit", "event": "Principal B submits its exact authorized next reqns-b1/sequence 1 and commits a reserved admission.", "expected": {"consumed_through_a1": "0", "consumed_through_b1": "1", "operation_id": "op-principal-b", "receipt_slots_used": "1", "dispatch": "not_started", "delivery": "pending", "receipt_retain_through": "11"}},
+        {"id": "namespace-quota-is-principal-bound", "event": "Principal A requests a third active namespace; then Principal B requests its second while global active count is 3.", "expected": {"principal_a_third_namespace": "refused", "principal_b_second_namespace": "issued-as-reqns-b2", "active_request_namespaces": "4", "principal_a_cursor_changed": false, "global_dispatch_fairness_or_latency": "not_claimed"}},
+        {"id": "binding-budget-refusal", "event": "Principal A submits next reqns-a1/sequence 1 with a synthetic validated representation of 1025 bytes, exceeding this review profile's 1024-byte binding bound.", "expected": {"disposition": "refuse-before-admission", "consumed_through_a1": "0", "new_dispatch_count": "0", "durable_payload_or_payload_hash": "absent"}}
+      ]
+    }
+  ],
+  "traceability": {"requirements": ["R01", "R02"], "validation_families": ["V01", "V02", "V03"], "assertions": ["RC01", "RC02", "RC03", "RC04", "RC05", "RC06", "RC09", "RC10"], "status": "Proposed review oracle; not executed."}
+}

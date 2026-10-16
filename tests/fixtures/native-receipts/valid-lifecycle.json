@@ -1,0 +1,118 @@
+{
+  "case_id": "valid-receipt-lifecycle",
+  "purpose": "Hand-authored N0-02 review trace; no runtime, wire schema or executed model-test result.",
+  "profile": "n0-receipt-model/0",
+  "namespace_id": "ns-receipt-synthetic",
+  "assumptions": [
+    "An authenticated connection is service-bound to principal-agent; all exact task, attempt, context, runner and policy revisions below are authorized.",
+    "The injected clock has trusted continuity within authority epoch 7. The synthetic volatile body is below 1024 validated representation bytes.",
+    "The keeper validates final authority before its one launch dispatch, has stable private OS-handle evidence, and discloses the synthetic receipt facts under current read authority.",
+    "Request and receipt field spellings are illustrative. No fixture command is executed."
+  ],
+  "issued_request_namespace": {
+    "id": "reqns-agent-a",
+    "authenticated_principal_binding": "principal-agent",
+    "authority_epoch": "7",
+    "clock_origin": "clock-epoch-7",
+    "issued_at": "0",
+    "not_after": "5",
+    "first_seq": "1",
+    "max_seq": "4",
+    "consumed_through": "0"
+  },
+  "synthetic_volatile_request": {
+    "request_key": {"namespace_id": "ns-receipt-synthetic", "request_namespace_id": "reqns-agent-a", "authority_epoch": "7", "request_seq": "1"},
+    "method": "RunProcess",
+    "dispatch_deadline": "4",
+    "task": {"id": "task-demo", "revision": "1"},
+    "attempt": {"id": "attempt-a", "revision": "1"},
+    "context": {"id": "ctx-demo", "revision": "3"},
+    "process": {"argv": ["fixture-work", "--synthetic"], "io": "pipes", "runtime_profile": "host-approved", "capture_policy": "memory-only-bounded"}
+  },
+  "steps": [
+    {
+      "id": "admit-and-lose-response",
+      "clock": "1",
+      "event": "Commit admission, receipt reservation and consumed sequence atomically; drop the response before the client sees the operation ID.",
+      "expected": {
+        "consumed_through": "1",
+        "operation": {"id": "op-launch-a"},
+        "execution": {"id": "exec-a", "runner": {"id": "runner-demo", "incarnation": "1"}},
+        "admission": "admitted",
+        "dispatch": "not_started",
+        "delivery": "pending",
+        "receipt_retain_through": "11",
+        "receipt_slots_used": "1",
+        "volatile_binding": "available",
+        "dispatch_start_count": "0",
+        "os_creation_count": "0",
+        "client_admission_knowledge": "unknown"
+      }
+    },
+    {
+      "id": "query-without-operation-id",
+      "clock": "1",
+      "event": "QueryOperation by the exact issued request key, with current read authority and no replay body.",
+      "expected": {"resolved_operation_id": "op-launch-a", "admission": "admitted", "dispatch": "not_started", "delivery": "pending", "dispatch_start_count": "0"}
+    },
+    {
+      "id": "equal-repeat-before-dispatch",
+      "clock": "1",
+      "event": "Resubmit the exact validated typed request; transport JSON key order differs.",
+      "expected": {"disposition": "original-decision-lookup", "operation_id": "op-launch-a", "consumed_through": "1", "receipt_slots_used": "1", "dispatch_start_count": "0"}
+    },
+    {
+      "id": "changed-body-refusal",
+      "clock": "1",
+      "event": "Reuse sequence 1 with process.argv changed to [fixture-work, --changed].",
+      "expected": {"disposition": "refuse-payload-conflict", "original_operation_id": "op-launch-a", "consumed_through": "1", "dispatch_start_count": "0", "original_binding_replaced": false}
+    },
+    {
+      "id": "durable-intent-before-os",
+      "clock": "2",
+      "event": "Commit dispatch intent, validate runner/controller authority and contact the runner once.",
+      "expected": {"admission": "admitted", "dispatch": "started", "delivery": "pending", "dispatch_start_count": "1", "os_creation_count": "0", "durable_payload_or_payload_hash": "absent"}
+    },
+    {
+      "id": "full-launch-result",
+      "clock": "2",
+      "event": "The runner observes OS process creation and commits a same-operation record bound to exec-a and its private stable handle.",
+      "expected": {"dispatch": "closed", "delivery": "full", "delivery_boundary": "os-process-creation", "byte_extent": "not_applicable", "dispatch_start_count": "1", "os_creation_count": "1", "exit": "unavailable", "streams_drained": "unavailable", "task_acceptance": "unresolved"}
+    },
+    {
+      "id": "equal-repeat-after-full",
+      "clock": "3",
+      "event": "Repeat the exact launch request after full delivery, while namespace and volatile binding are still live.",
+      "expected": {"disposition": "original-decision-lookup", "operation_id": "op-launch-a", "delivery": "full", "dispatch_start_count": "1", "os_creation_count": "1"}
+    },
+    {
+      "id": "independent-exit-fact",
+      "clock": "3",
+      "event": "Observe child exit code 0. One stream end has not been observed and a descendant may hold its output handle.",
+      "expected": {"delivery": "full", "exit": {"level": "observed", "exit_code": 0, "execution_id": "exec-a"}, "streams_drained": "unavailable", "validation": "unavailable", "task_acceptance": "unresolved", "os_creation_count": "1"}
+    },
+    {
+      "id": "independent-drain-fact",
+      "clock": "3",
+      "event": "Observe both bounded pipe streams reach end of stream under the declared stream scope.",
+      "expected": {"streams_drained": "observed", "validation": "unavailable", "task_acceptance": "unresolved", "all_descendants_terminated": "not_established"}
+    },
+    {
+      "id": "consume-rejected-next-sequence",
+      "clock": "3",
+      "event": "Submit authorized reqns-agent-a/epoch 7/sequence 2 with a stale context revision. Commit a final rejected decision and receipt reservation.",
+      "expected": {"consumed_through": "2", "decision": "rejected", "rejected_decision_retain_through": "13", "receipt_slots_used": "2", "operation_allocated_for_rejected_request": false, "external_delivery": "not_applicable", "original_operation_dispatch_start_count": "1", "new_external_dispatch_count": "0"}
+    },
+    {
+      "id": "prompt-shaped-ack-is-data",
+      "clock": "3",
+      "event": "Read synthetic application text: ACK op-launch-a accepted task-demo.",
+      "expected": {"task_acceptance": "unresolved", "new_grants": "0", "new_control_records": "0", "delivery": "full"}
+    }
+  ],
+  "default_durable_metadata_review": {
+    "included": ["issued request key", "consumed cursor", "operation/execution references", "admission and dispatch phase", "epochs", "retention/deadline", "authorized delivery boundary/evidence reference"],
+    "excluded": ["argv values", "environment values", "request body", "encoded payload", "payload-derived hash", "arbitrary application text"]
+  },
+  "traceability": {"requirements": ["R01", "R02"], "validation_families": ["V01", "V02"], "assertions": ["RC01", "RC02", "RC04", "RC08", "RC10"], "status": "Proposed review oracle; not executed."}
+}
