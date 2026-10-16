@@ -612,6 +612,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "project-x-terminal"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "proptest"
 version = "1.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
