@@ -1,0 +1,105 @@
+{
+  "version": 1,
+  "purpose": "N0-03 synthetic writer/protection/reply review data; no runtime/schema adoption or passing model/gate claim.",
+  "source": "../../../docs/engine/native-contract.md#observeactobserve-races-and-human-override",
+  "provenance": "README.md",
+  "profile": "n0-writer-model/0",
+  "draft_base_commit": "33dcdb91ca177501abb333074a8d3877023c0357",
+  "files": [
+    {
+      "path": "writer-races.json",
+      "sha256": "00b210aef1f57c9305c400057f645ef7d198ade01d77579482d5b7a670592aa7",
+      "origin": "Hand-authored synthetic contract review data, 2026-10-16; no captured or upstream data",
+      "requirements": [
+        "R02",
+        "R03",
+        "R04",
+        "R10",
+        "R16"
+      ],
+      "navigation_cases": [
+        "N09",
+        "N10",
+        "N11",
+        "N12",
+        "N15",
+        "N16"
+      ],
+      "validation_families": [
+        "V03",
+        "V10"
+      ]
+    },
+    {
+      "path": "protected-handoff.json",
+      "sha256": "2a084a1b99225030bac031b4ceb3f45a690d1c5f83b01549ad13c97d2dae09d6",
+      "origin": "Hand-authored synthetic contract review data, 2026-10-16; no captured or upstream data",
+      "requirements": [
+        "R02",
+        "R03",
+        "R10",
+        "R18"
+      ],
+      "navigation_cases": [
+        "N09",
+        "N10",
+        "N12",
+        "N13",
+        "N14"
+      ],
+      "validation_families": [
+        "V03",
+        "V10"
+      ]
+    },
+    {
+      "path": "reply-traces.json",
+      "sha256": "0916c63c396ec92ee0d1d630c2c47189d8b3834782607257fd4cbd0e60571fe2",
+      "origin": "Hand-authored synthetic contract review data, 2026-10-16; no captured or upstream data",
+      "requirements": [
+        "R03",
+        "R11",
+        "R15",
+        "R16"
+      ],
+      "navigation_cases": [
+        "N13",
+        "N14"
+      ],
+      "validation_families": [
+        "V03",
+        "V11"
+      ]
+    },
+    {
+      "path": "rejection-cases.json",
+      "sha256": "d67aa3850b1c29452959ec406981ab7bc2d096e62e7f8c8f16a8cae10ff52ac7",
+      "origin": "Hand-authored synthetic contract review data, 2026-10-16; no captured or upstream data",
+      "requirements": [
+        "R02",
+        "R03",
+        "R04",
+        "R10",
+        "R11",
+        "R15",
+        "R16",
+        "R18"
+      ],
+      "navigation_cases": [
+        "N09",
+        "N10",
+        "N11",
+        "N12",
+        "N13",
+        "N14",
+        "N15",
+        "N16"
+      ],
+      "validation_families": [
+        "V03",
+        "V10",
+        "V11"
+      ]
+    }
+  ]
+}

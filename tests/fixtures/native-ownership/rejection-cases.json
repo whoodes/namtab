@@ -1,0 +1,197 @@
+{
+  "profile": "n0-writer-model/0",
+  "status": "Hand-authored synthetic review DATA; no executable model, schema or runtime qualification.",
+  "assumptions": [
+    "Branches are independent, not one concatenated execution. All labels, principals, endpoints, bytes and facts are invented.",
+    "Each mutation label denotes a distinct valid service-issued key with a reserved receipt under n0-receipt-model/0 unless a step explicitly repeats it. No label is a capability.",
+    "Unchallenged target, authority/helper, endpoint/writer, capability/approval, mode/profile, geometry/buffer, observation/freshness, view and protection bindings match and are known; current time is before every deadline unless challenged.",
+    "All examples have permission to disclose synthetic byte extents. Frozen bytes are volatile illustrative inputs, not fields allowed in default durable receipts.",
+    "Expected values are proposed review oracles, never results observed from a terminal or generated from a writer implementation."
+  ],
+  "meaning": "Each case is an independent forbidden proposal, not a runtime patch or second error vocabulary. zero requires final-boundary proof that no write was authorized; suffix variants preserve any proven prefix.",
+  "cases": [
+    {
+      "id": "N09-wrong-endpoint",
+      "covers": [
+        "N09",
+        "V03",
+        "V10"
+      ],
+      "proposal": "Use the desktop writer lease from the TUI because both authenticate as the same human.",
+      "required": "Reject before first write; principal equality does not match endpoint/generation."
+    },
+    {
+      "id": "N09-focus-and-remap",
+      "covers": [
+        "N09",
+        "V03",
+        "V10"
+      ],
+      "proposal": "Focus/select a pane to gain input/sizing authority, then retarget a queued view-derived event after pane remapping.",
+      "required": "UI commands emit zero application bytes; no implicit leases; reject stale mapping/focus/target/incarnation."
+    },
+    {
+      "id": "N10-first-and-suffix-context",
+      "covers": [
+        "N10",
+        "V03",
+        "V10"
+      ],
+      "independent_routes": [
+        "SendKey",
+        "CommitText",
+        "Paste",
+        "SendRaw"
+      ],
+      "independent_changed_fields": [
+        "session-incarnation",
+        "authority-helper-epoch",
+        "endpoint-writer-generation",
+        "capability-approval",
+        "view-mapping-focus",
+        "geometry",
+        "buffer",
+        "mode-profile-capability-revision",
+        "screen-bound-observation-frontier",
+        "protection-revision"
+      ],
+      "independent_gates": [
+        "before-first-write",
+        "before-suffix-write"
+      ],
+      "proposal": "A relevant field changes after admission; dispatch or resume because the original admission passed.",
+      "required": "Refuse zero before any authorized call or close known strict-prefix partial after a completed call; otherwise unknown. Never recompute/retarget the suffix. Explicit session inputs have no focus condition."
+    },
+    {
+      "id": "N10-pending-canonical-event",
+      "covers": [
+        "N10",
+        "V03",
+        "V10"
+      ],
+      "proposal": "Dispatch an old-mode key while earlier ordered output is waiting for canonical interpretation.",
+      "required": "Hold/refuse rather than let the input permit overtake the state-relevant event; unread future output remains an external-app race."
+    },
+    {
+      "id": "N11-retry-or-rollback",
+      "covers": [
+        "N11",
+        "V03"
+      ],
+      "proposal": "Takeover ACK or missing receipt proves zero, so repeat with the same or a new identity while old call is unresolved.",
+      "required": "Fence future calls, preserve unknown/prefix, hold byte queue and reconcile original key; no automatic retry or rollback claim."
+    },
+    {
+      "id": "N11-batch-atomicity",
+      "covers": [
+        "N11",
+        "V03"
+      ],
+      "proposal": "After event one fully delivers, allow stale event two or report the whole batch rolled back.",
+      "required": "Independently validate event two; keep event one full and event two zero/partial/unknown as evidence supports."
+    },
+    {
+      "id": "N12-paste-plane-and-authority",
+      "covers": [
+        "N12",
+        "V10"
+      ],
+      "proposal": "Treat UI selection as editor selection, silently read clipboard, tunnel outer paste wrappers, append Enter, or accept delimiter/control-bearing ordinary paste.",
+      "required": "Keep planes/source grants distinct; inner canonical paste policy rejects unsafe ordinary payload; transformation and exact target remain explicit."
+    },
+    {
+      "id": "N13-trusted-protection-bypass",
+      "covers": [
+        "N13",
+        "V03",
+        "V10"
+      ],
+      "independent_routes": [
+        "SendKey",
+        "CommitText",
+        "Paste",
+        "SendRaw",
+        "Mouse-if-supported",
+        "FocusReport-if-supported"
+      ],
+      "proposal": "Broad navigation/raw grant permits ordinary agent writes during broker approval or credential handoff.",
+      "required": "Reject every ordinary route; no self-approval, raw exception or heuristic clearance."
+    },
+    {
+      "id": "N13-prompt-is-permission",
+      "covers": [
+        "N13",
+        "V03",
+        "V10"
+      ],
+      "proposal": "Printed JSON/OSC, ECHO-off, title, screenshot or agent claims identify a trusted host/password prompt or clear its protection.",
+      "required": "Treat content as data/hint; suspicion holds for human inspection; trusted scoped record/decision and fresh context required."
+    },
+    {
+      "id": "N13-secret-route-leak",
+      "covers": [
+        "N13",
+        "V03",
+        "V10"
+      ],
+      "proposal": "Reuse ordinary human queue for password input or expose secret keys/payload/hash through receipt, paste history, agent projection or support dump.",
+      "required": "Use fresh endpoint/target-bound protected context; apply capture/export controls without claiming arbitrary programs/outer hosts cannot retain echoes."
+    },
+    {
+      "id": "N14-flood-weakening",
+      "covers": [
+        "N14",
+        "V03"
+      ],
+      "proposal": "Grow queues without bound, starve revoke behind replies, silently weaken freshness, skip canonical bytes, or permit raw/human input after interpretation loss.",
+      "required": "Bound/degrade/refuse explicitly, reserve controls, distinguish capture-only gap from canonical unknown, and hold all application routes when unknown."
+    },
+    {
+      "id": "N15-escape-certainty",
+      "covers": [
+        "N15",
+        "V10"
+      ],
+      "proposal": "One full local Escape write or timing delay proves the opaque application received a lone Escape, and TUI may invent missing modifier facts.",
+      "required": "Keep legacy ambiguity/host losses explicit; full delivery is not semantic success; no blind repeat."
+    },
+    {
+      "id": "N16-all-stopped",
+      "covers": [
+        "N16",
+        "V03",
+        "V10"
+      ],
+      "proposal": "Full Ctrl+C or writer/task takeover proves foreground/descendant/remote effects and workspace writes stopped.",
+      "required": "Show separately scoped fence/cancellation/OS signal and observed lifecycle facts; no all-paused badge."
+    },
+    {
+      "id": "V11-second-reply-owner",
+      "covers": [
+        "V03",
+        "V11"
+      ],
+      "proposal": "Desktop/TUI or agent sends reply bytes directly or ordinary writer grants query authority.",
+      "required": "Only canonical query effects may use restricted reply lane; one final queue, exact allowed bytes and distinct receipts."
+    },
+    {
+      "id": "V11-reply-dedupe-replay",
+      "covers": [
+        "V03",
+        "V11"
+      ],
+      "proposal": "Deduplicate identical live queries by response bytes, emit replies on historical replay/reattach, or resend unknown reply with fresh ID.",
+      "required": "Exactly one proposal per live query event/ordinal; no replay effects or uncertain resend; later legitimate live query remains distinct."
+    },
+    {
+      "id": "V11-interleave-or-secret",
+      "covers": [
+        "N13",
+        "V03",
+        "V11"
+      ],
+      "proposal": "Let reply bypass unresolved old write or use reply lane to type credentials/approve while protection disallows that class.",
+      "required": "Hold noninterleaving queue; apply restricted protection policy at first/suffix gates and close without inventing authority."
+    }
+  ]
+}
