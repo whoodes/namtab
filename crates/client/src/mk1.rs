@@ -56,6 +56,12 @@ impl Client {
             .ok_or_else(|| io::Error::other("missing resume"))?;
         Ok(client)
     }
+    /// Close the old public transport before an explicit live-owner resume.
+    /// This does not undo or retry any operation whose response was lost.
+    pub fn close_transport(&mut self) {
+        let _ = self.writer.shutdown(std::net::Shutdown::Both);
+        self.failed = true;
+    }
     pub fn next_id(&self) -> u64 {
         self.next
     }

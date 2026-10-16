@@ -203,9 +203,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     KeyCode::Char('c') if !online => {
                         let resume = client.resume.clone();
                         let next = client.next_id();
+                        client.close_transport();
                         match Client::connect_resume(path,"host-tui",Role::Human,Some(resume),next) {
                             Ok(c) => { client=c;online=true;notice="Reconnected to live owner; no input replayed.".into(); }
-                            Err(_) => notice="Reconnect refused. Daemon restart is not live reconnect; detach and launch a new client explicitly.".into(),
+                            Err(_) => notice="Reconnect refused or previous operation still pending; retry this explicit reconnect later. Daemon restart needs a fresh client, not input replay.".into(),
                         }
                     }
                     KeyCode::Char('t') | KeyCode::Char('l') | KeyCode::Char('r') => {
