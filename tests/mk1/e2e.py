@@ -8,6 +8,7 @@ included in the result. This headless PTY run is not a desktop/visual claim.
 
 import argparse
 import datetime
+import errno
 import hashlib
 import json
 import os
@@ -289,7 +290,25 @@ class Journey:
                         continue
                 descriptor = None
                 try:
-                    descriptor = os.pidfd_open(pid)
+                    try:
+                        descriptor = os.pidfd_open(pid)
+                    except OSError as error:
+                        if error.errno != errno.EINVAL:
+                            raise
+                        # /proc children is a racy observation. A task may be
+                        # gone before pidfd_open, or be a non-leader for which
+                        # flags=0 cannot produce a process pidfd. Neither case
+                        # authorizes signalling that numeric ID.
+                        try:
+                            with Path(f"/proc/{pid}/status").open() as status:
+                                leader = next(int(line.split()[1]) for line in status if line.startswith("Tgid:"))
+                        except FileNotFoundError:
+                            self.record.setdefault("cleanup_discovery_notes", []).append("pidfd_EINVAL_task_already_gone")
+                            continue
+                        if leader != pid:
+                            self.record.setdefault("cleanup_discovery_notes", []).append("pidfd_EINVAL_nonleader_not_adopted")
+                            continue
+                        raise
                     stat = Path(f"/proc/{pid}/stat").read_text().rsplit(")", 1)[1].split()
                     if int(stat[1]) != parent:
                         os.close(descriptor)
