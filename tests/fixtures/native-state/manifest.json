@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "purpose": "N0-05 synthetic owned-state/parser review data; no implementation, passing gate or schema adoption",
+  "source": "../../../docs/engine/compatibility-and-core.md#n0-05-bounded-continuation-proposal",
+  "provenance": "README.md",
+  "files": [
+    {
+      "path": "continuations.json",
+      "sha256": "5746f87f6f2b24a0601dfbb88a3c072b488af14025976b86b38ddae9de820000",
+      "origin": "Hand-authored synthetic review data, 2026-10-16; no captured or upstream data",
+      "requirements": [
+        "R07",
+        "R08",
+        "R11",
+        "R12",
+        "R13"
+      ],
+      "validation_families": [
+        "V07",
+        "V08",
+        "V11",
+        "V12",
+        "V13"
+      ]
+    },
+    {
+      "path": "state-transitions.json",
+      "sha256": "0cb20c4f9c308e6855532f523f9eb00bd1febc978a39d1bc3996bff4bf60c4da",
+      "origin": "Hand-authored synthetic review data, 2026-10-16; no captured or upstream data",
+      "requirements": [
+        "R08",
+        "R10",
+        "R11",
+        "R12",
+        "R16"
+      ],
+      "validation_families": [
+        "V08",
+        "V10",
+        "V11",
+        "V12",
+        "V16"
+      ]
+    },
+    {
+      "path": "bounds-and-recovery.json",
+      "sha256": "be2d8ec1dd02d7d7e6ee01ba76d0f2b679c33a460c7a101019fe3bbfcaacb900",
+      "origin": "Hand-authored synthetic review data, 2026-10-16; no captured or upstream data",
+      "requirements": [
+        "R07",
+        "R08",
+        "R11",
+        "R12",
+        "R13",
+        "R15",
+        "R16"
+      ],
+      "validation_families": [
+        "V07",
+        "V08",
+        "V11",
+        "V12",
+        "V13",
+        "V15",
+        "V16"
+      ]
+    }
+  ]
+}
