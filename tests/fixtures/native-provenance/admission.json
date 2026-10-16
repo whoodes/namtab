@@ -1,0 +1,201 @@
+{
+  "artifact_kind": "draft-primitive-admission-review-data",
+  "record_version": 1,
+  "issue": "NAMTAB-N0-08 #14",
+  "review_date": "2026-10-16",
+  "status": "selected for N0 drafting only; owner/reviewer acceptance and N1 engineering admission pending",
+  "profile": "px-dev-text-0",
+  "contract_owner": "docs/engine/compatibility-and-core.md",
+  "source_manifest": "sources.json",
+  "evidence_limits": [
+    "No runtime implementation, install, source execution, Cargo feature resolution/build, actual dependency or project-license adoption occurs here.",
+    "This is source/provenance review and synthetic admission data, not the N0-07 conformance harness, a wire schema, release SBOM, security/legal certification or NG0/NG1 acceptance.",
+    "Historical X4 and EA1 remain FAIL; no legacy emulator authority or private semantic fork is selected."
+  ],
+  "selection": [
+    {
+      "slot": "owned-byte-FSM-and-UTF8-continuation",
+      "decision": "owned implementation proposed; no lexer crate",
+      "source_basis": [
+        "rust-utf8-source",
+        "rfc3629"
+      ],
+      "primitive": "Rust 1.91.0 core/std checked str::from_utf8 for completed bounded scalar bytes; pending bytes, discard/overflow and invalid-byte policy remain owned profile state",
+      "unicode_algorithm_dependency": null,
+      "state_requirement": "Complete explicit bounded continuation at arbitrary cuts; no str iterator, private parser or allocator pointer in snapshots. Source review does not implement this."
+    },
+    {
+      "slot": "Linux-PTY-OS-wrapper",
+      "decision": "exact candidate selected for drafting; not a new direct dependency",
+      "crate": "rustix@1.1.5",
+      "target": "x86_64-unknown-linux-gnu, default linux_raw backend",
+      "default_features": false,
+      "features": [
+        "std",
+        "fs",
+        "pty",
+        "termios",
+        "process"
+      ],
+      "public_apis_reviewed": [
+        "pty::openpt",
+        "pty::grantpt",
+        "pty::unlockpt",
+        "pty::ioctl_tiocgptpeer",
+        "pty::ptsname",
+        "termios::tcgetattr",
+        "termios::tcsetattr",
+        "termios::tcgetwinsize",
+        "termios::tcsetwinsize",
+        "termios::tcgetpgrp",
+        "termios::tcsetpgrp",
+        "process::setsid",
+        "process::setpgid",
+        "process::ioctl_tiocsctty",
+        "io::read",
+        "io::write"
+      ],
+      "selected_source_dependencies": [
+        "bitflags@2.13.2",
+        "linux-raw-sys@0.12.1"
+      ],
+      "boundary": "Reviewed safe OS operations only. No fork/exec/spawn strategy, keeper integration, descriptor lifecycle, credentials, sockets, readiness scheduling, descendant containment or kernel qualification is established. Separate N1 design and tests must settle those seams.",
+      "replacement_cost": "High behavioral cost: replacing rustix with libc/nix requires a new unsafe/FD/error review and rerunning controlling-terminal, session/pgrp, signal, partial-write, resize and cleanup cases."
+    },
+    {
+      "slot": "bounded-JSON-codec",
+      "decision": "reuse exact existing foundation source tuple for future DTOs; codec does not admit requests",
+      "crates": [
+        "serde@1.0.229",
+        "serde_json@1.0.154"
+      ],
+      "serde_features": [
+        "std",
+        "derive"
+      ],
+      "serde_json_features": [
+        "std"
+      ],
+      "build_closure": [
+        "serde_core@1.0.229",
+        "serde_derive@1.0.229",
+        "proc-macro2@1.0.107",
+        "quote@1.0.47",
+        "syn@3.0.9",
+        "unicode-ident@1.0.27"
+      ],
+      "runtime_source_dependencies": [
+        "serde_core@1.0.229",
+        "itoa@1.0.18",
+        "memchr@2.8.3",
+        "zmij@1.0.23"
+      ],
+      "limits": "serde_json Value map deserialization inserts repeated keys into one Map; generic maps can lose duplicates. Derived structs can reject duplicate known fields, but normally ignore unknown fields unless configured. Neither route alone proves duplicate rejection throughout nested request data or the IPC size/depth/count/large-integer/unknown-authorization-field policy.",
+      "engineering_gates": [
+        "Length bound before body allocation and parsing; explicit nesting, collection, string and work caps. Keep unbounded_depth and additional codec features disabled unless separately justified.",
+        "Owned bounded visitor/prevalidation that detects prohibited duplicates before any map loses them, rejects unknown authorization fields and validates bounded decimal-string identities. Do not use Value as the admission oracle.",
+        "Exact versioned DTO generation/schema agreement, malformed/trailing input handling and independent adversarial tests belong to N0-06/N1."
+      ],
+      "replacement_cost": "Medium/high: DTO derives, generated schema interoperability, error and persisted-format behavior must be reviewed; no generic JSON output is a canonical snapshot or cryptographic encoding."
+    },
+    {
+      "slot": "finite-terminal-text-policy",
+      "decision": "no external Unicode algorithm or runtime data dependency selected",
+      "policy_basis": "The existing finite profile admits ASCII U+0020..U+007E and U+00A0..U+00FF except U+00AD, with width one; valid out-of-repertoire scalars paint U+FFFD width one. No normalization, grapheme algorithm, wide cells, bidi or shaping is advertised. This record does not extend that contract.",
+      "reference_data_version": "18.0.0",
+      "reference_data_use": "Property crosscheck only; data not installed, generated into code or admitted to product.",
+      "property_crosscheck": {
+        "east_asian_width": {
+          "source_id": "ucd-east-asian-width",
+          "source_sha256": "a0cf29eacd00cfcaec4381c6b7c281685f18dbb4e7ff82b4076ccb342ca839aa",
+          "scalar_count": 190,
+          "property_counts": {
+            "Na": 101,
+            "N": 46,
+            "A": 43
+          },
+          "replacement_U_FFFD_property": "A"
+        },
+        "grapheme_break": {
+          "source_id": "ucd-grapheme-break-property",
+          "source_sha256": "0839dcb79e4ac639ecd538b1abf7c9d22e3f9dd265b7e182d33627aa4d75b45a",
+          "scalar_count": 190,
+          "property_counts": {
+            "Other": 190
+          },
+          "replacement_U_FFFD_property": "Other"
+        }
+      },
+      "interpretation": "All 190 admitted scalars have Grapheme_Cluster_Break Other, and EAW Na/N/A only. A and U+FFFD are deliberately width one. These observations are consistent with the finite policy; they do not verify a Unicode18 algorithm, streaming reducer or full v1 tailoring.",
+      "replacement_cost": "Low artifact cost for the present owned finite range predicate; high semantic cost to expand repertoire, occupancy, grapheme continuation or reflow: new versioned profile/state, exact matched data/algorithm, notices and independent cases required."
+    }
+  ],
+  "deferred_or_rejected": [
+    {
+      "candidate": "unicode-segmentation@1.13.3",
+      "actual_table_version": "17.0.0",
+      "decision": "Not selected for N1; fails Unicode18 table match for later v1. No fabricated upgrade or generated private patch."
+    },
+    {
+      "candidate": "unicode-width@0.2.2",
+      "actual_table_version": "17.0.0",
+      "decision": "Not selected for inner N1 occupancy; fails Unicode18 table match for later v1. Foundation TUI presence is not reducer admission."
+    },
+    {
+      "candidate": "unicode-ident@1.0.27",
+      "actual_table_version": "18.0.0",
+      "decision": "Build-time identifier classification in proc-macro closure only; does not supply UAX29 grapheme segmentation or terminal widths."
+    },
+    {
+      "candidate": "vte@0.15.0",
+      "decision": "Rejected for authoritative lexer continuation at this pin.",
+      "source_finding": "Parser has private FSM state, params/intermediates, OSC buffer/indices/ignore state and partial_utf8 bytes/length. Public new/advance/advance_until_terminated and Perform callbacks do not export/import that complete state. The optional serde feature does not derive serialization for Parser. std OSC storage is a Vec; no_std buffer sizing is not a public complete state contract.",
+      "future_admission_gate": "Require public complete bounded continuation import/export with validated version/caps and continuation fixtures at every cut. Review exact maintained source/notice/feature closure separately. No fork, private field access, unsafe memory serialization, inferred state from callbacks or legacy screen semantics.",
+      "replacement_cost": "Rejecting it leaves the already chosen owned bounded FSM; accepting any future lexer requires transition/overflow/discard/UTF8 event policy and snapshot migration/continuation revalidation."
+    },
+    {
+      "candidate": "Unicode18 full-v1 algorithm/data tuple",
+      "decision": "Pending matching reviewed segmentation/width implementation and complete profile tailoring. The pinned reference files are a partial data set: emoji/variation, DerivedCoreProperties/InCB, wide-cell editing, reflow and exhaustive conformance corpus/notice closure remain unselected. No complete Unicode18 support claim."
+    }
+  ],
+  "notice_and_pin_gaps": [
+    "Every acquired crate archive hash matches the unchanged lock where present and fresh registry metadata; relevant source/manifest/VCS/notice member hashes are in sources.json. Metadata is not an independent signature or advisory review.",
+    "Rustix and linux-raw-sys offer Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT; source COPYRIGHT and all license alternatives remain part of notice review. Codec closure includes memchr Unlicense OR MIT, zmij MIT, and unicode-ident (MIT OR Apache-2.0) AND Unicode-3.0. No project license is chosen by those labels.",
+    "Current Unicode License V3 copyright/permission notice must accompany any later redistributed data or associated documentation; this review pins its observed bytes. Future generated data must carry its source/notice provenance.",
+    "Conditional Windows crates windows-sys@0.61.2 and windows-link@0.2.1 have locked/current metadata hashes but archives/notices were not acquired; neither is selected for Linux. libc/errno sources were checked as conditional alternatives, not a libc-backend selection. New target/backend/features require new graph/notice review.",
+    "Build scripts/proc macros and Rust/compiler distribution third-party notices/advisories still need engineering/release review; reviewed source is not permission to execute new build inputs. Source hashes are not reproducible-binary or release attestation."
+  ],
+  "tool_observation": {
+    "toolchain_manifest": "rust-toolchain.toml; unchanged channel 1.91.0, minimal, rustfmt and clippy",
+    "observed_at": "2026-10-16T16:49:51.296459+00:00",
+    "rustc_version_verbose": [
+      "rustc 1.91.0 (f8297e351 2025-10-28)",
+      "binary: rustc",
+      "commit-hash: f8297e351a40c1439a467bbbb6879088047f50b3",
+      "commit-date: 2025-10-28",
+      "host: x86_64-unknown-linux-gnu",
+      "release: 1.91.0",
+      "LLVM version: 21.1.2"
+    ],
+    "installed_rustc_sha256": "1b4a8971db9b9f440d55f64c0c592e4f3cfe0efc085c1b1a0e4972dfffaa238b",
+    "source_commit": "f8297e351a40c1439a467bbbb6879088047f50b3",
+    "source_ids": [
+      "rust-utf8-source",
+      "rust-license-mit",
+      "rust-license-apache",
+      "rust-copyright"
+    ],
+    "limits": "Local installed executable observation and exact source pin only; no fresh tool download, signature verification, complete sysroot/compiler distribution inventory or binary reproducibility claim. Existing Node/pnpm/docs tool evidence remains independently scoped."
+  },
+  "normative_access": {
+    "historical": "S01 remains the 2026-10-15 browser HTTP403 observation; unsuccessful DEC/GNU retrieval records are unchanged.",
+    "current_POSIX": "2026-10-16 bounded urllib GETs of Issue8 terminal chapter and posix_openpt returned HTTP200 genuine Issue8/IEEE1003.1-2024 pages. Only controlling-terminal/job-control overview and openpt flags/return/error sections were inspected. This narrows access gaps for these two pages only. tcsetpgrp normative page, remaining relevant interfaces and a full POSIX mapping were not re-reviewed here.",
+    "source_conflict": "rustix 1.1.5 pty::OpenptFlags comment says standard posix_openpt does not support CLOEXEC; retrieved Issue8 posix_openpt explicitly lists O_CLOEXEC and O_CLOFORK. Treat the crate comment as stale versus this standard, preserve it as observed, and do not infer Linux supports every POSIX8 flag. No upstream correction/contact made.",
+    "DEC": "No newly retrieved/authenticated direct DEC manual. xterm documentation remains a de facto implementation source; private-profile P decisions do not become verified normative DEC quotations."
+  },
+  "acceptance_remaining": [
+    "Owner/reviewer acceptance of this proposed finite profile/source tuple.",
+    "Separate dependency/features/target/build/notice change only if N1 implementation is authorized; no manifest/lock/license changes in this record.",
+    "Unicode18 full-v1 admission remains pending; normative interfaces beyond the two newly read pages and direct DEC access remain bounded gaps."
+  ]
+}

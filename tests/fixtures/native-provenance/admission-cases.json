@@ -1,0 +1,68 @@
+{
+  "artifact_kind": "synthetic-admission-review-data",
+  "status": "Hand-authored expected review decisions only; no runtime loads this file and no test runner is added.",
+  "owner": "docs/engineering/15-dependencies-and-supply-chain.md#n0-primitive-and-data-selection-2026-10-16",
+  "manifest": "admission.json",
+  "cases": [
+    {
+      "id": "minimal-finite-policy",
+      "proposed": "Owned complete byte/UTF8 continuation; finite repertoire predicate; no Unicode algorithm dependency",
+      "expected": "eligible-for-draft-review-only",
+      "reason": "Avoids any false Unicode18 algorithm/table claim; N1 implementation and owner acceptance remain pending."
+    },
+    {
+      "id": "segmentation17-labelled18",
+      "proposed": "Use unicode-segmentation 1.13.3 to claim Unicode18 grapheme conformance",
+      "expected": "reject",
+      "reason": "Pinned tables declare 17.0.0; no table/algorithm match to 18 is established."
+    },
+    {
+      "id": "width17-labelled18",
+      "proposed": "Use foundation unicode-width 0.2.2 as the inner Unicode18 width oracle",
+      "expected": "reject",
+      "reason": "Pinned tables declare 17.0.0 and generic library output does not own terminal tailoring."
+    },
+    {
+      "id": "identifier18-implies-terminal18",
+      "proposed": "Infer Unicode18 terminal support from build-time unicode-ident 1.0.27",
+      "expected": "reject",
+      "reason": "Its 18.0.0 identifier tables implement a different property/algorithm purpose."
+    },
+    {
+      "id": "vte-private-cut",
+      "proposed": "Serialize private vte 0.15.0 Parser memory or reconstruct it from Perform callbacks",
+      "expected": "reject",
+      "reason": "No public complete bounded continuation import/export; no private fork or opaque-state authority admitted."
+    },
+    {
+      "id": "duplicate-map-before-admission",
+      "proposed": "Parse {\"grant\":\"a\",\"grant\":\"b\"} into Value and validate only its resulting map",
+      "expected": "reject",
+      "reason": "Map insertion can erase a duplicate before authorization validation; a bounded visitor/prevalidation remains required."
+    },
+    {
+      "id": "unknown-authority-field",
+      "proposed": "Accept an unknown authorization field because ordinary derived deserialization ignores it",
+      "expected": "reject",
+      "reason": "The IPC contract requires explicit unknown-authority-field rejection; derive alone is insufficient."
+    },
+    {
+      "id": "unbounded-codec-before-length",
+      "proposed": "Read an unbounded request into a generic JSON value before checking frame size/depth",
+      "expected": "reject",
+      "reason": "The selected codec does not enforce product resource limits before allocation."
+    },
+    {
+      "id": "metadata-hash-drift",
+      "proposed": "Silently refresh a source/hash after the URL returns different bytes",
+      "expected": "reject",
+      "reason": "Preserve the original observation and review a separately dated exact replacement."
+    },
+    {
+      "id": "POSIX-access-method-change",
+      "proposed": "Rewrite the old HTTP403 record because a new urllib request succeeds",
+      "expected": "reject",
+      "reason": "Append the dated200 observation and bounded sections read; preserve the historical access failure."
+    }
+  ]
+}
