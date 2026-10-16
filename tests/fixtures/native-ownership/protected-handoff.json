@@ -1,0 +1,336 @@
+{
+  "profile": "n0-writer-model/0",
+  "status": "Hand-authored synthetic review DATA; no executable model, schema or runtime qualification.",
+  "assumptions": [
+    "Branches are independent, not one concatenated execution. All labels, principals, endpoints, bytes and facts are invented.",
+    "Each mutation label denotes a distinct valid service-issued key with a reserved receipt under n0-receipt-model/0 unless a step explicitly repeats it. No label is a capability.",
+    "Unchallenged target, authority/helper, endpoint/writer, capability/approval, mode/profile, geometry/buffer, observation/freshness, view and protection bindings match and are known; current time is before every deadline unless challenged.",
+    "All examples have permission to disclose synthetic byte extents. Frozen bytes are volatile illustrative inputs, not fields allowed in default durable receipts.",
+    "Expected values are proposed review oracles, never results observed from a terminal or generated from a writer implementation."
+  ],
+  "branches": [
+    {
+      "id": "trusted-protection-blocks-every-route",
+      "covers": [
+        "N10",
+        "N13",
+        "V03",
+        "V10"
+      ],
+      "initial": {
+        "session": "session-a",
+        "incarnation": "1",
+        "protection_revision": "1",
+        "state": "ordinary",
+        "writer_endpoint": "endpoint-agent"
+      },
+      "independent_routes": [
+        "SendKey",
+        "CommitText",
+        "Paste",
+        "SendRaw",
+        "Mouse-if-supported",
+        "FocusReport-if-supported"
+      ],
+      "steps": [
+        {
+          "order": "1",
+          "event": "Ordinary agent event passes admission but has not crossed first gate.",
+          "expected": {
+            "delivery": "pending",
+            "admission_is_protection_bypass": false
+          }
+        },
+        {
+          "order": "2",
+          "event": "Broker records a target-bound credential handoff from an authorized authenticated adapter; protection revision advances to 2 before first gate.",
+          "expected": {
+            "protection_state": "protected",
+            "adapter_remote_honesty_proven": false
+          }
+        },
+        {
+          "order": "3",
+          "event": "Each independently considered ordinary route reaches final gate, including separately granted raw.",
+          "expected": {
+            "delivery": "zero",
+            "ordinary_agent_input_allowed": false
+          }
+        },
+        {
+          "order": "4",
+          "event": "Independent prefix variant: the route had instead written one strict-prefix byte before revision 2, with no remaining OS call.",
+          "expected": {
+            "delivery": "partial",
+            "proven_prefix": "1",
+            "suffix_closed": true,
+            "prior_byte_retracted": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "fresh-human-secret-handoff",
+      "covers": [
+        "N09",
+        "N12",
+        "N13",
+        "V03",
+        "V10"
+      ],
+      "initial": {
+        "protected_session": "session-a",
+        "incarnation": "1",
+        "handoff": "handoff-a",
+        "protection_revision": "2",
+        "trusted_target_label": "synthetic-host",
+        "old_writer_endpoint": "endpoint-agent",
+        "writer_generation": "1",
+        "human_principal": "principal-human"
+      },
+      "steps": [
+        {
+          "order": "1",
+          "event": "TUI dedicated protected review discards buffered Enter/prefix/paste; explicit handoff closes old writer at final boundary.",
+          "expected": {
+            "writer_endpoint": "endpoint-tui",
+            "writer_generation": "2",
+            "old_agent_suffix_closed": true,
+            "buffered_input_replayed": false
+          }
+        },
+        {
+          "order": "2",
+          "event": "TUI obtains fresh protected context matching handoff-a, host/runtime, session incarnation, revision 2 and permitted human secret-input class. Desktop mirror has same principal but no writer.",
+          "expected": {
+            "desktop_secret_write_allowed": false,
+            "agent_secret_read_granted": false,
+            "clipboard_read_granted": false
+          }
+        },
+        {
+          "order": "3",
+          "event": "Human enters synthetic credential through the dedicated context with first/suffix checks.",
+          "expected": {
+            "secret_value_in_review_data": false,
+            "ordinary_receipt_payload_or_keys_or_hash": false,
+            "input_history_entry": false,
+            "implicit_durable_capture": false,
+            "ordinary_agent_observation_suspended": true,
+            "protected_interval_automatic_capture_export": false,
+            "capture_gap_recorded_if_durable_tail_omitted": true
+          }
+        },
+        {
+          "order": "4",
+          "event": "Application might echo input and outer host might retain it.",
+          "expected": {
+            "universal_output_secret_removal_proven": false,
+            "capture_export_policy_applied": true
+          }
+        },
+        {
+          "order": "5",
+          "event": "Authorized handoff completion advances protection revision to 3; a delayed old protected key and old agent request arrive.",
+          "expected": {
+            "old_protected_delivery": "zero",
+            "old_agent_delivery": "zero",
+            "agent_automatically_resumed": false,
+            "full_screen_agent_export_automatically_resumed": false
+          }
+        },
+        {
+          "order": "6",
+          "event": "Agent handback explicitly grants generation 3 after fresh observation and human-edit handoff note.",
+          "expected": {
+            "new_context_required": true,
+            "old_approval_resurrected": false,
+            "old_queue_replayed": false,
+            "resumed_projection_requires_explicit_authorization": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "spoof-and-suspicion",
+      "covers": [
+        "N13",
+        "V03",
+        "V10"
+      ],
+      "initial": {
+        "state": "ordinary",
+        "protection_revision": "1",
+        "writer_endpoint": "endpoint-agent"
+      },
+      "steps": [
+        {
+          "order": "1",
+          "event": "Application prints broker-looking approval JSON and OSC password/host marker; ECHO-off heuristic raises suspicion.",
+          "expected": {
+            "grant_created": false,
+            "prompt_identity_verified": false,
+            "protection_state": "suspected",
+            "protection_revision": "2"
+          }
+        },
+        {
+          "order": "2",
+          "event": "Ordinary agent sends Enter, text, paste or raw under broad navigation authority.",
+          "expected": {
+            "delivery": "zero",
+            "broker_decision_recorded": false
+          }
+        },
+        {
+          "order": "3",
+          "event": "Human inspects local opaque SSH session; remote credential target is not authenticated by prompt text.",
+          "expected": {
+            "fresh_protected_context_from_text_alone": false,
+            "unknown_target_visible": true
+          }
+        },
+        {
+          "order": "4",
+          "event": "Human explicitly dismisses suspicion and selects a disclosed opaque-interaction policy; broker advances revision and requires fresh observation/context.",
+          "expected": {
+            "prompt_safe_certified": false,
+            "old_agent_queue_replayed": false,
+            "ordinary_input_only_under_new_authority": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "broker-approval-is-separate",
+      "covers": [
+        "N13",
+        "V03",
+        "V10"
+      ],
+      "initial": {
+        "protection_state": "broker-approval-pending",
+        "protection_revision": "2",
+        "decision_request": "decision-a",
+        "decision_subject_revision": "1"
+      },
+      "steps": [
+        {
+          "order": "1",
+          "event": "Agent or application submits Enter/Y, raw bytes, a palette command or printed Allow.",
+          "expected": {
+            "decision_recorded": false,
+            "ordinary_agent_delivery": "zero"
+          }
+        },
+        {
+          "order": "2",
+          "event": "TUI outer profile lacks certified paste/input separation.",
+          "expected": {
+            "allow_action_available": false,
+            "read_deny_cancel_available": true
+          }
+        },
+        {
+          "order": "3",
+          "event": "Desktop review uses authenticated review capability and fresh challenge, but subject changed to revision 2.",
+          "expected": {
+            "old_decision_refused": true,
+            "capability_expanded": false
+          }
+        },
+        {
+          "order": "4",
+          "event": "Current authorized reviewer explicitly reviews revision 2 and records disposition.",
+          "expected": {
+            "disposition_source": "authenticated-review-control",
+            "application_bytes": "0",
+            "agent_self_approval": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "protection-source-loss-and-unknown-engine",
+      "covers": [
+        "N13",
+        "N14",
+        "V03",
+        "V10"
+      ],
+      "initial": {
+        "protection_state": "protected",
+        "protection_revision": "2",
+        "interpretation": "known"
+      },
+      "steps": [
+        {
+          "order": "1",
+          "event": "Credential adapter continuity is lost, then engine continuity cannot be reconciled.",
+          "expected": {
+            "application_input_held": true,
+            "protected_prompt_cleared": false,
+            "interpretation": "unknown"
+          }
+        },
+        {
+          "order": "2",
+          "event": "Desktop human ordinary keys, TUI protected context, agent raw and reply request attempt to continue.",
+          "expected": {
+            "application_bytes": "0",
+            "new_query_replies": "0",
+            "raw_recovery_bypass": false
+          }
+        },
+        {
+          "order": "3",
+          "event": "Human selects independently authorized process inspection/stop or new session.",
+          "expected": {
+            "lifecycle_control_requires_live_terminal_parser": false,
+            "old_effects_rolled_back": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "undetected-prompt-and-bypass-limit",
+      "covers": [
+        "N13",
+        "V03",
+        "V10"
+      ],
+      "initial": {
+        "protection_state": "ordinary",
+        "protection_revision": "1",
+        "policy": "explicit-broad-opaque-session",
+        "runtime": "host-inherited-unenforced"
+      },
+      "steps": [
+        {
+          "order": "1",
+          "event": "Opaque application silently changes to a sensitive widget; broker has no trusted or suspected indication.",
+          "expected": {
+            "universal_protected_prompt_detection": false
+          }
+        },
+        {
+          "order": "2",
+          "event": "Previously authorized input may be consumed there before a protection record reaches final boundary.",
+          "expected": {
+            "input_recall_possible": false,
+            "semantic_safety_proven": false
+          }
+        },
+        {
+          "order": "3",
+          "event": "An unrestricted same-UID external writer or already-authorized remote process acts outside mediation.",
+          "expected": {
+            "writer_lease_prevents_external_action": false,
+            "all_paused_badge_allowed": false,
+            "unenforced_status_visible": true
+          }
+        }
+      ]
+    }
+  ]
+}
