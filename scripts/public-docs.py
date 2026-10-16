@@ -7,6 +7,7 @@ from pathlib import Path
 import argparse
 import gzip
 import hashlib
+from html import unescape
 from html.parser import HTMLParser
 import json
 import re
@@ -16,6 +17,7 @@ import sys
 from urllib.parse import unquote, urlsplit
 
 import yaml
+import mkdocs
 
 ROOT = Path(__file__).resolve().parent.parent
 PUBLIC = ROOT / '.artifacts/public-docs'
@@ -36,25 +38,87 @@ RULES = {
     'private-contact': rb'(?i)\b[A-Z0-9._%+-]+@(?:gmail|outlook|hotmail|yahoo)\.[A-Z]{2,}\b',
 }
 ALLOWED_EXTENSIONS = {'.html', '.css', '.js', '.json', '.xml', '.gz', '.ico', '.png', '.ttf', '.woff2', '.map'}
+THEME_CSS = Path(mkdocs.__file__).parent / 'themes/mkdocs/css'
+
+
+def local_resource(target):
+    """Admit ordinary local resource paths, without browser URL normalization tricks."""
+    if not target or '\\' in target or any(ord(char) < 32 or ord(char) == 127 for char in target):
+        return False
+    try:
+        parsed = urlsplit(target.strip())
+        return bool(parsed.path) and not parsed.scheme and not parsed.netloc
+    except ValueError:
+        return False
+
+
+def theme_script(text):
+    """Only the stock theme's inert base-path/keyboard configuration is admitted."""
+    match = re.fullmatch(r'\s*var base_url\s*=\s*("(?:[^"\\]|\\.)*")\s*,\s*shortcuts\s*=\s*(\{[^{}]*\})\s*;\s*', text)
+    if not match:
+        return False
+    try:
+        base, shortcuts = (json.loads(value) for value in match.groups())
+    except json.JSONDecodeError:
+        return False
+    return (isinstance(base, str) and local_resource(base)
+            and isinstance(shortcuts, dict) and set(shortcuts) == {'help', 'next', 'previous', 'search'}
+            and all(type(value) is int and 0 <= value <= 255 for value in shortcuts.values()))
 
 
 class ExternalResources(HTMLParser):
     def __init__(self):
         super().__init__()
         self.found = False
+        self.unsupported = False
         self.ids = set()
         self.links = []
+        self.script = None
 
     def handle_starttag(self, tag, attrs):
+        if len(attrs) != len(dict(attrs)):
+            # Browsers use the first duplicate attribute; dict() uses the last.
+            self.unsupported = True
         attrs = dict(attrs)
+        if (tag in {'style', 'object', 'embed', 'iframe', 'frame', 'frameset', 'base', 'svg', 'math', 'audio', 'video', 'source', 'track', 'applet', 'portal'}
+                or any(name.startswith('on') or name in {'srcset', 'srcdoc', 'formaction', 'ping'} for name in attrs)
+                or tag == 'form' and attrs.get('action')
+                or tag == 'meta' and attrs.get('http-equiv', '').lower() == 'refresh'):
+            self.unsupported = True
+        if 'style' in attrs:
+            style = re.sub(r'\s+', '', attrs['style']).lower().rstrip(';')
+            if style not in {'width:20%', 'text-align:left', 'text-align:right', 'text-align:center'}:
+                self.unsupported = True
         if 'id' in attrs:
             self.ids.add(attrs['id'])
         self.links.extend(attrs[name] for name in ('href', 'src') if name in attrs)
-        target = attrs.get('src') if tag in {'script', 'img', 'iframe'} else None
-        if tag == 'link' and attrs.get('rel') == 'stylesheet':
-            target = attrs.get('href')
-        if target and (target.startswith(('https:', 'http:', '//'))):
+        target = attrs.get('src')
+        if tag == 'link':
+            rel = set(attrs.get('rel', '').lower().split())
+            if rel != {'canonical'}:
+                if not rel or not rel <= {'stylesheet', 'shortcut', 'icon'}:
+                    self.unsupported = True
+                target = attrs.get('href')
+        if target is not None and not local_resource(target):
             self.found = True
+        if tag == 'a' and 'href' in attrs:
+            try:
+                if urlsplit(attrs['href'].strip()).scheme.lower() not in {'', 'http', 'https', 'mailto'}:
+                    self.unsupported = True
+            except ValueError:
+                self.unsupported = True
+        if tag == 'script':
+            self.script = [] if 'src' not in attrs else None
+
+    def handle_data(self, data):
+        if self.script is not None:
+            self.script.append(data)
+
+    def handle_endtag(self, tag):
+        if tag == 'script' and self.script is not None:
+            if not theme_script(''.join(self.script)):
+                self.unsupported = True
+            self.script = None
 
 
 def audit_site(site):
@@ -88,15 +152,35 @@ def audit_site(site):
             except (OSError, EOFError):
                 findings.append({'file': relative, 'rule': 'invalid-gzip'})
                 continue
+        variants = [data]
+        if path.suffix == '.html':
+            variants.append(unescape(data.decode('utf-8')).encode())
+        if path.suffix == '.json':
+            try:
+                # Search text can contain JSON escapes and HTML entities.
+                variants.append(unescape(json.dumps(json.loads(data), ensure_ascii=False)).encode())
+            except (UnicodeDecodeError, json.JSONDecodeError):
+                findings.append({'file': relative, 'rule': 'invalid-json'})
         for rule, pattern in RULES.items():
-            if re.search(pattern, data):
+            if any(re.search(pattern, variant) for variant in variants):
                 findings.append({'file': relative, 'rule': rule})
+        if path.suffix == '.css':
+            # Do not invent a partial CSS sanitizer. The current public profile
+            # admits only byte-identical CSS from the hash-locked MkDocs theme.
+            vendor = THEME_CSS / path.name
+            if relative != 'css/' + path.name or not vendor.is_file() or vendor.read_bytes() != data:
+                findings.append({'file': relative, 'rule': 'unreviewed-css'})
         if path.suffix == '.html':
             resources = ExternalResources()
             resources.feed(data.decode('utf-8'))
+            resources.close()
+            if resources.script is not None:
+                resources.unsupported = True
             pages[path.resolve()] = resources
             if resources.found:
                 findings.append({'file': relative, 'rule': 'external-runtime-resource'})
+            if resources.unsupported:
+                findings.append({'file': relative, 'rule': 'unsupported-active-markup'})
     if not (site / 'index.html').is_file() or not (site / 'search/search_index.json').is_file():
         findings.append({'file': '(site)', 'rule': 'missing-page-or-search-index'})
     root = site.resolve()
@@ -173,6 +257,7 @@ def build():
         'findings': findings,
         'limits': [
             'Pattern checks and review cannot prove absence of all secrets or private information.',
+            'Decoded HTML/JSON checks and a narrow markup profile are not a universal sanitizer or arbitrary JavaScript/browser analysis.',
             'Theme fonts/images are byte-scanned, not OCR inspected; pinned MkDocs supplies them.',
             'Git history, repository discussions and Actions records need a separate visibility audit.',
             'Search index is public documentation content, not a permission boundary.',

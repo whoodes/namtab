@@ -67,6 +67,54 @@ class PublicArtifactTests(unittest.TestCase):
         (self.site / 'index.html').write_text('<script src="https://example.invalid/library.js"></script>')
         self.assertIn({'file': 'index.html', 'rule': 'external-runtime-resource'}, module.audit_site(self.site)[1])
 
+    def test_external_resource_schemes_are_case_insensitive(self):
+        for markup in [
+            '<script src="HTTPS://example.invalid/library.js"></script>',
+            '<img src="//example.invalid/image.png">',
+            '<link rel="STYLESHEET" href="HtTpS://example.invalid/style.css">',
+            '<script src="https:\\example.invalid/library.js"></script>',
+        ]:
+            with self.subTest(markup=markup):
+                (self.site / 'index.html').write_text(markup)
+                self.assertIn({'file': 'index.html', 'rule': 'external-runtime-resource'}, module.audit_site(self.site)[1])
+
+    def test_unsupported_active_markup_is_refused(self):
+        for markup in [
+            '<img srcset="https://example.invalid/image.png 2x">',
+            '<object data="https://example.invalid/content"></object>',
+            '<style>@import "https://example.invalid/style.css";</style>',
+            '<p style="background:url(https://example.invalid/image.png)">Text</p>',
+            '<form action="https://example.invalid/submit"><input></form>',
+            '<button formaction="https://example.invalid/submit">Submit</button>',
+            '<img src="image.png" onerror="fetch(\'https://example.invalid/\')">',
+            '<script>fetch("https://example.invalid/")</script>',
+            '<script>fetch("https://example.invalid/")',
+            '<img src="https://example.invalid/image.png" src="image.png">',
+            '<meta http-equiv="REFRESH" content="0;url=https://example.invalid/">',
+        ]:
+            with self.subTest(markup=markup):
+                (self.site / 'index.html').write_text(markup)
+                self.assertIn({'file': 'index.html', 'rule': 'unsupported-active-markup'}, module.audit_site(self.site)[1])
+
+    def test_stock_inert_search_and_theme_config_remain_allowed(self):
+        (self.site / 'index.html').write_text('<form><input type="search"></form><th style="width: 20%;">Keys</th><td style="text-align: center">Text</td><script>var base_url = ".", shortcuts = {"help":191,"next":78,"previous":80,"search":83};</script>')
+        self.assertEqual(module.audit_site(self.site)[1], [])
+
+    def test_only_pinned_theme_css_is_admitted(self):
+        (self.site / 'css').mkdir()
+        css = self.site / 'css/base.css'
+        css.write_bytes((module.THEME_CSS / 'base.css').read_bytes())
+        self.assertEqual(module.audit_site(self.site)[1], [])
+        css.write_text('@import "https://example.invalid/private.css";')
+        self.assertIn({'file': 'css/base.css', 'rule': 'unreviewed-css'}, module.audit_site(self.site)[1])
+
+    def test_entity_and_json_encoded_private_paths_are_scanned(self):
+        (self.site / 'index.html').write_text('&#47;ho&#109;e/example/private')
+        self.assertIn({'file': 'index.html', 'rule': 'local-home-path'}, module.audit_site(self.site)[1])
+        (self.site / 'index.html').write_text('Safe')
+        (self.site / 'search/search_index.json').write_text(r'{"text": "\u002fho\u006de/example/private"}')
+        self.assertIn({'file': 'search/search_index.json', 'rule': 'local-home-path'}, module.audit_site(self.site)[1])
+
     def test_project_root_links_and_fragments_resolve(self):
         (self.site / 'index.html').write_text('<h1 id="hello">Hi</h1><a href="/namtab/#hello">Home</a>')
         self.assertEqual(module.audit_site(self.site)[1], [])
