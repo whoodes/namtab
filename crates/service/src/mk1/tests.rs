@@ -810,3 +810,230 @@ fn full_journal_still_allows_protective_human_revoke_but_never_a_new_grant() {
             .is_none()
     );
 }
+
+fn typed_input_request(id: u64, session: &Session, text: &str, policy: InputPolicy) -> Request {
+    Request {
+        version: wire::VERSION.into(),
+        id,
+        operation: Op::Input {
+            session: session.id.clone(),
+            generation: session.generation,
+            revision: session.screen.revision,
+            mode_revision: session.screen.mode_revision,
+            policy,
+            intent: Intent::Text { text: text.into() },
+        },
+    }
+}
+fn wait_for_human_waiter(broker: &Broker) {
+    let start = Instant::now();
+    while broker.human_waiters.load(Ordering::Acquire) == 0 {
+        assert!(
+            start.elapsed() < Duration::from_millis(200),
+            "human input did not enter pending-output wait"
+        );
+        std::thread::sleep(Duration::from_millis(1));
+    }
+}
+#[test]
+fn human_live_waits_for_real_pending_echo_and_delivers_new_key_once() {
+    let mut h = Harness::new();
+    let session = h.shell();
+    let pid = h.broker.worker.process_id().to_string();
+    assert!(
+        std::process::Command::new("/bin/kill")
+            .args(["-STOP", &pid])
+            .status()
+            .unwrap()
+            .success()
+    );
+    assert_eq!(
+        h.broker
+            .state
+            .lock()
+            .unwrap()
+            .sessions
+            .get_mut(&session.id)
+            .unwrap()
+            .writer
+            .write_once(b"x")
+            .unwrap(),
+        1
+    );
+    let start = Instant::now();
+    while h.broker.state.lock().unwrap().sessions[&session.id].pending_output == 0 {
+        assert!(start.elapsed() < Duration::from_secs(1));
+        std::thread::sleep(Duration::from_millis(1));
+    }
+    let request = typed_input_request(100, &session, "y", InputPolicy::HumanLive);
+    let duplicate = request.clone();
+    let endpoint = h.human.clone();
+    let broker = Arc::clone(&h.broker);
+    let input = std::thread::spawn(move || broker.request(&endpoint, request));
+    wait_for_human_waiter(&h.broker);
+    assert!(
+        std::process::Command::new("/bin/kill")
+            .args(["-CONT", &pid])
+            .status()
+            .unwrap()
+            .success()
+    );
+    let response = input.join().unwrap();
+    assert!(response.ok, "{response:?}");
+    assert_eq!(response.receipt.as_ref().unwrap().delivered_bytes, 1);
+    let snapshot = h.wait(|snapshot| {
+        snapshot.sessions[0]
+            .screen
+            .lines
+            .iter()
+            .any(|line| line.trim_end().ends_with("xy"))
+    });
+    assert!(
+        snapshot.sessions[0]
+            .screen
+            .lines
+            .iter()
+            .all(|line| !line.contains("xyy"))
+    );
+    assert_eq!(
+        h.broker.request(&h.human, duplicate).receipt,
+        response.receipt
+    );
+}
+#[test]
+fn mode_change_during_human_pending_wait_refuses_before_first_write() {
+    let mut h = Harness::new();
+    let session = h.shell();
+    h.broker
+        .state
+        .lock()
+        .unwrap()
+        .sessions
+        .get_mut(&session.id)
+        .unwrap()
+        .pending_output += 1;
+    let request = typed_input_request(100, &session, "SHOULD_NOT_APPEAR", InputPolicy::HumanLive);
+    let endpoint = h.human.clone();
+    let broker = Arc::clone(&h.broker);
+    let input = std::thread::spawn(move || broker.request(&endpoint, request));
+    wait_for_human_waiter(&h.broker);
+    let Reply::Fed { frame, .. } = h
+        .broker
+        .worker_call(Operation::Feed {
+            session: session.id.clone(),
+            bytes: b"\x1b[?1h".to_vec(),
+        })
+        .unwrap()
+    else {
+        panic!("frame")
+    };
+    {
+        let mut state = h.broker.state.lock().unwrap();
+        let value = state.sessions.get_mut(&session.id).unwrap();
+        value.publish(frame);
+        value.pending_output -= 1;
+        h.broker.changed.notify_all();
+    }
+    let response = input.join().unwrap();
+    assert!(!response.ok);
+    assert_eq!(response.error.as_deref(), Some("mode_revision_stale"));
+    assert_eq!(response.receipt.unwrap().delivered_bytes, 0);
+    assert!(
+        h.broker.snapshot(&h.human).unwrap().sessions[0]
+            .screen
+            .lines
+            .iter()
+            .all(|line| !line.contains("SHOULD_NOT_APPEAR"))
+    );
+}
+#[test]
+fn takeover_during_human_pending_wait_refuses_old_writer_before_first_write() {
+    let mut h = Harness::new();
+    let session = h.shell();
+    let (_, replacement) = h.broker.hello(1, Role::Human, None);
+    let replacement = replacement.unwrap();
+    h.broker
+        .state
+        .lock()
+        .unwrap()
+        .sessions
+        .get_mut(&session.id)
+        .unwrap()
+        .pending_output += 1;
+    let request = typed_input_request(100, &session, "SHOULD_NOT_APPEAR", InputPolicy::HumanLive);
+    let endpoint = h.human.clone();
+    let broker = Arc::clone(&h.broker);
+    let input = std::thread::spawn(move || broker.request(&endpoint, request));
+    wait_for_human_waiter(&h.broker);
+    let takeover = h.broker.request(
+        &replacement,
+        Request {
+            version: wire::VERSION.into(),
+            id: 2,
+            operation: Op::TakeControl {
+                session: session.id.clone(),
+                generation: session.generation,
+                force: true,
+            },
+        },
+    );
+    assert!(takeover.ok);
+    let response = input.join().unwrap();
+    assert!(!response.ok);
+    assert_eq!(
+        response.error.as_deref(),
+        Some("writer_or_generation_stale")
+    );
+    assert_eq!(response.receipt.unwrap().delivered_bytes, 0);
+    assert_eq!(
+        h.broker.snapshot(&h.human).unwrap().sessions[0]
+            .owner
+            .as_deref(),
+        Some(replacement.as_str())
+    );
+}
+#[test]
+fn agent_observed_input_keeps_immediate_pending_output_refusal() {
+    let mut h = Harness::new();
+    let session = h.shell();
+    assert!(
+        h.human(Op::ReleaseControl {
+            session: session.id.clone(),
+            generation: session.generation
+        })
+        .ok
+    );
+    let session = h.broker.snapshot(&h.human).unwrap().sessions[0].clone();
+    assert!(
+        h.request(
+            &h.agent.clone(),
+            Op::TakeControl {
+                session: session.id.clone(),
+                generation: session.generation,
+                force: false
+            }
+        )
+        .ok
+    );
+    let session = h.broker.snapshot(&h.human).unwrap().sessions[0].clone();
+    h.broker
+        .state
+        .lock()
+        .unwrap()
+        .sessions
+        .get_mut(&session.id)
+        .unwrap()
+        .pending_output += 1;
+    let response = h.broker.request(
+        &h.agent,
+        typed_input_request(100, &session, "SHOULD_NOT_APPEAR", InputPolicy::Observed),
+    );
+    assert!(!response.ok);
+    assert_eq!(
+        response.error.as_deref(),
+        Some("canonical_output_pending_observe_again")
+    );
+    assert_eq!(response.receipt.unwrap().delivered_bytes, 0);
+    assert_eq!(h.broker.human_waiters.load(Ordering::Acquire), 0);
+    assert_eq!(h.broker.worker.outstanding(), 0);
+}

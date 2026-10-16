@@ -25,7 +25,7 @@ use std::fs::File;
 use std::io::{self, Read};
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, Condvar, Mutex};
 use std::time::Duration;
 
 pub use server::serve;
@@ -197,6 +197,9 @@ pub struct Broker {
     config: Config,
     epoch: String,
     stopping: AtomicBool,
+    changed: Condvar,
+    #[cfg(test)]
+    human_waiters: std::sync::atomic::AtomicUsize,
 }
 impl Broker {
     fn new(config: Config, journal_path: &Path) -> io::Result<Arc<Self>> {
@@ -221,6 +224,9 @@ impl Broker {
             config,
             epoch,
             stopping: AtomicBool::new(false),
+            changed: Condvar::new(),
+            #[cfg(test)]
+            human_waiters: std::sync::atomic::AtomicUsize::new(0),
         }))
     }
     fn shutdown(&self) {
@@ -309,6 +315,7 @@ impl Broker {
             session.view.owner = None;
             session.view.generation += 1;
         }
+        self.changed.notify_all();
         for endpoint in state.endpoints.values_mut() {
             for decision in endpoint.decisions.values_mut() {
                 if decision.receipt.state == "reserved" {
@@ -521,6 +528,7 @@ impl Broker {
         let binding = Sha256::digest(&body).into();
         value.view.generation = value.view.generation.checked_add(1)?;
         value.view.owner = None;
+        self.changed.notify_all();
         let receipt = Receipt {
             endpoint: endpoint.into(),
             id: request.id,
@@ -583,6 +591,7 @@ impl Broker {
                     .checked_add(1)
                     .ok_or("generation_exhausted")?;
                 value.view.owner = Some(endpoint.into());
+                self.changed.notify_all();
                 Ok((
                     "applied".into(),
                     0,
@@ -598,6 +607,7 @@ impl Broker {
                 Self::owner(value, endpoint, *generation)?;
                 value.view.owner = None;
                 value.view.generation += 1;
+                self.changed.notify_all();
                 Ok((
                     "applied".into(),
                     0,
