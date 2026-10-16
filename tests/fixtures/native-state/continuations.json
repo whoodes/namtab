@@ -1,0 +1,420 @@
+{
+  "format": "n0-05-review-data-1",
+  "status": "Proposed hand-authored subset assertions; no runtime or public schema adoption",
+  "profile": "px-dev-text-0",
+  "initial_geometry": {
+    "rows": 3,
+    "columns": 8
+  },
+  "event_assumption": "Each prefix is one fully reduced output event. Each listed continuation is a subsequent ordered event. Empty prefix is event cut 0.",
+  "requirements": [
+    "R07",
+    "R08",
+    "R11",
+    "R12",
+    "R13"
+  ],
+  "validation_families": [
+    "V07",
+    "V08",
+    "V11",
+    "V12",
+    "V13"
+  ],
+  "cases": [
+    {
+      "id": "utf8-scalar-split",
+      "prefix_output_hex": "c3",
+      "cut_after": "complete prefix event; parser need not be ground",
+      "expected_at_cut": {
+        "parser": "ground with UTF-8 prefix",
+        "utf8_prefix_hex": "c3",
+        "cursor": [
+          1,
+          1
+        ]
+      },
+      "continuation_events": [
+        {
+          "kind": "output",
+          "hex": "a958"
+        }
+      ],
+      "proposed_requirements_after": [
+        "Row 1 columns 1-2 contain U+00E9 and X, one cell each; cursor is (1,3).",
+        "No replacement, reply or control is synthesized at the cut."
+      ]
+    },
+    {
+      "id": "utf8-three-prefix-bytes",
+      "prefix_output_hex": "f09f92",
+      "cut_after": "complete prefix event; parser need not be ground",
+      "expected_at_cut": {
+        "parser": "ground with UTF-8 prefix",
+        "utf8_prefix_hex": "f09f92",
+        "expected_length": 4,
+        "retained_prefix_bytes": 3
+      },
+      "continuation_events": [
+        {
+          "kind": "output",
+          "hex": "a958"
+        }
+      ],
+      "proposed_requirements_after": [
+        "Complete valid U+1F4A9, which is outside the dev repertoire, into exactly one width-one U+FFFD; then paint X.",
+        "Do not flush at the cut, retain a dependency iterator, or create emoji/grapheme/wide-cell state."
+      ]
+    },
+    {
+      "id": "utf8-invalid-then-control",
+      "prefix_output_hex": "c3",
+      "cut_after": "complete prefix event; parser need not be ground",
+      "expected_at_cut": {
+        "parser": "ground with UTF-8 prefix",
+        "utf8_prefix_hex": "c3"
+      },
+      "continuation_events": [
+        {
+          "kind": "output",
+          "hex": "1b5b366e"
+        }
+      ],
+      "proposed_requirements_after": [
+        "Replace the prefix once with U+FFFD at (1,1), then process ESC as the query introducer.",
+        "Exactly one proposed CPR has hex 1b5b313b3252; replay dispatches none."
+      ]
+    },
+    {
+      "id": "escape-introducer-split",
+      "prefix_output_hex": "1b",
+      "cut_after": "complete prefix event; parser need not be ground",
+      "expected_at_cut": {
+        "parser": "ESC collect",
+        "intermediates_hex": ""
+      },
+      "continuation_events": [
+        {
+          "kind": "output",
+          "hex": "5b33316d41"
+        }
+      ],
+      "proposed_requirements_after": [
+        "A at (1,1) has foreground index 1; parser returns to ground.",
+        "The ESC at the prefix cut is retained, not printed or silently dropped."
+      ]
+    },
+    {
+      "id": "escape-intermediate-split",
+      "prefix_output_hex": "1b20",
+      "cut_after": "complete prefix event; parser need not be ground",
+      "expected_at_cut": {
+        "parser": "ESC collect",
+        "intermediates_hex": "20"
+      },
+      "continuation_events": [
+        {
+          "kind": "output",
+          "hex": "7158"
+        }
+      ],
+      "proposed_requirements_after": [
+        "Unsupported ESC SPACE q is consumed; only X is painted with default attributes."
+      ]
+    },
+    {
+      "id": "csi-number-split",
+      "prefix_output_hex": "1b5b33",
+      "cut_after": "complete prefix event; parser need not be ground",
+      "expected_at_cut": {
+        "parser": "CSI parameters",
+        "fields": [
+          {
+            "decimal_digits": "3",
+            "value": 3
+          }
+        ]
+      },
+      "continuation_events": [
+        {
+          "kind": "output",
+          "hex": "316d41"
+        }
+      ],
+      "proposed_requirements_after": [
+        "The digits form 31, not separate values 3 and 1; A has foreground index 1."
+      ]
+    },
+    {
+      "id": "csi-private-intermediate-split",
+      "prefix_output_hex": "1b5b3f3230303424",
+      "cut_after": "complete prefix event; parser need not be ground",
+      "expected_at_cut": {
+        "parser": "CSI intermediates",
+        "private_prefix": "?",
+        "fields": [
+          2004
+        ],
+        "intermediates_hex": "24"
+      },
+      "continuation_events": [
+        {
+          "kind": "output",
+          "hex": "70"
+        }
+      ],
+      "proposed_requirements_after": [
+        "Exactly one paste-mode-reset reply is proposed with hex 1b5b3f323030343b322479.",
+        "The query does not turn bracketed paste on."
+      ]
+    },
+    {
+      "id": "csi-empty-field-preserved",
+      "prefix_output_hex": "1b5b3b",
+      "cut_after": "complete prefix event; parser need not be ground",
+      "expected_at_cut": {
+        "parser": "CSI parameters",
+        "fields": [
+          {
+            "empty": true
+          },
+          {
+            "empty": true
+          }
+        ]
+      },
+      "continuation_events": [
+        {
+          "kind": "output",
+          "hex": "3348"
+        }
+      ],
+      "proposed_requirements_after": [
+        "CUP uses row default 1 and column 3; cursor is (1,3)."
+      ]
+    },
+    {
+      "id": "csi-overflow-in-ignore",
+      "prefix_output_hex": "1b5b3635353336",
+      "cut_after": "complete prefix event; parser need not be ground",
+      "expected_at_cut": {
+        "parser": "CSI ignore",
+        "reason": "numeric value exceeds 65535"
+      },
+      "continuation_events": [
+        {
+          "kind": "output",
+          "hex": "c3a96d58"
+        }
+      ],
+      "proposed_requirements_after": [
+        "Non-ASCII bytes stay discarded in ignore, without UTF-8 decoding; m ends ignore.",
+        "Only X is painted at (1,1), default attributes; overflow counts once."
+      ]
+    },
+    {
+      "id": "escape-overflow-in-ignore",
+      "prefix_output_hex": "1b202020",
+      "cut_after": "complete prefix event; parser need not be ground",
+      "expected_at_cut": {
+        "parser": "ESC ignore",
+        "reason": "third intermediate exceeds bound"
+      },
+      "continuation_events": [
+        {
+          "kind": "output",
+          "hex": "c3a97158"
+        }
+      ],
+      "proposed_requirements_after": [
+        "Non-ASCII bytes remain discarded; q ends ESC ignore; only X is painted."
+      ]
+    },
+    {
+      "id": "ignore-listed-c0",
+      "prefix_output_hex": "1b5b313a",
+      "cut_after": "complete prefix event; parser need not be ground",
+      "expected_at_cut": {
+        "parser": "CSI ignore",
+        "reason": "colon subparameter unsupported"
+      },
+      "continuation_events": [
+        {
+          "kind": "output",
+          "hex": "0a7158"
+        }
+      ],
+      "proposed_requirements_after": [
+        "LF executes without ending ignore; q then ends CSI ignore.",
+        "X is painted at (2,1), with no colon syntax reinterpreted as text."
+      ]
+    },
+    {
+      "id": "collect-nonascii-cancels",
+      "prefix_output_hex": "1b5b31",
+      "cut_after": "complete prefix event; parser need not be ground",
+      "expected_at_cut": {
+        "parser": "CSI parameters"
+      },
+      "continuation_events": [
+        {
+          "kind": "output",
+          "hex": "c3a958"
+        }
+      ],
+      "proposed_requirements_after": [
+        "c3 cancels CSI and is discarded; a9 is then a stray continuation in ground.",
+        "Paint one U+FFFD then X; do not combine c3/a9 into U+00E9."
+      ]
+    },
+    {
+      "id": "osc-pending-st",
+      "prefix_output_hex": "1b5d6d6164652d75701b",
+      "cut_after": "complete prefix event; parser need not be ground",
+      "expected_at_cut": {
+        "parser": "string discard with pending ESC",
+        "string_kind": "OSC",
+        "retained_payload_bytes": 0
+      },
+      "continuation_events": [
+        {
+          "kind": "output",
+          "hex": "5c58"
+        }
+      ],
+      "proposed_requirements_after": [
+        "Backslash completes ST; only X is painted; no title or host effect is created."
+      ]
+    },
+    {
+      "id": "dcs-not-a-nested-csi",
+      "prefix_output_hex": "1b5064617461071b",
+      "cut_after": "complete prefix event; parser need not be ground",
+      "expected_at_cut": {
+        "parser": "string discard with pending ESC",
+        "string_kind": "DCS",
+        "retained_payload_bytes": 0
+      },
+      "continuation_events": [
+        {
+          "kind": "output",
+          "hex": "5b33316d1b5c58"
+        }
+      ],
+      "proposed_requirements_after": [
+        "BEL does not terminate DCS; ESC [31m stays string payload, not SGR.",
+        "ST ends discard; X has default attributes."
+      ]
+    },
+    {
+      "id": "osc-bel-after-pending-escape",
+      "prefix_output_hex": "1b5d781b",
+      "cut_after": "complete prefix event; parser need not be ground",
+      "expected_at_cut": {
+        "parser": "string discard with pending ESC",
+        "string_kind": "OSC"
+      },
+      "continuation_events": [
+        {
+          "kind": "output",
+          "hex": "0758"
+        }
+      ],
+      "proposed_requirements_after": [
+        "BEL terminates OSC despite pending ESC; only X is painted."
+      ]
+    },
+    {
+      "id": "repeated-string-escape",
+      "prefix_output_hex": "1b5f6162631b",
+      "cut_after": "complete prefix event; parser need not be ground",
+      "expected_at_cut": {
+        "parser": "string discard with pending ESC",
+        "string_kind": "APC"
+      },
+      "continuation_events": [
+        {
+          "kind": "output",
+          "hex": "1b5c58"
+        }
+      ],
+      "proposed_requirements_after": [
+        "Second ESC retains pending ESC; backslash closes APC; only X is painted."
+      ]
+    },
+    {
+      "id": "string-cancel",
+      "prefix_output_hex": "1b5e696e76656e746564",
+      "cut_after": "complete prefix event; parser need not be ground",
+      "expected_at_cut": {
+        "parser": "string discard",
+        "string_kind": "PM"
+      },
+      "continuation_events": [
+        {
+          "kind": "output",
+          "hex": "1858"
+        }
+      ],
+      "proposed_requirements_after": [
+        "CAN cancels PM, produces no glyph and permits X in ground."
+      ]
+    },
+    {
+      "id": "utf8-eof",
+      "prefix_output_hex": "c3",
+      "cut_after": "complete prefix event; parser need not be ground",
+      "expected_at_cut": {
+        "parser": "ground with UTF-8 prefix"
+      },
+      "continuation_events": [
+        {
+          "kind": "output_eof"
+        },
+        {
+          "kind": "output_eof"
+        }
+      ],
+      "proposed_requirements_after": [
+        "First EOF paints exactly one U+FFFD; repeated EOF is inert and stream is closed."
+      ]
+    },
+    {
+      "id": "sos-eof-pending-st",
+      "prefix_output_hex": "1b58646973636172641b",
+      "cut_after": "complete prefix event; parser need not be ground",
+      "expected_at_cut": {
+        "parser": "string discard with pending ESC",
+        "string_kind": "SOS"
+      },
+      "continuation_events": [
+        {
+          "kind": "output_eof"
+        }
+      ],
+      "proposed_requirements_after": [
+        "EOF records incomplete and closes the stream, without painting or inventing ST."
+      ]
+    },
+    {
+      "id": "csi-at-field-bound",
+      "prefix_output_hex": "1b5b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b303b3030303031",
+      "cut_after": "complete prefix event; parser need not be ground",
+      "expected_at_cut": {
+        "parser": "CSI parameters",
+        "field_count": 64,
+        "last_value": 1
+      },
+      "continuation_events": [
+        {
+          "kind": "output",
+          "hex": "6d58"
+        }
+      ],
+      "proposed_requirements_after": [
+        "64 fields are syntactically within the field bound, but SGR values include 1 only after default zeros; X is bold.",
+        "The 512-total-byte ceiling is unreachable for well-formed dev syntax under the earlier bounds; review the malformed long-run requirement separately."
+      ]
+    }
+  ]
+}

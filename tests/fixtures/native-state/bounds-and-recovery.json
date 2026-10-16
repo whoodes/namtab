@@ -1,0 +1,147 @@
+{
+  "format": "n0-05-review-data-1",
+  "status": "Adversarial fixture requirements only; no test execution, measurements or wire adoption",
+  "profile": "px-dev-text-0",
+  "requirements": [
+    "R07",
+    "R08",
+    "R11",
+    "R12",
+    "R13",
+    "R15",
+    "R16"
+  ],
+  "validation_families": [
+    "V07",
+    "V08",
+    "V11",
+    "V12",
+    "V13",
+    "V15",
+    "V16"
+  ],
+  "bounds": [
+    {
+      "id": "numeric-value",
+      "at_bound_hex": "1b5b36353533354158",
+      "one_beyond_hex": "1b5b36353533364158",
+      "requirement": "At bound clamp movement once; beyond discard the whole sequence through A, then paint X without the movement. Start from row 3 to distinguish."
+    },
+    {
+      "id": "numeric-leading-zeros",
+      "at_bound_hex": "1b5b30303030314358",
+      "one_beyond_hex": "1b5b3030303030314358",
+      "requirement": "Five digits valid despite leading zeros; sixth digit enters ignore even though value remains 1; final C is consumed and X paints without movement."
+    },
+    {
+      "id": "parameter-fields",
+      "recipe": "CSI followed by 63 semicolons then m gives 64 explicit empty fields; 64 semicolons gives 65.",
+      "requirement": "The first resets attributes; the second overflows and changes none, with no extra empty field lost at a cut."
+    },
+    {
+      "id": "intermediates",
+      "at_bound_hex": "1b20207158",
+      "one_beyond_hex": "1b2020207158",
+      "requirement": "Two intermediates form unsupported ESC; third enters ignore. Neither prints sequence bytes; only X appears."
+    },
+    {
+      "id": "csi-total-length",
+      "recipe": "The 512-byte CSI ceiling is defensive: with <=64 decimal fields of <=5 digits, <=63 separators, <=1 prefix and <=2 intermediates, a well-formed dev CSI has at most 389 bytes including introducer/final.",
+      "requirement": "Do not fabricate a well-formed 512-byte case that violates earlier syntax/count bounds. Feed >512 ignored bytes under malformed syntax to verify constant-state discard; future syntax expansion must independently test a newly reachable total bound."
+    },
+    {
+      "id": "geometry",
+      "at_bound": {
+        "rows": 200,
+        "columns": 500
+      },
+      "one_beyond": [
+        {
+          "rows": 201,
+          "columns": 500
+        },
+        {
+          "rows": 200,
+          "columns": 501
+        },
+        {
+          "rows": 1,
+          "columns": 2
+        }
+      ],
+      "requirement": "At bound requires capacity admission; out-of-range requests reject before either grid/slot/cut changes. Check arithmetic on oversized imported lengths before allocation."
+    },
+    {
+      "id": "string-discard",
+      "recipe": "For each OSC/DCS/APC/PM/SOS kind, discard 1 byte and a bounded 65536-byte synthetic payload containing CR/LF/BEL/ESC, ending in the permitted terminator; partition immediately before/after pending ESC.",
+      "requirement": "Retain zero payload bytes independent of length; only OSC BEL terminates. No newline screen effects, allocation proportional to payload or nested control dispatch."
+    },
+    {
+      "id": "dev-grapheme-exclusion",
+      "output_hex": "41cc81e7958c",
+      "requirement": "Paint A followed by one replacement for U+0301 and one for U+754C, each width one. Do not combine, produce a wide tail or claim Unicode18 conformance."
+    },
+    {
+      "id": "reply-reservation",
+      "recipe": "In a 512-byte event, finish one pending DSR query with its final byte, then issue 127 more four-byte DSR queries and pad to the byte cap. Keep dispatch stalled before the next output event.",
+      "requirement": "Reserve 128 slots / 4096 bytes before starting the event; stage at most 128 replies and dispatch only after event commit. Pause the next event until prior committed reply capacity is available; never stall mid-event waiting on its own unpublished replies, drop a query, deduplicate or expose partial state."
+    },
+    {
+      "id": "work-quanta",
+      "recipe": "Maximum-size grids; repeated RIS/ED2/scroll and long ignored strings, delivered in <=512-byte keeper events.",
+      "requirement": "Yield by 4096 inspected bytes or 4096 charged cells/work items, including copies/snapshots. Staged mutations never leak partial frames; no count-sized loop, geometry/input/reply overtaking or unbounded COW versions. Time/fairness remains unmeasured."
+    },
+    {
+      "id": "identity-and-diagnostics",
+      "recipe": "Import bounded counters at UINT32_MAX diagnostic saturation and UINT64_MAX next-row/revision allocation, under an otherwise admissible exact tuple.",
+      "requirement": "Diagnostic counters saturate and set flags; identity allocation exhaustion is unavailable/unknown and never wraps, including across RIS. No payload log per failure."
+    }
+  ],
+  "forbidden_claims": [
+    {
+      "id": "frame-is-full-state",
+      "claim": "A live active-grid frame resumes a parser because its cells look correct.",
+      "required_disposition": "Refuse completeness: inactive buffer, saves/modes/continuation/history/cuts must be explicit."
+    },
+    {
+      "id": "missing-discard-bit",
+      "claim": "Restore string discard with pending ESC as ground, or omit the pending bit.",
+      "required_disposition": "Reject incomplete import; do not interpret the remaining backslash/payload as new text or commands."
+    },
+    {
+      "id": "tuple-drift",
+      "claim": "Load under a different engine/profile/Unicode-width-reflow/config policy because a screen hash matches.",
+      "required_disposition": "Refuse incompatible tuple; no cross-version live migration is adopted."
+    },
+    {
+      "id": "missing-canonical-tail",
+      "claim": "Skip an absent output/resize/options/EOF event and accept the later contiguous-looking screen.",
+      "required_disposition": "Interpretation remains unknown and all application input, including raw, stays fenced."
+    },
+    {
+      "id": "capture-gap-only",
+      "claim": "A capture-only retention gap means an otherwise complete live canonical interpretation is necessarily missing bytes.",
+      "required_disposition": "Keep evidence/recovery availability distinct from the known live interpretation; no false automatic reset."
+    },
+    {
+      "id": "snapshot-rewinds-receipts",
+      "claim": "Restore old terminal state and thereby erase consumed request sequences or retry an uncertain reply/input.",
+      "required_disposition": "Receipt fences/delivery records remain independent; do not resend; lost receipt identity retires the affected namespace."
+    },
+    {
+      "id": "partial-event-frontier",
+      "claim": "Publish changed cells/modes from half an event with the previous whole-event frontier or snapshot its private scratch as complete.",
+      "required_disposition": "Retain the last committed projection or withhold it until the event completes; snapshot only eligible completed-event cuts."
+    },
+    {
+      "id": "replay-authority",
+      "claim": "Import restores a writer grant or dispatches historical queries because proposed reply IDs are present.",
+      "required_disposition": "Decode/replay without external effects; reobserve/reconcile and require fresh authority independently."
+    },
+    {
+      "id": "deterministic-process",
+      "claim": "Fixed-event reducer equivalence proves identical shell scheduling, filesystem/network effects or future process output.",
+      "required_disposition": "Reject claim; equivalence covers admitted bounded reduction under a fixed event order and exact semantic tuple only."
+    }
+  ]
+}
