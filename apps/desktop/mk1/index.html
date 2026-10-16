@@ -37,44 +37,46 @@
         <h2>Shared tasks</h2>
         <label for="tasks" class="hint">Selected contract</label>
         <select id="tasks" size="4" aria-label="Shared task contract"></select>
-        <details id="define-task-tools">
-          <summary>Define a task</summary>
-          <form id="define-task-form">
-            <label
-              >Task label<input
-                id="contract-name"
-                value="task-1"
-                maxlength="80"
-                required
-                autocomplete="off"
-            /></label>
-            <label
-              >Goal / instructions<textarea
-                id="contract-goal"
-                rows="3"
-                maxlength="512"
-                placeholder="Instructions shared with connected typed agent clients"
-                required
-              ></textarea>
-            </label>
-            <label
-              >Expected artifact paths
-              <span class="hint">Optional, one per line (maximum two)</span
-              ><textarea
-                id="expected-artifacts"
-                rows="2"
-                spellcheck="false"
-              ></textarea>
-            </label>
-            <button id="define-task" type="submit">
-              Create immutable contract
-            </button>
-          </form>
-          <p class="hint">
-            Instructions are shared data. Creating a task does not start a model
-            or execute a command.
-          </p>
-        </details>
+        <div id="task-definition-sidebar">
+          <details id="define-task-tools">
+            <summary>Define a task</summary>
+            <form id="define-task-form">
+              <label
+                >Task label<input
+                  id="contract-name"
+                  value="task-1"
+                  maxlength="80"
+                  required
+                  autocomplete="off"
+              /></label>
+              <label
+                >Goal / instructions<textarea
+                  id="contract-goal"
+                  rows="3"
+                  maxlength="512"
+                  placeholder="Instructions shared with connected typed agent clients"
+                  required
+                ></textarea>
+              </label>
+              <label
+                >Expected artifact paths
+                <span class="hint">Optional, one per line (maximum two)</span
+                ><textarea
+                  id="expected-artifacts"
+                  rows="2"
+                  spellcheck="false"
+                ></textarea>
+              </label>
+              <button id="define-task" type="submit">
+                Create immutable contract
+              </button>
+            </form>
+            <p class="hint">
+              Instructions are shared data. Creating a task does not start a
+              model or execute a command.
+            </p>
+          </details>
+        </div>
         <h2>Shell sessions</h2>
         <label for="sessions" class="hint">Selected shell</label>
         <select id="sessions" aria-label="Session"></select>
@@ -106,6 +108,7 @@
         </section>
       </aside>
       <main>
+        <p id="attention" class="warning" role="alert" hidden></p>
         <section class="task-overview" aria-labelledby="task-heading">
           <p class="eyebrow">Selected shared task</p>
           <h2 id="task-heading">Choose or define a task</h2>
@@ -113,12 +116,17 @@
             Task instructions and execution facts will appear here.
           </p>
           <p id="task-expectations" class="hint"></p>
+          <div id="empty-task-composer"></div>
           <details>
             <summary>Contract identity</summary>
             <p id="task-revision" class="hint">No contract observed</p>
           </details>
         </section>
-        <section class="activity" aria-labelledby="activity-heading">
+        <section
+          id="activity"
+          class="activity"
+          aria-labelledby="activity-heading"
+        >
           <div class="section-heading">
             <h2 id="activity-heading">Activity</h2>
             <div class="toolbar">
@@ -306,11 +314,11 @@ Connect to observe a real session.</pre
             application completion. Unknown mutations are never replayed.
             Artifact labels and task contracts do not prove causality.
           </p>
+          <p id="notice" class="notice" role="status" aria-live="polite">
+            Waiting for the public endpoint.
+          </p>
           <div id="receipts" class="receipt-list"></div>
         </details>
-        <p id="notice" class="notice" role="status" aria-live="polite">
-          Waiting for the public endpoint.
-        </p>
       </main>
     </div>
     <footer>
