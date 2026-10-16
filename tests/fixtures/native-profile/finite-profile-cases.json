@@ -1,0 +1,510 @@
+{
+  "artifact_kind": "synthetic-review-data",
+  "profile": "px-dev-text-0",
+  "status": "accepted-for-drafting recommendation; owner/reviewer acceptance pending",
+  "contract_owner": "docs/engine/compatibility-and-core.md",
+  "origin": "Hand-authored synthetic expectations for N0-04 #10, 2026-10-16; no captures, copied upstream corpus, runtime execution or oracle output",
+  "scope": "Small review sample only. Expected projections omit other state and do not define a wire schema, full conformance corpus, test runner or snapshot format.",
+  "evidence_status": {
+    "data_review": "pending independent N0-07 review",
+    "owned_engine": "NOT IMPLEMENTED",
+    "runtime_tests": "NOT RUN",
+    "NG0": "NOT ACCEPTED",
+    "NG1": "NOT RUN"
+  },
+  "assumptions": [
+    "All cases start in contract initial state at the specified rows/columns unless a setup output is stated.",
+    "Hex strings denote literal ordered output or input bytes; no frontend parser is an authority.",
+    "Input cases assume broker authority/freshness admission and known canonical state; those conditions are not tested here.",
+    "Output expectations are selected visible/hidden state projections, not complete state equality.",
+    "Original terminal/continuations.json and historical X4/EA1 FAIL gates remain unchanged.",
+    "No application/widget focus, readiness, command acceptance or process outcome follows from encoded bytes."
+  ],
+  "source_basis": [
+    {
+      "id": "S07",
+      "url": "https://ecma-international.org/publications-and-standards/standards/ecma-48/",
+      "use": "control-syntax vocabulary"
+    },
+    {
+      "id": "S08",
+      "url": "https://invisible-island.net/xterm/ctlseqs/ctlseqs.html",
+      "use": "documented DEC/xterm alternatives; exact profile policy is P"
+    },
+    {
+      "id": "P",
+      "path": "docs/engine/compatibility-and-core.md",
+      "use": "namtab choices and hand-authored expectations; remote sources are not content-pinned here"
+    }
+  ],
+  "output_cases": [
+    {
+      "id": "saved-cursor-live-continuation",
+      "geometry": {
+        "rows": 5,
+        "columns": 10
+      },
+      "before_cut_hex": "1b5b323b33481b371b5b343b3748",
+      "after_cut_hex": "1b3858",
+      "expected_projection": {
+        "active_buffer": "primary",
+        "cursor": [
+          2,
+          4
+        ],
+        "cells": [
+          {
+            "at": [
+              2,
+              3
+            ],
+            "text": "X"
+          }
+        ],
+        "save_slot_cursor": [
+          2,
+          3
+        ],
+        "pending_wrap": false,
+        "reply_hex": []
+      },
+      "review_note": "Same synthetic output as the original saved-cursor continuation, with independent explicit expected state; no old result altered."
+    },
+    {
+      "id": "scroll-region-live-continuation",
+      "geometry": {
+        "rows": 5,
+        "columns": 8
+      },
+      "before_cut_hex": "310d0a320d0a330d0a340d0a351b5b323b34721b5b343b3148",
+      "after_cut_hex": "0d0a58",
+      "expected_projection": {
+        "rows": [
+          "1       ",
+          "3       ",
+          "4       ",
+          "X       ",
+          "5       "
+        ],
+        "cursor": [
+          4,
+          2
+        ],
+        "region": [
+          2,
+          4
+        ],
+        "primary_history_rows": 0,
+        "reply_hex": []
+      }
+    },
+    {
+      "id": "custom-tab-live-continuation",
+      "geometry": {
+        "rows": 4,
+        "columns": 10
+      },
+      "before_cut_hex": "1b5b33671b5b313b34481b481b5b48",
+      "after_cut_hex": "0958",
+      "expected_projection": {
+        "cursor": [
+          1,
+          5
+        ],
+        "tab_columns": [
+          4
+        ],
+        "rows": [
+          "   X      ",
+          "          ",
+          "          ",
+          "          "
+        ],
+        "reply_hex": []
+      }
+    },
+    {
+      "id": "alternate-return-and-repeated-enter",
+      "geometry": {
+        "rows": 4,
+        "columns": 12
+      },
+      "before_cut_hex": "6e6f726d616c1b5b3f3130343968414c541b5b3f3130343968",
+      "after_cut_hex": "1b5b3f313034396c5a",
+      "expected_projection": {
+        "active_buffer": "primary",
+        "cursor": [
+          1,
+          8
+        ],
+        "rows": [
+          "normalZ     ",
+          "            ",
+          "            ",
+          "            "
+        ],
+        "return_slot_valid": false,
+        "reply_hex": []
+      },
+      "review_note": "Second 1049h must not clear ALT or overwrite/push the primary return slot."
+    },
+    {
+      "id": "partial-csi-and-unsupported-sgr-atomicity",
+      "geometry": {
+        "rows": 4,
+        "columns": 10
+      },
+      "before_cut_hex": "1b5b3331",
+      "after_cut_hex": "6d581b5b313b33383b353b3230306d59",
+      "expected_projection": {
+        "cursor": [
+          1,
+          3
+        ],
+        "cells": [
+          {
+            "at": [
+              1,
+              1
+            ],
+            "text": "X",
+            "foreground": {
+              "indexed": 1
+            },
+            "bold": false
+          },
+          {
+            "at": [
+              1,
+              2
+            ],
+            "text": "Y",
+            "foreground": {
+              "indexed": 1
+            },
+            "bold": false
+          }
+        ],
+        "reply_hex": [],
+        "unsupported_sequences": 1
+      },
+      "review_note": "The unsupported 256-color SGR is ignored as a whole, including its leading bold parameter."
+    },
+    {
+      "id": "query-origin-and-mode-cut",
+      "geometry": {
+        "rows": 5,
+        "columns": 10
+      },
+      "output_hex": "1b5b323b34721b5b3f36681b5b323b33481b5b366e1b5b3f366e1b5b3f3230303424701b5b63",
+      "expected_projection": {
+        "cursor": [
+          3,
+          3
+        ],
+        "region": [
+          2,
+          4
+        ],
+        "origin": true,
+        "reply_hex": [
+          "1b5b323b3352",
+          "1b5b3f323b3352",
+          "1b5b3f323030343b322479"
+        ],
+        "DA_reply_count": 0
+      },
+      "review_note": "CPR reports row relative to top margin; DA has no fabricated device identity."
+    },
+    {
+      "id": "utf8-prefix-and-narrow-repertoire",
+      "geometry": {
+        "rows": 4,
+        "columns": 10
+      },
+      "chunks_hex": [
+        "c3",
+        "a9e282",
+        "ac"
+      ],
+      "expected_projection": {
+        "cursor": [
+          1,
+          3
+        ],
+        "cells": [
+          {
+            "at": [
+              1,
+              1
+            ],
+            "text": "\u00e9"
+          },
+          {
+            "at": [
+              1,
+              2
+            ],
+            "text": "\ufffd"
+          }
+        ],
+        "unsupported_text_scalars": 1,
+        "utf8_pending_bytes_hex": "",
+        "reply_hex": []
+      },
+      "review_note": "e-acute is the narrow admitted UTF-8 slice; Euro is deliberately unqualified and paints replacement."
+    },
+    {
+      "id": "soft-reset-input-modes",
+      "geometry": {
+        "rows": 4,
+        "columns": 10
+      },
+      "output_hex": "411b5b3f31681b3d1b5b3f3637681b5b3f32303034681b5b3f31303034681b5b2170",
+      "expected_projection": {
+        "cursor": [
+          1,
+          2
+        ],
+        "cells": [
+          {
+            "at": [
+              1,
+              1
+            ],
+            "text": "A"
+          }
+        ],
+        "application_cursor": false,
+        "application_keypad": false,
+        "backarrow": "DEL",
+        "paste": false,
+        "focus": false,
+        "reply_hex": []
+      }
+    },
+    {
+      "id": "overflow-ignore-non-ascii-continuation",
+      "geometry": {
+        "rows": 3,
+        "columns": 8
+      },
+      "before_cut_hex": "1b5b313233343536",
+      "at_cut_projection": {
+        "parser_state": "csi-ignore",
+        "pending_utf8_hex": ""
+      },
+      "after_cut_hex": "c3a96d58",
+      "expected_projection": {
+        "rows": [
+          "X       ",
+          "        ",
+          "        "
+        ],
+        "cursor": [
+          1,
+          2
+        ],
+        "reply_hex": []
+      },
+      "review_note": "Sixth digit enters ignore. UTF-8-looking bytes remain discarded until CSI final m; only X paints. This is a P-policy oracle, not executed output."
+    },
+    {
+      "id": "syntax-ignore-non-ascii-continuation",
+      "geometry": {
+        "rows": 3,
+        "columns": 8
+      },
+      "before_cut_hex": "1b5b313a",
+      "at_cut_projection": {
+        "parser_state": "csi-ignore",
+        "pending_utf8_hex": ""
+      },
+      "after_cut_hex": "c3a96d58",
+      "expected_projection": {
+        "rows": [
+          "X       ",
+          "        ",
+          "        "
+        ],
+        "cursor": [
+          1,
+          2
+        ],
+        "reply_hex": []
+      },
+      "review_note": "Unsupported colon syntax enters ignore; same non-ASCII precedence as resource overflow."
+    },
+    {
+      "id": "alternate-save-slot-reinitialized",
+      "geometry": {
+        "rows": 3,
+        "columns": 8
+      },
+      "before_cut_hex": "1b5b3f31303439681b5b323b33481b371b5b3f313034396c",
+      "after_cut_hex": "1b5b3f31303439681b3858",
+      "expected_projection": {
+        "active_buffer": "alternate",
+        "rows": [
+          "X       ",
+          "        ",
+          "        "
+        ],
+        "cursor": [
+          1,
+          2
+        ],
+        "save_slot_cursor": [
+          1,
+          1
+        ],
+        "reply_hex": []
+      },
+      "review_note": "A previous alternate DECSC slot does not survive exit and new alternate entry."
+    }
+  ],
+  "input_cases": [
+    {
+      "id": "classic-aliases",
+      "geometry": {
+        "rows": 4,
+        "columns": 10
+      },
+      "expected_encoding": [
+        {
+          "intent": "Ctrl-I",
+          "hex": "09"
+        },
+        {
+          "intent": "Tab",
+          "hex": "09"
+        },
+        {
+          "intent": "Ctrl-M",
+          "hex": "0d"
+        },
+        {
+          "intent": "Enter",
+          "hex": "0d"
+        },
+        {
+          "intent": "Ctrl-[",
+          "hex": "1b"
+        },
+        {
+          "intent": "Escape",
+          "hex": "1b"
+        }
+      ]
+    },
+    {
+      "id": "mode-aware-key-and-keypad",
+      "geometry": {
+        "rows": 4,
+        "columns": 10
+      },
+      "expected_encoding": [
+        {
+          "intent": "Up",
+          "setup_output_hex": "",
+          "hex": "1b5b41"
+        },
+        {
+          "intent": "Up",
+          "setup_output_hex": "1b5b3f3168",
+          "hex": "1b4f41"
+        },
+        {
+          "intent": "Ctrl-Left",
+          "setup_output_hex": "1b5b3f3168",
+          "hex": "1b5b313b3544"
+        },
+        {
+          "intent": "KP1",
+          "setup_output_hex": "",
+          "hex": "31"
+        },
+        {
+          "intent": "KP1",
+          "setup_output_hex": "1b3d",
+          "hex": "1b4f71"
+        },
+        {
+          "intent": "Alt-x with resolved text x",
+          "setup_output_hex": "",
+          "hex": "1b78"
+        },
+        {
+          "intent": "Shift-Tab",
+          "setup_output_hex": "",
+          "hex": "1b5b5a"
+        }
+      ],
+      "review_note": "Each entry is independent, starting initial before its stated setup; KP1 does not become End."
+    },
+    {
+      "id": "paste-and-focus",
+      "geometry": {
+        "rows": 4,
+        "columns": 10
+      },
+      "expected_encoding": [
+        {
+          "intent": "Paste a CRLF b with explicit lf-from-crlf-v1",
+          "content_hex": "610d0a62",
+          "setup_output_hex": "1b5b3f3230303468",
+          "hex": "1b5b3230307e610a621b5b3230317e"
+        },
+        {
+          "intent": "FocusReport focus-in",
+          "setup_output_hex": "1b5b3f3130303468",
+          "hex": "1b5b49"
+        }
+      ]
+    },
+    {
+      "id": "refuse-before-write",
+      "geometry": {
+        "rows": 4,
+        "columns": 10
+      },
+      "expected_rejections": [
+        {
+          "intent": "Ctrl-Tab",
+          "error_family": "UnsupportedCapability",
+          "hex": ""
+        },
+        {
+          "intent": "key release",
+          "error_family": "UnsupportedCapability",
+          "hex": ""
+        },
+        {
+          "intent": "CommitText containing ESC",
+          "error_family": "InvalidRequest",
+          "hex": ""
+        },
+        {
+          "intent": "Paste containing ESC [ 201 ~",
+          "error_family": "InvalidRequest",
+          "hex": ""
+        },
+        {
+          "intent": "Paste without explicit fallback while bracketed mode off",
+          "error_family": "UnsupportedCapability",
+          "hex": ""
+        },
+        {
+          "intent": "FocusReport while focus mode off",
+          "error_family": "UnsupportedCapability",
+          "hex": ""
+        },
+        {
+          "intent": "request Kitty keyboard encoding",
+          "error_family": "UnsupportedCapability",
+          "hex": ""
+        }
+      ]
+    }
+  ]
+}
