@@ -152,10 +152,7 @@
   function normalizeKey(event) {
     if (
       event.metaKey ||
-      (event.ctrlKey &&
-        !event.altKey &&
-        (event.key.toLowerCase() === "v" ||
-          (event.shiftKey && event.key.toLowerCase() === "c"))) ||
+      (event.ctrlKey && !event.altKey && event.key.toLowerCase() === "v") ||
       (event.shiftKey &&
         event.key === "Insert" &&
         !event.ctrlKey &&
