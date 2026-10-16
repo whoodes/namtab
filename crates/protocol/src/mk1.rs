@@ -283,7 +283,7 @@ mod tests {
                 format!(r#"{{"version":"namtab.mk1/1","id":{id},"operation":{{"op":"observe"}}}}"#);
             assert!(decode(q.as_bytes()).is_err());
         }
-        assert_eq!(decode(&vec![b'['; 17]), Err("nesting"));
+        assert_eq!(decode(&[b'['; 17]), Err("nesting"));
         assert_eq!(decode(&vec![0; MAX_FRAME + 1]), Err("frame_size"));
     }
 }
