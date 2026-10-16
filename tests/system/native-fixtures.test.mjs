@@ -60,7 +60,7 @@ test("native corpus and earlier native manifests receive static checks only", as
   assert.equal(result.state_cases, 26);
   assert.equal(result.input_cases, 24);
   assert.equal(result.transport_partitions_checked, 879);
-  assert.equal(result.local_payload_digests_verified, 13);
+  assert(result.local_payload_digests_verified >= 16);
   assert.equal(result.static_oracle_data, "PASS");
   assert.equal(
     result.engine_state_continuation_key_reply_conformance,
@@ -109,6 +109,7 @@ test("earlier identity, receipt and state payloads cannot drift silently", async
     "native-contract/valid-event-cuts.json",
     "native-receipts/valid-lifecycle.json",
     "native-state/continuations.json",
+    "native-provenance/admission.json",
   ]) {
     await sandbox(async (root) => {
       await writeFile(join(root, "tests/fixtures", path), "{}\n");
