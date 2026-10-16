@@ -98,7 +98,7 @@
     text(
       "task-status",
       managed
-        ? `${managed.state} · exit ${managed.exit_code ?? "not observed"}${managed.truncated ? " · output truncated" : ""}`
+        ? `${state.connected ? "" : "last observed "}${managed.state} · exit ${managed.exit_code ?? "not observed"}${managed.truncated ? " · output truncated" : ""}`
         : "No attempt",
     );
     text("stdout", managed?.stdout || "");
@@ -165,13 +165,13 @@
     text(
       "owner",
       value
-        ? `Input owner: ${value.owner || "none"}${owner ? " (this endpoint)" : ""} · generation ${value.generation}`
+        ? `Input owner${next.connected ? "" : " (last observed)"}: ${value.owner || "none"}${owner ? " (this endpoint)" : ""} · generation ${value.generation}`
         : "No selected session",
     );
     text(
       "process",
       value
-        ? `${value.process} · exit ${value.exit_code ?? "not observed"}`
+        ? `${next.connected ? "" : "last observed "}${value.process} · exit ${value.exit_code ?? "not observed"}`
         : "No session",
     );
     text(
@@ -197,7 +197,7 @@
     text(
       "screen-status",
       value
-        ? `${value.screen.cols}×${value.screen.rows} · screen revision ${value.screen.revision} · mode revision ${value.screen.mode_revision} · ${value.screen.alternate ? "alternate" : "primary"} screen · input ${value.screen.input_known ? "known" : "UNKNOWN / refused"}${value.screen.diagnostics.length ? " · " + value.screen.diagnostics.join("; ") : ""}`
+        ? `${next.connected ? "" : "LAST OBSERVED · "}${value.screen.cols}×${value.screen.rows} · screen revision ${value.screen.revision} · mode revision ${value.screen.mode_revision} · ${value.screen.alternate ? "alternate" : "primary"} screen · input ${value.screen.input_known ? "known" : "UNKNOWN / refused"}${value.screen.diagnostics.length ? " · " + value.screen.diagnostics.join("; ") : ""}`
         : "No canonical observation",
     );
     renderScreen(value);
