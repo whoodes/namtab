@@ -52,6 +52,14 @@
       throw new Error("Invalid request envelope");
     return { version: VERSION, id, operation };
   }
+  function validSocketPath(value) {
+    return (
+      string(value, 107) &&
+      value.startsWith("/") &&
+      !value.includes("\0") &&
+      new TextEncoder().encode(value).length <= 107
+    );
+  }
   function validateCommandShape(command) {
     const fields = {
       state: [],
@@ -363,6 +371,7 @@
     integer,
     string,
     requestEnvelope,
+    validSocketPath,
     validateCommandShape,
     textAllowed,
     validateIntent,

@@ -80,6 +80,15 @@ test("MK1 desktop emits the strict nested wire envelope and limits IPC fields", 
   );
 });
 
+test("MK1 desktop refuses Linux socket paths before an opaque transport failure", () => {
+  assert.equal(mk1.validSocketPath("/" + "a".repeat(106)), true);
+  assert.equal(mk1.validSocketPath("/" + "a".repeat(107)), false);
+  assert.equal(mk1.validSocketPath("/" + "£".repeat(53)), true);
+  assert.equal(mk1.validSocketPath("/" + "£".repeat(54)), false);
+  for (const value of [null, undefined, "relative.sock", "/a\0b"])
+    assert.equal(mk1.validSocketPath(value), false);
+});
+
 test("MK1 desktop keeps layout-consumed text distinct from modified keys", () => {
   assert.deepEqual(mk1.normalizeKey(key("£", { shiftKey: true })), {
     intent: { kind: "text", text: "£" },

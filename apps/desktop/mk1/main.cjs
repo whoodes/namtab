@@ -9,6 +9,7 @@ const {
   integer,
   validateIntent,
   validateCommandShape,
+  validSocketPath,
   inputFenceValid,
 } = require("./shared.js");
 
@@ -45,9 +46,9 @@ app.enableSandbox();
 const socketIndex = process.argv.indexOf("--socket");
 const socketPath =
   socketIndex >= 0 ? process.argv[socketIndex + 1] : process.env.NAMTAB_SOCKET;
-if (!socketPath || !path.isAbsolute(socketPath) || socketPath.includes("\0")) {
+if (!validSocketPath(socketPath)) {
   process.stderr.write(
-    "MK1 desktop requires --socket /absolute/public.sock or NAMTAB_SOCKET.\n",
+    "MK1 desktop requires --socket /absolute/public.sock or NAMTAB_SOCKET, at most 107 UTF-8 bytes on Linux and without NUL. Use a short public endpoint path.\n",
   );
   app.exit(1);
 } else {
