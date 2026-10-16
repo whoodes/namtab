@@ -88,6 +88,25 @@ Artifact registration explicitly associates a bounded workspace file with a task
 
 Use MK1 to assess typing feel, visibility of ownership/status, navigation between two sessions/tasks and the usefulness of truthful native evidence. After verified handoff, implementation stops for user feedback. Broader compatibility, hardening, polish and full NG1 remain separate work.
 
+## Detach, stop and evaluate again
+
+To leave work running, detach the TUI with Ctrl-G q and close the desktop window. To end a test, first finish or interrupt your commands and explicitly exit each shell; observe its exited state. Close clients, then use Ctrl-C in the daemon terminal. Killing the daemon is not an orderly all-process shutdown: descendants/effects may survive and a socket may remain. Inspect and clean up only your known processes separately; never infer termination from a closed window.
+
+Completed attempts and sessions still consume the lifetime budget. For another evaluation, use a **new** owned run directory instead of deleting an old socket/journal. After the build, these explicit commands select the same fresh endpoint (replace `mk1-next` with another unused short name if needed):
+
+```sh
+# Terminal 1
+./target/debug/namtabd --socket "$PWD/.artifacts/mk1-next/socket" --workspace "$PWD" --worker "$PWD/target/debug/namtab-terminal-worker" --pty-helper "$PWD/target/debug/namtab-pty-helper" --terminfo "$PWD/.artifacts/terminfo"
+# Terminal 2
+./target/debug/namtab-tui --socket "$PWD/.artifacts/mk1-next/socket"
+# Terminal 3: use only the previously verified official runtime.
+./.tools/electron/44.8.0/runtime/electron apps/desktop/mk1 --socket "$PWD/.artifacts/mk1-next/socket"
+# Optional separate terminal
+./target/debug/namtab-agent --socket "$PWD/.artifacts/mk1-next/socket"
+```
+
+These examples use the default native `target/debug`; adjust all binary paths together if `CARGO_TARGET_DIR` was selected. A fresh daemon has empty RAM state and new authority, not restored work or a guarantee that previous side effects stopped.
+
 ## Reproduce engine evidence
 
 After `make mk1-build`, the active CI lane runs both real harnesses in fresh isolated namespaces, preserving any live evaluation session:
