@@ -23,6 +23,8 @@ The EA1 ownership harness checks the actual wrapper in a disposable Cargo projec
 
 ## Pull request eligibility
 
+**Bounded current exception:** the user delegates eligible normal PR merges only until the [verified MK1 handoff](mk1-scope-and-admission.md). All checks and independent reviews below still apply. This explicit authority supersedes the per-PR user-approval step for MK1 alone; afterward stop for user feedback. It does not authorize security/settings/license changes.
+
 Every PR needs one associated **issue in this repository**, required checks passing for its candidate SHA, two independent adversarial agent reviews, and explicit user merge approval. Start the body with this exact non-closing field, followed by the ordinary description:
 
 ```text

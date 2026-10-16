@@ -40,6 +40,7 @@ nav:
       - "Domain storage and extensions": "architecture/05-architecture-storage-and-extensions.md"
   - "Delivery and engineering":
       - "Milestones / traceability / risks": "engine/delivery-and-validation.md"
+      - "MK1 scope and owner admission": "engineering/mk1-scope-and-admission.md"
       - "Prototype entrypoint": "engineering/12-prototype-plan.md"
       - "Acceptance catalog / G6 budgets": "engineering/07-validation-roadmap-and-risks.md"
       - "Repository and practices": "engineering/14-repository-and-engineering-practices.md"
