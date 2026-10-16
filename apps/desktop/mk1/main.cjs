@@ -122,6 +122,8 @@ function createWindow(publicSocketPath) {
         status,
         notice,
         queued: connection.queue.length + (connection.pending ? 1 : 0),
+        inputPaused: connection.inputPaused,
+        inputPauseReason: connection.inputPauseReason,
       });
   }
   function fenceFocus() {
@@ -183,12 +185,19 @@ function createWindow(publicSocketPath) {
       publish();
       return { viewEpoch, focused };
     }
+    if (command.op === "pause_input") {
+      connection.pauseInput(
+        checkedString(command.reason, 8192, "input pause reason"),
+      );
+      return;
+    }
     if (!connection.ready || !snapshot)
       throw new Error("Input frozen until connected and observed");
     let fields;
     let guard = null;
     if (command.op === "input") {
       if (
+        connection.inputPaused ||
         !validateIntent(command.intent) ||
         !inputFenceValid(
           command.fence,
@@ -197,10 +206,14 @@ function createWindow(publicSocketPath) {
           viewEpoch,
           focused,
         )
-      )
+      ) {
+        connection.pauseInput(
+          "Application input was refused by the current focus, owner, selection, mode or repertoire fence. Inspect and Take input again.",
+        );
         throw new Error(
           "Input refused: focus, owner, selection, mode or repertoire is stale/unsupported. Observe and take input explicitly.",
         );
+      }
       const fence = { ...command.fence };
       fields = {
         op: "input",
@@ -212,6 +225,7 @@ function createWindow(publicSocketPath) {
         intent: command.intent,
       };
       guard = () =>
+        !connection.inputPaused &&
         inputFenceValid(fence, snapshot, selectedSession, viewEpoch, focused);
     } else if (
       ["take_control", "release_control", "resize"].includes(command.op)
@@ -272,11 +286,44 @@ function createWindow(publicSocketPath) {
         throw new Error("Receipt ID must be a positive safe integer");
       fields = { op: "receipt", request_id: command.request_id };
     } else throw new Error("Unsupported UI operation");
+    let rearmRevision = null;
+    if (fields.op === "take_control") {
+      connection.pauseInput(
+        "Inspecting and taking input; typing remains paused until fresh ownership and mode are observed.",
+      );
+      rearmRevision = connection.inputPauseRevision;
+    }
     const response = await connection.request(fields, guard);
     if (!response.ok)
       throw new Error(
         response.error || "Backend refused operation; inspect its receipt",
       );
+    if (fields.op === "take_control") {
+      if (response.receipt?.state !== "applied")
+        throw new Error(
+          "Take input did not receive an applied receipt; typing remains paused.",
+        );
+      const observed = await connection.request({ op: "observe" });
+      const value = selected();
+      if (
+        !observed.ok ||
+        selectedSession !== fields.session ||
+        !value ||
+        value.owner !== connection.endpoint ||
+        value.process !== "running" ||
+        !value.screen.input_known ||
+        snapshot.degraded !== null ||
+        !connection.rearmInput(rearmRevision)
+      )
+        throw new Error(
+          "Input remains paused: ownership/mode changed or a new refusal occurred. Inspect and Take input again.",
+        );
+      return {
+        id: response.receipt.id,
+        state: response.receipt.state,
+        rearmed: true,
+      };
+    }
     return response.receipt
       ? { id: response.receipt.id, state: response.receipt.state }
       : null;
@@ -293,6 +340,10 @@ function createWindow(publicSocketPath) {
       publish();
       return { ok: true, result };
     } catch (error) {
+      if (command?.op === "input")
+        connection.pauseInput(
+          "Application input was refused. Inspect the session and receipt, then Take input again.",
+        );
       notice = String(error.message || "Operation refused");
       publish();
       return { ok: false, error: notice };
@@ -303,6 +354,12 @@ function createWindow(publicSocketPath) {
     publish();
   });
   connection.on("disconnected", fenceFocus);
+  connection.on("input-paused", () => {
+    focused = false;
+    viewEpoch++;
+    publish();
+  });
+  connection.on("input-rearmed", publish);
   connection.on("response", (response) => {
     if (response.snapshot) {
       if (

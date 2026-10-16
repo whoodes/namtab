@@ -21,6 +21,10 @@ class Connection extends EventEmitter {
     this.socket = null;
     this.ready = false;
     this.buffer = Buffer.alloc(0);
+    this.inputPaused = true;
+    this.inputPauseReason =
+      "Inspect the selected session, then Take input to arm typing.";
+    this.inputPauseRevision = 0;
   }
   connect(fresh = false) {
     if (this.socket) return;
@@ -82,14 +86,21 @@ class Connection extends EventEmitter {
     });
   }
   request(fields, guard = null, hello = false) {
+    if (fields.op === "input" && this.inputPaused)
+      return Promise.reject(new Error(this.inputPauseReason));
     if (!this.socket || (!this.ready && !hello))
       return Promise.reject(new Error("Not connected"));
-    if (this.queue.length + (this.pending ? 1 : 0) >= MAX_QUEUE)
+    if (this.queue.length + (this.pending ? 1 : 0) >= MAX_QUEUE) {
+      if (fields.op === "input")
+        this.pauseInput(
+          "Input queue full. Inspect the session and Take input again; no queued suffix will be sent.",
+        );
       return Promise.reject(
         new Error(
           "Input queue full (64); nothing added. Wait and observe before continuing.",
         ),
       );
+    }
     return new Promise((resolve, reject) => {
       this.queue.push({ fields, guard, resolve, reject });
       this.pump();
@@ -98,7 +109,16 @@ class Connection extends EventEmitter {
   pump() {
     if (!this.socket || this.pending || this.queue.length === 0) return;
     const item = this.queue.shift();
+    if (item.fields.op === "input" && this.inputPaused) {
+      item.reject(new Error(this.inputPauseReason));
+      this.pump();
+      return;
+    }
     if (item.guard && !item.guard()) {
+      if (item.fields.op === "input")
+        this.pauseInput(
+          "Queued input refused after a focus, owner, selection or mode change. Inspect and Take input again.",
+        );
       item.reject(
         new Error(
           "Queued operation refused: focus, selection, ownership or mode changed.",
@@ -111,6 +131,10 @@ class Connection extends EventEmitter {
       !Number.isSafeInteger(this.nextId) ||
       this.nextId > Number.MAX_SAFE_INTEGER
     ) {
+      if (item.fields.op === "input")
+        this.pauseInput(
+          "Input request namespace exhausted; inspect and start a new endpoint before taking input.",
+        );
       item.reject(
         new Error("Request ID namespace exhausted; new endpoint required."),
       );
@@ -121,6 +145,10 @@ class Connection extends EventEmitter {
       JSON.stringify(requestEnvelope(id, item.fields)) + "\n",
     );
     if (frame.length > MAX_FRAME) {
+      if (item.fields.op === "input")
+        this.pauseInput(
+          "Input frame refused. Inspect the session and Take input again.",
+        );
       item.reject(new Error("Request exceeds 1 MiB frame limit"));
       this.pump();
       return;
@@ -180,12 +208,29 @@ class Connection extends EventEmitter {
       const pending = this.pending;
       clearTimeout(pending.timer);
       this.pending = null;
+      if (
+        pending.fields.op === "input" &&
+        (!response.ok ||
+          response.receipt?.state !== "applied" ||
+          response.receipt.operation !== "input")
+      ) {
+        this.pauseInput(
+          "Application input was refused or its delivery is uncertain. Inspect the session and receipt, then Take input again. No queued suffix was sent.",
+        );
+      }
       this.emit("response", response);
       pending.resolve(response);
       this.pump();
     }
   }
   clearQueuedInputs() {
+    if (
+      this.queue.some((item) => item.fields.op === "input") ||
+      (!this.inputPaused && this.pending?.fields.op === "input")
+    )
+      this.pauseInput(
+        "Application input was queued or in flight when focus or selection changed. Inspect the session and receipt, then Take input again.",
+      );
     this.queue = this.queue.filter((item) => {
       if (
         !["input", "take_control", "release_control", "resize"].includes(
@@ -202,6 +247,9 @@ class Connection extends EventEmitter {
     });
   }
   disconnect(reason = "Window closed") {
+    this.pauseInput(
+      reason + " Inspect the session and Take input after reconnecting.",
+    );
     const socket = this.socket;
     this.socket = null;
     this.ready = false;
@@ -215,6 +263,26 @@ class Connection extends EventEmitter {
     if (socket) socket.destroy();
     this.emit("status", reason);
     this.emit("disconnected");
+  }
+  pauseInput(reason) {
+    this.inputPauseRevision++;
+    if (!this.inputPaused) this.inputPauseReason = reason;
+    this.inputPaused = true;
+    const retained = [];
+    for (const item of this.queue) {
+      if (item.fields.op === "input")
+        item.reject(new Error(this.inputPauseReason));
+      else retained.push(item);
+    }
+    this.queue = retained;
+    this.emit("input-paused");
+  }
+  rearmInput(pauseRevision) {
+    if (!this.ready || pauseRevision !== this.inputPauseRevision) return false;
+    this.inputPaused = false;
+    this.inputPauseReason = null;
+    this.emit("input-rearmed");
+    return true;
   }
 }
 module.exports = { Connection };

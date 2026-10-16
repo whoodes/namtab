@@ -533,3 +533,118 @@ test("MK1 endpoint observations are declared roles and bounded connection facts"
     true,
   );
 });
+
+// An adversarial local protocol peer tests transport ordering, not application
+// semantics. Real namtabd queue/refusal evidence is recorded separately.
+async function refusalPeer(t, state) {
+  const net = await import("node:net");
+  const fs = await import("node:fs/promises");
+  const os = await import("node:os");
+  const path = await import("node:path");
+  const { once } = await import("node:events");
+  const { Connection } = await import("../../apps/desktop/mk1/connection.cjs");
+  const directory = await fs.mkdtemp(path.join(os.tmpdir(), "mk1-input-"));
+  const socketPath = path.join(directory, "socket");
+  const operations = [];
+  const sockets = new Set();
+  const server = net.createServer((socket) => {
+    sockets.add(socket);
+    socket.on("close", () => sockets.delete(socket));
+    let buffer = "";
+    socket.on("data", (data) => {
+      buffer += data.toString("utf8");
+      for (;;) {
+        const newline = buffer.indexOf("\n");
+        if (newline < 0) break;
+        const request = JSON.parse(buffer.slice(0, newline));
+        buffer = buffer.slice(newline + 1);
+        const operation = request.operation;
+        operations.push(operation.op);
+        const input = operation.op === "input";
+        const response = {
+          id: request.id,
+          ok: !input,
+          error: input ? "Injected input refusal" : null,
+          epoch: "fault-peer-epoch",
+          endpoint: "human-1",
+          resume: operation.op === "hello" ? "test-only-token" : null,
+          snapshot: null,
+          receipt: input
+            ? {
+                endpoint: "human-1",
+                id: request.id,
+                operation: "input",
+                state,
+                detail: "Injected disposition",
+                delivered_bytes: state === "partial" ? 1 : 0,
+              }
+            : null,
+        };
+        socket.write(JSON.stringify(response) + "\n");
+      }
+    });
+  });
+  server.listen(socketPath);
+  await once(server, "listening");
+  const connection = new Connection(socketPath);
+  t.after(async () => {
+    connection.disconnect();
+    for (const socket of sockets) socket.destroy();
+    await new Promise((resolve) => server.close(resolve));
+    await fs.rm(directory, { recursive: true, force: true });
+  });
+  const ready = once(connection, "ready");
+  connection.connect();
+  await ready;
+  return { connection, operations, once };
+}
+
+for (const disposition of ["rejected", "partial", "unknown"]) {
+  test(`MK1 transport synchronously pauses after ${disposition} input and drops the queued command suffix`, async (t) => {
+    const { connection, operations, once } = await refusalPeer(t, disposition);
+    assert.equal(connection.rearmInput(connection.inputPauseRevision), true);
+    const priorPause = connection.inputPauseRevision;
+    const first = connection.request({
+      op: "input",
+      intent: { kind: "text", text: "e" },
+    });
+    const suffix = ["x", "i", "t", "\r"].map((text) =>
+      connection.request({ op: "input", intent: { kind: "text", text } }),
+    );
+    const results = await Promise.allSettled([first, ...suffix]);
+    assert.equal(results[0].value.receipt.state, disposition);
+    assert.equal(
+      results.slice(1).every((result) => result.status === "rejected"),
+      true,
+    );
+    assert.equal(
+      operations.filter((operation) => operation === "input").length,
+      1,
+    );
+    assert.equal(connection.inputPaused, true);
+    assert.equal(connection.queue.length, 0);
+    assert.equal(connection.rearmInput(priorPause), false);
+    await connection.request({ op: "observe" });
+    connection.clearQueuedInputs();
+    await assert.rejects(connection.request({ op: "input" }), /Inspect/i);
+    assert.equal(
+      connection.inputPaused,
+      true,
+      "observe and focus reconciliation cannot rearm",
+    );
+    connection.disconnect("Test explicit reconnect");
+    const ready = once(connection, "ready");
+    connection.connect();
+    await ready;
+    await assert.rejects(connection.request({ op: "input" }), /Inspect/i);
+    assert.equal(
+      operations.filter((operation) => operation === "input").length,
+      1,
+    );
+    assert.equal(
+      connection.rearmInput(connection.inputPauseRevision),
+      true,
+      "only explicit revision-matched rearm clears pause",
+    );
+  });
+}
