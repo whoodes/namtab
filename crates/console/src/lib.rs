@@ -23,27 +23,30 @@ impl Router {
         if event.kind != KeyEventKind::Press {
             return Route::Unsupported;
         }
-        let ctrl = event.modifiers.contains(KeyModifiers::CONTROL);
-        if self.prefix {
-            self.prefix = false;
-            return if event.code == KeyCode::Char(':') {
-                Route::UiPalette
-            } else if event.code == KeyCode::Char('g') && ctrl {
-                Route::Application(Intent::Text {
-                    text: "\u{7}".into(),
-                })
-            } else {
-                Route::Unsupported
-            };
-        }
-        if event.code == KeyCode::Char('g') && ctrl {
-            self.prefix = true;
-            return Route::Unsupported;
-        }
         if event
             .modifiers
             .intersects(KeyModifiers::SUPER | KeyModifiers::HYPER | KeyModifiers::META)
         {
+            self.prefix = false;
+            return Route::Unsupported;
+        }
+        let ctrl = event.modifiers.contains(KeyModifiers::CONTROL);
+        if self.prefix {
+            self.prefix = false;
+            return if event.code == KeyCode::Char(':')
+                && !event
+                    .modifiers
+                    .intersects(KeyModifiers::CONTROL | KeyModifiers::ALT)
+            {
+                Route::UiPalette
+            } else {
+                // Ctrl-G quoting needs a future representable key intent. Never
+                // route control bytes as committed text to bypass that limit.
+                Route::Unsupported
+            };
+        }
+        if event.code == KeyCode::Char('g') && event.modifiers == KeyModifiers::CONTROL {
+            self.prefix = true;
             return Route::Unsupported;
         }
         let key = match event.code {

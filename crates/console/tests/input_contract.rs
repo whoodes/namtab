@@ -68,3 +68,56 @@ fn unsupported_characters_and_actions_are_not_guessed() {
         assert!(matches!(Router::default().key(event), Route::Unsupported));
     }
 }
+
+#[test]
+fn prefix_refuses_unrepresentable_control_text_and_modified_shortcuts() {
+    let ctrl_g = KeyEvent::new(KeyCode::Char('g'), KeyModifiers::CONTROL);
+    let mut router = Router::default();
+    assert!(matches!(router.key(ctrl_g), Route::Unsupported));
+    // The current named-key protocol cannot represent Ctrl-G. It must not be
+    // smuggled into CommitText; the future Send key/quoting API is unimplemented.
+    assert!(matches!(router.key(ctrl_g), Route::Unsupported));
+    assert!(matches!(
+        router.key(KeyEvent::new(KeyCode::Char(':'), KeyModifiers::NONE)),
+        Route::Unsupported
+    ));
+    for extra in [
+        KeyModifiers::ALT,
+        KeyModifiers::SHIFT,
+        KeyModifiers::SUPER,
+        KeyModifiers::HYPER,
+        KeyModifiers::META,
+    ] {
+        let mut router = Router::default();
+        router.key(KeyEvent::new(
+            KeyCode::Char('g'),
+            KeyModifiers::CONTROL | extra,
+        ));
+        assert!(matches!(
+            router.key(KeyEvent::new(KeyCode::Char(':'), KeyModifiers::NONE)),
+            Route::Unsupported
+        ));
+    }
+    for extra in [
+        KeyModifiers::ALT,
+        KeyModifiers::CONTROL,
+        KeyModifiers::SUPER,
+        KeyModifiers::HYPER,
+        KeyModifiers::META,
+    ] {
+        let mut router = Router::default();
+        router.key(ctrl_g);
+        assert!(matches!(
+            router.key(KeyEvent::new(KeyCode::Char(':'), extra)),
+            Route::Unsupported
+        ));
+    }
+    for modifiers in [KeyModifiers::NONE, KeyModifiers::SHIFT] {
+        let mut router = Router::default();
+        router.key(ctrl_g);
+        assert!(matches!(
+            router.key(KeyEvent::new(KeyCode::Char(':'), modifiers)),
+            Route::UiPalette
+        ));
+    }
+}

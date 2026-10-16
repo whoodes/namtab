@@ -35,11 +35,14 @@ export function encodeText(intent: Intent, modes: Modes): Uint8Array {
   if (/[\uD800-\uDFFF]/u.test(intent.text))
     throw new Error("InvalidRequest: unpaired surrogate");
   if (intent.text.length > 8192) throw new Error("ResourceExhausted");
+  // Bound payload bytes as well as pre-encoding allocation. UTF-16 code units
+  // alone allow multibyte Unicode payloads to exceed the 8 KiB input limit.
+  const payload = new TextEncoder().encode(intent.text);
+  if (payload.byteLength > 8192) throw new Error("ResourceExhausted");
   // Do not manufacture a trusted paste boundary from embedded delimiters.
   if (intent.kind === "paste" && /\x1b\[20[01]~/u.test(intent.text))
     throw new Error("UnsupportedCapability: embedded paste boundary");
-  let text = intent.text;
   if (intent.kind === "paste" && modes.bracketedPasteMode)
-    text = "\x1b[200~" + text + "\x1b[201~";
-  return new TextEncoder().encode(text);
+    return new TextEncoder().encode("\x1b[200~" + intent.text + "\x1b[201~");
+  return payload;
 }
