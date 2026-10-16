@@ -65,7 +65,7 @@ Keyboard cases cover ordinary Ctrl-I/M/[, actual Tab/Enter/Escape, Ctrl-C not im
 
 [CI0–CI4](../engineering/16-test-and-ci-strategy.md#ci-lanes-and-practical-cost) owns lane triggers, budgets and quarantine policy; [fixture/artifact policy](../engineering/16-test-and-ci-strategy.md#sanitized-fixtures-and-ci-artifact-security) owns provenance, retention and safe evidence handling. V families refine the inherited T/N/DF catalog into owned-engine obligations, not a parallel CI workflow.
 
-The currently authored legacy CI jobs may still be red. This documentation does not change jobs, expectations or old gate definitions. Future owned-engine CI must add its own V/NG criteria and explicitly distinguish historical candidate failures; it cannot use an expected-failure assertion as new-engine certification. Existing workspace PASS remains foundation evidence only.
+Routine CI validates the [active-source foundation and governance](../engineering/16-test-and-ci-strategy.md#ci-artifact-diagnosis-and-lane-separation). Obsolete historical qualification jobs were removed in PR33 under owner approval; their original FAIL evidence, pins and manual reproduction paths remain. The native fixture checks below validate review data, not a terminal implementation. Future owned-engine CI must establish its own V/NG criteria; neither expected historical failures nor foundation PASS certify an engine.
 
 ## Ordered milestones
 

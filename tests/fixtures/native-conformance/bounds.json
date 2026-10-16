@@ -1,0 +1,128 @@
+{
+  "format": "n0-conformance-bounds-1",
+  "profile": "px-dev-text-0",
+  "limits": {
+    "rows": [2, 200],
+    "columns": [2, 500],
+    "cells_per_grid": 100000,
+    "esc_intermediates": 2,
+    "esc_total_bytes": 4,
+    "csi_fields": 64,
+    "csi_digits": 5,
+    "csi_value": 65535,
+    "csi_intermediates": 2,
+    "csi_total_bytes": 512,
+    "utf8_prefix_bytes": 3,
+    "retained_string_payload_bytes": 0,
+    "history_rows": 1000,
+    "output_event_bytes": 512,
+    "reply_bytes": 32,
+    "pending_replies": 128,
+    "pending_reply_bytes": 4096,
+    "work_items_per_yield": 4096,
+    "input_content_bytes": 8192,
+    "input_batch_events": 64
+  },
+  "recipes": [
+    {
+      "id": "csi-total-at-bound",
+      "recipe": {
+        "prefix_hex": "1b5b",
+        "repeat_hex": "00",
+        "repeat_count": 509,
+        "suffix_hex": "4158"
+      },
+      "sequence_bytes": 512,
+      "initial_cursor": [3, 1],
+      "expected_cursor": [2, 2],
+      "expected_x_at": [2, 1],
+      "expanded_bytes": 513,
+      "keeper_event_max_bytes": 512,
+      "transport_policy": "every-single-byte-cut; seeded contiguous partitions; preserve keeper event identities",
+      "coverage": ["bounds", "V07"]
+    },
+    {
+      "id": "csi-total-over-bound",
+      "recipe": {
+        "prefix_hex": "1b5b",
+        "repeat_hex": "00",
+        "repeat_count": 510,
+        "suffix_hex": "4158"
+      },
+      "sequence_bytes": 513,
+      "initial_cursor": [3, 1],
+      "expected_cursor": [3, 2],
+      "expected_x_at": [3, 1],
+      "expanded_bytes": 514,
+      "keeper_event_max_bytes": 512,
+      "transport_policy": "every-single-byte-cut; seeded contiguous partitions; preserve keeper event identities",
+      "coverage": ["bounds", "V07"]
+    },
+    {
+      "id": "long-discard",
+      "recipe": {
+        "prefix_hex": "1b50",
+        "repeat_hex": "41",
+        "repeat_count": 65536,
+        "suffix_hex": "1b5c58"
+      },
+      "sequence_bytes": null,
+      "initial_cursor": [1, 1],
+      "expected_cursor": [1, 2],
+      "expected_x_at": [1, 1],
+      "expected_retained_payload_bytes": 0,
+      "expanded_bytes": 65541,
+      "keeper_event_max_bytes": 512,
+      "transport_policy": "every-single-byte-cut; seeded contiguous partitions; preserve keeper event identities",
+      "coverage": ["bounds", "V07"]
+    }
+  ],
+  "input_bounds": [
+    {
+      "id": "text-at-cap",
+      "kind": "CommitText",
+      "repeat_hex": "61",
+      "repeat_count": 8192,
+      "expected_encoded_bytes": 8192,
+      "error": null
+    },
+    {
+      "id": "text-over-cap",
+      "kind": "CommitText",
+      "repeat_hex": "61",
+      "repeat_count": 8193,
+      "expected_encoded_bytes": 0,
+      "error": "ResourceExhausted"
+    },
+    {
+      "id": "geometry-at-cap",
+      "rows": 200,
+      "columns": 500,
+      "error": null,
+      "condition": "capacity reserved before allocation"
+    },
+    {
+      "id": "geometry-over-cap",
+      "rows": 201,
+      "columns": 500,
+      "error": "InvalidRequest",
+      "expected_mutation": false
+    },
+    {
+      "id": "geometry-arithmetic",
+      "rows": "18446744073709551615",
+      "columns": "18446744073709551615",
+      "error": "InvalidRequest",
+      "expected_mutation": false
+    }
+  ],
+  "future_execution": {
+    "status": "NOT RUN",
+    "seed": 1300711,
+    "long_partition_samples": 64,
+    "max_materialized_bytes": 131072,
+    "max_events_per_recipe": 257,
+    "time_budget_seconds_per_recipe": 10,
+    "note": "A future implementation runner must enforce these bounds and measure retained state/work; static recipe arithmetic is not runtime resource evidence."
+  }
+}

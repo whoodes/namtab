@@ -1,0 +1,20 @@
+{
+  "format": "n0-provenance-local-integrity-1",
+  "purpose": "Local static integrity of unchanged source/admission review records, added when integrating N0-07. Does not retrieve sources, run admission cases, verify legal suitability or certify engine behavior.",
+  "source": "../../../docs/engineering/15-dependencies-and-supply-chain.md#n0-primitive-and-data-selection-2026-10-16",
+  "provenance": "Existing synthetic and metadata review records authored 2026-10-16; no new upstream content or project license adopted.",
+  "files": [
+    {
+      "path": "admission-cases.json",
+      "sha256": "2bb41ce23e8f5dcdbb4fefd55ce33bcb4b8deece9517e43a2e366ed83ec7caa6"
+    },
+    {
+      "path": "admission.json",
+      "sha256": "2808c064178dea3b9511c49bf14f959aea72f5927efb4fc01c43f924ad108416"
+    },
+    {
+      "path": "sources.json",
+      "sha256": "6f21db91ad75c1962da5f703cfe551a7255bde4e90d0be8d12e6f8b7924c73f7"
+    }
+  ]
+}
