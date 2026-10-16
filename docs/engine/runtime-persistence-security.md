@@ -2,7 +2,7 @@
 
 [Campaign](index.md) · [Native operations](native-contract.md) · [Core state](compatibility-and-core.md) · [Delivery gates](delivery-and-validation.md)
 
-**Accepted-for-design direction; proposed implementation details below.** No new crate, runtime, database or snapshot has been implemented. Source constraints: S02–S06, S20–S29, S31–S32 and historical recovery evidence H01. The N0-09 module/IPC proposal for [issue 15](https://github.com/whoodes/namtab/issues/15) awaits integration review with N0-06, independent review and owner acceptance; this page does not declare the issue complete or NG0 accepted.
+**Accepted-for-design direction; proposed implementation details below.** No new crate, runtime, database or snapshot has been implemented. Source constraints: S02–S06, S20–S29, S31–S32 and historical recovery evidence H01. The N0-09 module/IPC contract review for [issue 15](https://github.com/whoodes/namtab/issues/15) completed with actual N0-06 integration and two independent final-head reviews in [PR37](https://github.com/whoodes/namtab/pull/37). The [NG0 packet](delivery-and-validation.md#ng0-review-packet-draft) owns exact accepted source revisions and remaining owner decisions. Contract review completion implements no worker/decoder/runtime and admits no resource/dependency tuple; NG0 remains unaccepted.
 
 ## Module and process design
 
