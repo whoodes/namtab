@@ -109,6 +109,7 @@ pub enum InputError {
     UnsupportedRelease,
     UnsupportedText,
     PasteNotEnabled,
+    FocusNotEnabled,
     TooLarge,
 }
 
@@ -136,11 +137,12 @@ impl Engine {
                 bytes.extend_from_slice(b"\x1b[201~");
                 Ok(bytes)
             }
-            Input::Focus { focused } => Ok(if self.modes.focus_reporting {
-                if *focused { b"\x1b[I" } else { b"\x1b[O" }.to_vec()
-            } else {
-                Vec::new()
-            }),
+            Input::Focus { focused } => {
+                if !self.modes.focus_reporting {
+                    return Err(InputError::FocusNotEnabled);
+                }
+                Ok(if *focused { b"\x1b[I" } else { b"\x1b[O" }.to_vec())
+            }
             Input::Key {
                 key,
                 modifiers,

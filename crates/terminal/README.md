@@ -18,7 +18,7 @@ not implemented or claimed.
 Logical input covers named editing/function/keypad keys, classic Ctrl aliases,
 documented modifiers, committed repertoire text and bracketed paste. Physical
 layout/consumed-modifier facts must already be resolved by the endpoint. Release
-events are refused; a known repeat emits once. Paste requires bracketed mode,
+events are refused; a known repeat emits once. Disabled focus reporting explicitly refuses focus input. Paste requires bracketed mode,
 normalizes CRLF/lone CR to LF and rejects ESC/control payloads. Unsupported Kitty
 or modifyOtherKeys negotiation fences all input until a terminal reset. This is
 an explicit finite profile refusal, not emulation of those protocols.
@@ -38,6 +38,8 @@ with strictly increasing nonzero request IDs. A malformed, oversized or replayed
 exchange terminates the worker with a generic error and no payload echo. A lost
 response is uncertainty, not permission to retry. The service remains the sole
 PTY/input/reply dispatcher and must fence affected sessions on worker failure.
+`FinishOutput` resolves trailing partial decoder state and closes input for that
+reducer; it is independent of actual child exit and never resurrects a process.
 
 Run `cargo test -p project-x-terminal --offline` and
 `cargo clippy -p project-x-terminal --all-targets --offline -- -D warnings` with

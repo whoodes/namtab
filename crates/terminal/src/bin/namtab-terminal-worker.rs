@@ -115,6 +115,10 @@ fn apply(
             engine.resize(cols, rows).map_err(WorkerError::Engine)?;
             Ok(Reply::Frame(engine.frame()))
         }
+        Operation::FinishOutput { .. } => {
+            engine.finish_output().map_err(WorkerError::Engine)?;
+            Ok(Reply::Frame(engine.frame()))
+        }
         Operation::New { .. } | Operation::Close { .. } => unreachable!(),
     }
 }
