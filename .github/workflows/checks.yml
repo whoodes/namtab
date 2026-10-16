@@ -1,4 +1,4 @@
-name: Active foundation and historical experiments
+name: Active foundation
 on:
   pull_request:
   workflow_dispatch:
@@ -21,35 +21,4 @@ jobs:
         run: make foundation-verify
   # No publication, artifact uploads, credentials, privileged runners or blanket script permits.
   # Merge eligibility: Active-source foundation + PR issue and commit policy.
-  # Owner-approved historical exceptions retain raw failure; no continue-on-error.
-  # These jobs do not qualify the owned engine or fresh-host native worker.
-
-  historical-x4:
-    name: Historical X4 (raw; nonblocking)
-    runs-on: ubuntu-22.04
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - name: Locked historical reference dependencies
-        run: make bootstrap install
-      - name: Raw historical selection remains nonzero
-        run: make engine-gate
-
-  ea1:
-    name: Historical EA1 (unqualified; nonblocking)
-    runs-on: ubuntu-22.04
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - name: Exact Rust compiler
-        run: rustup toolchain install 1.91.0 --profile minimal --component rustfmt,clippy
-      - name: Local locked prerequisites
-        run: make bootstrap install assessment-bootstrap assessment-build
-      - name: Bounded native ownership and provenance
-        run: make ea1-build ea1-ownership ea1-provenance
-      - name: Historical EA1 selection (raw FAIL on legacy control aliases)
-        run: make ea1-test
+  # Historical selection remains manual; retained regressions do not qualify an engine.

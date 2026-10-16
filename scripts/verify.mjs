@@ -143,34 +143,6 @@ for (const [name, bin, args] of steps) {
   checks.push({ name, verdict, ...r });
   console.log(name + ": " + verdict);
 }
-const gate = command("node", ["scripts/run-x4.mjs", "--require-pass"]);
-let parsedGate;
-try {
-  parsedGate = JSON.parse(gate.stdout);
-} catch {
-  parsedGate = null;
-}
-const knownFailure =
-  gate.exit === 1 &&
-  parsedGate?.gate === "X4" &&
-  parsedGate?.verdict === "FAIL" &&
-  JSON.stringify(
-    parsedGate.results?.map((c) => [c.name, c.atAttach, c.afterContinuation]),
-  ) ===
-    JSON.stringify([
-      ["plain", true, true],
-      ["saved-cursor", true, false],
-      ["scroll-region", true, false],
-      ["custom-tabs", true, false],
-      ["alternate", true, true],
-      ["partial-csi", true, false],
-    ]);
-console.log(
-  "Historical X4 gate: " +
-    (knownFailure
-      ? "FAIL (original counterexamples reproduced; no owned-engine certification)"
-      : "UNEXPECTED RESULT / inspect evidence"),
-);
 const folder = new URL(
   "../.artifacts/verification/" + randomUUID() + "/",
   import.meta.url,
@@ -197,17 +169,11 @@ const report = {
   property_cases: env.PROPTEST_CASES,
   checks,
   system_test_files: systemTests,
-  essential_gate: {
-    verdict: knownFailure ? "FAIL" : gate.exit === 0 ? "PASS_MINIMAL" : "ERROR",
-    expectedExit: 1,
-    verifiedCounterexamples: knownFailure,
-    ...gate,
-  },
   limits:
     (sourceOnly
       ? "Source-only selection excludes the historical native worker from Cargo Clippy/tests; not a full-workspace pass. "
       : "") +
-    "Foundation PASS is not terminal-engine certification. Tests asserting known failure do not turn X4 green. No performance budgets measured.",
+    "Foundation PASS is not terminal-engine certification. Historical X4/EA1 qualification is separate; retained regressions do not change their recorded FAIL verdicts. No performance budgets measured.",
 };
 await writeFile(
   new URL("checks.json", folder),
@@ -219,7 +185,6 @@ console.log(
 );
 if (
   checks.some((c) => c.verdict === "FAIL") ||
-  versions.some((c) => c.exit !== 0) ||
-  !knownFailure
+  versions.some((c) => c.exit !== 0)
 )
   process.exitCode = 1;
