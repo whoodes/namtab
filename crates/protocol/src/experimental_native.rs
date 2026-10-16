@@ -607,6 +607,18 @@ pub struct InputRequest {
     pub context: InputContext,
     pub intent: InputIntent,
 }
+/// Read-only refusal codes use the existing error families; no mutation decision is recorded.
+#[derive(Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "snake_case")]
+pub enum SubscribeRefusalReason {
+    InvalidRequest,
+    UnsupportedCapability,
+    Unauthorized,
+    StaleContext,
+    ResourceExhausted,
+    Unavailable,
+    IncompatibleVersion,
+}
 /// Read correlation is not a mutation identity. Input requests use the issued key above.
 #[derive(Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(tag = "message", rename_all = "snake_case", deny_unknown_fields)]
@@ -619,6 +631,16 @@ pub enum Message {
         session: SessionRef,
         start: SubscriptionStart,
         credit: Credit,
+    },
+    SubscriptionOpened {
+        correlation_id: Id,
+        subscription_id: Id,
+        session: SessionRef,
+        projection: Projection,
+    },
+    SubscribeRefused {
+        correlation_id: Id,
+        reason: SubscribeRefusalReason,
     },
     ReadPage {
         subscription_id: Id,
@@ -635,6 +657,7 @@ pub enum Message {
         page: SnapshotPage,
     },
     ObservationUnavailable {
+        subscription_id: Id,
         session: SessionRef,
         projection: Projection,
         reason: UnavailableReason,
@@ -766,6 +789,46 @@ mod tests {
                 );
             }
         }
+    }
+
+    #[test]
+    fn opening_refusal_and_active_unavailability_require_their_routing_fields() {
+        let fixture = examples();
+        for name in [
+            "opened",
+            "opened-zero-credit",
+            "subscribe-refused",
+            "unavailable",
+        ] {
+            let value = &fixture["examples"][name];
+            let raw = serde_json::to_string(value).unwrap();
+            let decoded: Envelope = serde_json::from_str(&raw).unwrap();
+            assert_eq!(serde_json::to_value(decoded).unwrap(), *value);
+            let required: &[&str] = match name {
+                "subscribe-refused" => &["correlation_id"],
+                "unavailable" => &["subscription_id"],
+                _ => &["correlation_id", "subscription_id", "session", "projection"],
+            };
+            for field in required {
+                let mut missing = value.clone();
+                assert!(
+                    missing["body"]
+                        .as_object_mut()
+                        .unwrap()
+                        .remove(*field)
+                        .is_some()
+                );
+                assert!(
+                    serde_json::from_str::<Envelope>(&serde_json::to_string(&missing).unwrap())
+                        .is_err()
+                );
+            }
+        }
+        let mut refused = fixture["examples"]["subscribe-refused"].clone();
+        refused["body"]["subscription_id"] = json!("unallocated-subscription");
+        assert!(
+            serde_json::from_str::<Envelope>(&serde_json::to_string(&refused).unwrap()).is_err()
+        );
     }
 
     #[test]

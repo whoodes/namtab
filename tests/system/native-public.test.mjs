@@ -51,6 +51,73 @@ test("N0 public examples fit the separate strict static schemas", () => {
   }
 });
 
+test("subscription control shapes route concurrent and zero-credit examples", () => {
+  const first = examples.subscribe.body;
+  const zero = examples["subscribe-zero-credit"].body;
+  assert.notEqual(first.correlation_id, zero.correlation_id);
+  assert.deepEqual(first.session, zero.session);
+  assert.deepEqual(first.start, zero.start);
+  assert.deepEqual(zero.credit, { pages: 0, bytes: 0 });
+  const opened = examples.opened.body;
+  const openedZero = examples["opened-zero-credit"].body;
+  for (const [request, response] of [
+    [zero, openedZero],
+    [first, opened],
+  ]) {
+    assert.equal(response.correlation_id, request.correlation_id);
+    assert.deepEqual(response.session, request.session);
+    assert.deepEqual(response.projection, request.start.projection);
+  }
+  assert.notEqual(opened.subscription_id, openedZero.subscription_id);
+  for (const name of ["grant-credit-zero", "cancel-zero", "closed-zero"])
+    assert.equal(
+      examples[name].body.subscription_id,
+      openedZero.subscription_id,
+    );
+  const refused = examples["subscribe-refused"];
+  assert.equal(
+    refused.body.correlation_id,
+    examples["subscribe-denied"].body.correlation_id,
+  );
+  assert.equal(Object.hasOwn(refused.body, "subscription_id"), false);
+  const unavailable = examples.unavailable.body;
+  const openedHistory = examples["opened-history"].body;
+  assert.equal(unavailable.subscription_id, openedHistory.subscription_id);
+  assert.deepEqual(unavailable.session, openedHistory.session);
+  assert.deepEqual(unavailable.projection, openedHistory.projection);
+});
+
+test("opening/refusal/active-unavailable schemas require explicit routing", () => {
+  for (const [name, fields] of [
+    ["opened", ["correlation_id", "subscription_id", "session", "projection"]],
+    [
+      "opened-zero-credit",
+      ["correlation_id", "subscription_id", "session", "projection"],
+    ],
+    ["subscribe-refused", ["correlation_id"]],
+    ["unavailable", ["subscription_id"]],
+  ]) {
+    const original = examples[name];
+    assert.ok(validate(original), name + " positive shape failed");
+    for (const field of fields) {
+      const missing = structuredClone(original);
+      delete missing.body[field];
+      assert.equal(
+        validate(missing),
+        false,
+        name + " accepted missing " + field,
+      );
+    }
+  }
+  const refused = structuredClone(examples["subscribe-refused"]);
+  refused.body.subscription_id = "unallocated-subscription";
+  assert.equal(
+    validate(refused),
+    false,
+    "refusal allocated an active stream ID",
+  );
+});
+
 test("both-client matrix executes shape expectations only", () => {
   const ids = new Set();
   for (const item of read("intent-cases.json").cases) {

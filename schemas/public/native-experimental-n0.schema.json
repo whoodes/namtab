@@ -942,6 +942,56 @@
         {
           "type": "object",
           "properties": {
+            "correlation_id": {
+              "$ref": "#/definitions/Id"
+            },
+            "message": {
+              "type": "string",
+              "const": "subscription_opened"
+            },
+            "projection": {
+              "$ref": "#/definitions/Projection"
+            },
+            "session": {
+              "$ref": "#/definitions/SessionRef"
+            },
+            "subscription_id": {
+              "$ref": "#/definitions/Id"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "message",
+            "correlation_id",
+            "subscription_id",
+            "session",
+            "projection"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "correlation_id": {
+              "$ref": "#/definitions/Id"
+            },
+            "message": {
+              "type": "string",
+              "const": "subscribe_refused"
+            },
+            "reason": {
+              "$ref": "#/definitions/SubscribeRefusalReason"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "message",
+            "correlation_id",
+            "reason"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
             "cursor": {
               "$ref": "#/definitions/Id"
             },
@@ -1030,11 +1080,15 @@
             },
             "session": {
               "$ref": "#/definitions/SessionRef"
+            },
+            "subscription_id": {
+              "$ref": "#/definitions/Id"
             }
           },
           "additionalProperties": false,
           "required": [
             "message",
+            "subscription_id",
             "session",
             "projection",
             "reason"
@@ -1651,6 +1705,19 @@
         "inverse",
         "conceal",
         "strike"
+      ]
+    },
+    "SubscribeRefusalReason": {
+      "description": "Read-only refusal codes use the existing error families; no mutation decision is recorded.",
+      "type": "string",
+      "enum": [
+        "invalid_request",
+        "unsupported_capability",
+        "unauthorized",
+        "stale_context",
+        "resource_exhausted",
+        "unavailable",
+        "incompatible_version"
       ]
     },
     "SubscriptionStart": {

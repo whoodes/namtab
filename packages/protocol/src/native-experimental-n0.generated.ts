@@ -16,6 +16,18 @@ export type Message =
       start: SubscriptionStart;
     }
   | {
+      correlation_id: Id;
+      message: "subscription_opened";
+      projection: Projection;
+      session: SessionRef;
+      subscription_id: Id;
+    }
+  | {
+      correlation_id: Id;
+      message: "subscribe_refused";
+      reason: SubscribeRefusalReason;
+    }
+  | {
       cursor: Id;
       message: "read_page";
       subscription_id: Id;
@@ -38,6 +50,7 @@ export type Message =
       projection: Projection;
       reason: UnavailableReason;
       session: SessionRef;
+      subscription_id: Id;
     }
   | {
       delta: FrameDelta;
@@ -87,6 +100,17 @@ export type Projection =
       limit: number;
     };
 export type BufferKind = "primary" | "alternate";
+/**
+ * Read-only refusal codes use the existing error families; no mutation decision is recorded.
+ */
+export type SubscribeRefusalReason =
+  | "invalid_request"
+  | "unsupported_capability"
+  | "unauthorized"
+  | "stale_context"
+  | "resource_exhausted"
+  | "unavailable"
+  | "incompatible_version";
 export type Completeness = "complete_for_selection" | "partial";
 export type UnavailableReason = "denied" | "expired" | "capture_gap" | "state_unknown";
 export type FactEvidence =

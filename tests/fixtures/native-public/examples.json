@@ -1221,10 +1221,198 @@
             "kind": "primary",
             "generation": "1"
           },
-          "first_row_id": "row-evicted",
+          "first_row_id": "row-retained",
           "limit": 32
         },
-        "reason": "expired"
+        "reason": "expired",
+        "subscription_id": "subscription-history"
+      }
+    },
+    "opened": {
+      "namespace": "namtab.native.experimental.n0",
+      "version": "n0-06-draft-1",
+      "body": {
+        "message": "subscription_opened",
+        "correlation_id": "read-one",
+        "subscription_id": "subscription-one",
+        "session": {
+          "namespace_id": "ns-synthetic",
+          "session_id": "session-one",
+          "incarnation": "1"
+        },
+        "projection": {
+          "kind": "active_grid"
+        }
+      }
+    },
+    "subscribe-zero-credit": {
+      "namespace": "namtab.native.experimental.n0",
+      "version": "n0-06-draft-1",
+      "body": {
+        "message": "subscribe",
+        "correlation_id": "read-zero-credit",
+        "session": {
+          "namespace_id": "ns-synthetic",
+          "session_id": "session-one",
+          "incarnation": "1"
+        },
+        "start": {
+          "kind": "current_snapshot",
+          "projection": {
+            "kind": "active_grid"
+          }
+        },
+        "credit": {
+          "pages": 0,
+          "bytes": 0
+        }
+      }
+    },
+    "opened-zero-credit": {
+      "namespace": "namtab.native.experimental.n0",
+      "version": "n0-06-draft-1",
+      "body": {
+        "message": "subscription_opened",
+        "correlation_id": "read-zero-credit",
+        "subscription_id": "subscription-zero-credit",
+        "session": {
+          "namespace_id": "ns-synthetic",
+          "session_id": "session-one",
+          "incarnation": "1"
+        },
+        "projection": {
+          "kind": "active_grid"
+        }
+      }
+    },
+    "grant-credit-zero": {
+      "namespace": "namtab.native.experimental.n0",
+      "version": "n0-06-draft-1",
+      "body": {
+        "message": "grant_credit",
+        "subscription_id": "subscription-zero-credit",
+        "credit": {
+          "pages": 1,
+          "bytes": 32768
+        }
+      }
+    },
+    "cancel-zero": {
+      "namespace": "namtab.native.experimental.n0",
+      "version": "n0-06-draft-1",
+      "body": {
+        "message": "cancel_subscription",
+        "subscription_id": "subscription-zero-credit"
+      }
+    },
+    "closed-zero": {
+      "namespace": "namtab.native.experimental.n0",
+      "version": "n0-06-draft-1",
+      "body": {
+        "message": "subscription_closed",
+        "subscription_id": "subscription-zero-credit",
+        "reason": "canceled"
+      }
+    },
+    "subscribe-denied": {
+      "namespace": "namtab.native.experimental.n0",
+      "version": "n0-06-draft-1",
+      "body": {
+        "message": "subscribe",
+        "correlation_id": "read-denied",
+        "session": {
+          "namespace_id": "ns-synthetic",
+          "session_id": "session-one",
+          "incarnation": "1"
+        },
+        "start": {
+          "kind": "current_snapshot",
+          "projection": {
+            "kind": "active_grid"
+          }
+        },
+        "credit": {
+          "pages": 0,
+          "bytes": 0
+        }
+      }
+    },
+    "subscribe-refused": {
+      "namespace": "namtab.native.experimental.n0",
+      "version": "n0-06-draft-1",
+      "body": {
+        "message": "subscribe_refused",
+        "correlation_id": "read-denied",
+        "reason": "unauthorized"
+      }
+    },
+    "opened-resume": {
+      "namespace": "namtab.native.experimental.n0",
+      "version": "n0-06-draft-1",
+      "body": {
+        "message": "subscription_opened",
+        "correlation_id": "read-two",
+        "subscription_id": "subscription-resumed",
+        "session": {
+          "namespace_id": "ns-synthetic",
+          "session_id": "session-one",
+          "incarnation": "1"
+        },
+        "projection": {
+          "kind": "active_grid"
+        }
+      }
+    },
+    "subscribe-history": {
+      "namespace": "namtab.native.experimental.n0",
+      "version": "n0-06-draft-1",
+      "body": {
+        "message": "subscribe",
+        "correlation_id": "read-history",
+        "session": {
+          "namespace_id": "ns-synthetic",
+          "session_id": "session-one",
+          "incarnation": "1"
+        },
+        "start": {
+          "kind": "current_snapshot",
+          "projection": {
+            "kind": "history",
+            "buffer": {
+              "kind": "primary",
+              "generation": "1"
+            },
+            "first_row_id": "row-retained",
+            "limit": 32
+          }
+        },
+        "credit": {
+          "pages": 0,
+          "bytes": 0
+        }
+      }
+    },
+    "opened-history": {
+      "namespace": "namtab.native.experimental.n0",
+      "version": "n0-06-draft-1",
+      "body": {
+        "message": "subscription_opened",
+        "correlation_id": "read-history",
+        "subscription_id": "subscription-history",
+        "session": {
+          "namespace_id": "ns-synthetic",
+          "session_id": "session-one",
+          "incarnation": "1"
+        },
+        "projection": {
+          "kind": "history",
+          "buffer": {
+            "kind": "primary",
+            "generation": "1"
+          },
+          "first_row_id": "row-retained",
+          "limit": 32
+        }
       }
     }
   },
