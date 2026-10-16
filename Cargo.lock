@@ -609,6 +609,8 @@ dependencies = [
  "project-x-domain",
  "project-x-platform",
  "project-x-protocol",
+ "project-x-terminal",
+ "serde",
  "serde_json",
  "sha2",
 ]
