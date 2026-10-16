@@ -268,13 +268,8 @@ class Connection extends EventEmitter {
     this.inputPauseRevision++;
     if (!this.inputPaused) this.inputPauseReason = reason;
     this.inputPaused = true;
-    const retained = [];
-    for (const item of this.queue) {
-      if (item.fields.op === "input")
-        item.reject(new Error(this.inputPauseReason));
-      else retained.push(item);
-    }
-    this.queue = retained;
+    for (const item of this.queue.splice(0))
+      item.reject(new Error(this.inputPauseReason));
     this.emit("input-paused");
   }
   rearmInput(pauseRevision) {

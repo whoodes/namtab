@@ -611,7 +611,16 @@ for (const disposition of ["rejected", "partial", "unknown"]) {
     const suffix = ["x", "i", "t", "\r"].map((text) =>
       connection.request({ op: "input", intent: { kind: "text", text } }),
     );
-    const results = await Promise.allSettled([first, ...suffix]);
+    const queuedMutation = connection.request({
+      op: "run",
+      task: "queued",
+      argv: ["/bin/true"],
+    });
+    const results = await Promise.allSettled([
+      first,
+      ...suffix,
+      queuedMutation,
+    ]);
     assert.equal(results[0].value.receipt.state, disposition);
     assert.equal(
       results.slice(1).every((result) => result.status === "rejected"),
@@ -620,6 +629,11 @@ for (const disposition of ["rejected", "partial", "unknown"]) {
     assert.equal(
       operations.filter((operation) => operation === "input").length,
       1,
+    );
+    assert.equal(
+      operations.includes("run"),
+      false,
+      "a queued mutation is not sent after refusal",
     );
     assert.equal(connection.inputPaused, true);
     assert.equal(connection.queue.length, 0);
