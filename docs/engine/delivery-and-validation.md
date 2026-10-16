@@ -102,7 +102,9 @@ Before NG0 acceptance, the owner must resolve staffing/review responsibility and
 
 ### NG0 review packet (draft)
 
-This N0-10 packet supports [issue 16](https://github.com/whoodes/namtab/issues/16). **NG0 is BLOCKED / NOT ACCEPTED**: the nine dependent N0 contract outcomes have merged, but explicit owner admission, staffing/timebox and bounded-N1 decisions remain. A complete packet, passing static checks or an agent review cannot record owner acceptance. N1 remains unauthorized and unimplemented. This section owns the packet; contracts and the remaining-decision register retain their existing owners.
+**Current disposition:** N0 is accepted for the bounded MK1 design baseline under the [owner admission](../engineering/mk1-scope-and-admission.md). MK1 implementation is authorized; full NG1 qualification is not claimed. The following packet preserves the pre-authorization disposition and evidence limits.
+
+This N0-10 packet supports [issue 16](https://github.com/whoodes/namtab/issues/16). **Pre-authorization packet disposition — NG0 was BLOCKED / NOT ACCEPTED**: the nine dependent N0 contract outcomes have merged, but explicit owner admission, staffing/timebox and bounded-N1 decisions remain. A complete packet, passing static checks or an agent review cannot record owner acceptance. At that packet revision, N1 remained unauthorized and unimplemented. This section owns the packet; contracts and the remaining-decision register retain their existing owners.
 
 | Input / requirement families | Revision-bound review input | Disposition for this packet |
 | --- | --- | --- |
