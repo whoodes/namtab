@@ -146,8 +146,12 @@
   function render(next) {
     if (next.viewEpoch !== state.viewEpoch || !next.connected) {
       clearPrefix();
-      acknowledgedFocusEpoch = null;
     }
+    acknowledgedFocusEpoch = protocol.reconcileFocusAcknowledgement(
+      acknowledgedFocusEpoch,
+      next.viewEpoch,
+      next.connected,
+    );
     state = next;
     text(
       "connection",
