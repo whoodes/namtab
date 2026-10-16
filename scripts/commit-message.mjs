@@ -1,6 +1,5 @@
 // Shared objective policy. Rationale, grammar and logical completeness need review.
 import { readFileSync } from "node:fs";
-import { execFileSync } from "node:child_process";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
@@ -43,17 +42,13 @@ if (
   try {
     if (process.argv.length !== 3)
       throw new Error("Usage: node scripts/commit-message.mjs COMMIT_MSG_FILE");
-    // Git removes editor comments/normalizes whitespace before storing messages.
-    // Respect Git's configured comment character rather than inventing a parser.
-    const raw = new TextDecoder("utf-8", { fatal: true }).decode(
-      readFileSync(process.argv[2]),
-    );
-    const cleaned = execFileSync("git", ["stripspace", "--strip-comments"], {
-      input: raw,
-      encoding: "utf8",
-      maxBuffer: 2 * 1024 * 1024,
-    });
-    const errors = validateCommitMessage(cleaned, { mode: "hook" });
+    // A hook cannot infer per-invocation --cleanup flags. Validate the literal
+    // file, including comment-like text, rather than hide text Git may retain.
+    const raw = new TextDecoder("utf-8", {
+      fatal: true,
+      ignoreBOM: true,
+    }).decode(readFileSync(process.argv[2]));
+    const errors = validateCommitMessage(raw, { mode: "hook" });
     if (errors.length) throw new Error(errors.join("\n"));
   } catch (error) {
     console.error("Commit message rejected:\n" + error.message);

@@ -50,6 +50,9 @@ test("versioned executable hook works noninteractively without creating commits"
   for (const [message, expected] of [
     ["Keep Unicode 界 intact\r\n\r\nContext.\r\n# Git editor comment\r\n", 0],
     ["Title\nMissing blank separator\n", 1],
+    ["#123 Fix Unicode handling\n", 0],
+    ["\uFEFFFix Unicode handling\n", 1],
+    ["Title\n# Comment body without blank line\n", 1],
     ["fixup! Keep input attribution exact\n", 0],
     ["Merge branch 'topic' into audit/local-correctness-20261016\n", 0],
     ["fixup!\n", 1],
@@ -64,7 +67,7 @@ test("versioned executable hook works noninteractively without creating commits"
       timeout: 10000,
     });
     assert.equal(r.status, expected, r.stderr);
-    if (expected) assert.match(r.stderr, /blank line|target title/u);
+    if (expected) assert.match(r.stderr, /blank line|target title|whitespace/u);
   }
   writeFileSync(file, Buffer.from([0x46, 0x69, 0x78, 0x20, 0xff]));
   const malformed = spawnSync(".githooks/commit-msg", [file], {
