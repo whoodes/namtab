@@ -1,0 +1,485 @@
+{
+  "profile": "n0-writer-model/0",
+  "status": "Hand-authored synthetic review DATA; no executable model, schema or runtime qualification.",
+  "assumptions": [
+    "Branches are independent, not one concatenated execution. All labels, principals, endpoints, bytes and facts are invented.",
+    "Each mutation label denotes a distinct valid service-issued key with a reserved receipt under n0-receipt-model/0 unless a step explicitly repeats it. No label is a capability.",
+    "Unchallenged target, authority/helper, endpoint/writer, capability/approval, mode/profile, geometry/buffer, observation/freshness, view and protection bindings match and are known; current time is before every deadline unless challenged.",
+    "All examples have permission to disclose synthetic byte extents. Frozen bytes are volatile illustrative inputs, not fields allowed in default durable receipts.",
+    "Expected values are proposed review oracles, never results observed from a terminal or generated from a writer implementation."
+  ],
+  "branches": [
+    {
+      "id": "cross-client-queued-takeover",
+      "covers": [
+        "N09",
+        "N11",
+        "V03",
+        "V10"
+      ],
+      "initial": {
+        "session": "session-a",
+        "incarnation": "1",
+        "writer": {
+          "principal": "principal-agent",
+          "endpoint": "endpoint-agent",
+          "generation": "1"
+        },
+        "human_principal": "principal-human",
+        "human_endpoints": [
+          "endpoint-desktop",
+          "endpoint-tui"
+        ],
+        "byte_queue": [
+          "agent-key",
+          "agent-text"
+        ]
+      },
+      "steps": [
+        {
+          "order": "1",
+          "event": "Desktop focuses session-a; TUI attaches the same session read-only.",
+          "expected": {
+            "writer_generation": "1",
+            "ui_application_bytes": "0",
+            "sizing_transfer": false
+          }
+        },
+        {
+          "order": "2",
+          "event": "Desktop tries typing without takeover.",
+          "expected": {
+            "delivery": "zero",
+            "attempted_keys_discarded": true,
+            "automatic_replay_after_takeover": false
+          }
+        },
+        {
+          "order": "3",
+          "event": "Desktop TakeOver reaches final boundary before either agent event is authorized to write.",
+          "expected": {
+            "writer_endpoint": "endpoint-desktop",
+            "writer_generation": "2",
+            "old_events_delivery": [
+              "zero",
+              "zero"
+            ],
+            "fence_acknowledged": true,
+            "process_stop_proven": false
+          }
+        },
+        {
+          "order": "4",
+          "event": "TUI tries ordinary typing with the same human principal but no endpoint lease.",
+          "expected": {
+            "delivery": "zero",
+            "reason": "Endpoint is not current writer"
+          }
+        },
+        {
+          "order": "5",
+          "event": "Delayed endpoint-agent frame arrives with writer generation 1.",
+          "expected": {
+            "delivery": "zero",
+            "writer_endpoint": "endpoint-desktop"
+          }
+        },
+        {
+          "order": "6",
+          "event": "Desktop obtains fresh observation/context and submits one new key.",
+          "expected": {
+            "delivery": "full",
+            "destination": "session-a",
+            "new_operation": true
+          }
+        },
+        {
+          "order": "7",
+          "event": "TUI explicitly takes input; final boundary acknowledges generation 3; delayed desktop keys arrive.",
+          "expected": {
+            "writer_endpoint": "endpoint-tui",
+            "writer_generation": "3",
+            "delayed_desktop_delivery": "zero",
+            "old_queues_replayed": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "background-target-and-view-remap",
+      "covers": [
+        "N09",
+        "V03",
+        "V10"
+      ],
+      "initial": {
+        "human_focused_session": "session-a",
+        "agent_writer_session": "session-b",
+        "agent_writer_generation": "1",
+        "desktop_view_mapping_generation": "1"
+      },
+      "steps": [
+        {
+          "order": "1",
+          "event": "Native agent submits explicit session-b input while desktop and TUI inspect session-a.",
+          "expected": {
+            "destination": "session-b",
+            "human_focus_changed": false
+          }
+        },
+        {
+          "order": "2",
+          "event": "Desktop prepares view-derived input to session-a at mapping 1; view remaps to session-b at mapping 2 before final gate.",
+          "expected": {
+            "delivery": "zero",
+            "silent_retarget": false
+          }
+        },
+        {
+          "order": "3",
+          "event": "Replacement backing PTY advances session-a incarnation to 2; old incarnation 1 input reaches gate.",
+          "expected": {
+            "delivery": "zero",
+            "old_incarnation_rebound": false
+          }
+        },
+        {
+          "order": "4",
+          "event": "TUI takes sizing authority; desktop focuses its mirror and requests an inner resize with old sizing epoch.",
+          "expected": {
+            "inner_resize_refused": true,
+            "focus_transfers_sizing": false,
+            "writer_transferred": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "partial-mode-fence",
+      "covers": [
+        "N10",
+        "N12",
+        "V03",
+        "V10"
+      ],
+      "initial": {
+        "operation": "paste-a",
+        "writer_endpoint": "endpoint-agent",
+        "writer_generation": "1",
+        "inner_bracketed_paste": true,
+        "mode_revision": "1",
+        "frozen_hex": "1b5b3230307e411b5b3230317e",
+        "encoded_length": "13"
+      },
+      "steps": [
+        {
+          "order": "1",
+          "event": "First final gate authorizes write; OS reports first 7 bytes only.",
+          "expected": {
+            "state": "suffix_pending",
+            "proven_prefix": "7",
+            "delivery": "pending"
+          }
+        },
+        {
+          "order": "2",
+          "event": "Earlier committed output is reduced and changes bracketed-paste mode to off at mode revision 2 before next write attempt.",
+          "expected": {
+            "new_mode_revision": "2",
+            "remaining_suffix_hex": "1b5b3230317e"
+          }
+        },
+        {
+          "order": "3",
+          "event": "Suffix gate detects relevant mode revision mismatch.",
+          "expected": {
+            "delivery": "partial",
+            "proven_prefix": "7",
+            "suffix_closed": true,
+            "suffix_reencoded": false,
+            "automatic_new_operation": false
+          }
+        },
+        {
+          "order": "4",
+          "event": "Both clients show interrupted paste with possible application input-parser uncertainty.",
+          "expected": {
+            "application_received_complete_paste_proven": false,
+            "ordinary_retry_offered": false,
+            "continuation_requires_fresh_authorized_context": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "inflight-takeover-late-result",
+      "covers": [
+        "N10",
+        "N11",
+        "N16",
+        "V03"
+      ],
+      "initial": {
+        "operation": "agent-escape",
+        "frozen_hex": "1b5b41",
+        "encoded_length": "3",
+        "writer_generation": "1",
+        "writer_endpoint": "endpoint-agent"
+      },
+      "steps": [
+        {
+          "order": "1",
+          "event": "First call authorization wins before human takeover reaches final boundary; OS call remains in flight.",
+          "expected": {
+            "state": "in_flight",
+            "delivery": "pending"
+          }
+        },
+        {
+          "order": "2",
+          "event": "TUI TakeOver closes old permit at final boundary and receives fence ACK.",
+          "expected": {
+            "writer_generation": "2",
+            "writer_endpoint": "endpoint-tui",
+            "old_suffix_may_start": false,
+            "delivery": "unknown",
+            "process_stop_proven": false
+          }
+        },
+        {
+          "order": "3",
+          "event": "TUI new input and canonical reply await old call completion.",
+          "expected": {
+            "new_byte_operations_started": "0",
+            "reason": "No interleaving into unresolved call"
+          }
+        },
+        {
+          "order": "4",
+          "event": "OS result returns 1 byte under original operation/encoding binding.",
+          "expected": {
+            "delivery": "partial",
+            "proven_prefix": "1",
+            "remaining_suffix_closed": true,
+            "fence_rolled_back": false
+          }
+        },
+        {
+          "order": "5",
+          "event": "Fresh inspection exposes interrupted Escape; TUI does not replay old event and opts for a separately authorized new session.",
+          "expected": {
+            "original_dispatch_repeated": false,
+            "old_process_exit_proven": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "inflight-takeover-result-unavailable",
+      "covers": [
+        "N11",
+        "V03"
+      ],
+      "initial": {
+        "operation": "agent-enter",
+        "frozen_hex": "0d",
+        "encoded_length": "1"
+      },
+      "steps": [
+        {
+          "order": "1",
+          "event": "One OS call is authorized, then keeper result/continuity is lost during takeover.",
+          "expected": {
+            "delivery": "unknown",
+            "proven_prefix": "0",
+            "zero_delivery_proven": false
+          }
+        },
+        {
+          "order": "2",
+          "event": "Service issues new authority epoch; old controller frames and duplicate admission attempt arrive.",
+          "expected": {
+            "old_frames_dispatched": false,
+            "duplicate_dispatch": false,
+            "byte_queue_held": true
+          }
+        },
+        {
+          "order": "3",
+          "event": "Current human queries original key; no authoritative call-completion record can be recovered.",
+          "expected": {
+            "delivery": "unknown",
+            "new_owner_byte_write_permitted": false,
+            "unknown_replayed": false,
+            "separate_lifecycle_controls_available_if_authorized": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "batch-lost-ack-and-deadline",
+      "covers": [
+        "N10",
+        "N11",
+        "V03",
+        "V10"
+      ],
+      "initial": {
+        "batch_events": [
+          "key-one",
+          "key-two"
+        ],
+        "frozen_hex_per_event": [
+          "41",
+          "42"
+        ],
+        "deadline_tick": "4",
+        "now_tick": "1"
+      },
+      "steps": [
+        {
+          "order": "1",
+          "event": "Event one fully writes; client loses response. Event two remains queued.",
+          "expected": {
+            "event_one_delivery": "full",
+            "event_two_delivery": "pending"
+          }
+        },
+        {
+          "order": "2",
+          "event": "Current client queries event one by issued key, then repeats identical request.",
+          "expected": {
+            "original_receipt_returned": true,
+            "additional_os_calls": "0"
+          }
+        },
+        {
+          "order": "3",
+          "event": "Before event two first gate, trusted now equals deadline tick 4.",
+          "expected": {
+            "event_two_delivery": "zero",
+            "batch_atomic": false,
+            "event_one_delivery": "full"
+          }
+        }
+      ]
+    },
+    {
+      "id": "prefix-deadline",
+      "covers": [
+        "N10",
+        "N11",
+        "V03"
+      ],
+      "initial": {
+        "operation": "text-a",
+        "frozen_hex": "4142",
+        "encoded_length": "2",
+        "deadline_tick": "4",
+        "now_tick": "1"
+      },
+      "steps": [
+        {
+          "order": "1",
+          "event": "OS reports 1-byte prefix; no call remains in flight.",
+          "expected": {
+            "proven_prefix": "1",
+            "state": "suffix_pending"
+          }
+        },
+        {
+          "order": "2",
+          "event": "At suffix gate trusted now equals deadline tick 4.",
+          "expected": {
+            "delivery": "partial",
+            "proven_prefix": "1",
+            "remaining_suffix_closed": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "unread-output-and-escape",
+      "covers": [
+        "N10",
+        "N15",
+        "V03",
+        "V10"
+      ],
+      "initial": {
+        "processed_frontier": "2",
+        "freshness": "exact-processed-cut",
+        "frozen_hex": "1b",
+        "encoded_length": "1"
+      },
+      "steps": [
+        {
+          "order": "1",
+          "event": "No earlier known state event is pending; gate matches cut 2, but application changes internal widget and new output is still unread.",
+          "expected": {
+            "backend_fence_holds": true,
+            "atomic_application_state_proven": false
+          }
+        },
+        {
+          "order": "2",
+          "event": "OS reports full write of lone Escape; SSH/application timing may still interpret it as a prefix.",
+          "expected": {
+            "delivery": "full",
+            "semantic_escape_proven": false,
+            "physical_alt_distinction_proven": false
+          }
+        },
+        {
+          "order": "3",
+          "event": "Agent, desktop and TUI inspect later evidence; expected transition is absent.",
+          "expected": {
+            "automatic_repeat": false,
+            "wrong_inferred_widget_possible": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "ctrl-c-and-residual-effects",
+      "covers": [
+        "N16",
+        "V03",
+        "V10"
+      ],
+      "initial": {
+        "operation": "interrupt-key",
+        "frozen_hex": "03",
+        "encoded_length": "1"
+      },
+      "steps": [
+        {
+          "order": "1",
+          "event": "Canonical Ctrl+C intent fully crosses OS write boundary; raw-mode application ignores it.",
+          "expected": {
+            "delivery": "full",
+            "process_exit_observed": false
+          }
+        },
+        {
+          "order": "2",
+          "event": "Desktop takes input; task takeover separately closes future mediated tool/workspace admission and requests attempt cancellation.",
+          "expected": {
+            "session_fence_acknowledged": true,
+            "task_cancel_requested": true,
+            "existing_background_or_remote_effects_stopped": false
+          }
+        },
+        {
+          "order": "3",
+          "event": "Human requests separately authorized stable-target signal; OS accepts it.",
+          "expected": {
+            "signal_delivery": "full",
+            "signal_handled_proven": false,
+            "descendant_termination_proven": false
+          }
+        }
+      ]
+    }
+  ]
+}

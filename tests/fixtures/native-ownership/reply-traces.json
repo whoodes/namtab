@@ -1,0 +1,256 @@
+{
+  "profile": "n0-writer-model/0",
+  "status": "Hand-authored synthetic review DATA; no executable model, schema or runtime qualification.",
+  "assumptions": [
+    "Branches are independent, not one concatenated execution. All labels, principals, endpoints, bytes and facts are invented.",
+    "Each mutation label denotes a distinct valid service-issued key with a reserved receipt under n0-receipt-model/0 unless a step explicitly repeats it. No label is a capability.",
+    "Unchallenged target, authority/helper, endpoint/writer, capability/approval, mode/profile, geometry/buffer, observation/freshness, view and protection bindings match and are known; current time is before every deadline unless challenged.",
+    "All examples have permission to disclose synthetic byte extents. Frozen bytes are volatile illustrative inputs, not fields allowed in default durable receipts.",
+    "Expected values are proposed review oracles, never results observed from a terminal or generated from a writer implementation."
+  ],
+  "branches": [
+    {
+      "id": "two-views-split-and-repeated-queries",
+      "covers": [
+        "V03",
+        "V11"
+      ],
+      "initial": {
+        "session": "session-a",
+        "incarnation": "1",
+        "views": [
+          "endpoint-desktop",
+          "endpoint-tui"
+        ],
+        "profile_allows": "DSR5",
+        "reply_class_protection_allowed": true
+      },
+      "steps": [
+        {
+          "order": "1",
+          "event": "Canonical output events 1 and 2 contain split bytes 1b5b and 356e; event 2 completes one DSR5 query.",
+          "expected": {
+            "proposed_replies": [
+              {
+                "id": "session-a:1:2:1",
+                "originating_event": "2",
+                "ordinal": "1",
+                "frozen_hex": "1b5b306e"
+              }
+            ],
+            "frontend_replies": "0"
+          }
+        },
+        {
+          "order": "2",
+          "event": "Both views render/reattach the same processed cut.",
+          "expected": {
+            "new_replies": "0",
+            "application_writer_transferred": false
+          }
+        },
+        {
+          "order": "3",
+          "event": "Event 3 independently contains identical live query 1b5b356e.",
+          "expected": {
+            "new_reply_id": "session-a:1:3:1",
+            "frozen_hex": "1b5b306e",
+            "deduplicated_by_bytes": false
+          }
+        },
+        {
+          "order": "4",
+          "event": "Both restricted reply operations cross the one final queue with matching fences.",
+          "expected": {
+            "reply_ids_dispatched": [
+              "session-a:1:2:1",
+              "session-a:1:3:1"
+            ],
+            "effects_per_query": "1",
+            "frontend_response_allowed": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "reply-partial-and-takeover",
+      "covers": [
+        "V03",
+        "V11"
+      ],
+      "initial": {
+        "reply_id": "session-a:1:2:1",
+        "frozen_hex": "1b5b306e",
+        "encoded_length": "4",
+        "writer_endpoint": "endpoint-agent",
+        "reply_class_protection_allowed": true
+      },
+      "steps": [
+        {
+          "order": "1",
+          "event": "Restricted reply first gate authorizes OS call; it returns prefix 2.",
+          "expected": {
+            "state": "suffix_pending",
+            "proven_prefix": "2"
+          }
+        },
+        {
+          "order": "2",
+          "event": "Desktop takeover changes application writer generation before reply suffix gate; no reply-authority/protection fence changes.",
+          "expected": {
+            "application_old_writer_fenced": true,
+            "reply_authority_revoked_by_writer_change": false,
+            "new_human_bytes_overtake_reply": false
+          }
+        },
+        {
+          "order": "3",
+          "event": "Reply suffix gate validates its own authority/cut and writes remaining frozen bytes 306e.",
+          "expected": {
+            "reply_delivery": "full",
+            "proven_prefix": "4",
+            "new_reply_id_allocated": false
+          }
+        },
+        {
+          "order": "4",
+          "event": "Fresh desktop application input may proceed after reply operation closes.",
+          "expected": {
+            "byte_interleaving": false,
+            "reply_grants_human_permission": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "reply-protection-closes-suffix",
+      "covers": [
+        "N13",
+        "V03",
+        "V11"
+      ],
+      "initial": {
+        "reply_id": "session-a:1:2:1",
+        "frozen_hex": "1b5b306e",
+        "encoded_length": "4",
+        "protection_revision": "1",
+        "reply_class_protection_allowed": true
+      },
+      "steps": [
+        {
+          "order": "1",
+          "event": "First reply write returns exact prefix 2, with no call outstanding.",
+          "expected": {
+            "proven_prefix": "2",
+            "delivery": "pending"
+          }
+        },
+        {
+          "order": "2",
+          "event": "Target-bound protection revision advances to 2 and explicitly disallows this reply class.",
+          "expected": {
+            "reply_suffix_allowed": false
+          }
+        },
+        {
+          "order": "3",
+          "event": "Suffix gate permanently closes the old reply.",
+          "expected": {
+            "delivery": "partial",
+            "proven_prefix": "2",
+            "suffix_reencoded": false,
+            "automatic_reply_replay": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "reply-crash-replay-unknown",
+      "covers": [
+        "V03",
+        "V11"
+      ],
+      "initial": {
+        "reply_id": "session-a:1:2:1",
+        "frozen_hex": "1b5b306e",
+        "encoded_length": "4"
+      },
+      "steps": [
+        {
+          "order": "1",
+          "event": "Reply OS call begins; result record/ACK is lost during crash.",
+          "expected": {
+            "delivery": "unknown",
+            "zero_delivery_proven": false
+          }
+        },
+        {
+          "order": "2",
+          "event": "Authorized state/tail recovery reinterprets historical events 1 and 2 in no-external-effects mode.",
+          "expected": {
+            "historical_external_reply_calls": "0",
+            "uncertain_reply_resent": false
+          }
+        },
+        {
+          "order": "3",
+          "event": "Same-operation evidence establishes call cessation but not extent; service reconciles and obtains fresh canonical continuity/authority plus explicit policy permission to continue despite disclosed input-parser uncertainty.",
+          "expected": {
+            "historical_delivery": "unknown",
+            "old_suffix_reopened": false
+          }
+        },
+        {
+          "order": "4",
+          "event": "A distinct later live query at event 3 receives a new restricted effect, if current profile/protection allows.",
+          "expected": {
+            "new_reply_id": "session-a:1:3:1",
+            "deduplicated_against_old_bytes": false,
+            "old_operation_redispatched": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "reply-flood-and-untrusted-payload",
+      "covers": [
+        "N14",
+        "V03",
+        "V11"
+      ],
+      "initial": {
+        "queued_reply_count": "2",
+        "model_reply_capacity": "2",
+        "reserved_revoke_capacity": true
+      },
+      "steps": [
+        {
+          "order": "1",
+          "event": "More reply-producing output arrives while queue is full.",
+          "expected": {
+            "unbounded_reply_allocation": false,
+            "canonical_output_silently_skipped": false,
+            "bounded_backpressure_or_declared_failure": true
+          }
+        },
+        {
+          "order": "2",
+          "event": "Agent/frontend proposes arbitrary text as query reply.",
+          "expected": {
+            "proposal_admitted": false,
+            "application_bytes": "0"
+          }
+        },
+        {
+          "order": "3",
+          "event": "Reserved human revoke control reaches final boundary despite reply flood.",
+          "expected": {
+            "old_application_writer_fenced": true,
+            "reply_flood_consumes_control_reservation": false,
+            "latency_slo_measured": false
+          }
+        }
+      ]
+    }
+  ]
+}
