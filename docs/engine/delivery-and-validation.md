@@ -80,6 +80,24 @@ The currently authored legacy CI jobs may still be red. This documentation does 
 
 N2/N3/N4 can overlap with explicit prerequisites; a useful N1 is intentionally earlier than full v1. v1 certification requires NG0–NG4 for the features it advertises and both frontends' critical workflows. None is measured/implemented in this campaign. No old failed engine must be fixed to begin a separately authorized owned-engine slice.
 
+### N0 starting queue and readiness
+
+The initial GitHub plan was read back on **2026-10-16**: five N0–N4 milestones, 24 issues, 17 parent links and 45 blocking edges. The private Project has two Ready cards and 22 Backlog cards; Blocked is a separate initial planning field, not an automatically synchronized guarantee. No N0 deliverable is completed by creating tracking. The order below resolves the issue graph without adding another roadmap or changing remote planning.
+
+| Order / issue | Prerequisites | Concrete exit evidence |
+| --- | --- | --- |
+| 1a — [N0-01 identities/facts](https://github.com/whoodes/namtab/issues/7) | Owner-approved contract-drafting scope; access to current design | Reviewed identity/event-cut examples, trust levels and valid/invalid native-operation fixtures; no prompt-derived attribution |
+| 1b — [N0-04 finite profile](https://github.com/whoodes/namtab/issues/10), in parallel | Same drafting scope; bounded N1 use case | Capability table with exact syntax/defaults, replies, classic aliases, exclusions and truthful TERM plan; enhanced input unadvertised until specified |
+| 2 — [N0-02 receipts](https://github.com/whoodes/namtab/issues/8), [N0-05 state](https://github.com/whoodes/namtab/issues/11), [N0-08 provenance](https://github.com/whoodes/namtab/issues/14) | Respectively N0-01; N0-04; N0-04 | Receipt/expiry/unknown transition table; complete bounded continuation inventory; exact admitted primitive/data/source/license tuple with explicit gaps |
+| 3 — [N0-03 ownership](https://github.com/whoodes/namtab/issues/9) and [N0-07 core fixtures](https://github.com/whoodes/namtab/issues/13) | N0-01/02; N0-04/05 respectively | First-write/takeover/partial-delivery traces; independent state/input/query goldens and oracle-challenge plan. Core fixtures need no invented native schema |
+| 4 — [N0-06 public observations/input](https://github.com/whoodes/namtab/issues/12) | N0-01/03/04 | Reviewed base/target/credit/resync examples and dual-client positive/refusal cases. Quoted Ctrl-G is a key intent or explicit refusal, never hidden control text |
+| 5 — [N0-09 modules/IPC](https://github.com/whoodes/namtab/issues/15) | N0-02/05/06/08 | One cohesive proposed core/worker seam, failure/resource domain and import/authority checklist; preserve existing experimental namespaces |
+| 6 — [N0-10 NG0 review](https://github.com/whoodes/namtab/issues/16) | All N0-01–09 outcomes; named owner/reviewer decision | Revision-bound R/V traceability, reviewed fixtures/schema examples, preservation checks, unresolved limits and explicit owner acceptance of the bounded N1 plan |
+
+**Ready means eligible for scoped contract drafting, not ready to execute engine work.** These tasks still need a real owner, review availability and an authorized timebox. Existing synthetic named-key/schema/receipt checks do not satisfy NG0 or live frontend/PTY requirements. A passing audit PR is not N0 acceptance or N1 implementation permission. N0-07's core fixtures can proceed independently of N0-06; shared native/frontend fixtures must also be reviewed against N0-06 before NG0 closes.
+
+Before NG0 acceptance, the owner must resolve staffing/review responsibility and timebox; the exact N1 feature/data/Unicode/cap tuple and smaller measurement workload; native wire/version/admission details; and dependency/data licensing admission. Project-license adoption remains separate and is not required to review private design work. Detailed options stay in the [remaining-decision register](#risk-register-and-remaining-decisions), not a second set of issue defaults. Configuration-version validation is required early; N5's broader migration backlog does not defer incompatible-version refusal or promise cross-version terminal restore.
+
 ## Staffing, expertise and effort
 
 Planning ranges, **not measurements, commitments or vendor quotes**. Assumptions: Linux text-first scope above; experienced full-time Rust/systems and UI engineers; at least one terminal/job-control/Unicode specialist; reusable OS/Unicode/font/storage infrastructure; no new shell or universal graphics/bidi/platform support. Independent security/accessibility review and recruiting are additional calendar constraints. Team members share conformance/fuzz work; do not hide testing as free work.

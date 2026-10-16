@@ -56,7 +56,7 @@ Runtime tests cover filesystem escapes/symlink races, source seal versus writabl
 
 ## CI lanes and practical cost
 
-Recommend GitHub Actions initially if the project adopts hosting there; the same lane definitions can run locally/elsewhere. A pinned-checkout foundation workflow is now authored, with an intentionally blocking X4 step; no provider account/remote is configured and it has not been executed remotely. Targets below are **future time budgets**, not measured runtimes.
+The repository is privately hosted as `whoodes/namtab`. Its pinned-checkout workflow uses `pull_request` and `workflow_dispatch`, not push. Actual provider results must be inspected for the exact candidate SHA; hosting or passing local checks does not imply a remote pass. Historical candidate failures remain distinct from foundation correctness and owned-engine qualification. The same lane definitions can run locally/elsewhere. Targets below are **future time budgets**, not measured runtimes.
 
 | Lane | Trigger / planned budget | Required scope and merge/release effect |
 | --- | --- | --- |

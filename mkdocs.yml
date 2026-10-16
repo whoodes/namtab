@@ -1,4 +1,4 @@
-site_name: Project X
+site_name: namtab
 site_description: Local engineering evidence and agent-first terminal design
 site_dir: .artifacts/site
 strict: true

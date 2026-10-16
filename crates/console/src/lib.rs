@@ -76,7 +76,7 @@ pub fn diagnostic() -> Result<String, Box<dyn std::error::Error>> {
     terminal.draw(|f| {
         f.render_widget(
             ratatui::widgets::Paragraph::new(
-                "Project X: offline foundation\nX4 failed: no live terminal or process execution",
+                "namtab: offline foundation\nHistorical X4/EA1 FAIL: no live terminal",
             ),
             f.area(),
         )
@@ -105,7 +105,7 @@ mod tests {
     }
     #[test]
     fn rendering_labels_incomplete_state() {
-        assert!(diagnostic().unwrap().contains("X4 failed"));
+        assert!(diagnostic().unwrap().contains("Historical X4/EA1 FAIL"));
     }
     #[test]
     fn release_is_not_another_key() {

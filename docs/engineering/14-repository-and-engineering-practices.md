@@ -2,7 +2,7 @@
 
 [Index](../index.md) · [Dependencies](15-dependencies-and-supply-chain.md) · [Tests/CI](16-test-and-ci-strategy.md) · [Target runtime modules](../engine/runtime-persistence-security.md#module-and-process-design)
 
-**Actual foundation versus proposed product.** Current source has seven Rust/four TS packages, including a binary-only historical libghostty EA1 worker. No live frontend, full broker or PTY runtime exists. [E4](../adr/0004-owned-agent-native-engine.md) chooses owned semantics; [runtime](../engine/runtime-persistence-security.md#module-and-process-design) owns the target graph. This page owns repository layout, actual dependency checks, schema/workflow/release policy. No source/dependency change occurs in this consolidation.
+**Actual foundation versus proposed product.** Current source has seven Rust/four TS packages, including a binary-only historical libghostty EA1 worker. No live frontend, full broker or PTY runtime exists. [E4](../adr/0004-owned-agent-native-engine.md) chooses owned semantics; [runtime](../engine/runtime-persistence-security.md#module-and-process-design) owns the target graph. This page owns repository layout, actual dependency checks, schema/workflow/release policy.
 
 The historical worker requires the evaluated local artifact for workspace builds; [EA1 reproduction](21-ea1-native-worker-results.md#results-and-reproduction) records preparation and limits. Its raw selection gate remains FAIL. A different runner/artifact is not automatically qualified. Current commands/prerequisites are in root README and Makefile; historical reports preserve their exact earlier tuples.
 

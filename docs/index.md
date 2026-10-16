@@ -1,4 +1,4 @@
-# Project X design guide
+# namtab design guide
 
 **Build a project-owned Rust agent-native terminal engine, with a compatibility boundary for existing Linux programs and two first-class human frontends: host-terminal TUI and Electron.** [Manifesto](product/manifesto.md) states the priorities; [ADR E4](adr/0004-owned-agent-native-engine.md) records the ownership decision and rejected alternatives.
 

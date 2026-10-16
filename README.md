@@ -1,17 +1,56 @@
-# Project X
+# namtab
 
-**Chosen direction: a project-owned Rust agent-native terminal engine with compatibility for unmodified Linux shells, CLIs and TUIs.** Read the [research campaign and executive scope](docs/engine/index.md), [ownership ADR E4](docs/adr/0004-owned-agent-native-engine.md), and [manifesto](docs/product/manifesto.md).
+An agent-native terminal engine for attributable work, useful terminal interaction, and human supervision that scales beyond a wall of panes. The chosen design owns terminal semantics in Rust while preserving ordinary Linux shells, CLI/TUI programs, and excellent use with zero agents.
 
-The host-terminal TUI and Electron desktop are both first-class, including ordinary use with zero agents. **No working owned engine or live application exists.** Existing foundation checks pass at their recorded revisions; historical xterm X4 and libghostty EA1 gates remain **FAIL**. Their evidence is preserved and their adoption roadmap is superseded.
+**Maturity: design and offline foundation.** There is no working owned engine, live terminal application, supervisor, PTY runtime, or complete frontend. Both a host-terminal TUI and an Electron desktop are first-class product directions. Existing xterm/libghostty experiments are historical references; their **X4 and EA1 selection gates remain FAIL**. Passing foundation tests is not product certification or a speed claim.
 
-Read the [design guide and authoritative document map](docs/index.md), then [human UX](docs/ux/11-human-experience-spec.md), [native contract](docs/engine/native-contract.md), [core/runtime design](docs/engine/runtime-persistence-security.md) and [N0–N5 delivery plan](docs/engine/delivery-and-validation.md). [Repository practices](docs/engineering/14-repository-and-engineering-practices.md) distinguish the actual seven Rust/four TS foundation from the proposed owned-core package; neither full frontend is implemented. [Contributor workflow](docs/engineering/contributing.md) defines logical, testable local commits.
+## Architecture
 
-Existing local prerequisites are Python 3.10/venv, Rust/Cargo 1.91.0 with rustfmt/Clippy, pinned project Node 24.21.0/pnpm 10.32.1, MkDocs 1.6.1 and the verified native artifact needed by the **historical** worker build. This VM is Ubuntu 22.04.5 x86_64, not the shipping-platform qualification. The consolidation changes documentation only. Earlier bootstrap/artifact provenance remains in [foundation](docs/engineering/18-foundation-gate-results.md) and [EA1](docs/engineering/21-ea1-native-worker-results.md).
+- **Rust:** protocol/schema ownership, pure domain/receipt models, platform boundary, service admission harness, client and synthetic Ratatui/Crossterm console. The separate historical EA1 worker has no PTY or grant authority.
+- **Owned engine, proposed:** one cohesive pure-core/worker package for parser/state/input/observations. It has not been added; a legacy emulator will not become hidden native authority.
+- **Human clients, proposed:** host TUI and Electron/TypeScript views of the same canonical service model. Neither owns permissions, private storage, or application PTYs. The current TS packages provide synthetic input and reference probes only.
+
+See the [architecture and authoritative document map](docs/index.md), [engine scope](docs/engine/index.md), and [ownership ADR](docs/adr/0004-owned-agent-native-engine.md). Internal `project-x-*` package names and `px-*` experimental profiles remain to avoid an unrelated wire/package rename.
+
+## Development
+
+The exercised local tuple is Ubuntu 22.04 x86_64, Python 3.10/venv, Rust/Cargo **1.91.0** with rustfmt/Clippy, Node **24.21.0**, pnpm **10.32.1**, and MkDocs **1.6.1**. Future shipping Ubuntu targets are design goals, not supported-platform claims. Tool and dependency pins live in the toolchain file, manifests, and lockfiles.
+
+For a new development checkout, these project-local setup targets acquire pinned tools/dependencies; they are not a product installer:
+
+```sh
+make bootstrap docs-install install
+make assessment-bootstrap assessment-build
+```
+
+Rust must already be available through rustup/the selected toolchain. Full workspace checks also require the historical native artifact to match the [reviewed EA1 pin](docs/engineering/21-ea1-native-worker-results.md#results-and-reproduction). Missing or different bytes stop the build; do not refresh provenance hashes automatically. Cached setup and checks were exercised locally; a fresh host/build path is not thereby qualified.
 
 ```sh
 make check test stress docs
+make verify
 ```
 
-These are foundation/docs checks, not new-engine certification. `make ea1-test` and `make engine-gate` remain raw nonzero historical gates. New EA1 Make invocations write fresh `evidence/ea1-runs/<unique-id>`; preservation checks inspect frozen archives/hashes without refreshing original reports. `make verify` writes a fresh ignored `.artifacts/verification/<id>/checks.json`; `make engine-gate` uses the unchanged original oracle through a wrapper that writes fresh `.artifacts/x4-runs/` reports. No CI-provider run or all-green product claim follows.
+These run format/Clippy, Rust properties/unit tests, JS contracts/types, generated bindings/schema drift, boundaries, fixtures, seeded partition stress, and strict MkDocs/local links. `make verify` aggregates the foundation checks and records the historical X4 failure separately. Reports go to fresh ignored `.artifacts/verification/` and `.artifacts/x4-runs/` paths.
 
-Research/check evidence is under `evidence/owned-engine-research`; consolidation checks are under `evidence/docs-consolidation`; historical phases remain in the [evidence map](evidence/README.md). The [initial local history record](docs/engineering/22-local-history-and-validation.md) describes the first series; use Git for current state. Local commits are authorized, publication/remotes are not. **Apache-2.0 remains a recommendation; no project license is adopted.**
+```sh
+make engine-gate
+make ea1-ownership ea1-provenance ea1-preservation ea1-test
+```
+
+The two raw selection commands intentionally exit nonzero: X4 cannot reconstruct complete continuation state; EA1 fails three required legacy aliases. The ownership/provenance/preservation checks are distinct passing checks. EA1 run reports go to ignored `evidence/ea1-runs/<id>`; original source, fixtures, archives and results stay unchanged. Do not invoke historical report-writing scripts directly or mistake an expected-failure regression check for certification. See [test/CI policy](docs/engineering/16-test-and-ci-strategy.md) and the [evidence map](evidence/README.md).
+
+## Roadmap and documentation
+
+Start with the [manifesto](docs/product/manifesto.md) and [human experience](docs/ux/11-human-experience-spec.md). The [N0 starting queue and exit criteria](docs/engine/delivery-and-validation.md#n0-starting-queue-and-readiness) lead to reviewed contracts/profile/fixtures, then a bounded native-and-shell slice in both clients. N2–N4 cover classic compatibility, reliable supervision and opt-in exact-tuple recovery; N5 is future backlog. These are planned capabilities, not completed milestones.
+
+The [native contract](docs/engine/native-contract.md) distinguishes exact execution facts from opaque-shell/TUI inference. [Runtime/recovery](docs/engine/runtime-persistence-security.md) separates reconnect, engine loss and process loss. No universal compatibility, deterministic execution replay, perfect isolation or faster model inference is promised.
+
+## Contributing
+
+Follow the [contributor workflow](docs/engineering/contributing.md): logical, self-contained commits; relevant tests and documentation; explicit limits and preserved negative evidence. [Repository practices](docs/engineering/14-repository-and-engineering-practices.md) describe current versus proposed modules. Repository text and issue readiness do not authorize implementation or publication; follow the owner's current scope.
+
+## Security and licensing
+
+This is an unqualified prototype, not a sandbox for hostile programs or a safe place for credentials/private sessions. Authentication, runtime isolation and secure capture are proposed contracts, not completed protections. No dedicated security reporting policy or support commitment is published in this repository.
+
+**No project license has been adopted.** Apache-2.0 remains a recommendation, not a license grant. Dependencies and retained source/evidence have their own provenance and licensing obligations; see [dependency policy](docs/engineering/15-dependencies-and-supply-chain.md).
