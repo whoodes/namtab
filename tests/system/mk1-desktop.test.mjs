@@ -19,6 +19,7 @@ const snapshot = () => ({
   version: mk1.VERSION,
   epoch: "daemon-1",
   endpoint: "human-1",
+  endpoints: [{ id: "human-1", role: "human", connected: true }],
   sessions: [
     {
       id: "shell-1",
@@ -464,4 +465,40 @@ test("MK1 response checks reject malformed canonical data before renderer delive
     truncated: false,
   });
   assert.equal(mk1.validateSnapshot(draining), true);
+});
+
+test("MK1 endpoint observations are declared roles and bounded connection facts", () => {
+  const observed = snapshot();
+  observed.endpoints.push({ id: "agent-1", role: "agent", connected: false });
+  assert.equal(mk1.validateSnapshot(observed), true);
+  for (const endpoints of [
+    [{ id: "agent-1", role: "thinking", connected: true }],
+    [{ id: "agent-1", role: "agent", connected: "true" }],
+    [
+      { id: "same", role: "human", connected: true },
+      { id: "same", role: "agent", connected: false },
+    ],
+    Array.from({ length: 17 }, (_, i) => ({
+      id: `e${i}`,
+      role: "agent",
+      connected: false,
+    })),
+    Array.from({ length: 5 }, (_, i) => ({
+      id: `e${i}`,
+      role: "agent",
+      connected: true,
+    })),
+  ])
+    assert.equal(mk1.validateSnapshot({ ...observed, endpoints }), false);
+  assert.equal(
+    mk1.validateSnapshot({
+      ...observed,
+      endpoints: Array.from({ length: 16 }, (_, i) => ({
+        id: `e${i}`,
+        role: "agent",
+        connected: i < 4,
+      })),
+    }),
+    true,
+  );
 });

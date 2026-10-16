@@ -159,6 +159,15 @@
         ? `Endpoint ${next.endpoint} · epoch ${next.epoch || "pending"}`
         : "No endpoint",
     );
+    const declaredAgents = next.snapshot?.endpoints.filter(
+      (endpoint) => endpoint.role === "agent",
+    );
+    text(
+      "agent-status",
+      declaredAgents
+        ? `${next.connected ? "" : "Last observed · "}Declared agent endpoints: ${declaredAgents.filter((endpoint) => endpoint.connected).length} connected / ${declaredAgents.length} retained`
+        : "Declared agent endpoints: unobserved",
+    );
     notice(next.notice);
     element("reconnect").disabled =
       next.connected || next.status === "Connecting…";

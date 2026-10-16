@@ -346,6 +346,19 @@
       snapshot.version === VERSION &&
       string(snapshot.epoch, 256) &&
       string(snapshot.endpoint, 256) &&
+      Array.isArray(snapshot.endpoints) &&
+      snapshot.endpoints.length <= 16 &&
+      snapshot.endpoints.every(
+        (endpoint) =>
+          record(endpoint) &&
+          string(endpoint.id, 256) &&
+          endpoint.id.length > 0 &&
+          ["human", "agent"].includes(endpoint.role) &&
+          typeof endpoint.connected === "boolean",
+      ) &&
+      snapshot.endpoints.filter((endpoint) => endpoint.connected).length <= 4 &&
+      new Set(snapshot.endpoints.map((endpoint) => endpoint.id)).size ===
+        snapshot.endpoints.length &&
       Array.isArray(snapshot.sessions) &&
       snapshot.sessions.length <= 2 &&
       snapshot.sessions.every(
