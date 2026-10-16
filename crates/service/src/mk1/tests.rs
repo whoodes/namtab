@@ -305,6 +305,17 @@ fn explicit_artifact_revision_changes_make_validation_stale() {
         .ok
     );
     let first = h.broker.snapshot(&h.human).unwrap().artifacts[0].clone();
+    let denied_agent_review = h.request(
+        &h.agent.clone(),
+        Op::ValidateArtifact {
+            artifact: first.id.clone(),
+            revision: first.revision.clone(),
+        },
+    );
+    assert_eq!(
+        denied_agent_review.error.as_deref(),
+        Some("artifact_review_requires_human_endpoint")
+    );
     assert!(
         h.human(Op::ValidateArtifact {
             artifact: first.id.clone(),
@@ -354,16 +365,13 @@ fn worker_loss_fences_input_but_preserves_independent_process_facts() {
     assert!(!snapshot.sessions[0].screen.input_known);
     assert!(snapshot.sessions[0].owner.is_none());
     assert_eq!(snapshot.sessions[0].process, "running");
-    assert_eq!(
-        h.human(Op::TakeControl {
-            session: snapshot.sessions[0].id.clone(),
-            generation: snapshot.sessions[0].generation,
-            force: true
-        })
-        .error
-        .as_deref(),
-        Some("broker_degraded_new_mutations_fenced")
-    );
+    let protected = h.human(Op::TakeControl {
+        session: snapshot.sessions[0].id.clone(),
+        generation: snapshot.sessions[0].generation,
+        force: true,
+    });
+    assert!(!protected.ok);
+    assert_eq!(protected.receipt.unwrap().state, "unknown");
 }
 
 #[test]
@@ -606,6 +614,7 @@ fn real_nonreading_pty_partial_write_reports_prefix_and_never_redispatches() {
             writer: process.writer,
             pending_output: 0,
             exited: false,
+            input_uncertain: false,
         },
     );
     let mut partial = None;
@@ -640,10 +649,162 @@ fn real_nonreading_pty_partial_write_reports_prefix_and_never_redispatches() {
         partial.is_some(),
         "real PTY did not reach bounded partial/no-progress boundary"
     );
+    let Reply::Fed { frame, .. } = h
+        .broker
+        .worker_call(Operation::Feed {
+            session: id.clone(),
+            bytes: b"later output".to_vec(),
+        })
+        .unwrap()
+    else {
+        panic!("frame")
+    };
+    h.broker
+        .state
+        .lock()
+        .unwrap()
+        .sessions
+        .get_mut(&id)
+        .unwrap()
+        .publish(frame);
+
     assert!(
         !h.broker.snapshot(&h.human).unwrap().sessions[0]
             .screen
             .input_known
     );
     let _ = process.process.kill_and_wait();
+}
+
+#[test]
+fn real_pty_eof_finishes_utf8_prefix_without_inventing_child_exit() {
+    let mut h = Harness::new();
+    let session = h.shell();
+    let text = "printf '\\303'; exit 7";
+    let response = h.human(Op::Input {
+        session: session.id.clone(),
+        generation: session.generation,
+        revision: session.screen.revision,
+        mode_revision: session.screen.mode_revision,
+        policy: InputPolicy::HumanLive,
+        intent: Intent::Text { text: text.into() },
+    });
+    assert!(response.ok, "{response:?}");
+    h.wait(|snapshot| {
+        snapshot.sessions[0]
+            .screen
+            .lines
+            .iter()
+            .any(|line| line.contains(text))
+    });
+    let session = h.broker.snapshot(&h.human).unwrap().sessions[0].clone();
+    let response = h.human(Op::Input {
+        session: session.id.clone(),
+        generation: session.generation,
+        revision: session.screen.revision,
+        mode_revision: session.screen.mode_revision,
+        policy: InputPolicy::HumanLive,
+        intent: Intent::Key {
+            key: "Enter".into(),
+            ctrl: false,
+            alt: false,
+            shift: false,
+        },
+    });
+    assert!(response.ok, "{response:?}");
+    let snapshot = h.wait(|snapshot| snapshot.sessions[0].process == "exited");
+    let session = &snapshot.sessions[0];
+    assert_eq!(session.exit_code, Some(7));
+    assert!(!session.screen.input_known);
+    assert!(
+        session
+            .screen
+            .lines
+            .iter()
+            .any(|line| line.contains('\u{fffd}'))
+    );
+}
+
+#[test]
+fn full_journal_still_allows_protective_human_revoke_but_never_a_new_grant() {
+    let mut h = Harness::new();
+    let session = h.shell();
+    assert!(
+        h.human(Op::ReleaseControl {
+            session: session.id.clone(),
+            generation: session.generation
+        })
+        .ok
+    );
+    let session = h.broker.snapshot(&h.human).unwrap().sessions[0].clone();
+    assert!(
+        h.request(
+            &h.agent.clone(),
+            Op::TakeControl {
+                session: session.id.clone(),
+                generation: session.generation,
+                force: false
+            }
+        )
+        .ok
+    );
+    let session = h.broker.snapshot(&h.human).unwrap().sessions[0].clone();
+    assert_eq!(session.owner.as_deref(), Some(h.agent.as_str()));
+    h.broker.state.lock().unwrap().journal.exhaust_for_test();
+    let request = Request {
+        version: wire::VERSION.into(),
+        id: 100,
+        operation: Op::TakeControl {
+            session: session.id.clone(),
+            generation: session.generation,
+            force: true,
+        },
+    };
+    let response = h.broker.request(&h.human, request.clone());
+    assert!(!response.ok);
+    let receipt = response.receipt.clone().unwrap();
+    assert_eq!(receipt.state, "unknown");
+    assert_eq!(receipt.delivered_bytes, 0);
+    let protected = h.broker.snapshot(&h.human).unwrap().sessions[0].clone();
+    assert!(protected.owner.is_none());
+    assert_eq!(protected.generation, session.generation + 1);
+    assert_eq!(protected.process, "running");
+    assert_eq!(
+        h.broker.request(&h.human, request.clone()).receipt,
+        Some(receipt)
+    );
+    assert_eq!(
+        h.broker.snapshot(&h.human).unwrap().sessions[0].generation,
+        protected.generation
+    );
+    let conflict = Request {
+        operation: Op::TakeControl {
+            session: session.id.clone(),
+            generation: protected.generation,
+            force: true,
+        },
+        ..request
+    };
+    assert_eq!(
+        h.broker.request(&h.human, conflict).error.as_deref(),
+        Some("mutation_id_conflict")
+    );
+    let denied = h.broker.request(
+        &h.agent,
+        Request {
+            version: wire::VERSION.into(),
+            id: 101,
+            operation: Op::TakeControl {
+                session: session.id,
+                generation: protected.generation,
+                force: false,
+            },
+        },
+    );
+    assert!(!denied.ok);
+    assert!(
+        h.broker.snapshot(&h.human).unwrap().sessions[0]
+            .owner
+            .is_none()
+    );
 }

@@ -94,6 +94,10 @@ impl Journal {
         .sync_all()?;
         Ok(journal)
     }
+    #[cfg(test)]
+    pub(super) fn exhaust_for_test(&mut self) {
+        self.size = LIMIT;
+    }
     fn write(&mut self, record: Record) -> io::Result<()> {
         let mut bytes = serde_json::to_vec(&record).map_err(io::Error::other)?;
         bytes.push(b'\n');

@@ -62,6 +62,9 @@ impl Broker {
             return Err("encoded_input_exceeds_single_write_capacity".into());
         }
         let mut state = self.state.lock().unwrap();
+        if state.degraded.is_some() {
+            return Err("broker_degraded_before_final_write".into());
+        }
         let role = state.endpoints[endpoint].role.clone();
         let value = state.sessions.get_mut(session).ok_or("unknown_session")?;
         if self.worker.failed() {
@@ -80,6 +83,7 @@ impl Broker {
             Err(error) if error.kind() == io::ErrorKind::WouldBlock => 0,
             Err(_) => {
                 value.view.screen.input_known = false;
+                value.input_uncertain = true;
                 value.view.owner = None;
                 value.view.generation += 1;
                 return Ok((
@@ -91,6 +95,7 @@ impl Broker {
         };
         if delivered < bytes.len() {
             value.view.screen.input_known = false;
+            value.input_uncertain = true;
             value.view.owner = None;
             value.view.generation += 1;
             return Ok((
@@ -206,6 +211,7 @@ impl Broker {
                     writer: process.writer,
                     pending_output: 0,
                     exited: false,
+                    input_uncertain: self.worker.failed(),
                 },
             );
             drop(state);
@@ -280,6 +286,16 @@ impl Broker {
                             if self.worker.failed() {
                                 continue;
                             }
+                            if !replies.is_empty() && state.degraded.is_some() {
+                                if let Some(value) = state.sessions.get_mut(&id) {
+                                    value.input_uncertain = true;
+                                    value.publish(frame);
+                                    value.pending_output = value.pending_output.saturating_sub(1);
+                                    value.view.owner = None;
+                                    value.view.generation += 1;
+                                }
+                                continue;
+                            }
                             if !replies.is_empty() {
                                 state.system_sequence += 1;
                                 let seq = state.system_sequence;
@@ -291,18 +307,20 @@ impl Broker {
                                     state.degraded = Some("query_journal_failed".into());
                                     if let Some(value) = state.sessions.get_mut(&id) {
                                         value.view.screen.input_known = false;
+                                        value.input_uncertain = true;
                                         value.view.owner = None;
                                         value.view.generation += 1;
                                     }
-                                    break;
+                                    drop(state);
+                                    self.worker.stop();
+                                    self.fence_worker();
+                                    continue;
                                 }
                             }
                             let Some(value) = state.sessions.get_mut(&id) else {
                                 break;
                             };
-                            if frame.revision >= value.view.screen.revision {
-                                value.view.screen = screen(frame);
-                            }
+                            value.publish(frame);
                             value.pending_output = value.pending_output.saturating_sub(1);
                             if !replies.is_empty() {
                                 let delivered = value.writer.write_once(&replies);
@@ -310,12 +328,14 @@ impl Broker {
                                     Ok(n) if n == replies.len() => ("applied", n),
                                     Ok(n) => {
                                         value.view.screen.input_known = false;
+                                        value.input_uncertain = true;
                                         value.view.owner = None;
                                         value.view.generation += 1;
                                         (if n == 0 { "rejected" } else { "partial" }, n)
                                     }
                                     Err(_) => {
                                         value.view.screen.input_known = false;
+                                        value.input_uncertain = true;
                                         value.view.owner = None;
                                         value.view.generation += 1;
                                         ("unknown", 0)
@@ -340,8 +360,23 @@ impl Broker {
                 }
                 Ok(ReadOutcome::Eof) => {
                     stream_closed = true;
+                    // Actual stream EOF is distinct from child exit and from a
+                    // transport chunk boundary. Let the sole reducer finish its
+                    // retained UTF-8/control prefix exactly once.
+                    let finished = if self.worker.failed() {
+                        None
+                    } else {
+                        self.worker_call(Operation::FinishOutput {
+                            session: id.clone(),
+                        })
+                        .ok()
+                    };
                     if let Some(value) = self.state.lock().unwrap().sessions.get_mut(&id) {
+                        if let Some(Reply::Frame(frame)) = finished {
+                            value.publish(frame);
+                        }
                         value.view.screen.input_known = false;
+                        value.input_uncertain = true;
                         value.view.owner = None;
                         value.view.generation += 1;
                     }
@@ -350,6 +385,7 @@ impl Broker {
                     if let Some(value) = self.state.lock().unwrap().sessions.get_mut(&id) {
                         value.view.process = "unknown".into();
                         value.view.screen.input_known = false;
+                        value.input_uncertain = true;
                         value.view.owner = None;
                         value.view.generation += 1;
                     }
@@ -390,12 +426,14 @@ impl Broker {
             _ => {
                 value.pending_output = value.pending_output.saturating_sub(1);
                 value.view.screen.input_known = false;
+                value.input_uncertain = true;
                 return Err("resize_worker_unavailable".into());
             }
         };
         if Self::owner(value, endpoint, generation).is_err() {
             value.pending_output = value.pending_output.saturating_sub(1);
             value.view.screen.input_known = false;
+            value.input_uncertain = true;
             value.view.owner = None;
             value.view.generation += 1;
             return Ok((
@@ -406,6 +444,7 @@ impl Broker {
         }
         if value.writer.resize(Geometry { cols, rows }).is_err() {
             value.view.screen.input_known = false;
+            value.input_uncertain = true;
             value.view.owner = None;
             value.view.generation += 1;
             value.pending_output = value.pending_output.saturating_sub(1);
@@ -415,9 +454,7 @@ impl Broker {
                 "canonical_resize_committed_ioctl_failed_no_rollback".into(),
             ));
         }
-        if frame.revision >= value.view.screen.revision {
-            value.view.screen = screen(frame);
-        }
+        value.publish(frame);
         value.pending_output = value.pending_output.saturating_sub(1);
         Ok((
             "applied".into(),

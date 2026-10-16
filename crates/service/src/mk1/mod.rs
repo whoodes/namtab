@@ -148,12 +148,28 @@ struct Endpoint {
     connected: bool,
     high_water: u64,
     decisions: BTreeMap<u64, Decision>,
+    emergency: BTreeMap<u64, Decision>,
 }
 struct LiveSession {
     view: Session,
     writer: PtyWriter,
     pending_output: usize,
     exited: bool,
+    input_uncertain: bool,
+}
+impl LiveSession {
+    fn publish(&mut self, frame: Frame) {
+        if frame.revision >= self.view.screen.revision {
+            let mut projection = screen(frame);
+            projection.input_known &= !self.input_uncertain;
+            if self.input_uncertain {
+                projection
+                    .diagnostics
+                    .push("delivery_or_continuity_unknown_new_session_required".into());
+            }
+            self.view.screen = projection;
+        }
+    }
 }
 struct LiveAttempt {
     view: Attempt,
@@ -253,6 +269,7 @@ impl Broker {
                     connected: false,
                     high_water: 0,
                     decisions: BTreeMap::new(),
+                    emergency: BTreeMap::new(),
                 },
             );
             Some(endpoint)
@@ -288,6 +305,7 @@ impl Broker {
         state.degraded = Some("worker_unavailable_all_interpretations_unknown_no_replay".into());
         for session in state.sessions.values_mut() {
             session.view.screen.input_known = false;
+            session.input_uncertain = true;
             session.view.owner = None;
             session.view.generation += 1;
         }
@@ -309,7 +327,11 @@ impl Broker {
         let binding: [u8; 32] = Sha256::digest(&binding).into();
         let mut state = self.state.lock().unwrap();
         let principal = state.endpoints.get(endpoint).ok_or("endpoint")?;
-        if let Some(decision) = principal.decisions.get(&request.id) {
+        if let Some(decision) = principal
+            .decisions
+            .get(&request.id)
+            .or_else(|| principal.emergency.get(&request.id))
+        {
             return if decision.binding == binding {
                 Ok(Some(decision.receipt.clone()))
             } else {
@@ -320,6 +342,8 @@ impl Broker {
             return Err("broker_degraded_new_mutations_fenced".into());
         }
         if principal.decisions.len() >= 4096 {
+            state.degraded =
+                Some("receipt_capacity_all_new_effects_fenced_restart_required".into());
             return Err("receipt_capacity_no_eviction".into());
         }
         if request.id <= principal.high_water {
@@ -420,7 +444,11 @@ impl Broker {
         }
         if let Op::Receipt { request_id } = request.operation {
             let state = self.state.lock().unwrap();
-            let Some(decision) = state.endpoints[endpoint].decisions.get(&request_id) else {
+            let Some(decision) = state.endpoints[endpoint]
+                .decisions
+                .get(&request_id)
+                .or_else(|| state.endpoints[endpoint].emergency.get(&request_id))
+            else {
                 return self.fail(request.id, "receipt_unavailable");
             };
             let mut response = self.response(request.id);
@@ -437,11 +465,83 @@ impl Broker {
                 response.receipt = Some(receipt);
                 return response;
             }
-            Err(error) => return self.fail(request.id, error),
+            Err(error) => {
+                return self
+                    .emergency_fence(endpoint, &request, &error)
+                    .unwrap_or_else(|| self.fail(request.id, error));
+            }
             Ok(None) => {}
         }
         let outcome = self.apply(endpoint, &request.operation);
         self.finish(endpoint, request.id, outcome)
+    }
+    /// A safety-only authority decrease may survive failed grant/storage admission.
+    /// It never writes application bytes or grants the requesting endpoint a lease.
+    fn emergency_fence(
+        &self,
+        endpoint: &str,
+        request: &Request,
+        admission_error: &str,
+    ) -> Option<Response> {
+        if !matches!(
+            admission_error,
+            "receipt_capacity_no_eviction"
+                | "broker_degraded_new_mutations_fenced"
+                | "journal_reservation_failed_no_effect"
+        ) {
+            return None;
+        }
+        let mut state = self.state.lock().unwrap();
+        let principal = state.endpoints.get(endpoint)?;
+        if request.id <= principal.high_water || !principal.emergency.is_empty() {
+            return None;
+        }
+        let (session, generation) = match &request.operation {
+            Op::TakeControl {
+                session,
+                generation,
+                force: true,
+            } if principal.role == Role::Human => (session, *generation),
+            Op::ReleaseControl {
+                session,
+                generation,
+            } => (session, *generation),
+            _ => return None,
+        };
+        let value = state.sessions.get_mut(session)?;
+        if value.view.generation != generation {
+            return None;
+        }
+        if matches!(request.operation, Op::ReleaseControl { .. })
+            && value.view.owner.as_deref() != Some(endpoint)
+        {
+            return None;
+        }
+        let body = serde_json::to_vec(&request.operation).ok()?;
+        let binding = Sha256::digest(&body).into();
+        value.view.generation = value.view.generation.checked_add(1)?;
+        value.view.owner = None;
+        let receipt = Receipt {
+            endpoint: endpoint.into(),
+            id: request.id,
+            operation: request.operation.mutation_name()?.into(),
+            state: "unknown".into(),
+            detail: "protective_fence_applied_new_writer_not_granted_durable_receipt_unavailable"
+                .into(),
+            delivered_bytes: 0,
+        };
+        let principal = state.endpoints.get_mut(endpoint)?;
+        principal.high_water = request.id;
+        principal.emergency.insert(
+            request.id,
+            Decision {
+                binding,
+                receipt: receipt.clone(),
+            },
+        );
+        let mut response = self.fail(request.id, receipt.detail.clone());
+        response.receipt = Some(receipt);
+        Some(response)
     }
     fn apply(
         self: &Arc<Self>,
@@ -537,6 +637,9 @@ impl Broker {
                 ))
             }
             Op::ValidateArtifact { artifact, revision } => {
+                if self.state.lock().unwrap().endpoints[endpoint].role != Role::Human {
+                    return Err("artifact_review_requires_human_endpoint".into());
+                }
                 let path = self
                     .state
                     .lock()
@@ -648,7 +751,15 @@ impl Broker {
                 view
             })
             .collect();
-        Ok(Snapshot { version: wire::VERSION.into(), epoch: self.epoch.clone(), endpoint: endpoint.into(), sessions: state.sessions.values().map(|value| value.view.clone()).collect(), attempts, artifacts: state.artifacts.values().cloned().collect(), receipts: state.endpoints[endpoint].decisions.values().rev().take(16).map(|value| value.receipt.clone()).collect(), degraded: state.degraded.clone().or_else(|| Some(if self.config.terminfo.is_some() { "same_uid_developer_host_unenforced_not_sandbox_capture_off_private_terminfo" } else { "same_uid_developer_host_unenforced_not_sandbox_capture_off_term_dumb" }.into())) })
+        let mut receipts = state.endpoints[endpoint]
+            .decisions
+            .values()
+            .chain(state.endpoints[endpoint].emergency.values())
+            .map(|value| value.receipt.clone())
+            .collect::<Vec<_>>();
+        receipts.sort_by_key(|receipt| std::cmp::Reverse(receipt.id));
+        receipts.truncate(16);
+        Ok(Snapshot { version: wire::VERSION.into(), epoch: self.epoch.clone(), endpoint: endpoint.into(), sessions: state.sessions.values().map(|value| value.view.clone()).collect(), attempts, artifacts: state.artifacts.values().cloned().collect(), receipts, degraded: state.degraded.clone().or_else(|| Some(if self.config.terminfo.is_some() { "same_uid_developer_host_unenforced_not_sandbox_capture_off_private_terminfo" } else { "same_uid_developer_host_unenforced_not_sandbox_capture_off_term_dumb" }.into())) })
     }
 }
 fn safe_output(bytes: &[u8]) -> (String, bool) {
