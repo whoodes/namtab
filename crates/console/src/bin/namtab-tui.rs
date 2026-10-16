@@ -38,7 +38,8 @@ impl Drop for Restore {
 fn safe(s: &str) -> String {
     s.chars()
         .map(|c| {
-            if c == '\n'
+            if c == '\u{fffd}'
+                || c == '\n'
                 || c == '\t'
                 || (' '..='~').contains(&c)
                 || (('\u{a0}'..='\u{ff}').contains(&c) && c != '\u{ad}')
@@ -405,11 +406,9 @@ fn review_text(snapshot: &Snapshot, selected: usize) -> String {
     }
     for a in &snapshot.artifacts {
         text.push_str(&format!(
-            "{} [{}] {} | revision {} | {}\n",
+            "{} [{}] {} | {} | revision {}\n",
             label(&a.id),
             label(&a.task),
-            label(&a.path),
-            label(&a.revision),
             if a.stale {
                 "STALE review"
             } else if a.validated_revision.is_some() {
@@ -417,6 +416,8 @@ fn review_text(snapshot: &Snapshot, selected: usize) -> String {
             } else {
                 "unreviewed"
             },
+            label(&a.path),
+            label(&a.revision),
         ));
     }
     if let Some(a) = attempt {
@@ -473,8 +474,18 @@ fn render(f: &mut ratatui::Frame<'_>, view: &View<'_>) {
     };
     f.render_widget(
         Paragraph::new(format!(
-            "namtab MK1 | {status} | {}\n{labels}",
-            safe(view.endpoint)
+            "namtab MK1 | {status} | {} | declared agents {}/{} connected\n{labels}",
+            safe(view.endpoint),
+            view.snapshot
+                .endpoints
+                .iter()
+                .filter(|e| e.role == Role::Agent && e.connected)
+                .count(),
+            view.snapshot
+                .endpoints
+                .iter()
+                .filter(|e| e.role == Role::Agent)
+                .count()
         ))
         .style(Style::default().fg(Color::Cyan)),
         areas[0],
@@ -673,6 +684,7 @@ mod tests {
             version: p::VERSION.into(),
             epoch: "synthetic-test".into(),
             endpoint: "human".into(),
+            endpoints: vec![],
             sessions: vec![],
             attempts: vec![
                 p::Attempt {
@@ -754,6 +766,7 @@ mod tests {
         let k = KeyEvent::new(KeyCode::Char('c'), KeyModifiers::CONTROL);
         assert!(matches!(intent(k), Some(Intent::Key { ctrl: true, .. })));
         assert_eq!(safe("\x1b[31m\u{202e}"), "?[31m?");
+        assert_eq!(safe("\u{fffd}"), "\u{fffd}");
     }
     #[test]
     fn prefix_paste_is_consumed_without_application_input() {
