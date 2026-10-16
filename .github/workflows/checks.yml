@@ -6,7 +6,7 @@ permissions:
   contents: read
 jobs:
   foundation:
-    name: Foundation contracts
+    name: Foundation contracts (source-only)
     runs-on: ubuntu-22.04
     timeout-minutes: 20
     steps:
@@ -17,10 +17,8 @@ jobs:
         run: rustup toolchain install 1.91.0 --profile minimal --component rustfmt,clippy
       - name: Local tools and locked dependencies
         run: make bootstrap docs-install install
-      - name: Verified evaluated native artifact for workspace checks
-        run: make assessment-bootstrap assessment-build
-      - name: Existing foundation contracts
-        run: make verify
+      - name: Source foundation contracts (historical native worker excluded)
+        run: make foundation-verify
   # No publication, artifact uploads, credentials, privileged runners or blanket script permits.
   # Raw historical failures remain visible; they are not owned-engine NG gates.
 

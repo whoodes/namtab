@@ -8,6 +8,15 @@ const version = (
 ).trim();
 if (process.version !== "v" + version)
   throw new Error("Use pinned project Node through make verify");
+const sourceOnly = process.argv[2] === "--source-foundation";
+if (process.argv.length > (sourceOnly ? 3 : 2))
+  throw new Error("Usage: verify.mjs [--source-foundation]");
+const scopeArgs = sourceOnly ? ["--exclude", "project-x-engine"] : [];
+console.log(
+  sourceOnly
+    ? "Scope: source foundation; historical native worker excluded (not full workspace)."
+    : "Scope: full workspace including historical native worker.",
+);
 const env = {
   ...process.env,
   CARGO_HOME: root + ".cache/cargo",
@@ -98,13 +107,18 @@ const steps = [
       "clippy",
       "--workspace",
       "--all-targets",
+      ...scopeArgs,
       "--locked",
       "--",
       "-D",
       "warnings",
     ],
   ],
-  ["rust-contracts", "cargo", ["test", "--workspace", "--locked"]],
+  [
+    "rust-contracts",
+    "cargo",
+    ["test", "--workspace", ...scopeArgs, "--locked"],
+  ],
   ["bindings-drift", "node", ["scripts/generate-bindings.mjs", "--check"]],
   ["typescript-build", "node", [".tools/pnpm/package/bin/pnpm.cjs", "build"]],
   ["dependency-boundaries", "node", ["scripts/check-boundaries.mjs"]],
@@ -164,6 +178,10 @@ const folder = new URL(
 await mkdir(folder, { recursive: true });
 const report = {
   date: new Date().toISOString(),
+  scope: sourceOnly
+    ? "source-foundation: excludes historical native worker only"
+    : "full-workspace",
+  excluded_packages: sourceOnly ? ["project-x-engine"] : [],
   environment: {
     platform: os.platform(),
     release: os.release(),
@@ -186,6 +204,9 @@ const report = {
     ...gate,
   },
   limits:
+    (sourceOnly
+      ? "Source-only selection excludes the historical native worker from Cargo Clippy/tests; not a full-workspace pass. "
+      : "") +
     "Foundation PASS is not terminal-engine certification. Tests asserting known failure do not turn X4 green. No performance budgets measured.",
 };
 await writeFile(

@@ -30,7 +30,7 @@ make check test stress docs
 make verify
 ```
 
-These run format/Clippy, Rust properties/unit tests, JS contracts/types, generated bindings/schema drift, boundaries, fixtures, seeded partition stress, and strict MkDocs/local links. `make verify` aggregates the foundation checks and records the historical X4 failure separately. Reports go to fresh ignored `.artifacts/verification/` and `.artifacts/x4-runs/` paths.
+These run format/Clippy, Rust properties/unit tests, JS contracts/types, generated bindings/schema drift, boundaries, fixtures, seeded partition stress, and strict MkDocs/local links. `make verify` aggregates the foundation checks and records the historical X4 failure separately. Reports go to fresh ignored `.artifacts/verification/` and `.artifacts/x4-runs/` paths. `make foundation-verify` provides an explicitly source-only lane excluding the historical native worker from Cargo Clippy/tests; it does not establish a full-workspace pass. See [CI artifact policy](docs/engineering/16-test-and-ci-strategy.md#ci-artifact-diagnosis-and-proposed-lane-separation).
 
 ```sh
 make engine-gate

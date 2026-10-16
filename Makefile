@@ -11,7 +11,7 @@ export NPM_CONFIG_USERCONFIG := /dev/null
 export NPM_CONFIG_GLOBALCONFIG := /dev/null
 PNPM := node .tools/pnpm/package/bin/pnpm.cjs
 
-.PHONY: bootstrap docs-install install docs check test stress verify engine-gate provenance format
+.PHONY: bootstrap docs-install install docs check test stress verify foundation-verify engine-gate provenance format
 bootstrap:
 	python3 -B scripts/bootstrap-tools.py
 docs-install:
@@ -35,6 +35,8 @@ test:
 	$(PNPM) test
 stress:
 	node tests/fuzz/chunk-corpus.mjs
+foundation-verify:
+	node scripts/verify.mjs --source-foundation
 verify:
 	node scripts/verify.mjs
 # Historical candidate reproduction; raw FAIL stays nonzero, not an owned-engine gate.

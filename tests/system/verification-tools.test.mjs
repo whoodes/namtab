@@ -148,3 +148,14 @@ test("EA1 recorder refuses commands-directory redirects before dispatch", () => 
   assert.doesNotMatch(result.stdout, /CHILD_DISPATCHED/u);
   assert.equal(existsSync(other + "/guard-probe-1.json"), false);
 });
+
+test("verification refuses unknown modes before running any checks", () => {
+  const result = spawnSync(
+    process.execPath,
+    ["scripts/verify.mjs", "--skip-native-silently"],
+    { encoding: "utf8", timeout: 5000 },
+  );
+  assert.equal(result.status, 1, result.stderr);
+  assert.match(result.stderr, /Usage: verify.mjs/u);
+  assert.doesNotMatch(result.stdout, /repository-local-links|Scope:/u);
+});
