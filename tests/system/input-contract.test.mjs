@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { normalize } from "../../apps/desktop/dist/input.js";
+import { encodeText } from "../../packages/terminal-adapter/dist/index.js";
 
 const profile = JSON.parse(
   readFileSync("tests/ea1/input-profile.json", "utf8"),
@@ -41,4 +42,25 @@ test("desktop refuses unavailable character/layout/composition/repeat facts", ()
   }
   // This synthetic API consumes keydown only. It has no keyup/action field;
   // native release/repeat support must not be inferred from it.
+});
+
+test("text and paste payload limits count UTF-8 bytes, not JS code units", () => {
+  const modes = {
+    applicationCursorKeysMode: false,
+    applicationKeypadMode: false,
+    bracketedPasteMode: true,
+  };
+  for (const kind of ["text", "paste"]) {
+    const boundary = "😀".repeat(2048);
+    assert.equal(
+      encodeText({ kind, text: boundary }, modes).byteLength,
+      8192 + (kind === "paste" ? 12 : 0),
+    );
+    for (const text of [boundary + "a", "界".repeat(2731)]) {
+      assert.throws(
+        () => encodeText({ kind, text }, modes),
+        /ResourceExhausted/u,
+      );
+    }
+  }
 });

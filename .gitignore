@@ -2,6 +2,8 @@
 .tools/
 .cache/
 .artifacts/
+# Fresh historical experiment reports are generated; review before retaining elsewhere.
+evidence/ea1-runs/
 .venv*/
 **/node_modules/
 **/target/

@@ -1,0 +1,18 @@
+#!/bin/sh
+set -eu
+root=$(git rev-parse --show-toplevel)
+version=$(cat "$root/.node-version")
+local_node="$root/.tools/node/node-v$version-linux-x64/bin/node"
+if [ -x "$local_node" ]; then
+    node_bin=$local_node
+elif command -v node >/dev/null 2>&1; then
+    node_bin=$(command -v node)
+else
+    echo 'Commit hook requires Node >=20 (project-pinned Node preferred); run make bootstrap.' >&2
+    exit 1
+fi
+if ! "$node_bin" -e 'process.exit(Number(process.versions.node.split(".")[0]) >= 20 ? 0 : 1)'; then
+    echo 'Commit hook requires Node >=20; use the pinned project tool or update your PATH.' >&2
+    exit 1
+fi
+exec "$node_bin" "$root/scripts/commit-message.mjs" "$1"

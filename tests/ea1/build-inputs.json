@@ -1,0 +1,6 @@
+{
+  "purpose": "Pre-fetch unchanged upstream translate-c bytes; not an artifact replacement or source override",
+  "url": "https://codeberg.org/vancluever/translate-c/archive/4e879eb8aba615de112eabd1231ea6e01920cead.tar.gz",
+  "archive_sha256": "8fb0f5c6a3e8b3bf0e35225d3abc1230bcf6f1fdf162467f1f747ec2fa5eda07",
+  "zig_hash": "translate_c-0.0.0-Q_BUWhVNBwDOEcIqub4VFPJPB6D9dgwzUMHTX5KWr8Xr"
+}

@@ -1,4 +1,4 @@
-# Project X manifesto
+# namtab manifesto
 
 **Draft north star.** Build an agent-first terminal that remains an excellent ordinary terminal for people. Use these principles to decide tradeoffs; they are requirements and priorities, not claims that the current prototype has achieved them.
 

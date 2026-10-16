@@ -1,5 +1,6 @@
 import { spawnSync } from "node:child_process";
-import { readFile, writeFile, mkdir } from "node:fs/promises";
+import { readFile, writeFile, mkdir, readdir } from "node:fs/promises";
+import { randomUUID } from "node:crypto";
 import os from "node:os";
 const root = new URL("../", import.meta.url).pathname;
 const version = (
@@ -7,6 +8,15 @@ const version = (
 ).trim();
 if (process.version !== "v" + version)
   throw new Error("Use pinned project Node through make verify");
+const sourceOnly = process.argv[2] === "--source-foundation";
+if (process.argv.length > (sourceOnly ? 3 : 2))
+  throw new Error("Usage: verify.mjs [--source-foundation]");
+const scopeArgs = sourceOnly ? ["--exclude", "project-x-engine"] : [];
+console.log(
+  sourceOnly
+    ? "Scope: source foundation; historical native worker excluded (not full workspace)."
+    : "Scope: full workspace including historical native worker.",
+);
 const env = {
   ...process.env,
   CARGO_HOME: root + ".cache/cargo",
@@ -45,6 +55,11 @@ const versions = [
   [".venv-docs/bin/python", ["--version"]],
   ["git", ["--version"]],
 ].map(([b, a]) => command(b, a));
+const systemTests = (await readdir(root + "tests/system"))
+  .filter((name) => name.endsWith(".test.mjs"))
+  .sort()
+  .map((name) => "tests/system/" + name);
+if (systemTests.length === 0) throw new Error("No system test files found");
 const steps = [
   [
     "repository-local-links",
@@ -70,7 +85,7 @@ const steps = [
       "tsconfig.json",
       "mkdocs.yml",
       "pnpm-workspace.yaml",
-      ".github/workflows/checks.yml",
+      ".github",
     ],
   ],
   [
@@ -92,22 +107,23 @@ const steps = [
       "clippy",
       "--workspace",
       "--all-targets",
+      ...scopeArgs,
       "--locked",
       "--",
       "-D",
       "warnings",
     ],
   ],
-  ["rust-contracts", "cargo", ["test", "--workspace", "--locked"]],
+  [
+    "rust-contracts",
+    "cargo",
+    ["test", "--workspace", ...scopeArgs, "--locked"],
+  ],
   ["bindings-drift", "node", ["scripts/generate-bindings.mjs", "--check"]],
   ["typescript-build", "node", [".tools/pnpm/package/bin/pnpm.cjs", "build"]],
   ["dependency-boundaries", "node", ["scripts/check-boundaries.mjs"]],
   ["fixture-integrity", "node", ["scripts/check-fixtures.mjs"]],
-  [
-    "synthetic-contracts",
-    "node",
-    ["--test", "tests/system/foundation.test.mjs"],
-  ],
+  ["synthetic-contracts", "node", ["--test", ...systemTests]],
   ["seeded-partitions", "node", ["tests/fuzz/chunk-corpus.mjs"]],
   [
     "offline-console",
@@ -127,10 +143,7 @@ for (const [name, bin, args] of steps) {
   checks.push({ name, verdict, ...r });
   console.log(name + ": " + verdict);
 }
-const gate = command("node", [
-  "tests/system/engine-probe.mjs",
-  "--require-pass",
-]);
+const gate = command("node", ["scripts/run-x4.mjs", "--require-pass"]);
 let parsedGate;
 try {
   parsedGate = JSON.parse(gate.stdout);
@@ -139,22 +152,36 @@ try {
 }
 const knownFailure =
   gate.exit === 1 &&
+  parsedGate?.gate === "X4" &&
   parsedGate?.verdict === "FAIL" &&
-  ["saved-cursor", "scroll-region", "custom-tabs"].every((name) =>
-    parsedGate.results?.some(
-      (c) =>
-        c.name === name && c.atAttach === true && c.afterContinuation === false,
-    ),
-  );
+  JSON.stringify(
+    parsedGate.results?.map((c) => [c.name, c.atAttach, c.afterContinuation]),
+  ) ===
+    JSON.stringify([
+      ["plain", true, true],
+      ["saved-cursor", true, false],
+      ["scroll-region", true, false],
+      ["custom-tabs", true, false],
+      ["alternate", true, true],
+      ["partial-csi", true, false],
+    ]);
 console.log(
-  "Essential X4 gate: " +
+  "Historical X4 gate: " +
     (knownFailure
-      ? "FAIL (counterexamples retained; dependent product work blocked)"
+      ? "FAIL (original counterexamples reproduced; no owned-engine certification)"
       : "UNEXPECTED RESULT / inspect evidence"),
 );
-await mkdir(new URL("../evidence", import.meta.url), { recursive: true });
+const folder = new URL(
+  "../.artifacts/verification/" + randomUUID() + "/",
+  import.meta.url,
+);
+await mkdir(folder, { recursive: true });
 const report = {
   date: new Date().toISOString(),
+  scope: sourceOnly
+    ? "source-foundation: excludes historical native worker only"
+    : "full-workspace",
+  excluded_packages: sourceOnly ? ["project-x-engine"] : [],
   environment: {
     platform: os.platform(),
     release: os.release(),
@@ -169,6 +196,7 @@ const report = {
   property_seed: env.PROPTEST_RNG_SEED,
   property_cases: env.PROPTEST_CASES,
   checks,
+  system_test_files: systemTests,
   essential_gate: {
     verdict: knownFailure ? "FAIL" : gate.exit === 0 ? "PASS_MINIMAL" : "ERROR",
     expectedExit: 1,
@@ -176,11 +204,18 @@ const report = {
     ...gate,
   },
   limits:
+    (sourceOnly
+      ? "Source-only selection excludes the historical native worker from Cargo Clippy/tests; not a full-workspace pass. "
+      : "") +
     "Foundation PASS is not terminal-engine certification. Tests asserting known failure do not turn X4 green. No performance budgets measured.",
 };
 await writeFile(
-  new URL("../evidence/checks.json", import.meta.url),
+  new URL("checks.json", folder),
   JSON.stringify(report, null, 2) + "\n",
+  { flag: "wx" },
+);
+console.log(
+  "Foundation verification report: " + new URL("checks.json", folder).pathname,
 );
 if (
   checks.some((c) => c.verdict === "FAIL") ||

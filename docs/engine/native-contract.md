@@ -2,7 +2,7 @@
 
 [Campaign](index.md) · [Core](compatibility-and-core.md) · [Runtime and recovery](runtime-persistence-security.md) · [Human journeys](frontend-contracts.md)
 
-**Proposed native contract for product v1; unimplemented, private experimental wire version pending N0.** The existing small domain/protocol tests are useful foundations, not this API's completed implementation. Source rationale: research S02–S05, S15–S19, S31–S32. Policy rules below are Project X decisions.
+**Proposed native contract for product v1; unimplemented, private experimental wire version pending N0.** The existing small domain/protocol tests are useful foundations, not this API's completed implementation. Source rationale: research S02–S05, S15–S19, S31–S32. Policy rules below are namtab decisions.
 
 ## Objects and authority
 
@@ -104,4 +104,4 @@ There is no OS primitive that atomically compares an application's screen/widget
 
 Parallel agents own separate attempts/processes/interactive writers by default. Dependencies become ready only at recorded revisions. A group budget constrains admissions, output, retained evidence and concurrency; it is not a claim to control an agent's unmediated provider/network calls. Conflicting worktrees/artifact publication need an explicit integration decision. One agent cannot mutate another's writer context by changing a task label.
 
-ACP/MCP adapters are optional later consumers of this contract, not foundational dependencies. Map cancellation and lifecycle semantics explicitly: ACP v1 `terminal/release` kills a running command (S17), while Project X detach does not. Foreign output truncation must become a gap, and foreign task completion must retain its trust level. No automatic mapping from an external permission request to an internal grant. Native APIs remain useful with a deterministic local client and no model provider.
+ACP/MCP adapters are optional later consumers of this contract, not foundational dependencies. Map cancellation and lifecycle semantics explicitly: ACP v1 `terminal/release` kills a running command (S17), while namtab detach does not. Foreign output truncation must become a gap, and foreign task completion must retain its trust level. No automatic mapping from an external permission request to an internal grant. Native APIs remain useful with a deterministic local client and no model provider.

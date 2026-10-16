@@ -4,6 +4,8 @@ import importlib.util
 import json
 from pathlib import Path
 import platform
+import os
+import subprocess
 import tarfile
 import urllib.request
 
@@ -39,6 +41,19 @@ def main():
             if item.isfile():
                 path=source.joinpath(*Path(item.name).parts[1:])
                 if path.read_bytes()!=archive.extractfile(item).read():raise ValueError('Modified upstream file '+item.name)
+    # Use system HTTPS/DNS for the same immutable Codeberg archive. Zig still
+    # validates its upstream content hash; no dependency override is installed.
+    dependency=json.loads((ROOT/'tests/ea1/build-inputs.json').read_text())
+    zon=(source/'pkg/translate-c/build.zig.zon').read_text()
+    assert dependency['url'] in zon and dependency['zig_hash'] in zon
+    pin=json.loads((ROOT/'evidence/ea1/artifact-pin.json').read_text())
+    zig=ROOT/pin['zig']
+    assert hashlib.sha256(zig.read_bytes()).hexdigest()==pin['zig_sha256'], 'Compiler mismatch'
+    archive=ROOT/'.cache/engine-assessment/translate-c-source.tar.gz'
+    acquire(dependency['url'],dependency['archive_sha256'],archive)
+    env={**os.environ,'ZIG_GLOBAL_CACHE_DIR':str(ROOT/'.cache/engine-assessment/zig-global')}
+    actual=subprocess.check_output([str(zig),'fetch',str(archive)],cwd=source,env=env,text=True).strip()
+    assert actual==dependency['zig_hash'], 'translate-c package content mismatch'
     print('Assessment compiler/source verified. No global installation or upstream edits.')
 
 if __name__=='__main__':main()

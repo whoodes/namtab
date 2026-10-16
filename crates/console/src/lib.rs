@@ -23,27 +23,30 @@ impl Router {
         if event.kind != KeyEventKind::Press {
             return Route::Unsupported;
         }
-        let ctrl = event.modifiers.contains(KeyModifiers::CONTROL);
-        if self.prefix {
-            self.prefix = false;
-            return if event.code == KeyCode::Char(':') {
-                Route::UiPalette
-            } else if event.code == KeyCode::Char('g') && ctrl {
-                Route::Application(Intent::Text {
-                    text: "\u{7}".into(),
-                })
-            } else {
-                Route::Unsupported
-            };
-        }
-        if event.code == KeyCode::Char('g') && ctrl {
-            self.prefix = true;
-            return Route::Unsupported;
-        }
         if event
             .modifiers
             .intersects(KeyModifiers::SUPER | KeyModifiers::HYPER | KeyModifiers::META)
         {
+            self.prefix = false;
+            return Route::Unsupported;
+        }
+        let ctrl = event.modifiers.contains(KeyModifiers::CONTROL);
+        if self.prefix {
+            self.prefix = false;
+            return if event.code == KeyCode::Char(':')
+                && !event
+                    .modifiers
+                    .intersects(KeyModifiers::CONTROL | KeyModifiers::ALT)
+            {
+                Route::UiPalette
+            } else {
+                // Ctrl-G quoting needs a future representable key intent. Never
+                // route control bytes as committed text to bypass that limit.
+                Route::Unsupported
+            };
+        }
+        if event.code == KeyCode::Char('g') && event.modifiers == KeyModifiers::CONTROL {
+            self.prefix = true;
             return Route::Unsupported;
         }
         let key = match event.code {
@@ -73,7 +76,7 @@ pub fn diagnostic() -> Result<String, Box<dyn std::error::Error>> {
     terminal.draw(|f| {
         f.render_widget(
             ratatui::widgets::Paragraph::new(
-                "Project X: offline foundation\nX4 failed: no live terminal or process execution",
+                "namtab: offline foundation\nHistorical X4/EA1 FAIL: no live terminal",
             ),
             f.area(),
         )
@@ -102,7 +105,7 @@ mod tests {
     }
     #[test]
     fn rendering_labels_incomplete_state() {
-        assert!(diagnostic().unwrap().contains("X4 failed"));
+        assert!(diagnostic().unwrap().contains("Historical X4/EA1 FAIL"));
     }
     #[test]
     fn release_is_not_another_key() {

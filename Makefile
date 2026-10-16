@@ -11,7 +11,7 @@ export NPM_CONFIG_USERCONFIG := /dev/null
 export NPM_CONFIG_GLOBALCONFIG := /dev/null
 PNPM := node .tools/pnpm/package/bin/pnpm.cjs
 
-.PHONY: bootstrap docs-install install docs check test stress verify engine-gate provenance format
+.PHONY: bootstrap docs-install install docs check test stress verify foundation-verify engine-gate provenance format
 bootstrap:
 	python3 -B scripts/bootstrap-tools.py
 docs-install:
@@ -23,7 +23,7 @@ docs:
 	.venv-docs/bin/python -B scripts/check-doc-links.py
 	.venv-docs/bin/python -m mkdocs build --strict
 check:
-	$(PNPM) exec prettier --check scripts apps packages tests/system tests/fuzz tests/assessment tests/ea1 package.json tsconfig.json mkdocs.yml pnpm-workspace.yaml .github/workflows/checks.yml
+	$(PNPM) exec prettier --check scripts apps packages tests/system tests/fuzz tests/assessment tests/ea1 package.json tsconfig.json mkdocs.yml pnpm-workspace.yaml .github
 	cargo fmt --all -- --check
 	cargo clippy --workspace --all-targets --locked -- -D warnings
 	node scripts/generate-bindings.mjs --check
@@ -35,16 +35,18 @@ test:
 	$(PNPM) test
 stress:
 	node tests/fuzz/chunk-corpus.mjs
+foundation-verify:
+	node scripts/verify.mjs --source-foundation
 verify:
 	node scripts/verify.mjs
-# Intentionally exits nonzero for the current essential X4 failure.
+# Historical candidate reproduction; raw FAIL stays nonzero, not an owned-engine gate.
 engine-gate:
-	node tests/system/engine-probe.mjs --require-pass
+	node scripts/run-x4.mjs --require-pass
 provenance:
 	node scripts/verify-provenance.mjs
 format:
 	cargo fmt --all
-	$(PNPM) exec prettier --write scripts apps packages tests/system tests/fuzz tests/assessment tests/ea1 package.json tsconfig.json mkdocs.yml pnpm-workspace.yaml .github/workflows/checks.yml
+	$(PNPM) exec prettier --write scripts apps packages tests/system tests/fuzz tests/assessment tests/ea1 package.json tsconfig.json mkdocs.yml pnpm-workspace.yaml .github
 
 # Separate experimental engine assessment from foundation checks.
 include make/assessment.mk

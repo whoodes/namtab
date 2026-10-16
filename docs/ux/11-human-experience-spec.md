@@ -8,7 +8,7 @@
 
 ## Information architecture and default layout
 
-With zero agents, a first interactive entry opens one ordinary shell via the broker in a full-size application viewport. Subsequent attach uses existing-session selection rather than creating a duplicate. This applies to both clients; explicit Work entry may open the dashboard. No account, model provider, task creation, recording, shell hook, or container is required. Existing shell initialization runs under the user's authority; Project X does not rewrite it. A dismissible introduction explains the optional Work view. A small trusted status strip identifies host, runtime authority, input owner, capture policy, and live/history state. Do not start an agent or enable recording during onboarding.
+With zero agents, a first interactive entry opens one ordinary shell via the broker in a full-size application viewport. Subsequent attach uses existing-session selection rather than creating a duplicate. This applies to both clients; explicit Work entry may open the dashboard. No account, model provider, task creation, recording, shell hook, or container is required. Existing shell initialization runs under the user's authority; namtab does not rewrite it. A dismissible introduction explains the optional Work view. A small trusted status strip identifies host, runtime authority, input owner, capture policy, and live/history state. Do not start an agent or enable recording during onboarding.
 
 One window selects a workspace. A workspace groups task records, artifact references, connection references, and terminal layouts; it is not itself a sandbox or a Git repository. Four lenses share selection without equating it with focus:
 
