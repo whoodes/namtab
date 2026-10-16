@@ -17,7 +17,7 @@ const allowed = {
   terminal: [],
   domain: [],
   platform: ["domain"],
-  service: ["protocol", "domain", "platform"],
+  service: ["protocol", "domain", "platform", "terminal"],
   client: ["protocol"],
   console: ["client"],
 };
@@ -112,3 +112,24 @@ assert.equal(js.size, 4);
 console.log(
   "Boundary checks passed: eight Rust crates (seven active, engine is binary-only EA1), four TS packages, allowed edges acyclic. Static checks do not enforce runtime authority.",
 );
+
+// The MK1 service imports same-build worker values, never a second reducer.
+// This is a selected-source check, not whole-program or sandbox proof.
+async function rustSources(directory) {
+  const result = [];
+  for (const entry of await readdir(directory, { withFileTypes: true })) {
+    const path = directory + "/" + entry.name;
+    if (entry.isDirectory()) result.push(...(await rustSources(path)));
+    else if (entry.name.endsWith(".rs")) result.push(path);
+  }
+  return result;
+}
+for (const path of await rustSources("crates/service/src")) {
+  const source = await readFile(path, "utf8");
+  assert.ok(
+    !/\bEngine\s*::|project_x_terminal\s*::\s*Engine|project_x_terminal\s*::\s*\{[^}]*\bEngine\b/su.test(
+      source,
+    ),
+    "Service must not construct/import canonical Engine: " + path,
+  );
+}

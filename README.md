@@ -2,13 +2,15 @@
 
 An agent-native terminal engine for attributable work, useful terminal interaction, and human supervision that scales beyond a wall of panes. The chosen design owns terminal semantics in Rust while preserving ordinary Linux shells, CLI/TUI programs, and excellent use with zero agents.
 
-**Maturity: bounded MK1 foundation, not yet an integrated application.** Owned terminal reducer/input/worker and real Linux PTY/managed-process primitives now have targeted tests. There is not yet a usable supervisor or complete frontend. Both a host-terminal TUI and an Electron desktop are first-class product directions. Existing xterm/libghostty experiments are historical references; their **X4 and EA1 selection gates remain FAIL**. Passing foundation tests is not product certification or a speed claim.
+**Maturity: first hands-on MK1, under final integration review.** Real local PTY/managed execution, an owned finite Rust terminal worker, a host TUI and sandboxed Electron client share one backend. Scripted agent clients can share immutable task contracts, bind exact revisions and obtain broker-attributed attempts/receipts; writer handoffs remain explicit. This is a first hands-on human-feel prototype, not full NG1 or a production terminal. Existing xterm/libghostty experiments remain historical references; their **X4 and EA1 selection gates remain FAIL**. No compatibility, security or speed superiority claim follows.
+
+[Public documentation](https://whoodes.github.io/namtab/) · [Try MK1 locally](docs/engineering/mk1-quickstart.md): `make mk1-build`, then `make mk1-daemon`, `make mk1-tui` and `make mk1-desktop` in separate terminals on the prepared VM. The [scope/admission](docs/engineering/mk1-scope-and-admission.md) sets the stop-for-feedback boundary. No model or external service is needed.
 
 ## Architecture
 
-- **Rust:** protocol/schema ownership, pure domain/receipt models, platform boundary, service admission harness, client and synthetic Ratatui/Crossterm console. The separate historical EA1 worker has no PTY or grant authority.
+- **Rust:** protocol/schema ownership, pure domain/receipt models, platform boundary, local supervisor/receipt journal, public client and Ratatui/Crossterm TUI; the original offline diagnostic remains available. The separate historical EA1 worker has no PTY or grant authority.
 - **Owned engine, implemented finite subset:** `crates/terminal` owns bounded parser/state/input/reply proposals and a private worker. No history/reflow/checkpoint import or full profile qualification; see its [limits](crates/terminal/README.md). A legacy emulator is not native authority.
-- **Human clients, proposed:** host TUI and Electron/TypeScript views of the same canonical service model. Neither owns permissions, private storage, or application PTYs. The current TS packages provide synthetic input and reference probes only.
+- **Human clients, MK1:** host TUI and sandboxed Electron views of the same canonical service model. Neither owns permissions, private storage, or application PTYs. The desktop MK1 runtime lives in `apps/desktop/mk1`; existing TS input/reference probes remain distinct.
 
 See the [architecture and authoritative document map](docs/index.md), [engine scope](docs/engine/index.md), and [ownership ADR](docs/adr/0004-owned-agent-native-engine.md). Internal `project-x-*` package names and `px-*` experimental profiles remain to avoid an unrelated wire/package rename.
 
@@ -33,7 +35,7 @@ make verify
 
 Rebuilding the historical source can produce different library bytes and stop full-workspace checks before worker tests; do not refresh provenance hashes automatically. Cached original-artifact checks were exercised locally; a fresh native build/host is not thereby qualified.
 
-These run format/Clippy, Rust properties/unit tests, JS contracts/types, generated bindings/schema drift, boundaries, fixtures, seeded partition stress, and strict MkDocs/local links. `make verify` aggregates the full-workspace foundation checks, including the historical native worker in Cargo Clippy/tests; it does not run a separate historical qualification step. Reports go to fresh ignored `.artifacts/verification/` paths. `make foundation-verify` is the owner-approved **Active-source foundation** CI lane: it excludes only the historical native worker from Cargo Clippy/tests, checking all seven active Rust crates and the other foundation checks. Together with **PR issue and commit policy**, it is required for merge eligibility. Routine CI retains the X4 continuation regressions and evidence-preservation guards; historical X4/EA1 qualification jobs are retired from routine CI. This does not establish a full-workspace or runtime pass. See [CI artifact policy](docs/engineering/16-test-and-ci-strategy.md#ci-artifact-diagnosis-and-lane-separation).
+These run the real launch build, isolated TUI/CLI and two-agent journeys, format/Clippy, Rust properties/unit tests, JS contracts/types, generated bindings/schema drift, boundaries, fixtures, seeded partition stress, and strict MkDocs/local links. `make verify` aggregates the full-workspace foundation checks, including the historical native worker in Cargo Clippy/tests; it does not run a separate historical qualification step. Reports go to fresh ignored `.artifacts/verification/` paths. `make foundation-verify` is the owner-approved **Active-source foundation** CI lane: it excludes only the historical native worker from Cargo Clippy/tests, checking all seven active Rust crates and the other foundation checks. Together with **PR issue and commit policy**, it is required for merge eligibility. Routine CI retains the X4 continuation regressions and evidence-preservation guards; historical X4/EA1 qualification jobs are retired from routine CI. This does not establish full-workspace, NG1 or production-runtime qualification. See [CI artifact policy](docs/engineering/16-test-and-ci-strategy.md#ci-artifact-diagnosis-and-lane-separation).
 
 ```sh
 make engine-gate
@@ -44,7 +46,7 @@ These manual reproduction paths preserve the recorded failures: X4 cannot recons
 
 ## Roadmap and documentation
 
-Start with the [manifesto](docs/product/manifesto.md) and [human experience](docs/ux/11-human-experience-spec.md). The [MK1 admission and stop condition](docs/engineering/mk1-scope-and-admission.md) records accepted N0 design and authorized first hands-on work. The [N0 starting queue and exit criteria](docs/engine/delivery-and-validation.md#n0-starting-queue-and-readiness) lead to reviewed contracts/profile/fixtures, then a bounded native-and-shell slice in both clients. N2–N4 cover classic compatibility, reliable supervision and opt-in exact-tuple recovery; N5 is future backlog. These are planned capabilities, not completed milestones.
+Start with the [manifesto](docs/product/manifesto.md) and [human experience](docs/ux/11-human-experience-spec.md). The [MK1 admission and stop condition](docs/engineering/mk1-scope-and-admission.md) records accepted N0 design and authorized first hands-on work. The [N0 starting queue and exit criteria](docs/engine/delivery-and-validation.md#n0-starting-queue-and-readiness) lead to reviewed contracts/profile/fixtures, then a bounded native-and-shell slice in both clients. N2–N4 cover classic compatibility, reliable supervision and opt-in exact-tuple recovery; N5 is future backlog. N0 is accepted for MK1 design; full NG1 and later qualification remain unclaimed.
 
 The [native contract](docs/engine/native-contract.md) distinguishes exact execution facts from opaque-shell/TUI inference. [Runtime/recovery](docs/engine/runtime-persistence-security.md) separates reconnect, engine loss and process loss. No universal compatibility, deterministic execution replay, perfect isolation or faster model inference is promised.
 
@@ -54,6 +56,6 @@ Follow the [contributor workflow](docs/engineering/contributing.md): logical, se
 
 ## Security and licensing
 
-This is an unqualified prototype, not a sandbox for hostile programs or a safe place for credentials/private sessions. Authentication, runtime isolation and secure capture are proposed contracts, not completed protections. No dedicated security reporting policy or support commitment is published in this repository.
+This is an unqualified prototype, not a sandbox for hostile programs or a safe place for credentials/private sessions. Local same-UID transport checks are not human attestation or protection from hostile same-UID programs. Restricted runtime isolation and durable secure capture remain unimplemented. No dedicated security reporting policy or support commitment is published in this repository.
 
 **No project license has been adopted.** Apache-2.0 remains a recommendation, not a license grant. Dependencies and retained source/evidence have their own provenance and licensing obligations; see [dependency policy](docs/engineering/15-dependencies-and-supply-chain.md).

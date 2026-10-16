@@ -2,7 +2,9 @@
 
 [Index](../index.md) · [Shared human UX](../ux/11-human-experience-spec.md) · [Host TUI profile](../ux/13-dual-frontend-and-host-tui.md) · [Native contract](native-contract.md)
 
-**Proposed integration, unimplemented.** This page owns the canonical projection/rendering seam and the native-process-to-interactive handoff. Human layout, shortcuts, review, appearance, configuration and states have one owner in UX 11; host decoding/TERM/SSH differences have one owner in UX 13.
+**Product integration design; the minimal real MK1 clients are scoped below.** This page owns the canonical projection/rendering seam and the native-process-to-interactive handoff. Human layout, shortcuts, review, appearance, configuration and states have one owner in UX 11; host decoding/TERM/SSH differences have one owner in UX 13.
+
+The [MK1 quickstart](../engineering/mk1-quickstart.md) describes the current minimal real TUI/Electron clients and their explicit limits. The richer workflows below remain design obligations, not shipped accessibility, compatibility or performance qualification.
 
 ## One model, two useful clients
 

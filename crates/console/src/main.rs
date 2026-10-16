@@ -21,7 +21,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         _ => {
             return Err(
-                "Only offline diagnose and input-fixture commands exist; no live terminal".into(),
+                "This binary offers offline diagnose/input-fixture; use namtab-tui for live MK1"
+                    .into(),
             );
         }
     }

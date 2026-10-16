@@ -2,7 +2,7 @@
 
 [Index](../index.md) · [Dependencies](15-dependencies-and-supply-chain.md) · [Tests/CI](16-test-and-ci-strategy.md) · [Target runtime modules](../engine/runtime-persistence-security.md#module-and-process-design)
 
-**Actual foundation versus proposed product.** Current source has eight Rust/four TS workspace packages. The active-source CI lane covers seven Rust crates, excluding only the historical binary-only `project-x-engine` from active Clippy/tests; the worker remains a workspace member and historical source/gates remain intact. The owned finite core/worker and real Linux PTY/managed primitives have targeted tests; there is no integrated live product yet. [E4](../adr/0004-owned-agent-native-engine.md) chooses owned semantics; [runtime](../engine/runtime-persistence-security.md#module-and-process-design) owns the target graph. This page owns repository layout, actual dependency checks, schema/workflow/release policy.
+**Actual foundation versus proposed product.** Current source has eight Rust/four TS workspace packages. The active-source CI lane covers seven Rust crates, excluding only the historical binary-only `project-x-engine` from active Clippy/tests; the worker remains a workspace member and historical source/gates remain intact. The owned finite core/worker and real Linux PTY/managed primitives have targeted tests; MK1 adds a live local broker, public clients and minimal TUI/Electron views; it is not full NG1 or production qualification. [E4](../adr/0004-owned-agent-native-engine.md) chooses owned semantics; [runtime](../engine/runtime-persistence-security.md#module-and-process-design) owns the target graph. This page owns repository layout, actual dependency checks, schema/workflow/release policy.
 
 The historical worker requires the evaluated local artifact for workspace builds; [EA1 reproduction](21-ea1-native-worker-results.md#results-and-reproduction) records preparation and limits. Its raw selection gate remains FAIL. A different runner/artifact is not automatically qualified. Current commands/prerequisites are in root README and Makefile; historical reports preserve their exact earlier tuples.
 
@@ -20,11 +20,11 @@ project-x/                         TARGET with explicit future entries; actual m
     platform/                      PTY/process/filesystem/runtime OS adapters
     service/                       supervisor/store; project-x-service + project-x-keeper
     client/                        Rust public IPC client, subscriptions/receipt reconciliation
-    console/                       project-x CLI and Ratatui TUI modules, one binary
+    console/                       project-x CLI and Ratatui TUI modules, offline diagnostic plus the thin live TUI binary
     engine/                        preserved EA1 experimental binary-only worker; historical failed gate
     terminal/                      owned finite pure core + private worker; MK1 tests, not full qualification
   apps/
-    desktop/                       Electron main/preload + React renderer; no broker internals
+    desktop/                       MK1 vanilla-JS main/preload/renderer; proposed richer UI later
     engine-host/                   current xterm reference/assessment utility; not revised shipping target
   packages/
     protocol/                      generated TS public DTOs/validators + small IPC client
@@ -70,7 +70,7 @@ flowchart TD
     Service --> Domain[domain]
     Service --> Platform[platform]
     Platform --> Domain
-    Terminal[terminal: owned pure library + private worker]
+    Service --> Terminal[terminal: same-build worker DTOs; no second reducer]
     Desktop[desktop] --> TSWire[TS protocol + client]
     Desktop --> Adapter[reference terminal-adapter input types]
     Engine[reference TS engine-host] --> AdapterNode[reference terminal-adapter node entry]
@@ -133,7 +133,7 @@ The sole future engineering sequence is [N0–N5](../engine/delivery-and-validat
 
 ## Native-worker boundary after the assessment
 
-The experimental engine uses `deny(unsafe_code)` with one audited `ffi.rs` exception; the six original crates retain workspace unsafe forbidden. Validate C enum/struct ABI, ownership/allocator lifetimes, callback reentry/unwind, thread affinity and hostile lengths. The worker depends on wire DTOs only among application crates; the target service would launch/authenticate it through platform operations rather than link native semantics into the broker. Actual live service/worker orchestration is not implemented. Desktop/TUI/client cannot import private engine messages or reach that endpoint. It is not a sandbox until runtime/OS controls are verified. EA1 demonstrates selected public render-state/FFI semantics but fails required legacy control aliases. These are historical experiment limits, not an adoption roadmap; current owned-engine gates are in [delivery](../engine/delivery-and-validation.md).
+The experimental engine uses `deny(unsafe_code)` with one audited `ffi.rs` exception; the six original crates retain workspace unsafe forbidden. Validate C enum/struct ABI, ownership/allocator lifetimes, callback reentry/unwind, thread affinity and hostile lengths. The worker depends on wire DTOs only among application crates; the target service would launch/authenticate it through platform operations rather than link native semantics into the broker. The owned MK1 service/worker orchestration is separate from this historical FFI path; see the [MK1 quickstart](mk1-quickstart.md) and its limits. Desktop/TUI/client cannot import private engine messages or reach that endpoint. It is not a sandbox until runtime/OS controls are verified. EA1 demonstrates selected public render-state/FFI semantics but fails required legacy control aliases. These are historical experiment limits, not an adoption roadmap; current owned-engine gates are in [delivery](../engine/delivery-and-validation.md).
 
 Current local commands and installed versions are in the root README/Makefile; `make assessment-bootstrap assessment-build assessment-check` is a separate bounded research lane. EA1 added one local Cargo package without new registry dependencies; no shipping Ghostty dependency or project license was adopted; source/tool provenance supplements lockfiles under evidence/engine-assessment.
 

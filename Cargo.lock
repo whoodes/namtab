@@ -554,6 +554,7 @@ name = "project-x-client"
 version = "0.1.0"
 dependencies = [
  "project-x-protocol",
+ "serde_json",
 ]
 
 [[package]]
@@ -608,6 +609,8 @@ dependencies = [
  "project-x-domain",
  "project-x-platform",
  "project-x-protocol",
+ "project-x-terminal",
+ "serde",
  "serde_json",
  "sha2",
 ]

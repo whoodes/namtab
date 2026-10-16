@@ -76,7 +76,7 @@ pub fn diagnostic() -> Result<String, Box<dyn std::error::Error>> {
     terminal.draw(|f| {
         f.render_widget(
             ratatui::widgets::Paragraph::new(
-                "namtab: offline foundation\nHistorical X4/EA1 FAIL: no live terminal",
+                "namtab: offline foundation\nHistorical X4/EA1 FAIL; diagnostic does not attach MK1",
             ),
             f.area(),
         )

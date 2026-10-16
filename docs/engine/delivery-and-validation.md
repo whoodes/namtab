@@ -2,7 +2,7 @@
 
 [Campaign](index.md) · [Research ledger](research.md) · [Native design](native-contract.md) · [Core](compatibility-and-core.md) · [Runtime](runtime-persistence-security.md) · [Human experience](frontend-contracts.md)
 
-The first MK1 owned finite core/worker and real Linux PTY/managed-process primitives now have targeted tests. The broader runtime capabilities below remain **planned/not qualified**; a useful integrated application is not yet claimed. The completed research campaign has immutable evidence under `evidence/owned-engine-research/`; later N0 work adds reviewed contracts, experimental DTO/schema artifacts and static fixture checks. Those build/shape results are not an implemented engine. The [NG0 packet](#ng0-review-packet-draft) binds current N0 inputs and owner gates; fresh local command/review records remain under ignored `.artifacts/`. Historical X4/EA1 evidence remains immutable and failing.
+The first MK1 owned finite core/worker and real Linux PTY/managed-process primitives now have targeted tests. The broader runtime capabilities below remain **planned/not qualified**; the [MK1 hands-on slice](../engineering/mk1-quickstart.md) is the current integration target. The completed research campaign has immutable evidence under `evidence/owned-engine-research/`; later N0 work adds reviewed contracts, experimental DTO/schema artifacts and static fixture checks. Those N0 build/shape results alone are not runtime evidence; the separate finite MK1 implementation has its own actual test records. The [NG0 packet](#ng0-review-packet-draft) binds current N0 inputs and owner gates; fresh local command/review records remain under ignored `.artifacts/`. Historical X4/EA1 evidence remains immutable and failing.
 
 ## Requirement traceability
 

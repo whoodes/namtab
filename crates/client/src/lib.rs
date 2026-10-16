@@ -1,5 +1,7 @@
 //! Browser-equivalent contract decoding; IPC/subscriptions are unimplemented.
 pub use project_x_protocol::{Context, Intent, Key};
+pub mod mk1;
+pub use project_x_protocol::mk1 as mk1_protocol;
 pub fn validate_request(bytes: &[u8]) -> bool {
     project_x_protocol::decode(bytes).is_ok()
 }

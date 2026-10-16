@@ -2,6 +2,7 @@ import { spawnSync } from "node:child_process";
 import { readFile, writeFile, mkdir, readdir } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 import os from "node:os";
+import { resolve } from "node:path";
 const root = new URL("../", import.meta.url).pathname;
 const version = (
   await readFile(new URL("../.node-version", import.meta.url), "utf8")
@@ -60,6 +61,12 @@ const systemTests = (await readdir(root + "tests/system"))
   .sort()
   .map((name) => "tests/system/" + name);
 if (systemTests.length === 0) throw new Error("No system test files found");
+const binaryDirectory = resolve(
+  root,
+  env.CARGO_TARGET_DIR || "target",
+  "debug",
+);
+const realRun = root + ".artifacts/mk1-ci-" + randomUUID();
 const steps = [
   [
     "repository-local-links",
@@ -78,6 +85,7 @@ const steps = [
       "apps",
       "packages",
       "tests/system",
+      "tests/mk1/outer-screen.mjs",
       "tests/fuzz",
       "tests/assessment",
       "tests/ea1",
@@ -118,6 +126,35 @@ const steps = [
     "rust-contracts",
     "cargo",
     ["test", "--workspace", ...scopeArgs, "--locked"],
+  ],
+  ["mk1-launch-build", "python3", ["-B", "scripts/mk1.py", "build"]],
+  [
+    "mk1-real-journeys",
+    "python3",
+    [
+      "-B",
+      "tests/mk1/e2e.py",
+      "--bin-dir",
+      binaryDirectory,
+      "--terminfo",
+      root + ".artifacts/terminfo",
+      "--artifacts",
+      realRun,
+    ],
+  ],
+  [
+    "mk1-two-agent-journeys",
+    "python3",
+    [
+      "-B",
+      "tests/mk1/agents.py",
+      "--bin-dir",
+      binaryDirectory,
+      "--terminfo",
+      root + ".artifacts/terminfo",
+      "--artifacts",
+      realRun + "-agents",
+    ],
   ],
   ["bindings-drift", "node", ["scripts/generate-bindings.mjs", "--check"]],
   ["typescript-build", "node", [".tools/pnpm/package/bin/pnpm.cjs", "build"]],
@@ -162,7 +199,7 @@ const report = {
     memory_bytes: os.totalmem(),
     os_release: await readFile("/etc/os-release", "utf8"),
     display:
-      "No display/IME/screen-reader or live outer-terminal experiment performed; headless synthetic tests only.",
+      "Includes a headless real Linux PTY/host-TUI journey; no Electron display, IME, screen-reader or human visual qualification in this runner.",
   },
   versions,
   property_seed: env.PROPTEST_RNG_SEED,
