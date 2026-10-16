@@ -298,6 +298,19 @@
       keyboardActive === true
     );
   }
+  function reconcileFocusAcknowledgement(
+    acknowledgedEpoch,
+    viewEpoch,
+    connected,
+  ) {
+    if (
+      !connected ||
+      !integer(acknowledgedEpoch) ||
+      viewEpoch > acknowledgedEpoch
+    )
+      return null;
+    return acknowledgedEpoch;
+  }
   function validateScreen(screen) {
     return (
       record(screen) &&
@@ -509,6 +522,7 @@
     routeUiKey,
     routeUiPaste,
     focusReady,
+    reconcileFocusAcknowledgement,
     validateScreen,
     validateSnapshot,
     validateResponse,

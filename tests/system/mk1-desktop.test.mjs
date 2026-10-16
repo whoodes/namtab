@@ -269,6 +269,34 @@ test("MK1 UI input waits for the exact focus acknowledgement and active keyboard
     assert.equal(mk1.focusReady(4, 4, ...values), false);
 });
 
+test("MK1 focus acknowledgement survives either IPC acknowledgement/state ordering", () => {
+  let acknowledgement = 5;
+  acknowledgement = mk1.reconcileFocusAcknowledgement(acknowledgement, 4, true);
+  assert.equal(
+    acknowledgement,
+    5,
+    "a late prior state does not erase a future acknowledged epoch",
+  );
+  assert.equal(mk1.focusReady(acknowledgement, 4, true, true, true), false);
+  acknowledgement = mk1.reconcileFocusAcknowledgement(acknowledgement, 5, true);
+  assert.equal(mk1.focusReady(acknowledgement, 5, true, true, true), true);
+  assert.equal(
+    mk1.reconcileFocusAcknowledgement(null, 5, true),
+    null,
+    "state alone never grants input focus",
+  );
+  assert.equal(
+    mk1.reconcileFocusAcknowledgement(5, 6, true),
+    null,
+    "a newer fence invalidates the prior acknowledgement",
+  );
+  assert.equal(
+    mk1.reconcileFocusAcknowledgement(5, 5, false),
+    null,
+    "disconnect always clears acknowledgement",
+  );
+});
+
 test("MK1 desktop refuses controls, unsupported repertoire and oversized paste before IPC", () => {
   for (const value of [
     "\0",
