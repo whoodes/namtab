@@ -203,7 +203,7 @@ fn real_shell_typed_input_takeover_stale_refusal_and_no_secret_journal() {
 #[test]
 fn duplicate_mutation_never_reexecutes_and_stream_drain_is_distinct() {
     let mut h = Harness::new();
-    let operation = Op::Run { task: "attributed".into(), argv: vec!["/bin/sh".into(), "-c".into(), "printf once >> counter; printf stdout; printf stderr >&2; (sleep 0.25; printf tail)& exit 0".into()] };
+    let operation = Op::Run { task_revision: None, task: "attributed".into(), argv: vec!["/bin/sh".into(), "-c".into(), "printf once >> counter; printf stdout; printf stderr >&2; (sleep 0.25; printf tail)& exit 0".into()] };
     let request = Request {
         version: wire::VERSION.into(),
         id: 4,
@@ -219,6 +219,7 @@ fn duplicate_mutation_never_reexecutes_and_stream_drain_is_distinct() {
             version: wire::VERSION.into(),
             id: 4,
             operation: Op::Run {
+                task_revision: None,
                 task: "changed".into(),
                 argv: vec!["/bin/true".into()],
             },
@@ -236,6 +237,7 @@ fn duplicate_mutation_never_reexecutes_and_stream_drain_is_distinct() {
     );
     assert!(
         h.human(Op::Run {
+            task_revision: None,
             task: "bounded flood".into(),
             argv: vec![
                 "/bin/sh".into(),
@@ -262,6 +264,7 @@ fn duplicate_mutation_never_reexecutes_and_stream_drain_is_distinct() {
     assert_eq!(flood.stderr, "drained");
     assert_eq!(
         h.human(Op::Run {
+            task_revision: None,
             task: "third".into(),
             argv: vec!["/bin/true".into()]
         })
@@ -486,6 +489,7 @@ fn receipts_remain_queryable_while_snapshot_is_bounded_and_cap_refuses_before_ef
                 Decision {
                     binding: [0; 32],
                     receipt: Receipt {
+                        result: None,
                         endpoint: h.human.clone(),
                         id,
                         operation: "input".into(),
@@ -504,6 +508,7 @@ fn receipts_remain_queryable_while_snapshot_is_bounded_and_cap_refuses_before_ef
             version: wire::VERSION.into(),
             id: 5000,
             operation: Op::Run {
+                task_revision: None,
                 task: "must not launch".into(),
                 argv: vec!["/bin/sh".into(), "-c".into(), "touch MUST_NOT_EXIST".into()],
             },
@@ -1154,4 +1159,334 @@ fn repeated_socket_launches_retain_sixteen_endpoints_and_old_resume_receipts() {
     assert!(resumed.ok);
     assert_eq!(resumed.endpoint.as_deref(), Some(h.human.as_str()));
     assert_eq!(h.broker.snapshot(&h.human).unwrap().endpoints.len(), 16);
+}
+
+fn defined_revision(response: &Response, task: &str) -> String {
+    assert!(response.ok, "{response:?}");
+    let Some(MutationResult::TaskDefined {
+        task: actual,
+        revision,
+    }) = response.receipt.as_ref().unwrap().result.as_ref()
+    else {
+        panic!("missing authoritative task result: {response:?}")
+    };
+    assert_eq!(actual, task);
+    revision.clone()
+}
+fn started_attempt(response: &Response) -> String {
+    assert!(response.ok, "{response:?}");
+    let Some(MutationResult::AttemptStarted { attempt }) =
+        response.receipt.as_ref().unwrap().result.as_ref()
+    else {
+        panic!("missing authoritative attempt result: {response:?}")
+    };
+    attempt.clone()
+}
+#[test]
+fn two_agents_share_one_immutable_contract_with_exact_receipt_and_launch_attribution() {
+    let h = Harness::new();
+    let (_, second) = h.broker.hello(1, Role::Agent, None);
+    let second = second.unwrap();
+    let definition = Request {
+        version: wire::VERSION.into(),
+        id: 10,
+        operation: Op::DefineTask {
+            task: "shared".into(),
+            goal: "GOAL_RAM_ONLY_two_independent_agents".into(),
+            expected_artifacts: vec!["EXPECTED_RAM_ONLY/result.txt".into()],
+        },
+    };
+    let defined = h.broker.request(&h.agent, definition.clone());
+    let revision = defined_revision(&defined, "shared");
+    assert_eq!(
+        h.broker.request(&h.agent, definition.clone()).receipt,
+        defined.receipt
+    );
+    let first_view = h.broker.snapshot(&h.agent).unwrap();
+    let second_view = h.broker.snapshot(&second).unwrap();
+    assert_eq!(first_view.tasks, second_view.tasks);
+    assert_eq!(first_view.tasks.len(), 1);
+    assert_eq!(first_view.tasks[0].revision, revision);
+    assert!(
+        second_view
+            .capabilities
+            .contains(&wire::SHARED_TASKS.into())
+    );
+    let same = h.broker.request(&second, definition.clone());
+    assert_eq!(defined_revision(&same, "shared"), revision);
+    let changed = Request {
+        operation: Op::DefineTask {
+            task: "shared".into(),
+            goal: "changed contract".into(),
+            expected_artifacts: vec![],
+        },
+        ..definition
+    };
+    assert_eq!(
+        h.broker.request(&h.agent, changed.clone()).error.as_deref(),
+        Some("mutation_id_conflict")
+    );
+    assert_eq!(
+        h.broker
+            .request(&second, Request { id: 11, ..changed })
+            .error
+            .as_deref(),
+        Some("task_contract_immutable_conflict")
+    );
+    for (id, task, task_revision, error) in [
+        (11, "shared", None, "task_revision_required_or_stale"),
+        (
+            12,
+            "shared",
+            Some(format!("sha256:{}", "0".repeat(64))),
+            "task_revision_required_or_stale",
+        ),
+        (
+            13,
+            "unknown",
+            Some(revision.clone()),
+            "unknown_task_contract",
+        ),
+    ] {
+        let refused = h.broker.request(
+            &h.agent,
+            Request {
+                version: wire::VERSION.into(),
+                id,
+                operation: Op::Run {
+                    task: task.into(),
+                    task_revision,
+                    argv: vec![
+                        "/bin/sh".into(),
+                        "-c".into(),
+                        "touch MUST_NOT_LAUNCH".into(),
+                    ],
+                },
+            },
+        );
+        assert_eq!(refused.error.as_deref(), Some(error));
+        assert!(refused.receipt.unwrap().result.is_none());
+    }
+    assert!(!h.directory.join("MUST_NOT_LAUNCH").exists());
+    assert!(h.broker.snapshot(&second).unwrap().attempts.is_empty());
+    let run = |marker: &str| Request {
+        version: wire::VERSION.into(),
+        id: 20,
+        operation: Op::Run {
+            task: "shared".into(),
+            task_revision: Some(revision.clone()),
+            argv: vec![
+                "/bin/sh".into(),
+                "-c".into(),
+                format!(
+                    "printf {marker} >> launches; printf OUTPUT_{marker}; printf ERROR_{marker} >&2"
+                ),
+            ],
+        },
+    };
+    let first_request = run("A");
+    let first = h.broker.request(&h.agent, first_request.clone());
+    let other = h.broker.request(&second, run("B"));
+    let first_id = started_attempt(&first);
+    let other_id = started_attempt(&other);
+    assert_ne!(first_id, other_id);
+    assert_eq!(
+        h.broker.request(&h.agent, first_request).receipt,
+        first.receipt
+    );
+    let snapshot = h.wait(|snapshot| {
+        snapshot.attempts.len() == 2
+            && snapshot
+                .attempts
+                .iter()
+                .all(|attempt| attempt.state == "exited")
+    });
+    for (id, endpoint, marker) in [(&first_id, &h.agent, "A"), (&other_id, &second, "B")] {
+        let attempt = snapshot
+            .attempts
+            .iter()
+            .find(|attempt| &attempt.id == id)
+            .unwrap();
+        assert_eq!(
+            attempt.origin,
+            Some(wire::AttemptOrigin {
+                endpoint: endpoint.clone(),
+                request_id: 20
+            })
+        );
+        assert_eq!(attempt.task_revision.as_deref(), Some(revision.as_str()));
+        assert_eq!(attempt.task, "shared");
+        assert_eq!(attempt.stdout, format!("OUTPUT_{marker}"));
+        assert_eq!(attempt.stderr, format!("ERROR_{marker}"));
+        assert_eq!(attempt.exit_code, Some(0));
+    }
+    for (endpoint, response) in [(&h.agent, &first), (&second, &other)] {
+        assert_eq!(
+            h.broker
+                .request(
+                    endpoint,
+                    Request {
+                        version: wire::VERSION.into(),
+                        id: 21,
+                        operation: Op::Receipt { request_id: 20 },
+                    }
+                )
+                .receipt,
+            response.receipt
+        );
+    }
+    let launches = fs::read_to_string(h.directory.join("launches")).unwrap();
+    assert_eq!(launches.len(), 2);
+    assert_eq!(launches.matches('A').count(), 1);
+    assert_eq!(launches.matches('B').count(), 1);
+    let third = h.broker.request(&second, Request { id: 21, ..run("C") });
+    assert_eq!(third.error.as_deref(), Some("attempt_capacity_two_total"));
+    assert!(third.receipt.unwrap().result.is_none());
+    assert_eq!(
+        fs::read_to_string(h.directory.join("launches"))
+            .unwrap()
+            .len(),
+        2
+    );
+    let journal = fs::read_to_string(h.directory.join("journal")).unwrap();
+    for forbidden in [
+        "GOAL_RAM_ONLY",
+        "EXPECTED_RAM_ONLY",
+        "OUTPUT_A",
+        "printf",
+        &revision,
+        &first_id,
+        &other_id,
+    ] {
+        assert!(
+            !journal.contains(forbidden),
+            "payload/result leaked into metadata journal"
+        );
+    }
+}
+
+#[test]
+fn four_contract_limit_preserves_existing_contracts_and_same_definition() {
+    let mut h = Harness::new();
+    let mut revisions = Vec::new();
+    for n in 0..4 {
+        let task = format!("task{n}");
+        revisions.push(defined_revision(
+            &h.human(Op::DefineTask {
+                task: task.clone(),
+                goal: format!("goal{n}"),
+                expected_artifacts: vec![],
+            }),
+            &task,
+        ));
+    }
+    let same = h.human(Op::DefineTask {
+        task: "task0".into(),
+        goal: "goal0".into(),
+        expected_artifacts: vec![],
+    });
+    assert_eq!(defined_revision(&same, "task0"), revisions[0]);
+    let full = h.human(Op::DefineTask {
+        task: "task4".into(),
+        goal: "fifth".into(),
+        expected_artifacts: vec![],
+    });
+    assert_eq!(
+        full.error.as_deref(),
+        Some("task_contract_capacity_four_total")
+    );
+    assert!(full.receipt.unwrap().result.is_none());
+    let snapshot = h.broker.snapshot(&h.agent).unwrap();
+    assert_eq!(snapshot.tasks.len(), 4);
+    assert_eq!(
+        snapshot
+            .tasks
+            .iter()
+            .map(|task| task.revision.clone())
+            .collect::<Vec<_>>(),
+        revisions
+    );
+    assert!(snapshot.degraded.is_none());
+    assert!(snapshot.attempts.is_empty());
+}
+
+#[test]
+fn adhoc_attempt_never_gains_later_contract_revision() {
+    let mut h = Harness::new();
+    let started = h.human(Op::Run {
+        task: "label".into(),
+        argv: vec!["/bin/true".into()],
+        task_revision: None,
+    });
+    let id = started_attempt(&started);
+    let definition = h.human(Op::DefineTask {
+        task: "label".into(),
+        goal: "new immutable contract".into(),
+        expected_artifacts: vec![],
+    });
+    let revision = defined_revision(&definition, "label");
+    let snapshot = h.broker.snapshot(&h.agent).unwrap();
+    assert_eq!(
+        snapshot
+            .attempts
+            .iter()
+            .find(|attempt| attempt.id == id)
+            .unwrap()
+            .task_revision,
+        None
+    );
+    let refused = h.human(Op::Run {
+        task: "label".into(),
+        argv: vec!["/bin/true".into()],
+        task_revision: None,
+    });
+    assert_eq!(
+        refused.error.as_deref(),
+        Some("task_revision_required_or_stale")
+    );
+    let valid = h.human(Op::Run {
+        task: "label".into(),
+        argv: vec!["/bin/true".into()],
+        task_revision: Some(revision),
+    });
+    assert_ne!(started_attempt(&valid), id);
+}
+
+#[test]
+fn unknown_completion_preserves_exact_attempt_reference_without_reexecution() {
+    let h = Harness::new();
+    let request = Request {
+        version: wire::VERSION.into(),
+        id: 10,
+        operation: Op::Run {
+            task: "ad-hoc".into(),
+            task_revision: None,
+            argv: vec!["/bin/sh".into(), "-c".into(), "printf once >> once".into()],
+        },
+    };
+    assert!(h.broker.reserve(&h.agent, &request).unwrap().is_none());
+    let outcome = h.broker.apply(&h.agent, request.id, &request.operation);
+    assert!(outcome.is_ok());
+    h.broker.state.lock().unwrap().journal.exhaust_for_test();
+    let response = h.broker.finish(&h.agent, request.id, outcome);
+    assert!(!response.ok);
+    let receipt = response.receipt.clone().unwrap();
+    assert_eq!(receipt.state, "unknown");
+    let Some(MutationResult::AttemptStarted { attempt }) = &receipt.result else {
+        panic!("lost attempt correlation")
+    };
+    let snapshot = h.wait(|snapshot| snapshot.attempts[0].state == "exited");
+    assert_eq!(snapshot.attempts[0].id, *attempt);
+    assert_eq!(
+        snapshot.attempts[0].origin,
+        Some(wire::AttemptOrigin {
+            endpoint: h.agent.clone(),
+            request_id: 10
+        })
+    );
+    assert_eq!(h.broker.request(&h.agent, request).receipt, Some(receipt));
+    assert_eq!(
+        fs::read_to_string(h.directory.join("once")).unwrap(),
+        "once"
+    );
 }

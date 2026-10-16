@@ -4,6 +4,10 @@ pub const VERSION: &str = "namtab.mk1/1";
 pub const MAX_FRAME: usize = 1_048_576;
 pub const MAX_INPUT: usize = 8192;
 pub const MAX_ID: u64 = 9_007_199_254_740_991;
+/// Additive MK1/1 extensions; clients must observe support before using them.
+pub const SHARED_TASKS: &str = "shared_tasks_v1";
+pub const ATTEMPT_ORIGIN: &str = "attempt_origin_v1";
+pub const RECEIPT_RESULTS: &str = "receipt_results_v1";
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum Role {
@@ -67,9 +71,16 @@ pub enum Op {
         cols: u16,
         rows: u16,
     },
+    DefineTask {
+        task: String,
+        goal: String,
+        expected_artifacts: Vec<String>,
+    },
     Run {
         task: String,
         argv: Vec<String>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        task_revision: Option<String>,
     },
     Artifact {
         task: String,
@@ -119,11 +130,29 @@ pub struct Session {
 pub struct Attempt {
     pub id: String,
     pub task: String,
+    /// Absent only for an older server that cannot attest launch attribution.
+    #[serde(default)]
+    pub origin: Option<AttemptOrigin>,
+    /// None denotes an ad-hoc label, never implicit membership in a later task.
+    #[serde(default)]
+    pub task_revision: Option<String>,
     pub state: String,
     pub exit_code: Option<i32>,
     pub stdout: String,
     pub stderr: String,
     pub truncated: bool,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+pub struct AttemptOrigin {
+    pub endpoint: String,
+    pub request_id: u64,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+pub struct TaskContract {
+    pub task: String,
+    pub revision: String,
+    pub goal: String,
+    pub expected_artifacts: Vec<String>,
 }
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Artifact {
@@ -142,6 +171,14 @@ pub struct Receipt {
     pub state: String,
     pub detail: String,
     pub delivered_bytes: usize,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub result: Option<MutationResult>,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(tag = "kind", rename_all = "snake_case")]
+pub enum MutationResult {
+    TaskDefined { task: String, revision: String },
+    AttemptStarted { attempt: String },
 }
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct EndpointView {
@@ -156,6 +193,10 @@ pub struct Snapshot {
     pub epoch: String,
     pub endpoint: String,
     pub endpoints: Vec<EndpointView>,
+    #[serde(default)]
+    pub capabilities: Vec<String>,
+    #[serde(default)]
+    pub tasks: Vec<TaskContract>,
     pub sessions: Vec<Session>,
     pub attempts: Vec<Attempt>,
     pub artifacts: Vec<Artifact>,
@@ -182,6 +223,7 @@ impl Op {
             Self::ReleaseControl { .. } => "release_control",
             Self::Input { .. } => "input",
             Self::Resize { .. } => "resize",
+            Self::DefineTask { .. } => "define_task",
             Self::Run { .. } => "run",
             Self::Artifact { .. } => "artifact",
             Self::ValidateArtifact { .. } => "validate_artifact",
@@ -237,19 +279,29 @@ pub fn decode(bytes: &[u8]) -> Result<Request, &'static str> {
     if request.id == 0 || request.id > MAX_ID {
         return Err("request_id");
     }
-    let label = |s: &str| {
-        !s.is_empty() && s.len() <= 80 && s.chars().all(|c| c.is_ascii_graphic() || c == ' ')
-    };
     match &request.operation {
         Op::Hello {
             label: l, resume, ..
         } if !label(l) || resume.as_ref().is_some_and(|s| s.len() > 128) => return Err("hello"),
         Op::CreateSession { name } if !label(name) => return Err("name"),
-        Op::Run { task, argv }
-            if !label(task)
-                || argv.is_empty()
-                || argv.len() > 32
-                || argv.iter().any(|s| s.len() > 8192 || s.contains('\0')) =>
+        Op::DefineTask {
+            task,
+            goal,
+            expected_artifacts,
+        } => {
+            validate_task_definition(task, goal, expected_artifacts)?;
+        }
+        Op::Run {
+            task,
+            argv,
+            task_revision,
+        } if !label(task)
+            || argv.is_empty()
+            || argv.len() > 32
+            || argv.iter().any(|s| s.len() > 8192 || s.contains('\0'))
+            || task_revision
+                .as_ref()
+                .is_some_and(|value| !task_revision_valid(value)) =>
         {
             return Err("argv");
         }
@@ -269,6 +321,42 @@ pub fn decode(bytes: &[u8]) -> Result<Request, &'static str> {
         _ => {}
     }
     Ok(request)
+}
+fn label(value: &str) -> bool {
+    !value.is_empty()
+        && value.len() <= 80
+        && value.chars().all(|c| c.is_ascii_graphic() || c == ' ')
+}
+fn task_revision_valid(value: &str) -> bool {
+    value.strip_prefix("sha256:").is_some_and(|hash| {
+        hash.len() == 64
+            && hash
+                .bytes()
+                .all(|c| c.is_ascii_digit() || (b'a'..=b'f').contains(&c))
+    })
+}
+pub fn validate_task_definition(
+    task: &str,
+    goal: &str,
+    expected_artifacts: &[String],
+) -> Result<(), &'static str> {
+    if !label(task)
+        || goal.trim().is_empty()
+        || goal.len() > 512
+        || goal.chars().any(char::is_control)
+    {
+        return Err("task_definition");
+    }
+    if expected_artifacts.len() > 2
+        || expected_artifacts.iter().any(|path| {
+            path.len() > 512
+                || path.chars().any(|c| c == '\\' || c.is_control())
+                || path.split('/').any(|part| matches!(part, "" | "." | ".."))
+        })
+    {
+        return Err("expected_artifacts");
+    }
+    Ok(())
 }
 #[cfg(test)]
 mod tests {
@@ -293,5 +381,92 @@ mod tests {
         }
         assert_eq!(decode(&[b'['; 17]), Err("nesting"));
         assert_eq!(decode(&vec![0; MAX_FRAME + 1]), Err("frame_size"));
+    }
+    fn request(operation: serde_json::Value) -> Result<Request, &'static str> {
+        decode(
+            &serde_json::to_vec(&serde_json::json!({
+                "version": VERSION, "id": 1, "operation": operation,
+            }))
+            .unwrap(),
+        )
+    }
+    #[test]
+    fn shared_contract_fields_are_bounded_before_admission() {
+        let definition = |goal: &str, paths: Vec<&str>| {
+            serde_json::json!({
+                "op": "define_task", "task": "shared task", "goal": goal, "expected_artifacts": paths,
+            })
+        };
+        assert!(
+            request(definition(
+                &"é".repeat(256),
+                vec![".artifacts/result", "out.txt"]
+            ))
+            .is_ok()
+        );
+        for goal in [" ".to_owned(), "a\nb".into(), "é".repeat(257)] {
+            assert_eq!(request(definition(&goal, vec![])), Err("task_definition"));
+        }
+        for paths in [
+            vec!["one", "two", "three"],
+            vec![""],
+            vec!["../out"],
+            vec!["/out"],
+            vec!["a//b"],
+            vec!["./out"],
+            vec!["a\\b"],
+            vec!["a\0b"],
+        ] {
+            assert_eq!(
+                request(definition("goal", paths)),
+                Err("expected_artifacts")
+            );
+        }
+        let long_path = "x".repeat(513);
+        assert_eq!(
+            request(definition("goal", vec![&long_path])),
+            Err("expected_artifacts")
+        );
+        let unknown_field = serde_json::json!({
+            "op": "define_task", "task": "shared", "goal": "goal", "expected_artifacts": [], "scheduler": true,
+        });
+        assert_eq!(request(unknown_field), Err("shape"));
+    }
+    #[test]
+    fn additive_mk1_fields_preserve_legacy_json_and_expose_unknown_authority() {
+        let legacy =
+            request(serde_json::json!({"op":"run", "task":"adhoc", "argv":["/bin/true"]})).unwrap();
+        assert!(matches!(
+            &legacy.operation,
+            Op::Run {
+                task_revision: None,
+                ..
+            }
+        ));
+        assert!(
+            serde_json::to_value(&legacy.operation)
+                .unwrap()
+                .get("task_revision")
+                .is_none()
+        );
+        assert!(request(serde_json::json!({"op":"run", "task":"shared", "argv":["/bin/true"], "task_revision": format!("sha256:{}", "a".repeat(64))})).is_ok());
+        assert_eq!(
+            request(
+                serde_json::json!({"op":"run", "task":"shared", "argv":["/bin/true"], "task_revision": "unknown"})
+            ),
+            Err("argv")
+        );
+        let snapshot: Snapshot = serde_json::from_value(serde_json::json!({
+            "version": VERSION, "epoch":"older", "endpoint":"e1", "endpoints":[], "sessions":[], "attempts":[{
+                "id":"old-attempt", "task":"label", "state":"exited", "exit_code":0, "stdout":"", "stderr":"", "truncated":false,
+            }], "artifacts":[], "receipts":[{
+                "endpoint":"e1", "id":1, "operation":"run", "state":"applied", "detail":"legacy", "delivered_bytes":0,
+            }], "degraded":null,
+        })).unwrap();
+        assert!(snapshot.capabilities.is_empty());
+        assert!(snapshot.tasks.is_empty());
+        assert!(snapshot.attempts[0].origin.is_none());
+        assert!(snapshot.attempts[0].task_revision.is_none());
+        assert!(snapshot.receipts[0].result.is_none());
     }
 }

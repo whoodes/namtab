@@ -195,7 +195,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                             let task = format!("tui-task-{}", client.next_id());
                             send(
                                 &mut client,
-                                Op::Run { task, argv },
+                                Op::Run {
+                                    task,
+                                    argv,
+                                    task_revision: None,
+                                },
                                 &mut notice,
                                 &mut online,
                                 &mut input_gate,
@@ -927,9 +931,13 @@ mod tests {
             epoch: "synthetic-test".into(),
             endpoint: "human".into(),
             endpoints: vec![],
+            capabilities: vec![],
+            tasks: vec![],
             sessions: vec![],
             attempts: vec![
                 p::Attempt {
+                    origin: None,
+                    task_revision: None,
                     id: "attempt1".into(),
                     task: "first-task".into(),
                     state: "exited".into(),
@@ -939,6 +947,8 @@ mod tests {
                     truncated: false,
                 },
                 p::Attempt {
+                    origin: None,
+                    task_revision: None,
                     id: "attempt2".into(),
                     task: "second-task".into(),
                     state: "exited".into(),
@@ -958,6 +968,7 @@ mod tests {
             }],
             receipts: [20, 10]
                 .map(|id| p::Receipt {
+                    result: None,
                     endpoint: "human".into(),
                     id,
                     operation: "input".into(),
@@ -1031,6 +1042,7 @@ mod tests {
             ok: true,
             error: None,
             receipt: Some(p::Receipt {
+                result: None,
                 endpoint: "human".into(),
                 id: 3,
                 operation: operation.into(),

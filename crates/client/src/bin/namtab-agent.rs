@@ -23,7 +23,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             "{}",
             serde_json::to_string(&c.call(Op::Run {
                 task: args[4].clone(),
-                argv: args[5..].to_vec()
+                argv: args[5..].to_vec(),
+                task_revision: None,
             })?)?
         );
         return Ok(());

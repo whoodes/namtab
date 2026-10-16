@@ -3,6 +3,7 @@ mod attempts;
 mod journal;
 mod server;
 mod sessions;
+mod tasks;
 #[cfg(test)]
 mod tests;
 mod worker;
@@ -11,8 +12,8 @@ use project_x_platform::local_process::{
     self as platform, CommandSpec, Geometry, ProcessHandle, PtyWriter, ReadOutcome,
 };
 use project_x_protocol::mk1::{
-    self as wire, Artifact, Attempt, InputPolicy, Intent, Op, Receipt, Request, Response, Role,
-    Screen, Session, Snapshot,
+    self as wire, Artifact, Attempt, InputPolicy, Intent, MutationResult, Op, Receipt, Request,
+    Response, Role, Screen, Session, Snapshot, TaskContract,
 };
 use project_x_terminal::{
     Frame, Input, Key, KeyPhase, Modifiers,
@@ -183,6 +184,7 @@ struct State {
     endpoints: BTreeMap<String, Endpoint>,
     sessions: BTreeMap<String, LiveSession>,
     attempts: BTreeMap<String, LiveAttempt>,
+    tasks: BTreeMap<String, TaskContract>,
     artifacts: BTreeMap<String, Artifact>,
     reserved_sessions: usize,
     reserved_attempts: usize,
@@ -212,6 +214,7 @@ impl Broker {
                 endpoints: BTreeMap::new(),
                 sessions: BTreeMap::new(),
                 attempts: BTreeMap::new(),
+                tasks: BTreeMap::new(),
                 artifacts: BTreeMap::new(),
                 reserved_sessions: 0,
                 reserved_attempts: 0,
@@ -371,6 +374,7 @@ impl Broker {
             state: "reserved".into(),
             detail: "reserved_before_effect".into(),
             delivered_bytes: 0,
+            result: None,
         };
         let principal = state.endpoints.get_mut(endpoint).unwrap();
         principal.high_water = request.id;
@@ -479,7 +483,7 @@ impl Broker {
             }
             Ok(None) => {}
         }
-        let outcome = self.apply(endpoint, &request.operation);
+        let outcome = self.apply(endpoint, request.id, &request.operation);
         self.finish(endpoint, request.id, outcome)
     }
     /// A safety-only authority decrease may survive failed grant/storage admission.
@@ -537,6 +541,7 @@ impl Broker {
             detail: "protective_fence_applied_new_writer_not_granted_durable_receipt_unavailable"
                 .into(),
             delivered_bytes: 0,
+            result: None,
         };
         let principal = state.endpoints.get_mut(endpoint)?;
         principal.high_water = request.id;
@@ -554,11 +559,21 @@ impl Broker {
     fn apply(
         self: &Arc<Self>,
         endpoint: &str,
+        request_id: u64,
         operation: &Op,
     ) -> Result<(String, usize, String), String> {
         match operation {
             Op::CreateSession { name } => self.create_session(name),
-            Op::Run { task, argv } => self.run(task, argv),
+            Op::DefineTask {
+                task,
+                goal,
+                expected_artifacts,
+            } => self.define_task(endpoint, request_id, task, goal, expected_artifacts),
+            Op::Run {
+                task,
+                argv,
+                task_revision,
+            } => self.run(endpoint, request_id, task, task_revision.as_deref(), argv),
             Op::TakeControl {
                 session,
                 generation,
@@ -782,6 +797,15 @@ impl Broker {
                     connected: value.connected,
                 })
                 .collect(),
+            capabilities: [
+                wire::SHARED_TASKS,
+                wire::ATTEMPT_ORIGIN,
+                wire::RECEIPT_RESULTS,
+            ]
+            .into_iter()
+            .map(str::to_owned)
+            .collect(),
+            tasks: state.tasks.values().cloned().collect(),
             sessions: state
                 .sessions
                 .values()

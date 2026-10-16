@@ -3,11 +3,20 @@ use super::*;
 impl Broker {
     pub(super) fn run(
         self: &Arc<Self>,
+        endpoint: &str,
+        request_id: u64,
         task: &str,
+        task_revision: Option<&str>,
         argv: &[String],
     ) -> Result<(String, usize, String), String> {
         let id = {
             let mut state = self.state.lock().unwrap();
+            match (state.tasks.get(task), task_revision) {
+                (Some(contract), Some(revision)) if contract.revision == revision => {}
+                (Some(_), _) => return Err("task_revision_required_or_stale".into()),
+                (None, Some(_)) => return Err("unknown_task_contract".into()),
+                (None, None) => {}
+            }
             if state.attempts.len() + state.reserved_attempts >= 2 {
                 return Err("attempt_capacity_two_total".into());
             }
@@ -29,6 +38,11 @@ impl Broker {
                 view: Attempt {
                     id: id.clone(),
                     task: task.into(),
+                    origin: Some(wire::AttemptOrigin {
+                        endpoint: endpoint.into(),
+                        request_id,
+                    }),
+                    task_revision: task_revision.map(str::to_owned),
                     state: "running".into(),
                     exit_code: None,
                     stdout: String::new(),
@@ -42,6 +56,19 @@ impl Broker {
                 exited: false,
             },
         );
+        // Correlate at authoritative publication, before another endpoint can
+        // observe this attempt. Receipt state still describes completion certainty.
+        state
+            .endpoints
+            .get_mut(endpoint)
+            .unwrap()
+            .decisions
+            .get_mut(&request_id)
+            .unwrap()
+            .receipt
+            .result = Some(MutationResult::AttemptStarted {
+            attempt: id.clone(),
+        });
         drop(state);
         for (is_stderr, mut stream) in [
             (false, Box::new(process.stdout) as Box<dyn Read + Send>),
