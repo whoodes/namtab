@@ -27,6 +27,12 @@ on setup/exec failure and closes the status socket at exec. As with conventional
 CLOEXEC launch handshakes, a crash between marker and exec cannot be ruled out
 by EOF alone. The startup result is not a process-running guarantee.
 
+`peer_uid` obtains the kernel's Unix-socket peer UID using `SO_PEERCRED`;
+`effective_uid` obtains this process's effective UID. The broker can compare
+them for the admitted local same-UID boundary without trusting a client field.
+This does not attest human identity, differentiate hostile same-UID processes
+or implement a sandbox. No stored credentials or account configuration are read.
+
 `launch_managed` gives null stdin and distinct stdout/stderr pipes. Drain them
 concurrently, and keep **exit observed**, **stdout EOF** and **stderr EOF**
 separate. A descendant can retain an output descriptor after the direct child
@@ -43,10 +49,15 @@ not a universal stop guarantee. Child wait/kill can block in the kernel.
 
 The only new direct dependency is exact **rustix 1.1.5**, cached from crates.io,
 with `default-features = false` and features `std`, `pty` (implies `fs`),
-`process`, `termios`, `stdio`, `event`. Public source inspected on 2026-10-16:
+`process`, `termios`, `stdio`, `event`, `net`. `stdio` enables safe child-helper
+stdio replacement; `event` enables bounded read polling; `net` enables only the
+used `SO_PEERCRED` helper (Rustix's feature also enables `linux-raw-sys`'s `net`,
+`netlink`, `if_ether` feature definitions). No dependency version is changed.
+Public source inspected on 2026-10-16:
 `src/pty.rs`, `src/process/{id,ioctl}.rs`, `src/stdio.rs`, `src/io/fcntl.rs`,
 `src/fs/fcntl.rs`, `src/termios/tc.rs`, `src/event/poll.rs` and its Linux backend
-`PollFd` definition. Rustix declares
+`PollFd` definition, plus `src/net/{sockopt,types}.rs` and `src/ugid.rs` for
+`socket_peercred`, `UCred.uid` and `Uid::as_raw`. Rustix declares
 `Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT`; this is dependency
 provenance, not adoption of a namtab project license.
 

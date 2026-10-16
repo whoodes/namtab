@@ -5,11 +5,24 @@ use std::path::Path;
 use std::time::{Duration, Instant};
 
 use project_x_platform::local_process::{
-    CommandSpec, Geometry, PtyReader, ReadOutcome, launch_managed, launch_pty,
+    CommandSpec, Geometry, PtyReader, ReadOutcome, effective_uid, launch_managed, launch_pty,
+    peer_uid,
 };
 
 const SHORT: Duration = Duration::from_millis(100);
 const LIMIT: Duration = Duration::from_secs(3);
+
+#[test]
+fn unix_socket_peer_uid_is_kernel_observed_not_client_prose() {
+    let (mut sender, mut receiver) = std::os::unix::net::UnixStream::pair().unwrap();
+    assert_eq!(peer_uid(&sender).unwrap(), effective_uid());
+    assert_eq!(peer_uid(&receiver).unwrap(), effective_uid());
+    // Application bytes cannot change the independently obtained identity.
+    std::io::Write::write_all(&mut sender, b"declared-role:human;uid:0").unwrap();
+    let mut payload = [0; 25];
+    receiver.read_exact(&mut payload).unwrap();
+    assert_eq!(peer_uid(&receiver).unwrap(), effective_uid());
+}
 
 fn shell(script: &str) -> CommandSpec {
     let mut spec = CommandSpec::new("/bin/bash", env!("CARGO_MANIFEST_DIR"));

@@ -26,6 +26,18 @@ pub const MAX_WRITE_BYTES: usize = 8192;
 const STARTUP_TIMEOUT: Duration = Duration::from_secs(3);
 const STARTUP_MARKER: &[u8] = b"NAMTAB_PTY_1\n";
 
+/// Effective identity of this process; this does not access stored credentials.
+pub fn effective_uid() -> u32 {
+    rustix::process::geteuid().as_raw()
+}
+
+/// Kernel-provided Unix socket peer UID at connection time. Matching this UID
+/// supports the MK1 same-UID developer-host boundary; it does not distinguish a
+/// human from another process under that UID or attest a declared client role.
+pub fn peer_uid(stream: &UnixStream) -> io::Result<u32> {
+    Ok(rustix::net::sockopt::socket_peercred(stream)?.uid.as_raw())
+}
+
 /// Literal program/argv, never an implicit shell command string.
 #[derive(Debug, Clone)]
 pub struct CommandSpec {
