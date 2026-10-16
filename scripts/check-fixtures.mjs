@@ -1,3 +1,4 @@
+import { checkNativeFixtures } from "./check-native-fixtures.mjs";
 import { readFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 const manifest = JSON.parse(
@@ -13,3 +14,4 @@ console.log(
     manifest.files.length +
     " payloads).",
 );
+console.log("Native fixture static checks:", await checkNativeFixtures());

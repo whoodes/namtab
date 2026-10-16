@@ -1,0 +1,229 @@
+{
+  "format": "n0-conformance-manifest-1",
+  "profile": "px-dev-text-0",
+  "draft_base_commit": "667435633eaaa6bd51b483a532c19da3ef930a64",
+  "origin": "Hand-authored synthetic goldens, 2026-10-16. Repeated blank/default fields and byte metadata expanded mechanically; no VT parser, engine, reference runtime or captured output generated expected values.",
+  "contract_owner": "docs/engine/compatibility-and-core.md",
+  "licensing": {
+    "new_data": "Session-authored synthetic review data; no project license added or inferred",
+    "upstream": "No upstream code/corpus/Unicode tables imported. S07/S08/S09 are rationale links in contract, not content-pinned incorporated data. N0-08 owns any later source/license adoption.",
+    "capture": "No real sessions, user data, secrets, environment dumps or executed embedded commands"
+  },
+  "status": {
+    "independent_review": "PENDING",
+    "static_integrity": "RUN BY CHECKER; no preclaimed result",
+    "state_conformance": "NOT RUN",
+    "continuation_conformance": "NOT RUN",
+    "key_reply_conformance": "NOT RUN",
+    "NG0": "NOT ACCEPTED",
+    "NG1": "NOT RUN"
+  },
+  "files": [
+    {
+      "path": "goldens.json",
+      "sha256": "ce8d898fc7bdd02c110b97e470ad08664e3948e587b58f4b2962a619ba130278"
+    },
+    {
+      "path": "bounds.json",
+      "sha256": "8edb4cedc1d6ce7738e4e246b9c31f1d4d1195160cec1c4c68bcb48807043ece"
+    }
+  ],
+  "source_records": [
+    {
+      "id": "original-x4-inputs",
+      "path": "tests/fixtures/terminal/continuations.json",
+      "sha256": "f4be9e644749b53fe236b6bed4b61410230c7775221f2633f51f18b9c904999a",
+      "role": "original-synthetic-inputs",
+      "licensing": "Existing repository synthetic data/source provenance only; no upstream corpus imported and no new license granted"
+    },
+    {
+      "id": "original-shared-manifest",
+      "path": "tests/fixtures/manifest.json",
+      "sha256": "a31a7d8430141048d18d7c14539281c691dbfc69f0cdc90ebc0373067278b7b8",
+      "role": "original-integrity-manifest",
+      "licensing": "Existing repository synthetic data/source provenance only; no upstream corpus imported and no new license granted"
+    },
+    {
+      "id": "original-x4-oracle",
+      "path": "tests/system/engine-probe.mjs",
+      "sha256": "3759fd2cc266b53ead0eea96f893628efcd7e7a99ddfe55792eb18ab86331b02",
+      "role": "historical-oracle-source-not-imported",
+      "licensing": "Existing repository synthetic data/source provenance only; no upstream corpus imported and no new license granted"
+    },
+    {
+      "id": "original-x4-result",
+      "path": "evidence/engine-continuation.json",
+      "sha256": "2410a56ecd6d45d08f391f15b9dd8e8d18c693b750a866d593f124747a2e5231",
+      "role": "historical-X4-FAIL",
+      "licensing": "Existing repository synthetic data/source provenance only; no upstream corpus imported and no new license granted"
+    },
+    {
+      "id": "ea1-continuation-results",
+      "path": "evidence/ea1/continuations.json",
+      "sha256": "b758754ac6f9cfe20971fb1aabf36e35e28d17f784e9290f8fd61da8a542b9ba",
+      "role": "historical-bounded-continuation-PASS-not-selection",
+      "licensing": "Existing repository synthetic data/source provenance only; no upstream corpus imported and no new license granted"
+    },
+    {
+      "id": "ea1-alias-results",
+      "path": "evidence/ea1/legacy-control-aliases.json",
+      "sha256": "1d5a83fbfb9a7f580b10a0311401131ce5aa1feabd2070172daa2187e7969c74",
+      "role": "historical-legacy-alias-FAIL",
+      "licensing": "Existing repository synthetic data/source provenance only; no upstream corpus imported and no new license granted"
+    },
+    {
+      "id": "ea1-selection",
+      "path": "evidence/ea1/summary.json",
+      "sha256": "9e5ca4ea51f7eaa07f72b4679f650e0bae2047cdaa58717e70b0e9f2bc7bfc50",
+      "role": "historical-selection-FAIL",
+      "licensing": "Existing repository synthetic data/source provenance only; no upstream corpus imported and no new license granted"
+    },
+    {
+      "id": "n0-profile-review",
+      "path": "tests/fixtures/native-profile/finite-profile-cases.json",
+      "sha256": "c289785c4deaff15c38d4e2154593d695a44b5b09378799c13ae973757b47419",
+      "role": "prior-synthetic-review-not-runtime-oracle",
+      "licensing": "Existing repository synthetic data/source provenance only; no upstream corpus imported and no new license granted"
+    },
+    {
+      "id": "n0-state-continuations",
+      "path": "tests/fixtures/native-state/continuations.json",
+      "sha256": "5746f87f6f2b24a0601dfbb88a3c072b488af14025976b86b38ddae9de820000",
+      "role": "prior-synthetic-review-challenged-independently",
+      "licensing": "Existing repository synthetic data/source provenance only; no upstream corpus imported and no new license granted"
+    },
+    {
+      "id": "n0-state-transitions",
+      "path": "tests/fixtures/native-state/state-transitions.json",
+      "sha256": "0cb20c4f9c308e6855532f523f9eb00bd1febc978a39d1bc3996bff4bf60c4da",
+      "role": "prior-synthetic-review-challenged-independently",
+      "licensing": "Existing repository synthetic data/source provenance only; no upstream corpus imported and no new license granted"
+    },
+    {
+      "id": "n0-state-bounds",
+      "path": "tests/fixtures/native-state/bounds-and-recovery.json",
+      "sha256": "be2d8ec1dd02d7d7e6ee01ba76d0f2b679c33a460c7a101019fe3bbfcaacb900",
+      "role": "prior-synthetic-review-challenged-independently",
+      "licensing": "Existing repository synthetic data/source provenance only; no upstream corpus imported and no new license granted"
+    }
+  ],
+  "historical_selection_verdicts": {
+    "X4": "FAIL",
+    "EA1": "FAIL"
+  },
+  "reference_disagreement": {
+    "policy": "No majority oracle. Classify each mismatch before changing a golden.",
+    "allowed_classes": [
+      "standard-requirement",
+      "deliberate-profile-difference",
+      "implementation-bug",
+      "reference-bug",
+      "unresolved"
+    ],
+    "cases": [
+      {
+        "source_record": "original-x4-result",
+        "classification": "implementation-bug",
+        "scope": "historical serializer continuation failures; no new runtime comparison performed"
+      },
+      {
+        "source_record": "ea1-alias-results",
+        "classification": "deliberate-profile-difference",
+        "scope": "historical configuration emitted enhanced packets for Ctrl aliases; finite unnegotiated classic profile requires 09/0d/1b; old failure remains"
+      },
+      {
+        "case_id": "wide-combining-replacement",
+        "classification": "deliberate-profile-difference",
+        "scope": "finite profile substitutes width-one U+FFFD; later Unicode/wide-cell profiles unadvertised"
+      }
+    ]
+  },
+  "partition_policy": {
+    "exhaustive_up_to_bytes": 8,
+    "every_single_cut": true,
+    "nonempty_contiguous_chunks_only": true,
+    "preserve_keeper_events": true,
+    "empty_chunks": "not output events; zero/end cuts are harness boundaries, never EOF"
+  },
+  "coverage": {
+    "historical": [
+      "historical-plain",
+      "historical-saved-cursor",
+      "historical-scroll-region",
+      "historical-custom-tabs",
+      "historical-alternate",
+      "historical-partial-csi"
+    ],
+    "continuation": [
+      "historical-plain",
+      "historical-saved-cursor",
+      "historical-scroll-region",
+      "historical-custom-tabs",
+      "historical-alternate",
+      "historical-partial-csi",
+      "utf8-split",
+      "csi-overflow-ignore",
+      "csi-colon-ignore",
+      "escape-ignore",
+      "string-pending-st",
+      "dedicated-return-slot",
+      "alternate-exit-reinitializes-local-state"
+    ],
+    "hidden-pair": [
+      "pending-wrap-a",
+      "pending-wrap-b",
+      "saved-attributes-a",
+      "saved-attributes-b"
+    ],
+    "wrap": ["pending-wrap-a", "pending-wrap-b"],
+    "saved-attributes": [
+      "saved-attributes-a",
+      "saved-attributes-b",
+      "dedicated-return-slot"
+    ],
+    "utf8": [
+      "utf8-split",
+      "utf8-invalid-control",
+      "utf8-eof",
+      "wide-combining-replacement"
+    ],
+    "eof": ["utf8-eof"],
+    "malformed": [
+      "utf8-invalid-control",
+      "csi-overflow-ignore",
+      "csi-colon-ignore",
+      "escape-ignore",
+      "atomic-unsupported-sgr"
+    ],
+    "strings": ["string-pending-st"],
+    "wide-exclusion": ["wide-combining-replacement"],
+    "queries": ["utf8-invalid-control", "query-state-cut", "identical-queries"],
+    "reply-authority": ["identical-queries"],
+    "reset": [
+      "soft-reset-both-buffers",
+      "hard-reset-both-buffers",
+      "alternate-exit-reinitializes-local-state"
+    ],
+    "both-buffers": [
+      "soft-reset-both-buffers",
+      "hard-reset-both-buffers",
+      "resize-crop-both-buffers",
+      "dedicated-return-slot",
+      "alternate-exit-reinitializes-local-state"
+    ],
+    "resize": ["resize-crop-both-buffers"],
+    "crop-no-reflow": ["resize-crop-both-buffers"],
+    "input-modes": [
+      "soft-reset-both-buffers",
+      "alternate-exit-reinitializes-local-state"
+    ]
+  },
+  "draft_clarifications": [
+    {
+      "id": "P-1049-exit-grid-local-reset",
+      "policy": "1049 exit reinitializes alternate cells/cursor/wrap/region/tabs/ordinary save and row identities; preserves primary/history and restored session attributes/input modes",
+      "status": "Explicit unadvertised finite-profile drafting choice, 2026-10-16; no runtime evidence or accepted version claim"
+    }
+  ],
+  "future_requirements": ["V07", "V08", "V09", "V10", "V11"]
+}
