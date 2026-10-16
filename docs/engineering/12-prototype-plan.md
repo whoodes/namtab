@@ -2,7 +2,7 @@
 
 [Index](../index.md) · [Scope](../engine/index.md) · [Canonical delivery plan](../engine/delivery-and-validation.md#ordered-milestones)
 
-**Planned, not implemented.** The only current engineering sequence is [N0–N5 / NG0–NG4](../engine/delivery-and-validation.md#ordered-milestones), with deliverables, dependencies, success/stop criteria, staffing and open questions in that owner document. This page preserves earlier entrypoints without maintaining another plan.
+**MK1 engineering authorized; broader qualification remains planned.** The [MK1 admission](mk1-scope-and-admission.md) owns the first hands-on stopping point; finite core/worker and Linux process primitives are implemented with targeted tests, not a usable integrated app yet. The only current engineering sequence is [N0–N5 / NG0–NG4](../engine/delivery-and-validation.md#ordered-milestones), with deliverables, dependencies, success/stop criteria, staffing and open questions in that owner document. This page preserves earlier entrypoints without maintaining another plan.
 
 ## Order and stopping rules
 
@@ -26,7 +26,7 @@ Historical labels now route to [shared UX](../ux/11-human-experience-spec.md), [
 
 ## Foundation bootstrap after separate engineering authorization
 
-Preserve the actual seven Rust/four TS foundation and historical experiments. The [target layout](14-repository-and-engineering-practices.md#concrete-proposed-layout-and-ownership) and [module contract](../engine/runtime-persistence-security.md#module-and-process-design) propose one cohesive future `terminal` library/worker package. Extend schemas/import checks deliberately; add no empty microcrates. Each new capability adds its own relevant test evidence.
+Preserve the [current workspace inventory](14-repository-and-engineering-practices.md#concrete-proposed-layout-and-ownership) and historical experiments. The [target layout](14-repository-and-engineering-practices.md#concrete-proposed-layout-and-ownership) and [module contract](../engine/runtime-persistence-security.md#module-and-process-design) now include one cohesive finite `terminal` library/worker package. Extend schemas/import checks deliberately; add no empty microcrates. Each new capability adds its own relevant test evidence.
 
 ## Beyond the first certified baseline
 

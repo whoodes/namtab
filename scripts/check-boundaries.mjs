@@ -14,6 +14,7 @@ const metadata = JSON.parse(
 const allowed = {
   protocol: [],
   engine: ["protocol"],
+  terminal: [],
   domain: [],
   platform: ["domain"],
   service: ["protocol", "domain", "platform"],
@@ -106,8 +107,8 @@ for (const root of ["apps", "packages"])
     }
   }
 acyclic(js);
-assert.equal(metadata.packages.length, 7);
+assert.equal(metadata.packages.length, 8);
 assert.equal(js.size, 4);
 console.log(
-  "Boundary checks passed: seven Rust crates (engine is binary-only EA1), four TS packages, allowed edges acyclic. Static checks do not enforce runtime authority.",
+  "Boundary checks passed: eight Rust crates (seven active, engine is binary-only EA1), four TS packages, allowed edges acyclic. Static checks do not enforce runtime authority.",
 );

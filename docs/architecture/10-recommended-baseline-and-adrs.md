@@ -18,7 +18,7 @@
 | Capture/retention | Memory-only ordinary output; explicit capture classes | A6 below; capture consent is not consent to model export |
 | Storage | SQLite journal/projections + policy-scoped objects; accepted for design | [Domain storage](05-architecture-storage-and-extensions.md#storage-and-durability), [terminal recovery](../engine/runtime-persistence-security.md#complete-snapshots-and-journal-cuts) |
 | IPC/extensions | Bounded local authenticated JSON; built-in then out-of-process adapters | [Runtime IPC](../engine/runtime-persistence-security.md#ipc-configuration-and-extension-scope), [extension lifecycle](05-architecture-storage-and-extensions.md#versioned-apis-and-plugins); private versioned interfaces, no stable plugin ABI |
-| Repository | Cargo + pnpm, current seven Rust/four TS packages; one future terminal package | [Repository target/actual](../engineering/14-repository-and-engineering-practices.md); no package migration yet |
+| Repository | Cargo + pnpm; owned finite terminal package now included | [Repository target/actual](../engineering/14-repository-and-engineering-practices.md); no package migration yet |
 | License | Apache-2.0 recommended only | A8 below; owner adoption and release-specific dependency clearance pending |
 
 ## ADR-A1 — Frontend and language boundary
@@ -78,7 +78,7 @@ The [runtime contract](../engine/runtime-persistence-security.md#ipc-configurati
 
 ## ADR-A10 — Small workspaces and measured engineering gates
 
-[Repository practices](../engineering/14-repository-and-engineering-practices.md) owns layout, schemas, typed errors/logging and release versions; [CI](../engineering/16-test-and-ci-strategy.md) owns lanes. Current code is seven Rust/four TS packages, including historical experiments; proposed `crates/terminal` is absent. No microcrate hierarchy, generic workflow framework or public plugin ecosystem is a prerequisite for N1.
+[Repository practices](../engineering/14-repository-and-engineering-practices.md) owns layout, schemas, typed errors/logging and release versions; [CI](../engineering/16-test-and-ci-strategy.md) owns lanes. The linked repository inventory now includes the owned finite `crates/terminal` core/worker and real Linux primitives. This is not yet an integrated app or full qualification. No microcrate hierarchy, generic workflow framework or public plugin ecosystem is a prerequisite for N1.
 
 ## Coherent stopping point
 
