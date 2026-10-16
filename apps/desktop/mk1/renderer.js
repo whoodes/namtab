@@ -14,6 +14,8 @@
   let screenKey = null;
   let artifactKey = null;
   let taskCounter = 1;
+  let selectedTask = null;
+  let selectedAttempt = null;
   let focusAfterTake = false;
   let focusRequest = 0;
   let acknowledgedFocusEpoch = null;
@@ -73,6 +75,79 @@
     return state.snapshot?.sessions.find(
       (value) => value.id === state.selectedSession,
     );
+  }
+  function task() {
+    return state.snapshot?.tasks?.find(
+      (value) => value.task === element("tasks").value,
+    );
+  }
+  function showActivity(kind) {
+    const shell = kind === "shell";
+    element("shell-panel").hidden = !shell;
+    element("task-panel").hidden = shell;
+    element("show-shell").setAttribute("aria-pressed", String(shell));
+    element("show-task").setAttribute("aria-pressed", String(!shell));
+  }
+  function renderTask() {
+    const selected = task();
+    const supported = state.snapshot?.capabilities?.includes("shared_tasks_v1");
+    text("task-heading", selected?.task || "Choose or define a task");
+    text(
+      "task-goal",
+      selected?.goal ||
+        (supported
+          ? "Share an immutable goal and expected artifacts with connected typed clients. No model is started by this app."
+          : "This daemon has no shared-task capability. Existing shell and attempt activity remain available."),
+    );
+    text(
+      "task-expectations",
+      selected
+        ? selected.expected_artifacts.length
+          ? "Declared expected artifacts: " +
+            selected.expected_artifacts.join(", ") +
+            ". File existence and review are separate observations."
+          : "No expected artifact paths declared."
+        : "",
+    );
+    text(
+      "task-revision",
+      selected ? selected.revision : "No contract observed",
+    );
+    const attempts = (state.snapshot?.attempts || []).filter(
+      (value) =>
+        !selected ||
+        (value.task === selected.task &&
+          value.task_revision === selected.revision),
+    );
+    options(
+      "attempts",
+      attempts,
+      (value) => `${value.task} · ${value.id} · ${value.state}`,
+      selectedAttempt,
+    );
+    if (attempts.some((value) => value.id === selectedAttempt))
+      selectedAttempt = null;
+    text(
+      "run-target",
+      selected
+        ? `Launch is bound to selected task “${selected.task}” and its exact immutable revision.`
+        : "No shared task selected. The command will use the unregistered label below.",
+    );
+    element("fallback-task-label").hidden = !!selected;
+    const used = state.snapshot?.attempts.length;
+    text(
+      "attempt-budget",
+      used === undefined
+        ? "Attempt capacity unobserved"
+        : `${used}/2 retained attempts used for this daemon lifetime. ${used >= 2 ? "Capacity reached, including completed attempts; no further managed launch can be admitted." : "Completed attempts also occupy this bounded prototype capacity."}`,
+    );
+    element("run").disabled = !state.connected || used >= 2;
+    element("define-task").disabled =
+      !state.connected ||
+      !supported ||
+      (state.snapshot?.tasks?.length || 0) >= 4;
+    element("command-label").hidden = element("command-mode").value !== "shell";
+    element("argv-label").hidden = element("command-mode").value !== "argv";
   }
   function attempt() {
     return state.snapshot?.attempts.find(
@@ -141,7 +216,25 @@
         ? `${state.connected ? "" : "last observed "}${managed.state} · exit ${managed.exit_code ?? "not observed"}${managed.truncated ? " · output truncated" : ""}`
         : "No attempt",
     );
-    text("stdout", managed?.stdout || "");
+    text(
+      "stdout",
+      managed?.stdout ||
+        (managed
+          ? "No standard output observed."
+          : "No attempt observed for this selection."),
+    );
+    const origin = managed?.origin;
+    const originRole = state.snapshot?.endpoints.find(
+      (value) => value.id === origin?.endpoint,
+    )?.role;
+    text(
+      "attempt-origin",
+      managed
+        ? origin
+          ? `Launch endpoint ${origin.endpoint}${originRole ? " (declared " + originRole + ")" : ""} · request ${origin.request_id} · ${managed.task_revision ? "bound task revision " + managed.task_revision : "unregistered task label; no contract binding"}`
+          : "Legacy attempt: launch origin and task binding unknown."
+        : "No launch origin observed",
+    );
     text("stderr", managed?.stderr || "");
     element("observe-artifact").disabled = !state.connected || !managed;
     const file = artifact();
@@ -188,6 +281,15 @@
         ? `${next.connected ? "" : "Last observed · "}Declared agent endpoints: ${declaredAgents.filter((endpoint) => endpoint.connected).length} connected / ${declaredAgents.length} retained`
         : "Declared agent endpoints: unobserved",
     );
+    element("agent-connections").replaceChildren(
+      ...(declaredAgents || []).map((endpoint) => {
+        const row = document.createElement("div");
+        row.textContent = protocol.safeText(
+          `${endpoint.id} · declared agent · ${endpoint.connected ? "connected" : "disconnected"}${next.connected ? "" : " (last observed)"}`,
+        );
+        return row;
+      }),
+    );
     notice(next.notice);
     element("reconnect").disabled =
       next.connected || next.status === "Connecting…";
@@ -202,10 +304,20 @@
       next.selectedSession,
     );
     options(
-      "attempts",
-      next.snapshot?.attempts || [],
-      (value) => `${value.task} · ${value.id} · ${value.state}`,
+      "tasks",
+      (next.snapshot?.tasks || []).map((value) => ({
+        ...value,
+        id: value.task,
+      })),
+      (value) => value.task,
+      selectedTask,
     );
+    if (
+      selectedTask &&
+      next.snapshot?.tasks?.some((value) => value.task === selectedTask)
+    )
+      selectedTask = null;
+    renderTask();
     options(
       "artifacts",
       next.snapshot?.artifacts || [],
@@ -270,7 +382,7 @@
     element("force").disabled = !next.connected || !value || owner;
     element("release").disabled = !next.connected || !owner;
     element("resize").disabled = !next.connected || !owner;
-    element("run").disabled = !next.connected;
+
     element("create-form").querySelector("button").disabled =
       !next.connected || (next.snapshot?.sessions.length || 0) >= 2;
     text(
@@ -295,6 +407,32 @@
         }),
     );
   }
+  bind("show-task", "click", () => showActivity("task"));
+  bind("show-shell", "click", () => showActivity("shell"));
+  bind("open-shell", "click", () => showActivity("shell"));
+  bind("tasks", "change", () => {
+    renderTask();
+    renderDetails();
+  });
+  bind("command-mode", "change", renderTask);
+  bind("define-task-form", "submit", async (event) => {
+    event.preventDefault();
+    const paths = element("expected-artifacts").value.trim()
+      ? element("expected-artifacts").value.split(/\r?\n/)
+      : [];
+    const result = await send({
+      op: "define_task",
+      task: element("contract-name").value,
+      goal: element("contract-goal").value,
+      expected_artifacts: paths,
+    });
+    const reference = result.result?.result;
+    if (result.ok && reference?.kind === "task_defined") {
+      selectedTask = reference.task;
+      render(state);
+      element("define-task-tools").open = false;
+    }
+  });
   bind("reconnect", "click", () => send({ op: "connect" }));
   bind("new-endpoint", "click", () => send({ op: "new_endpoint" }));
   bind("sessions", "change", (event) =>
@@ -325,6 +463,7 @@
   }
   bind("create-form", "submit", (event) => {
     event.preventDefault();
+    showActivity("shell");
     send({ op: "create_session", name: element("session-name").value });
   });
   bind("resize-form", "submit", (event) => {
@@ -461,23 +600,55 @@
   bind("keyboard", "input", () => {
     element("keyboard").value = "";
   });
+  bind("run-form", "keydown", (event) => {
+    if (
+      event.key === "Enter" &&
+      event.target.tagName !== "TEXTAREA" &&
+      event.target.tagName !== "BUTTON"
+    )
+      event.preventDefault();
+  });
   bind("run-form", "submit", async (event) => {
     event.preventDefault();
-    let argv;
-    try {
-      argv = JSON.parse(element("argv").value);
-    } catch {
-      notice(
-        'argv must be valid JSON, for example ["/usr/bin/printf", "hello\\n"].',
-      );
+    if (event.submitter !== element("run")) {
+      notice("Use the explicit Run command button to execute.");
       return;
     }
+    let argv;
+    if (element("command-mode").value === "shell") {
+      argv = protocol.shellCommandArgv(element("command").value);
+      if (!argv) {
+        notice(
+          "Enter a nonblank local shell command within the bounded argv limit.",
+        );
+        return;
+      }
+    } else {
+      try {
+        argv = JSON.parse(element("argv").value);
+      } catch {
+        notice(
+          'Literal argv must be a JSON array, for example ["/usr/bin/printf", "hello\\n"].',
+        );
+        return;
+      }
+    }
+    const contract = task();
     const result = await send({
       op: "run",
-      task: element("task-name").value,
+      task: contract?.task || element("task-name").value,
       argv,
+      task_revision: contract?.revision || null,
     });
-    if (result.ok) element("task-name").value = `desktop-task-${++taskCounter}`;
+    const reference = result.result?.result;
+    if (result.ok) {
+      if (reference?.kind === "attempt_started")
+        selectedAttempt = reference.attempt;
+      if (!contract)
+        element("task-name").value = `desktop-task-${++taskCounter}`;
+      render(state);
+      showActivity("task");
+    }
   });
   bind("attempts", "change", renderDetails);
   bind("artifacts", "change", renderDetails);

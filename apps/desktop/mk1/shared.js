@@ -86,8 +86,40 @@
       Array.isArray(argv) &&
       argv.length >= 1 &&
       argv.length <= 32 &&
-      argv.every((value) => string(value, 4096) && !value.includes("\0")) &&
+      argv.every(
+        (value) =>
+          string(value, 4096) &&
+          !value.includes("\0") &&
+          new TextEncoder().encode(value).length <= 8192,
+      ) &&
       argv[0].length > 0
+    );
+  }
+  function shellCommandArgv(command) {
+    if (!string(command, 4096) || !command.trim() || command.includes("\0"))
+      return null;
+    const argv = ["/bin/bash", "--noprofile", "--norc", "-c", command];
+    return validArgv(argv) ? argv : null;
+  }
+  function validTaskDefinition(task, goal, paths) {
+    return (
+      typeof task === "string" &&
+      /^[\x20-\x7e]{1,80}$/.test(task) &&
+      string(goal, 512) &&
+      goal.trim().length > 0 &&
+      new TextEncoder().encode(goal).length <= 512 &&
+      !/[\u0000-\u001f\u007f-\u009f]/.test(goal) &&
+      Array.isArray(paths) &&
+      paths.length <= 2 &&
+      paths.every(
+        (value) =>
+          string(value, 512) &&
+          new TextEncoder().encode(value).length <= 512 &&
+          !/[\\\u0000-\u001f\u007f-\u009f]/.test(value) &&
+          value
+            .split("/")
+            .every((part) => part.length > 0 && part !== "." && part !== ".."),
+      )
     );
   }
   function validateCommandShape(command) {
@@ -103,7 +135,8 @@
       take_control: ["session", "force"],
       release_control: ["session"],
       resize: ["session", "cols", "rows"],
-      run: ["task", "argv"],
+      run: ["task", "argv", "task_revision"],
+      define_task: ["task", "goal", "expected_artifacts"],
       artifact: ["task", "path"],
       validate_artifact: ["artifact", "revision"],
       receipt: ["request_id"],
@@ -338,6 +371,20 @@
       screen.diagnostics.every((value) => string(value, 4096))
     );
   }
+  function validReceiptResult(result) {
+    return (
+      result === undefined ||
+      result === null ||
+      (record(result) &&
+        ((exactKeys(result, ["kind", "task", "revision"]) &&
+          result.kind === "task_defined" &&
+          string(result.task, 80) &&
+          /^sha256:[a-f0-9]{64}$/.test(result.revision)) ||
+          (exactKeys(result, ["kind", "attempt"]) &&
+            result.kind === "attempt_started" &&
+            string(result.attempt, 256))))
+    );
+  }
   function validateReceipt(receipt) {
     return (
       record(receipt) &&
@@ -348,7 +395,8 @@
         receipt.state,
       ) &&
       string(receipt.detail, 8192) &&
-      integer(receipt.delivered_bytes)
+      integer(receipt.delivered_bytes) &&
+      validReceiptResult(receipt.result)
     );
   }
   function validateSnapshot(snapshot) {
@@ -357,6 +405,25 @@
       snapshot.version === VERSION &&
       string(snapshot.epoch, 256) &&
       string(snapshot.endpoint, 256) &&
+      (snapshot.capabilities === undefined ||
+        (Array.isArray(snapshot.capabilities) &&
+          snapshot.capabilities.length <= 32 &&
+          snapshot.capabilities.every((value) => string(value, 128)))) &&
+      (snapshot.tasks === undefined ||
+        (Array.isArray(snapshot.tasks) &&
+          snapshot.tasks.length <= 4 &&
+          snapshot.tasks.every(
+            (value) =>
+              record(value) &&
+              validTaskDefinition(
+                value.task,
+                value.goal,
+                value.expected_artifacts,
+              ) &&
+              /^sha256:[a-f0-9]{64}$/.test(value.revision),
+          ) &&
+          new Set(snapshot.tasks.map((value) => value.task)).size ===
+            snapshot.tasks.length)) &&
       Array.isArray(snapshot.endpoints) &&
       snapshot.endpoints.length <= 16 &&
       snapshot.endpoints.every(
@@ -393,6 +460,14 @@
           record(attempt) &&
           string(attempt.id, 256) &&
           string(attempt.task, 4096) &&
+          (attempt.task_revision === undefined ||
+            attempt.task_revision === null ||
+            /^sha256:[a-f0-9]{64}$/.test(attempt.task_revision)) &&
+          (attempt.origin === undefined ||
+            attempt.origin === null ||
+            (record(attempt.origin) &&
+              string(attempt.origin.endpoint, 256) &&
+              integer(attempt.origin.request_id, 1))) &&
           ["running", "draining", "exited", "unknown"].includes(
             attempt.state,
           ) &&
@@ -515,6 +590,8 @@
     requestEnvelope,
     validSocketPath,
     validArgv,
+    shellCommandArgv,
+    validTaskDefinition,
     validateCommandShape,
     textAllowed,
     validateIntent,

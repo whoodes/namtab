@@ -648,3 +648,129 @@ for (const disposition of ["rejected", "partial", "unknown"]) {
     );
   });
 }
+
+test("MK1 local command fallback preserves explicit Bash shell intent without interpreting a goal", () => {
+  const command = "printf '%s\\n' hello > result.txt\nprintf second";
+  assert.deepEqual(mk1.shellCommandArgv(command), [
+    "/bin/bash",
+    "--noprofile",
+    "--norc",
+    "-c",
+    command,
+  ]);
+  for (const value of [
+    null,
+    "",
+    " \n ",
+    "echo\0bad",
+    "x".repeat(4097),
+    "😀".repeat(3000),
+  ])
+    assert.equal(mk1.shellCommandArgv(value), null);
+  assert.equal(
+    mk1.validateCommandShape({
+      op: "run",
+      task: "task",
+      argv: ["/bin/true"],
+      task_revision: null,
+    }),
+    true,
+  );
+  assert.equal(
+    mk1.validateCommandShape({ op: "run", task: "task", argv: ["/bin/true"] }),
+    false,
+  );
+});
+
+test("MK1 immutable task definitions validate bounded instructions and declared normal paths", () => {
+  assert.equal(
+    mk1.validTaskDefinition("human task: 1", "Produce a reviewed result", [
+      ".artifacts/result.txt",
+    ]),
+    true,
+  );
+  assert.equal(mk1.validTaskDefinition("task", "x".repeat(512), []), true);
+  for (const args of [
+    ["task", " ", []],
+    ["task", "line\nbreak", []],
+    ["task", "é".repeat(257), []],
+    ["界", "goal", []],
+    ["x".repeat(81), "goal", []],
+    ["task", "goal", ["a", "b", "c"]],
+    ...["/absolute", "../outside", "a/./b", "a//b", "a\\b", "a/", ""].map(
+      (value) => ["task", "goal", [value]],
+    ),
+  ])
+    assert.equal(mk1.validTaskDefinition(...args), false);
+});
+
+test("MK1 shared task activity exposes exact launch origin and receipt references while legacy stays unknown", () => {
+  const revision = "sha256:" + "a".repeat(64);
+  const value = snapshot();
+  value.capabilities = [
+    "shared_tasks_v1",
+    "attempt_origin_v1",
+    "receipt_results_v1",
+  ];
+  value.tasks = [
+    {
+      task: "task 1",
+      revision,
+      goal: "Create a local result",
+      expected_artifacts: ["result.txt"],
+    },
+  ];
+  value.attempts = [
+    {
+      id: "a1",
+      task: "task 1",
+      task_revision: revision,
+      origin: { endpoint: "human-1", request_id: 8 },
+      state: "exited",
+      exit_code: 0,
+      stdout: "done",
+      stderr: "",
+      truncated: false,
+    },
+  ];
+  assert.equal(mk1.validateSnapshot(value), true);
+  const response = {
+    id: 9,
+    ok: true,
+    error: null,
+    epoch: value.epoch,
+    endpoint: null,
+    resume: null,
+    snapshot: value,
+    receipt: {
+      endpoint: "human-1",
+      id: 9,
+      operation: "run",
+      state: "applied",
+      delivered_bytes: 0,
+      detail: "started",
+      result: { kind: "attempt_started", attempt: "a1" },
+    },
+  };
+  assert.equal(mk1.validateResponse(response, 9), true);
+  response.receipt.result = { kind: "task_defined", task: "task 1", revision };
+  assert.equal(mk1.validateResponse(response, 9), true);
+  response.receipt.result = { kind: "attempt_started", task: "task 1" };
+  assert.equal(mk1.validateResponse(response, 9), false);
+  value.attempts[0].origin.request_id = 0;
+  assert.equal(mk1.validateSnapshot(value), false);
+  value.attempts[0].origin = null;
+  value.attempts[0].task_revision = null;
+  assert.equal(
+    mk1.validateSnapshot(value),
+    true,
+    "unknown launch origin is not inferred from task label",
+  );
+  value.tasks[0].revision = "not-a-revision";
+  assert.equal(mk1.validateSnapshot(value), false);
+  assert.equal(
+    mk1.validateSnapshot(snapshot()),
+    true,
+    "legacy daemon observations remain usable",
+  );
+});

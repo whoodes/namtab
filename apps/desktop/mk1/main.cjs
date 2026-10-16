@@ -11,6 +11,7 @@ const {
   validateCommandShape,
   validSocketPath,
   validArgv,
+  validTaskDefinition,
   inputFenceValid,
 } = require("./shared.js");
 
@@ -259,15 +260,54 @@ function createWindow(publicSocketPath) {
         op: command.op,
         name: checkedString(command.name, 128, "session name"),
       };
-    else if (command.op === "run") {
+    else if (command.op === "define_task") {
+      if (!snapshot.capabilities?.includes("shared_tasks_v1"))
+        throw new Error("This daemon does not support shared task contracts.");
+      if (
+        !validTaskDefinition(
+          command.task,
+          command.goal,
+          command.expected_artifacts,
+        )
+      )
+        throw new Error(
+          "Task needs an ASCII label, a nonblank goal up to 512 UTF-8 bytes, and at most two normal relative artifact paths.",
+        );
+      fields = {
+        op: "define_task",
+        task: command.task,
+        goal: command.goal,
+        expected_artifacts: command.expected_artifacts,
+      };
+    } else if (command.op === "run") {
       if (!validArgv(command.argv))
         throw new Error(
           "argv must be a JSON array of 1–32 strings without NUL; executable must be nonempty",
+        );
+      if (
+        command.task_revision !== null &&
+        (typeof command.task_revision !== "string" ||
+          !/^sha256:[a-f0-9]{64}$/.test(command.task_revision))
+      )
+        throw new Error("Invalid task revision");
+      if (
+        command.task_revision !== null &&
+        !snapshot.tasks?.some(
+          (value) =>
+            value.task === command.task &&
+            value.revision === command.task_revision,
+        )
+      )
+        throw new Error(
+          "Select the current immutable task contract before running.",
         );
       fields = {
         op: "run",
         task: checkedString(command.task, 128, "task label"),
         argv: command.argv,
+        ...(snapshot.capabilities?.includes("shared_tasks_v1")
+          ? { task_revision: command.task_revision }
+          : {}),
       };
     } else if (command.op === "artifact")
       fields = {
@@ -325,7 +365,11 @@ function createWindow(publicSocketPath) {
       };
     }
     return response.receipt
-      ? { id: response.receipt.id, state: response.receipt.state }
+      ? {
+          id: response.receipt.id,
+          state: response.receipt.state,
+          result: response.receipt.result ?? null,
+        }
       : null;
   }
   ipcMain.handle("mk1:command", async (event, command) => {
