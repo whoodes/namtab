@@ -2,7 +2,7 @@
 
 [Campaign](index.md) · [Research ledger](research.md) · [Native design](native-contract.md) · [Core](compatibility-and-core.md) · [Runtime](runtime-persistence-security.md) · [Human experience](frontend-contracts.md)
 
-All new-engine capabilities below are **planned/not run**. This research phase validates documentation and the unchanged existing workspace, not a new engine. Evidence for this phase belongs under fresh `evidence/owned-engine-research/` paths. Historical X4/EA1 evidence remains immutable and failing.
+Owned-engine runtime capabilities below remain **planned/not run**. The completed research campaign has immutable evidence under `evidence/owned-engine-research/`; later N0 work adds reviewed contracts, experimental DTO/schema artifacts and static fixture checks. Those build/shape results are not an implemented engine. The [NG0 packet](#ng0-review-packet-draft) binds current N0 inputs and owner gates; fresh local command/review records remain under ignored `.artifacts/`. Historical X4/EA1 evidence remains immutable and failing.
 
 ## Requirement traceability
 
@@ -82,7 +82,7 @@ N2/N3/N4 can overlap with explicit prerequisites; a useful N1 is intentionally e
 
 ### N0 starting queue and readiness
 
-The initial GitHub plan was read back on **2026-10-16**: five N0–N4 milestones, 24 issues, 17 parent links and 45 blocking edges. The private Project has two Ready cards and 22 Backlog cards; Blocked is a separate initial planning field, not an automatically synchronized guarantee. No N0 deliverable is completed by creating tracking. The order below resolves the issue graph without adding another roadmap or changing remote planning.
+**Initial tracking snapshot, 2026-10-16 before N0 merges:** five N0–N4 milestones, 24 issues, 17 parent links and 45 blocking edges; two Ready cards and 22 Backlog cards. These are historical creation counts, not current readiness. Blocked is a separately maintained field. Creating tracking completed no N0 work. The table below owns dependency order; the [NG0 review packet](#ng0-review-packet-draft) records the later revision-bound disposition.
 
 | Order / issue | Prerequisites | Concrete exit evidence |
 | --- | --- | --- |
@@ -97,6 +97,34 @@ The initial GitHub plan was read back on **2026-10-16**: five N0–N4 milestones
 **Ready means eligible for scoped contract drafting, not ready to execute engine work.** These tasks still need a real owner, review availability and an authorized timebox. Existing synthetic named-key/schema/receipt checks do not satisfy NG0 or live frontend/PTY requirements. A passing audit PR is not N0 acceptance or N1 implementation permission. N0-07's core fixtures can proceed independently of N0-06; shared native/frontend fixtures must also be reviewed against N0-06 before NG0 closes.
 
 Before NG0 acceptance, the owner must resolve staffing/review responsibility and timebox; the exact N1 feature/data/Unicode/cap tuple and smaller measurement workload; native wire/version/admission details; and dependency/data licensing admission. Project-license adoption remains separate and is not required to review private design work. Detailed options stay in the [remaining-decision register](#risk-register-and-remaining-decisions), not a second set of issue defaults. Configuration-version validation is required early; N5's broader migration backlog does not defer incompatible-version refusal or promise cross-version terminal restore.
+
+### NG0 review packet (draft)
+
+This N0-10 packet supports [issue 16](https://github.com/whoodes/namtab/issues/16). **NG0 is BLOCKED / NOT ACCEPTED**: unmerged dependent drafts and explicit owner decisions remain. A complete packet, passing static checks or an agent review cannot record owner acceptance. N1 remains unauthorized and unimplemented. This section owns the packet; contracts and the remaining-decision register retain their existing owners.
+
+| Input / requirement families | Revision-bound review input | Disposition for this packet |
+| --- | --- | --- |
+| Identities/facts, R01/R02/R05 | Merged [PR27](https://github.com/whoodes/namtab/pull/27); native contract and `native-contract` review data | Contract input only; no managed execution implementation |
+| Finite profile/state, R06–R11 | Merged [PR28](https://github.com/whoodes/namtab/pull/28), [PR31](https://github.com/whoodes/namtab/pull/31), [PR35](https://github.com/whoodes/namtab/pull/35); `px-dev-text-0`, complete inventory and `native-conformance` data | Private unadvertised profile; goldens project selected hidden state, not a complete snapshot; parser/input/reply runners NOT RUN |
+| Receipts/writer, R02/R03/R10/R11 | Merged [PR29](https://github.com/whoodes/namtab/pull/29), [PR34](https://github.com/whoodes/namtab/pull/34); native receipt/ownership rules | Proposed interleavings and finite review bounds; no executed writer model, protection UI or OS delivery |
+| Primitive/data provenance, R07/R09/R14 | Merged [PR30](https://github.com/whoodes/namtab/pull/30); exact source/data observations and proposed feature tuple | Source identity reviewed; feature/target/notice and owner implementation admission pending |
+| Public observations/input, R02/R10/R16 | [PR36](https://github.com/whoodes/namtab/pull/36), candidate `e63fbd11fbd7fb156f26d3f4291ba50459342164` | Separate experimental schema/shape artifacts; semantic admission, clients and transport not implemented; merge/owner approval pending |
+| Module/private IPC, R03/R12–R16 | [PR37](https://github.com/whoodes/namtab/pull/37), candidate `2c10af99a035c319a23ef7900c658888346e0382` | One proposed pure core/worker seam; synthetic boundary cases, not runtime enforcement; merge/owner approval pending |
+| Human/runtime/security, R04/R12/R13/R15/R17/R18 | Canonical frontend/UX/runtime/security owners and [V01–V18 strategy](#test-and-evidence-strategy) | Live PTY/OS isolation, renderer/IME/a11y, scheduler/resource and recovery qualification NOT RUN |
+
+The baseline with all seven merged N0 inputs is `7018ec330c5e1975340958fdd71c290d5e6eae23` (through PR35). The two candidate IDs above pin additional review inputs, not accepted main revisions. The packet commit/CI/review identity is recorded externally in its PR and fresh ignored command/review records to avoid a self-referential source hash. Any changed input requires a fresh packet disposition, checks and independent review; a link to “latest” cannot silently replace a reviewed revision.
+
+**Evidence meanings:** PASS means the named exact-revision static/build/schema/preservation check passed; FAIL means its actual nonzero result or substantiated violated criterion; BLOCKED means a stated prerequisite or owner decision is missing; NOT RUN means the experiment has not executed. A schema-valid stale-input or wrong-focus example can be expected to refuse semantically without that refusal being implemented. An independent review checks proposed oracles but is not exhaustive model exploration. Original X4/EA1 selection remains historical FAIL, with obsolete routine jobs removed and manual reproduction paths preserved. No expected-failure assertion certifies the owned engine.
+
+Before owner acceptance, require exact-candidate active-source and freshly refreshed governance PASS, two independent adversarial final-head reviews with no unresolved blockers, full local links/strict MkDocs/generated drift/fixture integrity, preserved original history/201 protected files/locks/native pin, and the following **unrecorded owner decisions**:
+
+- Named implementation/review responsibility, staffing/funding and an authorized timebox. Planning estimates are not assignments or commitments.
+- The exact bounded N1 feature/profile/data tuple, admission/receipt/runtime limits, and smaller hardware/workload/measurement tuple. N0 review constants are proposals, not simultaneous capacity or achieved SLOs.
+- Admission of the proposed dependency feature/target/notice closure and public/private version/decoder details. A source hash or successful schema build does not grant legal/security suitability. Project-license adoption remains a separate owner decision; no license is added here.
+
+Record the owner, external owner-review decision reference (for example, the explicit user approval transcript or review URL), exact input/packet revisions, accepted exclusions and disposition before marking NG0 accepted-for-design or closing issue16/N0. This does not require implementing the product decision API before NG0. A merge approval for a preparation PR is not that decision unless the user explicitly says so. Keep the umbrella and milestone open while these conditions remain.
+
+**Bounded N1 plan for later authorization:** implement one safe owned pure reducer for the finite profile and its independent live-state/key/query oracles; connect one bounded multiplexed worker through the reviewed private seam; add one managed pipe attempt and one local Bash/readline PTY tuple with declared TERM/config; exercise one task/artifact/receipt workflow plus zero-agent shell and takeover in minimal views in both clients. Observe–act–observe, explicit unknown/partial effects and one reply owner are required from the slice. Demonstrate live-owner attach/detach/reconnect; durable crash restore remains N4. N1 earns NG1 only with the [existing concrete gate](#ordered-milestones), original regression inputs in the owned profile, native fact advantage and recorded actual results. No paid model, broad editor/Unicode compatibility, unrestricted automation, custom font stack, stable plugin ABI or full G6 claim is prerequisite. Stop the slice if it needs output-derived authority, private frontend PTY access, hidden semantic state or silent input replay; narrow an unadvertised profile explicitly rather than masking a failure.
 
 ## Staffing, expertise and effort
 
