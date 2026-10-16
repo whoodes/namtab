@@ -102,6 +102,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut command_form: Option<String> = None;
     let mut review = false;
     let mut review_state = ReviewState::default();
+    let mut input_gate = ApplicationGate::default();
     let mut dirty = true;
     loop {
         if online && last_poll.elapsed() >= Duration::from_millis(75) {
@@ -112,6 +113,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 }
                 Err(_) => {
                     online = false;
+                    input_gate.pause("Observation transport lost; last delivery may be unknown.");
                     dirty = true;
                     notice="DISCONNECTED: last observed only; effects of last operation may be unknown. Ctrl-G c reconnects, never replays.".into();
                 }
@@ -136,10 +138,31 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         form: command_form.as_deref(),
                         review,
                         review_state: &review_state,
+                        input_pause: input_gate.reason.as_deref(),
                     },
                 )
             })?;
             dirty = false;
+        }
+        if input_gate.discard_queued {
+            // Drop the currently available suffix, including queued UI recovery
+            // gestures. Bound each pass under a flood; do not replay anything.
+            for _ in 0..256 {
+                if !event::poll(Duration::ZERO)? {
+                    break;
+                }
+                let _ = event::read()?;
+            }
+            prefix = None;
+            command_form = None;
+            if !event::poll(Duration::ZERO)? {
+                let rearmed = input_gate.queue_drained();
+                if rearmed {
+                    notice = "Input re-armed after fresh takeover; queued input discarded, nothing replayed.".into();
+                }
+                dirty = true;
+            }
+            continue;
         }
         if !event::poll(Duration::from_millis(15))? {
             continue;
@@ -175,6 +198,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                                 Op::Run { task, argv },
                                 &mut notice,
                                 &mut online,
+                                &mut input_gate,
                             );
                         } else {
                             notice = "Use a JSON array of literal argv strings; nothing executed."
@@ -218,11 +242,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     }
                     KeyCode::Char('n') => {
                         let name = format!("shell-{}",snapshot.sessions.len()+1);
-                        send(&mut client,Op::CreateSession { name },&mut notice,&mut online);
+                        send(&mut client,Op::CreateSession { name },&mut notice,&mut online,&mut input_gate);
                     }
                     KeyCode::Char('a') => {
-                        command_form = Some(r#"["/usr/bin/printf","hello from managed argv\n"]"#.into());
-                        notice = "Edit literal argv; Enter submits once, Esc cancels.".into();
+                        if input_gate.ready() {
+                            command_form = Some(r#"["/usr/bin/printf","hello from managed argv\n"]"#.into());
+                            notice = "Edit literal argv; Enter submits once, Esc cancels.".into();
+                        } else {
+                            notice = "Input paused: inspect and explicitly re-arm before opening argv entry.".into();
+                        }
                     }
                     KeyCode::Char('c') if !online => {
                         let resume = client.resume.clone();
@@ -235,16 +263,22 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     }
                     KeyCode::Char('t') | KeyCode::Char('l') | KeyCode::Char('r') => {
                         if let Some(s) = selected_session {
+                            if k.code == KeyCode::Char('t') {
+                                let endpoint = client.endpoint.clone();
+                                if let Some(fresh) = recover_application(&mut input_gate, &endpoint, &s.id, &mut notice, &mut online, |op| client.call(op)) {
+                                    snapshot = fresh;
+                                }
+                                continue;
+                            }
                             let op = match k.code {
-                                KeyCode::Char('t') => Op::TakeControl { session:s.id,generation:s.generation,force:true },
                                 KeyCode::Char('l') => Op::ReleaseControl { session:s.id,generation:s.generation },
                                 _ => { let (cols,rows)=terminal::size()?;Op::Resize {session:s.id,generation:s.generation,cols:cols.saturating_sub(2).clamp(2,160),rows:rows.saturating_sub(12).clamp(2,48)} }
                             };
-                            send(&mut client,op,&mut notice,&mut online);
+                            send(&mut client,op,&mut notice,&mut online,&mut input_gate);
                         }
                     }
                     KeyCode::Char('g') if k.modifiers == KeyModifiers::CONTROL => {
-                        if !review && let Some(s)=selected_session { application(&mut client,&s,Intent::Key {key:"g".into(),ctrl:true,alt:false,shift:false},&mut notice,&mut online); }
+                        if !review && let Some(s)=selected_session { application(&mut client,&s,Intent::Key {key:"g".into(),ctrl:true,alt:false,shift:false},&mut notice,&mut online,&mut input_gate); }
                     }
                     _ => notice = "Unknown UI prefix command; no application input sent.".into(),
                 }
@@ -258,10 +292,20 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 }
             } else if let Some(intent) = intent(k) {
                 if let Some(s) = snapshot.sessions.get(selected) {
-                    application(&mut client, s, intent, &mut notice, &mut online);
+                    application(
+                        &mut client,
+                        s,
+                        intent,
+                        &mut notice,
+                        &mut online,
+                        &mut input_gate,
+                    );
                 }
             } else {
                 notice = "Host key cannot be represented in the MK1 profile; no bytes sent.".into();
+                input_gate.pause(
+                    "A host application key was unsupported; the command may be incomplete.",
+                );
             }
         } else if let Event::Paste(text) = e {
             if review {
@@ -275,6 +319,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     Intent::Paste { text },
                     &mut notice,
                     &mut online,
+                    &mut input_gate,
                 );
             }
         } else if let Event::Resize(_, _) = e {
@@ -287,6 +332,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 }
                 Err(_) => {
                     online = false;
+                    input_gate.pause("Observation transport lost; last delivery may be unknown.");
                     notice = "Connection lost; no mutation is retried.".into();
                 }
             }
@@ -305,6 +351,44 @@ struct View<'a> {
     form: Option<&'a str>,
     review: bool,
     review_state: &'a ReviewState,
+    input_pause: Option<&'a str>,
+}
+
+#[derive(Default)]
+struct ApplicationGate {
+    reason: Option<String>,
+    discard_queued: bool,
+    rearm_pending: bool,
+}
+
+impl ApplicationGate {
+    fn ready(&self) -> bool {
+        self.reason.is_none() && !self.discard_queued
+    }
+
+    fn pause(&mut self, reason: impl Into<String>) {
+        self.reason = Some(reason.into());
+        self.discard_queued = true;
+        self.rearm_pending = false;
+    }
+
+    fn stage_rearm(&mut self) {
+        self.reason =
+            Some("Fresh ownership confirmed; discarding queued input before re-arm.".into());
+        self.discard_queued = true;
+        self.rearm_pending = true;
+    }
+
+    fn queue_drained(&mut self) -> bool {
+        self.discard_queued = false;
+        if self.rearm_pending {
+            self.rearm_pending = false;
+            self.reason = None;
+            true
+        } else {
+            false
+        }
+    }
 }
 
 fn replace_snapshot(current: &mut Snapshot, next: Snapshot) -> bool {
@@ -542,6 +626,7 @@ fn render(f: &mut ratatui::Frame<'_>, view: &View<'_>) {
         );
         let inside = areas[1].inner(ratatui::layout::Margin::new(1, 1));
         if view.online
+            && view.input_pause.is_none()
             && view.form.is_none()
             && s.owner.as_deref() == Some(view.endpoint)
             && s.screen.cursor_visible
@@ -578,7 +663,14 @@ fn render(f: &mut ratatui::Frame<'_>, view: &View<'_>) {
         ),
         areas[2],
     );
-    let bottom = view.form.map_or_else(||format!("{}\nCtrl-G: t takeover | l release | Tab session | n shell | a argv | b review | r resize | c reconnect | q detach",safe(view.notice)),|s|format!("Managed argv JSON (Enter runs; Esc cancels; max 8192 bytes):\n{}\n{}",safe(s),safe(view.notice)));
+    let bottom = if let Some(reason) = view.input_pause {
+        format!(
+            "INPUT PAUSED: command may be incomplete; inspect then Ctrl-G t to re-arm.\n{}\nCtrl-G q detaches; UI navigation stays available. No input is replayed.",
+            label(reason)
+        )
+    } else {
+        view.form.map_or_else(||format!("{}\nCtrl-G: t takeover | l release | Tab session | n shell | a argv | b review | r resize | c reconnect | q detach",safe(view.notice)),|s|format!("Managed argv JSON (Enter runs; Esc cancels; max 8192 bytes):\n{}\n{}",safe(s),safe(view.notice)))
+    };
     f.render_widget(Paragraph::new(bottom), areas[3]);
 }
 fn observe(c: &mut Client) -> io::Result<Snapshot> {
@@ -589,7 +681,13 @@ fn observe(c: &mut Client) -> io::Result<Snapshot> {
     r.snapshot
         .ok_or_else(|| io::Error::other("missing snapshot"))
 }
-fn send(c: &mut Client, op: Op, notice: &mut String, online: &mut bool) {
+fn send(
+    c: &mut Client,
+    op: Op,
+    notice: &mut String,
+    online: &mut bool,
+    gate: &mut ApplicationGate,
+) {
     if !*online {
         *notice = "Disconnected: input disabled; no queued retry.".into();
         return;
@@ -607,6 +705,7 @@ fn send(c: &mut Client, op: Op, notice: &mut String, online: &mut bool) {
         }
         Err(_) => {
             *online = false;
+            gate.pause("Request transport failed; last delivery may be unknown.");
             *notice = "Transport lost; last operation may have effects. No automatic retry.".into();
         }
     }
@@ -617,24 +716,167 @@ fn application(
     intent: Intent,
     notice: &mut String,
     online: &mut bool,
+    gate: &mut ApplicationGate,
 ) {
-    if s.owner.as_deref() != Some(&c.endpoint) {
-        *notice = "Read-only view: Ctrl-G t explicitly takes input.".into();
+    let endpoint = c.endpoint.clone();
+    application_with(gate, &endpoint, s, intent, notice, online, |op| c.call(op));
+}
+
+fn application_with(
+    gate: &mut ApplicationGate,
+    endpoint: &str,
+    s: &p::Session,
+    intent: Intent,
+    notice: &mut String,
+    online: &mut bool,
+    mut call: impl FnMut(Op) -> io::Result<p::Response>,
+) {
+    if !gate.ready() {
         return;
     }
-    send(
-        c,
-        Op::Input {
-            session: s.id.clone(),
-            generation: s.generation,
-            revision: s.screen.revision,
-            mode_revision: s.screen.mode_revision,
-            policy: InputPolicy::HumanLive,
-            intent,
-        },
-        notice,
-        online,
-    );
+    if !*online {
+        gate.pause("Transport is unavailable; last delivery may be unknown.");
+        return;
+    }
+    if s.owner.as_deref() != Some(endpoint) {
+        gate.pause("Application input was refused by local ownership; command may be incomplete.");
+        return;
+    }
+    let response = call(Op::Input {
+        session: s.id.clone(),
+        generation: s.generation,
+        revision: s.screen.revision,
+        mode_revision: s.screen.mode_revision,
+        policy: InputPolicy::HumanLive,
+        intent,
+    });
+    match response {
+        Ok(response)
+            if response.ok
+                && response.receipt.as_ref().is_some_and(|r| {
+                    r.endpoint == endpoint
+                        && r.id == response.id
+                        && r.operation == "input"
+                        && r.state == "applied"
+                        && r.delivered_bytes > 0
+                }) =>
+        {
+            *notice = "Applied: accepted by local PTY, not application completion.".into();
+        }
+        Ok(response) => {
+            let reason = response.error.unwrap_or_else(|| {
+                response.receipt.map_or_else(
+                    || "application receipt missing".into(),
+                    |r| {
+                        format!(
+                            "{}: {} ({} bytes delivered)",
+                            r.state, r.detail, r.delivered_bytes
+                        )
+                    },
+                )
+            });
+            gate.pause(format!(
+                "Application input refused or uncertain: {}",
+                label(&reason)
+            ));
+        }
+        Err(_) => {
+            *online = false;
+            gate.pause("Application transport failed; delivery extent may be unknown.");
+        }
+    }
+}
+
+fn recover_application(
+    gate: &mut ApplicationGate,
+    endpoint: &str,
+    session: &str,
+    notice: &mut String,
+    online: &mut bool,
+    mut call: impl FnMut(Op) -> io::Result<p::Response>,
+) -> Option<Snapshot> {
+    if gate.discard_queued || !*online {
+        *notice = "Recovery not ready: discard queued input and reconnect first.".into();
+        return None;
+    }
+    // A new UI gesture must follow the painted pause and a drained host queue.
+    // This is deliberate UI acknowledgement, not physical-human attestation:
+    // delayed bytes from trusted same-UID software cannot be distinguished.
+    let mut transport_failed = false;
+    let result = (|| -> Result<Snapshot, String> {
+        let mut request = |op| {
+            call(op).map_err(|_| {
+                transport_failed = true;
+                "Recovery transport failed; authority/effects may be unknown.".to_string()
+            })
+        };
+        let before = recovery_snapshot(request(Op::Observe {})?)?;
+        let current = before
+            .sessions
+            .iter()
+            .find(|s| s.id == session)
+            .ok_or("Selected session no longer exists.")?;
+        if current.process != "running" || !current.screen.input_known {
+            return Err("Selected session has no known live input state; cannot re-arm.".into());
+        }
+        let generation = current.generation;
+        let taken = request(Op::TakeControl {
+            session: session.into(),
+            generation,
+            force: true,
+        })?;
+        if !taken.ok
+            || !taken.receipt.as_ref().is_some_and(|r| {
+                r.endpoint == endpoint
+                    && r.id == taken.id
+                    && r.operation == "take_control"
+                    && r.state == "applied"
+            })
+        {
+            return Err(taken
+                .error
+                .unwrap_or_else(|| "Fresh takeover was not verified applied.".into()));
+        }
+        let after = recovery_snapshot(request(Op::Observe {})?)?;
+        let current = after
+            .sessions
+            .iter()
+            .find(|s| s.id == session)
+            .ok_or("Selected session disappeared after takeover.")?;
+        if current.owner.as_deref() != Some(endpoint)
+            || current.generation <= generation
+            || current.process != "running"
+            || !current.screen.input_known
+        {
+            return Err(
+                "Fresh owner/generation/input state was not confirmed; still paused.".into(),
+            );
+        }
+        Ok(after)
+    })();
+    match result {
+        Ok(snapshot) => {
+            gate.stage_rearm();
+            *notice = "Fresh takeover confirmed; queued input is discarded before re-arm.".into();
+            Some(snapshot)
+        }
+        Err(reason) => {
+            *online &= !transport_failed;
+            gate.pause(reason);
+            None
+        }
+    }
+}
+
+fn recovery_snapshot(response: p::Response) -> Result<Snapshot, String> {
+    if !response.ok {
+        return Err(response
+            .error
+            .unwrap_or_else(|| "Fresh observation refused.".into()));
+    }
+    response
+        .snapshot
+        .ok_or_else(|| "Fresh observation missing.".into())
 }
 fn intent(k: KeyEvent) -> Option<Intent> {
     if k.modifiers
@@ -742,6 +984,7 @@ mod tests {
                         form: None,
                         review: true,
                         review_state: state,
+                        input_pause: None,
                     },
                 )
             })
@@ -758,6 +1001,302 @@ mod tests {
     }
     fn key(code: KeyCode) -> KeyEvent {
         KeyEvent::new(code, KeyModifiers::NONE)
+    }
+    fn live_session() -> p::Session {
+        p::Session {
+            id: "session1".into(),
+            name: "synthetic shell".into(),
+            owner: Some("human".into()),
+            generation: 2,
+            process: "running".into(),
+            exit_code: None,
+            screen: p::Screen {
+                cols: 80,
+                rows: 24,
+                lines: vec![" ".repeat(80); 24],
+                cursor_col: 0,
+                cursor_row: 0,
+                cursor_visible: true,
+                revision: 8,
+                mode_revision: 4,
+                alternate: false,
+                input_known: true,
+                diagnostics: vec![],
+            },
+        }
+    }
+    fn response(state: &str, operation: &str, delivered: usize) -> p::Response {
+        p::Response {
+            id: 3,
+            ok: true,
+            error: None,
+            receipt: Some(p::Receipt {
+                endpoint: "human".into(),
+                id: 3,
+                operation: operation.into(),
+                state: state.into(),
+                detail: "synthetic delivery result".into(),
+                delivered_bytes: delivered,
+            }),
+            snapshot: None,
+            endpoint: None,
+            resume: None,
+            epoch: "synthetic-test".into(),
+        }
+    }
+    fn observed(session: p::Session) -> p::Response {
+        let mut snapshot = fixture();
+        snapshot.sessions = vec![session];
+        let mut result = response("applied", "observe", 0);
+        result.receipt = None;
+        result.snapshot = Some(snapshot);
+        result
+    }
+    fn dispatch_text(
+        gate: &mut ApplicationGate,
+        session: &p::Session,
+        text: &str,
+        online: &mut bool,
+        call: impl FnMut(Op) -> io::Result<p::Response>,
+    ) {
+        application_with(
+            gate,
+            "human",
+            session,
+            Intent::Text { text: text.into() },
+            &mut String::new(),
+            online,
+            call,
+        );
+    }
+    #[test]
+    fn refused_first_key_never_routes_command_suffix_or_paste() {
+        let session = live_session();
+        for (state, delivered) in [
+            ("rejected", 0),
+            ("partial", 1),
+            ("unknown", 0),
+            ("applied", 0),
+        ] {
+            let mut gate = ApplicationGate::default();
+            let mut online = true;
+            let mut routed = Vec::new();
+            let mut first = response(state, "input", delivered);
+            if state == "rejected" {
+                first.ok = false;
+                first.error = Some("mode_revision_stale".into());
+            }
+            dispatch_text(&mut gate, &session, "e", &mut online, |op| {
+                routed.push(op);
+                Ok(first.clone())
+            });
+            // Clearing a host queue is not approval to resume application input.
+            assert!(!gate.queue_drained());
+            for suffix in ["x", "i", "t", "new command"] {
+                dispatch_text(&mut gate, &session, suffix, &mut online, |op| {
+                    routed.push(op);
+                    Ok(response("applied", "input", 1))
+                });
+            }
+            application_with(
+                &mut gate,
+                "human",
+                &session,
+                Intent::Key {
+                    key: "Enter".into(),
+                    ctrl: false,
+                    alt: false,
+                    shift: false,
+                },
+                &mut String::new(),
+                &mut online,
+                |op| {
+                    routed.push(op);
+                    Ok(response("applied", "input", 1))
+                },
+            );
+            application_with(
+                &mut gate,
+                "human",
+                &session,
+                Intent::Paste {
+                    text: "SHOULD_NOT_EXECUTE\n".into(),
+                },
+                &mut String::new(),
+                &mut online,
+                |op| {
+                    routed.push(op);
+                    Ok(response("applied", "input", 1))
+                },
+            );
+            assert_eq!(routed.len(), 1, "suffix escaped after {state}");
+            assert!(!gate.ready());
+            assert!(
+                matches!(&routed[0], Op::Input { intent: Intent::Text { text }, .. } if text == "e")
+            );
+        }
+    }
+    #[test]
+    fn transport_uncertainty_latches_across_other_sessions_and_observations() {
+        let mut gate = ApplicationGate::default();
+        let mut online = true;
+        let mut routed = Vec::new();
+        dispatch_text(&mut gate, &live_session(), "e", &mut online, |op| {
+            routed.push(op);
+            Err(io::Error::new(
+                io::ErrorKind::BrokenPipe,
+                "synthetic failure",
+            ))
+        });
+        assert!(!online);
+        assert!(!gate.queue_drained());
+        let mut next = fixture();
+        assert!(!replace_snapshot(&mut next, fixture()));
+        let mut other = live_session();
+        other.id = "session2".into();
+        online = true; // A successful transport resume alone does not re-arm.
+        dispatch_text(&mut gate, &other, "xit\r", &mut online, |op| {
+            routed.push(op);
+            Ok(response("applied", "input", 4))
+        });
+        assert_eq!(routed.len(), 1);
+        assert!(!gate.ready());
+    }
+    #[test]
+    fn queued_recovery_is_discarded_and_fresh_takeover_requires_verified_owner() {
+        let mut gate = ApplicationGate::default();
+        gate.pause("synthetic stale input");
+        let mut online = true;
+        let mut ops = Vec::new();
+        assert!(
+            recover_application(
+                &mut gate,
+                "human",
+                "session1",
+                &mut String::new(),
+                &mut online,
+                |op| {
+                    ops.push(op);
+                    Ok(observed(live_session()))
+                }
+            )
+            .is_none()
+        );
+        assert!(ops.is_empty(), "queued recovery reached the broker");
+        assert!(!gate.queue_drained());
+        let before = live_session();
+        let mut after = before.clone();
+        after.generation = 3;
+        let mut replies = [
+            observed(before.clone()),
+            response("applied", "take_control", 0),
+            observed(after.clone()),
+        ]
+        .into_iter();
+        let snapshot = recover_application(
+            &mut gate,
+            "human",
+            "session1",
+            &mut String::new(),
+            &mut online,
+            |op| {
+                ops.push(op);
+                Ok(replies.next().unwrap())
+            },
+        )
+        .unwrap();
+        assert!(matches!(
+            &ops[..],
+            [
+                Op::Observe {},
+                Op::TakeControl {
+                    generation: 2,
+                    force: true,
+                    ..
+                },
+                Op::Observe {}
+            ]
+        ));
+        assert!(
+            !gate.ready(),
+            "takeover must discard keys queued while it was pending"
+        );
+        dispatch_text(&mut gate, &after, "old suffix", &mut online, |_| {
+            panic!("queued suffix dispatched during re-arm")
+        });
+        assert!(gate.queue_drained());
+        assert!(gate.ready());
+        let mut fresh = Vec::new();
+        dispatch_text(
+            &mut gate,
+            &snapshot.sessions[0],
+            "new intent",
+            &mut online,
+            |op| {
+                fresh.push(op);
+                Ok(response("applied", "input", 10))
+            },
+        );
+        assert_eq!(fresh.len(), 1);
+        // A new refusal must latch again; a stale or foreign confirmation never clears it.
+        gate.pause("another refusal");
+        gate.queue_drained();
+        after.owner = Some("agent".into());
+        let mut replies = [
+            observed(before),
+            response("applied", "take_control", 0),
+            observed(after),
+        ]
+        .into_iter();
+        assert!(
+            recover_application(
+                &mut gate,
+                "human",
+                "session1",
+                &mut String::new(),
+                &mut online,
+                |_| Ok(replies.next().unwrap())
+            )
+            .is_none()
+        );
+        gate.queue_drained();
+        assert!(!gate.ready());
+    }
+    #[test]
+    fn persistent_pause_is_visible_even_when_other_notices_change() {
+        let snapshot = fixture();
+        let state = ReviewState::default();
+        let mut terminal = Terminal::new(ratatui::backend::TestBackend::new(120, 38)).unwrap();
+        terminal
+            .draw(|f| {
+                render(
+                    f,
+                    &View {
+                        snapshot: &snapshot,
+                        endpoint: "human",
+                        selected: 0,
+                        online: true,
+                        notice: "New unrelated ready notice",
+                        form: None,
+                        review: true,
+                        review_state: &state,
+                        input_pause: Some("mode_revision_stale"),
+                    },
+                )
+            })
+            .unwrap();
+        let buffer = terminal.backend().buffer();
+        let text = (0..38)
+            .map(|row| {
+                (0..120)
+                    .map(|col| buffer[(col, row)].symbol())
+                    .collect::<String>()
+            })
+            .collect::<Vec<_>>()
+            .join("\n");
+        assert!(text.contains("INPUT PAUSED: command may be incomplete"));
+        assert!(text.contains("inspect then Ctrl-G t"));
+        assert!(text.contains("mode_revision_stale"));
     }
     #[test]
     fn controls_and_consumed_shift_stay_semantic() {
