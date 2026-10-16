@@ -12,5 +12,7 @@ workspace = true
 project-x-domain = { path = "../domain" }
 project-x-protocol = { path = "../protocol" }
 project-x-platform = { path = "../platform" }
+project-x-terminal = { path = "../terminal" }
+serde.workspace = true
 serde_json.workspace = true
 sha2.workspace = true
