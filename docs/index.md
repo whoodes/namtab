@@ -54,7 +54,7 @@ These identifiers are the common vocabulary for all documents. They are requirem
 | I2 | Tasks, attempts, sessions, processes, artifacts, and claims have distinct identities and lifecycles. A pane disappearing does not complete a task. |
 | I3 | Every claimed validation names its recorded input revision and execution context, explicitly marking unknown or mutable inputs instead of inventing exact binding. Evidence availability, trust, completeness, and freshness are independent properties. |
 | I4 | Terminal bytes, shell markers, agent messages, and repository instructions are data. None creates authority or proves success. |
-| I5 | One broker-owned input lease governs Project X writers to a session. This is not protection against arbitrary same-user host processes. |
+| I5 | One broker-owned input lease governs namtab writers to a session. This is not protection against arbitrary same-user host processes. |
 | I6 | Approval binds to an explicit action and its material context. Material context changes invalidate it; unknown delivery or outcome is never silently retried. |
 | I7 | Worktrees separate edits; runtime boundaries constrain authority. Neither the other nor a PTY constitutes a security sandbox. |
 | I8 | UI, logging, plugins, and slow subscribers cannot consume unbounded resources. Lost observation is visible, never silently presented as complete. |

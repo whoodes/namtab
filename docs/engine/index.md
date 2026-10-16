@@ -2,7 +2,7 @@
 
 [Design index](../index.md) · [Ownership decision](../adr/0004-owned-agent-native-engine.md) · [Source ledger](research.md) · [Delivery and traceability](delivery-and-validation.md)
 
-Decision date and research retrieval date: **2026-10-15**. **Chosen by the owner:** build Project X's agent-native engine. **Accepted for design:** the boundaries below. **Pending implementation and measurement:** every new engine capability. This campaign changes the design, not executable code, dependencies, licenses or the historical gate results.
+Decision date and research retrieval date: **2026-10-15**. **Chosen by the owner:** build namtab's agent-native engine. **Accepted for design:** the boundaries below. **Pending implementation and measurement:** every new engine capability. This campaign changes the design, not executable code, dependencies, licenses or the historical gate results.
 
 ## Executive decision
 

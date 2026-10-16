@@ -85,7 +85,7 @@ One diagnostic rerun may classify an infrastructure/timing failure, but retain t
 | TUI over SSH to installed backend host | Remote outer latency, terminal capability loss, detach/service/logout semantics | Local latency budget or transparent remote process ownership after disconnect |
 | macOS/Windows future native hosts | Client/backend compile smoke early; later native PTY/ConPTY, process, credential, assistive, installer certification | POSIX parity from compilation; Linux container enforcement without explicit VM |
 
-Record the initial outer-terminal versions during N2/N3, selecting at least a common Linux desktop emulator, Project X Electron, and tmux nested inside a certified emulator. SSH is a transport overlay; Linux virtual console/basic-color behavior has a separate reduced profile. Do not advertise a named emulator/version until tested. This avoids fabricating a support list from project popularity.
+Record the initial outer-terminal versions during N2/N3, selecting at least a common Linux desktop emulator, namtab Electron, and tmux nested inside a certified emulator. SSH is a transport overlay; Linux virtual console/basic-color behavior has a separate reduced profile. Do not advertise a named emulator/version until tested. This avoids fabricating a support list from project popularity.
 
 Playwright's Electron automation is explicitly experimental. Browser accessibility scans identify some violations, not complete accessibility: keyboard, reading order, actual screen readers and critical human tasks still require manual evidence. [Electron automation](https://playwright.dev/docs/api/class-electron), [accessibility limitations](https://playwright.dev/docs/accessibility-testing)
 

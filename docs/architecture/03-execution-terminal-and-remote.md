@@ -84,7 +84,7 @@ Agent adapters expose task correlation, structured tool requests, cost reports, 
 
 | Mode | Location of execution truth | Disconnect/recovery contract |
 | --- | --- | --- |
-| Host TUI through SSH to installed Project X | Backend/keeper local to that remote host; SSH carries the outer TUI | Initial explicit deployment pattern; no remote install implied; disconnect/logout/persistence boundaries remain |
+| Host TUI through SSH to installed namtab | Backend/keeper local to that remote host; SSH carries the outer TUI | Initial explicit deployment pattern; no remote install implied; disconnect/logout/persistence boundaries remain |
 | Local owned runner | Local runner and host process observations | GUI restart can reconnect; host reboot cannot preserve processes |
 | SSH to an ordinary shell | Remote shell; local runner observes SSH transport | Connection loss leaves remote outcome uncertain; no claimed durable remote process ownership |
 | SSH with existing tmux | Remote tmux plus adapter | Persistence depends on remote tmux; output completeness and other clients must be disclosed |
