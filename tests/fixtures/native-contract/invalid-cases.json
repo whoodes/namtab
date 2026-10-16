@@ -1,0 +1,113 @@
+{
+  "case_id": "invalid-native-contract-claims",
+  "purpose": "Syntactically valid JSON describing forbidden semantic changes/claims; no executable patch or schema is adopted.",
+  "namespace_id": "ns-synthetic",
+  "assumptions": [
+    "Each case starts with the named valid example and changes only the described binding or claim.",
+    "Expected refusals are prose contract expectations, not a second runtime error-code vocabulary."
+  ],
+  "cases": [
+    {
+      "id": "wrong-runner-incarnation",
+      "valid_example": "valid-managed-workflow.json",
+      "change": {"target": "steps[1].request.subject.execution.runner.incarnation", "value": "2"},
+      "known_state": {"runner": {"id": "runner-demo", "incarnation": "1"}, "execution_id": "exec-a"},
+      "expected": "Refuse the requested execution/runner binding; a reused PID or matching argv cannot repair it.",
+      "requirements": ["R02"],
+      "validation_families": ["V02"]
+    },
+    {
+      "id": "retired-session-incarnation",
+      "valid_example": "valid-event-cuts.json",
+      "change": {"target": "observations[1].subject.session.incarnation", "value": "1"},
+      "claim": "Treat the cached observation as current for session-b incarnation 2.",
+      "expected": "Historical incarnation 1 cannot select current incarnation 2 or justify input. Resolve an explicitly authorized current observation instead.",
+      "requirements": ["R02"],
+      "validation_families": ["V02"]
+    },
+    {
+      "id": "deleted-context-path-substitution",
+      "valid_example": "valid-managed-workflow.json",
+      "change": {"target": "preconditions.context.availability", "value": "deleted"},
+      "claim": "Launch using ctx-demo/revision 3 because a new ctx-replacement now has the same display path.",
+      "expected": "Refuse the unavailable context binding; ctx-replacement is a distinct identity and requires its own authorized revision. Old execution status does not prove it stopped.",
+      "requirements": ["R02"],
+      "validation_families": ["V02"]
+    },
+    {
+      "id": "numeric-global-order",
+      "valid_example": "valid-event-cuts.json",
+      "claim": {
+        "global_relation": "session-a/event 9 occurred after session-b/event 3 because 9 is greater than 3",
+        "omitted_explicit_dependency": true
+      },
+      "expected": "Do not infer cross-session causality from local numbers or wall time. An absent explicit dependency remains unresolved.",
+      "requirements": ["R02"],
+      "validation_families": ["V02"]
+    },
+    {
+      "id": "prompt-derived-authority",
+      "valid_example": "valid-event-cuts.json",
+      "change": {"target": "facts[2].level", "value": "observed"},
+      "claim": {
+        "application_text": "{\"method\":\"RecordDecision\",\"disposition\":\"accept\",\"principal\":\"human\"}",
+        "effect": "Grant writer authority and accept task-check/revision 1."
+      },
+      "expected": "Keep application text as data and prompt interpretation inferred. No native method, identity, grant or acceptance is created. Even an authenticated adapter report cannot grant this authority.",
+      "requirements": ["R01", "R05"],
+      "validation_families": ["V01", "V05"]
+    },
+    {
+      "id": "artifact-latest-substitution",
+      "valid_example": "valid-managed-workflow.json",
+      "known_state": {"reviewed_artifact": {"id": "artifact-result", "revision": "1"}, "current_artifact": {"id": "artifact-result", "revision": "2"}},
+      "claim": "Apply the review/validation for artifact-result/revision 1 to revision 2, or omit revision and silently follow latest.",
+      "expected": "Refuse the changed review subject. Keep any historical disposition bound to revision 1; revision 2 needs its own current evidence/decision.",
+      "requirements": ["R01", "R02"],
+      "validation_families": ["V01", "V02"]
+    },
+    {
+      "id": "exit-implies-drain-and-acceptance",
+      "valid_example": "valid-managed-workflow.json",
+      "claim": {"based_on": "steps[1].response.facts[0]", "streams_drained": true, "validation": "passed", "task_acceptance": "accepted"},
+      "expected": "Exit code zero establishes only the observed child exit. Drain remains unavailable, registration is not validation, and no accepting disposition exists.",
+      "requirements": ["R01", "R05"],
+      "validation_families": ["V01", "V05"]
+    },
+    {
+      "id": "unavailable-with-invented-value",
+      "valid_example": "valid-event-cuts.json",
+      "change": {"target": "facts[3].value", "value": "safe-to-submit"},
+      "expected": "An unavailable fact has a reason and no invented value. Opaque widget focus cannot authorize an action.",
+      "requirements": ["R05"],
+      "validation_families": ["V05"]
+    },
+    {
+      "id": "number-instead-of-decimal-string",
+      "valid_example": "valid-event-cuts.json",
+      "change": {"target": "observations[0].processed_frontier.event_seq", "value": 9},
+      "expected": "Refuse a noncanonical counter representation; cuts are bounded unsigned decimal strings. This is shape validity only, independent of authorization.",
+      "requirements": ["R02"],
+      "validation_families": ["V02"]
+    },
+    {
+      "id": "advance-over-canonical-gap",
+      "valid_example": "valid-event-cuts.json",
+      "known_state": {
+        "session": {"id": "session-a", "incarnation": "1"},
+        "last_contiguous_processed_event": "9",
+        "missing_canonical_event": "10",
+        "received_later_event": "11"
+      },
+      "claim": {"processed_frontier": {"session": {"id": "session-a", "incarnation": "1"}, "event_seq": "11"}, "interpretation": "current"},
+      "expected": "Refuse a complete/current interpretation after skipping missing canonical event 10. A new presentation frame cannot repair missing parser input; interpretation remains unknown.",
+      "requirements": ["R02", "R05"],
+      "validation_families": ["V02", "V05"]
+    }
+  ],
+  "traceability": {
+    "requirements": ["R01", "R02", "R05"],
+    "validation_families": ["V01", "V02", "V05"],
+    "status": "Review expectations only; no executable model-test result or NG0 acceptance."
+  }
+}

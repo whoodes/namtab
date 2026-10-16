@@ -1,0 +1,180 @@
+{
+  "case_id": "valid-managed-workflow",
+  "purpose": "N0-01 review data only; illustrative spellings, not a runtime or wire schema.",
+  "namespace_id": "ns-synthetic",
+  "assumptions": [
+    "All identifiers, arguments, output and artifact bytes are hand-authored synthetic data; nothing is executed.",
+    "An authenticated service connection already authorizes the named context, bounded memory observations, artifact retention and the review operations.",
+    "request_ref stands for the N0-02 request-identity seam; no deduplication, expiry or receipt-retention algorithm is selected here.",
+    "The host-approved runtime is not claimed to seal inputs. The initial snapshot does not prove exactly which source bytes the process consumed.",
+    "The event cuts refer to already contiguous authorized execution history. No interactive session or terminal prompt is needed.",
+    "object-result/revision 1 is an already authorized immutable artifact object. Included synthetic_bytes describe its content for review, not an adopted upload API."
+  ],
+  "preconditions": {
+    "authority_epoch": "7",
+    "context": {
+      "id": "ctx-demo",
+      "revision": "3",
+      "availability": "available",
+      "source_manifest": {"id": "source-demo", "revision": "1", "availability": "available"},
+      "runtime_policy": {"id": "runtime-policy-demo", "revision": "1"}
+    },
+    "task": {"id": "task-check", "revision": "1"},
+    "attempt": {
+      "id": "attempt-a",
+      "revision": "1",
+      "task": {"id": "task-check", "revision": "1"},
+      "context": {"id": "ctx-demo", "revision": "3"},
+      "dependency_revisions": []
+    }
+  },
+  "steps": [
+    {
+      "request": {
+        "request_ref": "request-launch-1",
+        "method": "RunProcess",
+        "expected_authority_epoch": "7",
+        "task": {"id": "task-check", "revision": "1"},
+        "attempt": {"id": "attempt-a", "revision": "1"},
+        "context": {"id": "ctx-demo", "revision": "3"},
+        "process": {
+          "argv": ["fixture-check", "--format", "json"],
+          "cwd_policy": "context-root",
+          "env_policy": "declared-nonsecret-fixture",
+          "runtime_profile": "host-approved",
+          "io": "pipes",
+          "capture_policy": "memory-only-bounded"
+        }
+      },
+      "admitted": {
+        "operation": {"id": "op-launch"},
+        "execution": {"id": "exec-a", "runner": {"id": "runner-demo", "incarnation": "1"}},
+        "meaning": "Identity allocated; this admission does not assert launch, exit, drain or acceptance."
+      }
+    },
+    {
+      "request": {
+        "method": "Observe",
+        "subject": {"execution": {"id": "exec-a", "runner": {"id": "runner-demo", "incarnation": "1"}}},
+        "projection": {"kind": "process-and-stream-status", "max_facts": "4"},
+        "selection": "current"
+      },
+      "response": {
+        "observation": {"id": "obs-exec-a"},
+        "subject": {"execution": {"id": "exec-a", "runner": {"id": "runner-demo", "incarnation": "1"}}},
+        "processed_frontier": {"execution": {"id": "exec-a", "runner": {"id": "runner-demo", "incarnation": "1"}}, "event_seq": "4"},
+        "completeness": "complete-for-requested-cut",
+        "capture_policy": "memory-only-bounded",
+        "projection": {"kind": "process-and-stream-status", "max_facts": "4"},
+        "gaps": {"canonical": [], "capture": []},
+        "availability": "available",
+        "facts": [
+          {
+            "kind": "child_exit",
+            "level": "observed",
+            "producer": {"kind": "runner", "id": "runner-demo", "incarnation": "1", "schema": "fixture-runner-facts/0.x"},
+            "source": {"execution": {"id": "exec-a", "runner": {"id": "runner-demo", "incarnation": "1"}}, "event_seq": "3"},
+            "value": {"exit_code": 0},
+            "subject": {"execution": {"id": "exec-a", "runner": {"id": "runner-demo", "incarnation": "1"}}}
+          },
+          {
+            "kind": "bytes_read",
+            "level": "observed",
+            "producer": {"kind": "runner", "id": "runner-demo", "incarnation": "1", "schema": "fixture-runner-facts/0.x"},
+            "source": {"execution": {"id": "exec-a", "runner": {"id": "runner-demo", "incarnation": "1"}}, "event_seq": "2"},
+            "value": {"stream": "stdout", "stream_epoch": "1", "start": "0", "end": "13", "representation": "raw-bytes", "capture_policy": "memory-only-bounded", "gaps": [], "availability": "available"},
+            "subject": {"execution": {"id": "exec-a", "runner": {"id": "runner-demo", "incarnation": "1"}}}
+          },
+          {
+            "kind": "streams_drained",
+            "level": "unavailable",
+            "producer": {"kind": "service", "id": "service-demo", "incarnation": "1"},
+            "last_known_reference": {"execution": {"id": "exec-a", "runner": {"id": "runner-demo", "incarnation": "1"}}, "event_seq": "4"},
+            "reason": "Stream ends have not both been observed; descendants may still hold output handles."
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "request_ref": "request-artifact-1",
+        "method": "RegisterArtifact",
+        "expected_authority_epoch": "7",
+        "context": {"id": "ctx-demo", "revision": "3"},
+        "producer": {
+          "attempt": {"id": "attempt-a", "revision": "1"},
+          "execution": {"id": "exec-a", "runner": {"id": "runner-demo", "incarnation": "1"}}
+        },
+        "immutable_object": {
+          "id": "object-result",
+          "revision": "1",
+          "representation": "utf8",
+          "synthetic_bytes": "fixture result\n",
+          "sha256": "ec67402dd2288479c96640932588ca304a98a22095cc17c8e89d17a0e74451a2",
+          "retention_policy": "explicit-authorized-artifact-fixture"
+        },
+        "source_binding": {
+          "level": "initial_snapshot",
+          "limits": ["Writes during execution were not excluded."],
+          "source_manifest": {"id": "source-demo", "revision": "1"}
+        },
+        "evidence_refs": [
+          {
+            "observation": {"id": "obs-exec-a"},
+            "execution": {"id": "exec-a", "runner": {"id": "runner-demo", "incarnation": "1"}},
+            "stream": "stdout",
+            "stream_epoch": "1",
+            "start": "0",
+            "end": "13",
+            "representation": "raw-bytes",
+            "capture_policy": "memory-only-bounded",
+            "gaps": [],
+            "availability": "available",
+            "completeness": "complete-for-range"
+          }
+        ]
+      },
+      "recorded": {
+        "artifact": {"id": "artifact-result", "revision": "1"},
+        "meaning": "Authorized immutable artifact identity and provenance; no validation pass or task acceptance.",
+        "operation": {"id": "op-artifact"}
+      }
+    },
+    {
+      "request": {
+        "request_ref": "request-review-1",
+        "method": "RequestDecision",
+        "expected_authority_epoch": "7",
+        "task": {"id": "task-check", "revision": "1"},
+        "artifacts": [{"id": "artifact-result", "revision": "1"}],
+        "validations": [],
+        "question": "Review this exact artifact; exact consumed-source validation is unavailable."
+      },
+      "recorded": {"decision_request": {"id": "review-a", "revision": "1"}, "state": "pending", "operation": {"id": "op-review"}}
+    },
+    {
+      "request": {
+        "request_ref": "request-disposition-1",
+        "method": "RecordDecision",
+        "expected_authority_epoch": "7",
+        "expected_decision_request": {"id": "review-a", "revision": "1"},
+        "task": {"id": "task-check", "revision": "1"},
+        "artifacts": [{"id": "artifact-result", "revision": "1"}],
+        "disposition": "defer",
+        "reason": "Obtain the required exact-input validation before accepting this task revision."
+      },
+      "recorded": {
+        "decision": {"id": "decision-defer"},
+        "authenticated_actor_binding": "service-recorded connection identity; no caller-supplied principal authority",
+        "disposition": "defer",
+        "task_acceptance": "unresolved",
+        "operation": {"id": "op-disposition"}
+      }
+    }
+  ],
+  "traceability": {
+    "requirements": ["R01", "R02"],
+    "validation_families": ["V01", "V02"],
+    "status": "Contract example for review; future runtime assertions remain unimplemented."
+  }
+}

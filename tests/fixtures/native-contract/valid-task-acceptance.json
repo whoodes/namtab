@@ -1,0 +1,97 @@
+{
+  "case_id": "valid-task-acceptance",
+  "purpose": "N0-01 subject-versus-lifecycle review data only; field spellings are illustrative, no wire/runtime adoption.",
+  "namespace_id": "ns-synthetic",
+  "assumptions": [
+    "All records are synthetic and retained under authorized metadata policy.",
+    "This separate task requires an authorized human review only; it does not claim a check passed, relax another task requirement, or approve the deferred managed-workflow task.",
+    "The connection authenticates the authorized reviewer. Task, lifecycle and pending review compare-and-set bindings hold before the transition; receipt atomicity remains N0-02 work."
+  ],
+  "before": {
+    "task": {
+      "id": "task-review-only",
+      "revision": "1",
+      "acceptance_requirement": "authorized human acceptance of this exact definition"
+    },
+    "lifecycle": {
+      "revision": "12",
+      "task_revision": "1",
+      "state": "awaiting-review"
+    },
+    "pending_review": {
+      "id": "review-task-only",
+      "revision": "1",
+      "task": {
+        "id": "task-review-only",
+        "revision": "1"
+      }
+    }
+  },
+  "disposition": {
+    "kind": "accept",
+    "expected_lifecycle_revision": "12",
+    "expected_review": {
+      "id": "review-task-only",
+      "revision": "1"
+    },
+    "task": {
+      "id": "task-review-only",
+      "revision": "1"
+    },
+    "decision": {
+      "id": "decision-accept-task-only"
+    }
+  },
+  "after": {
+    "task": {
+      "id": "task-review-only",
+      "revision": "1"
+    },
+    "lifecycle": {
+      "revision": "13",
+      "task_revision": "1",
+      "state": "accepted"
+    },
+    "acceptance": {
+      "decision": {
+        "id": "decision-accept-task-only"
+      },
+      "subject": {
+        "task": {
+          "id": "task-review-only",
+          "revision": "1"
+        }
+      },
+      "current_for_selected_definition": true
+    }
+  },
+  "later_definition_edit": {
+    "task": {
+      "id": "task-review-only",
+      "revision": "2"
+    },
+    "lifecycle": {
+      "revision": "14",
+      "task_revision": "2",
+      "state": "draft"
+    },
+    "historical_acceptance_subject": {
+      "task": {
+        "id": "task-review-only",
+        "revision": "1"
+      }
+    },
+    "current_acceptance": "unresolved; a new current review is required"
+  },
+  "traceability": {
+    "requirements": [
+      "R02",
+      "R05"
+    ],
+    "validation_families": [
+      "V02",
+      "V05"
+    ],
+    "status": "Contract example only; no live task or accepted NG0 gate."
+  }
+}
