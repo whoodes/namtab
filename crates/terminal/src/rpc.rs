@@ -39,6 +39,10 @@ pub enum Operation {
         cols: u16,
         rows: u16,
     },
+    /// Close the observed output stream without asserting process exit.
+    FinishOutput {
+        session: String,
+    },
     /// Drop only this reducer. This never terminates an application/process.
     Close {
         session: String,
@@ -53,7 +57,8 @@ impl Operation {
             | Self::Frame { session }
             | Self::Encode { session, .. }
             | Self::Resize { session, .. }
-            | Self::Close { session } => session,
+            | Self::Close { session }
+            | Self::FinishOutput { session } => session,
         }
     }
 }

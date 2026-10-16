@@ -398,3 +398,22 @@ fn deterministic_hostile_byte_corpus_is_partition_invariant_and_stays_bounded() 
         );
     }
 }
+
+#[test]
+fn disabled_focus_is_an_explicit_refusal_without_a_write() {
+    let mut engine = Engine::new(80, 24).unwrap();
+    assert_eq!(
+        engine.encode(&Input::Focus { focused: true }),
+        Err(InputError::FocusNotEnabled)
+    );
+    feed(&mut engine, b"\x1b[?1004h");
+    assert_eq!(
+        engine.encode(&Input::Focus { focused: false }).unwrap(),
+        b"\x1b[O"
+    );
+    feed(&mut engine, b"\x1b[?1004l");
+    assert_eq!(
+        engine.encode(&Input::Focus { focused: false }),
+        Err(InputError::FocusNotEnabled)
+    );
+}

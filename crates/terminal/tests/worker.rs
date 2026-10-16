@@ -225,3 +225,68 @@ fn repeated_private_request_id_is_never_reexecuted() {
     let mut line = String::new();
     assert_eq!(worker.output.read_line(&mut line).unwrap(), 0);
 }
+
+#[test]
+fn real_worker_finishes_partial_output_without_claiming_process_exit() {
+    let mut worker = Worker::new();
+    worker
+        .call(
+            1,
+            Operation::New {
+                session: "eof".into(),
+                cols: 80,
+                rows: 24,
+            },
+        )
+        .result
+        .unwrap();
+    worker
+        .call(
+            2,
+            Operation::Feed {
+                session: "eof".into(),
+                bytes: vec![0xc3],
+            },
+        )
+        .result
+        .unwrap();
+    match worker
+        .call(
+            3,
+            Operation::FinishOutput {
+                session: "eof".into(),
+            },
+        )
+        .result
+        .unwrap()
+    {
+        Reply::Frame(frame) => {
+            assert!(frame.closed);
+            assert_eq!(frame.diagnostics.invalid_utf8, 1);
+        }
+        other => panic!("unexpected {other:?}"),
+    }
+    assert_eq!(
+        worker
+            .call(
+                4,
+                Operation::Encode {
+                    session: "eof".into(),
+                    input: Input::Text { text: "x".into() }
+                }
+            )
+            .result,
+        Err(WorkerError::Input(project_x_terminal::InputError::Closed))
+    );
+    assert!(matches!(
+        worker
+            .call(
+                5,
+                Operation::FinishOutput {
+                    session: "eof".into()
+                }
+            )
+            .result,
+        Ok(Reply::Frame(_))
+    ));
+}
