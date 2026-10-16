@@ -1,0 +1,1007 @@
+{
+  "artifact_kind": "source-provenance-review-data",
+  "record_version": 1,
+  "issue": "NAMTAB-N0-08 #14",
+  "recorded_on": "2026-10-16",
+  "base_commit": "7f0a09608e91b1500f97ad408fc24ca50fd91f99",
+  "scope": "Read-only archive/metadata/data review for proposed px-dev-text-0 primitives. No install, downloaded-code execution, dependency adoption, SBOM or legal/security certification. Metadata is a dated observation; content hashes identify retrieved bytes, not signatures.",
+  "raw_retrieval_evidence": ".artifacts/provenance-20261016T164600Z",
+  "reproduction": [
+    "GET each exact primary-source URL as bytes; compare byte length and SHA-256, retaining any failed or changed response as new dated evidence. Do not hash a browser-rendered excerpt.",
+    "For crates, GET archive_url (or use the preexisting cache), compare archive_sha256 to the exact Cargo.lock entry and current crates.io metadata checksum, then read the named tar members without running code. Notices and source members use SHA-256 over uncompressed member bytes.",
+    "Mutable metadata/license/landing responses can change. A mismatch requires a new review record; never overwrite historical hashes or infer agreement from HTTP 200.",
+    "This record inventories the locked graph around selected candidates, not a resolved feature/target build graph. Dev dependencies and optional features outside the selection need separate review if enabled."
+  ],
+  "locks_unchanged_at_review": {
+    "Cargo.lock": "7156d2082457d9ebbc5da80a943a7b08af3f0a14b3d87a665a540042195bb52d",
+    "pnpm-lock.yaml": "448688b057b8276aa826d0d76aa5b1d73e088f8131ff20128701081bdb149ba4",
+    "requirements-docs.txt": "e9f6f2bdb4fa8a6d9be9bb9b5d571e5e583e65338b1de9a15c44907503a0d70f"
+  },
+  "primary_sources": [
+    {
+      "id": "ucd-readme",
+      "url": "https://www.unicode.org/Public/18.0.0/ucd/ReadMe.txt",
+      "retrieved_at": "2026-10-16T16:46:12.476711+00:00",
+      "status": 200,
+      "final_url": "https://www.unicode.org/Public/18.0.0/ucd/ReadMe.txt",
+      "bytes": 729,
+      "sha256": "b0ea442f29dee90584aacd3665a6e1ce87ffc917a4d31f34e1916d2d6f7f9205",
+      "content_type": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "ucd-east-asian-width",
+      "url": "https://www.unicode.org/Public/18.0.0/ucd/EastAsianWidth.txt",
+      "retrieved_at": "2026-10-16T16:46:12.477540+00:00",
+      "status": 200,
+      "final_url": "https://www.unicode.org/Public/18.0.0/ucd/EastAsianWidth.txt",
+      "bytes": 204705,
+      "sha256": "a0cf29eacd00cfcaec4381c6b7c281685f18dbb4e7ff82b4076ccb342ca839aa",
+      "content_type": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "ucd-grapheme-break-property",
+      "url": "https://www.unicode.org/Public/18.0.0/ucd/auxiliary/GraphemeBreakProperty.txt",
+      "retrieved_at": "2026-10-16T16:46:12.477888+00:00",
+      "status": 200,
+      "final_url": "https://www.unicode.org/Public/18.0.0/ucd/auxiliary/GraphemeBreakProperty.txt",
+      "bytes": 100009,
+      "sha256": "0839dcb79e4ac639ecd538b1abf7c9d22e3f9dd265b7e182d33627aa4d75b45a",
+      "content_type": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "ucd-grapheme-break-test",
+      "url": "https://www.unicode.org/Public/18.0.0/ucd/auxiliary/GraphemeBreakTest.txt",
+      "retrieved_at": "2026-10-16T16:46:12.478241+00:00",
+      "status": 200,
+      "final_url": "https://www.unicode.org/Public/18.0.0/ucd/auxiliary/GraphemeBreakTest.txt",
+      "bytes": 137090,
+      "sha256": "b0cf047ee94485bbdc846de2b902f5f8a815f6b674f9d04223cddadd91c9df31",
+      "content_type": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "unicode-license",
+      "url": "https://www.unicode.org/license.txt",
+      "retrieved_at": "2026-10-16T16:46:12.479453+00:00",
+      "status": 200,
+      "final_url": "https://www.unicode.org/license.txt",
+      "bytes": 1995,
+      "sha256": "e7a93b009565cfce55919a381437ac4db883e9da2126fa28b91d12732bc53d96",
+      "content_type": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "unicode18-landing",
+      "url": "https://www.unicode.org/versions/Unicode18.0.0/",
+      "retrieved_at": "2026-10-16T16:46:12.642743+00:00",
+      "status": 200,
+      "final_url": "https://www.unicode.org/versions/Unicode18.0.0/",
+      "bytes": 62764,
+      "sha256": "e7c984c2738f5c402df0f89fb87fe7b2625d1e767ba07fe2aef723f4c07b7d77",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "id": "uax29-r49",
+      "url": "https://www.unicode.org/reports/tr29/tr29-49.html",
+      "retrieved_at": "2026-10-16T16:46:12.652847+00:00",
+      "status": 200,
+      "final_url": "https://www.unicode.org/reports/tr29/tr29-49.html",
+      "bytes": 141203,
+      "sha256": "60fb49ee640a154d9e40468306c6b283edcef73be3af5ede778107b4787bdec8",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "id": "uax11-r46",
+      "url": "https://www.unicode.org/reports/tr11/tr11-46.html",
+      "retrieved_at": "2026-10-16T16:46:12.655499+00:00",
+      "status": 200,
+      "final_url": "https://www.unicode.org/reports/tr11/tr11-46.html",
+      "bytes": 36549,
+      "sha256": "2c60f3da0010870eaa4d9665a4bbae3e473c016c82d27bb508ea075cbf2afa7a",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "id": "rfc3629",
+      "url": "https://www.rfc-editor.org/rfc/rfc3629.txt",
+      "retrieved_at": "2026-10-16T16:46:12.661178+00:00",
+      "status": 200,
+      "final_url": "https://www.rfc-editor.org/rfc/rfc3629.txt",
+      "bytes": 33856,
+      "sha256": "a2a3a39457d30420c812f87a38cc2b9194832f6982ef17e619de7d816879d6a6",
+      "content_type": "text/plain;charset=utf-8"
+    },
+    {
+      "id": "posix8-terminal",
+      "url": "https://pubs.opengroup.org/onlinepubs/9799919799/basedefs/V1_chap11.html",
+      "retrieved_at": "2026-10-16T16:46:12.692172+00:00",
+      "status": 200,
+      "final_url": "https://pubs.opengroup.org/onlinepubs/9799919799/basedefs/V1_chap11.html",
+      "bytes": 63052,
+      "sha256": "d5d4eaada506f1d2c6016383e7ae83c4010acd94a9cf4f93c5103c659dbae6ac",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "id": "posix8-openpt",
+      "url": "https://pubs.opengroup.org/onlinepubs/9799919799/functions/posix_openpt.html",
+      "retrieved_at": "2026-10-16T16:46:12.807479+00:00",
+      "status": 200,
+      "final_url": "https://pubs.opengroup.org/onlinepubs/9799919799/functions/posix_openpt.html",
+      "bytes": 10570,
+      "sha256": "992336357bf190c80401e3ca0bc5389e3cadb29ebd626c8119d6a47c9c757182",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "id": "rust-utf8-source",
+      "url": "https://raw.githubusercontent.com/rust-lang/rust/f8297e351a40c1439a467bbbb6879088047f50b3/library/core/src/str/validations.rs",
+      "retrieved_at": "2026-10-16T16:46:12.809679+00:00",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/rust-lang/rust/f8297e351a40c1439a467bbbb6879088047f50b3/library/core/src/str/validations.rs",
+      "bytes": 10582,
+      "sha256": "932abb6839ebd86e67ddd2377549ffbb4d91a3fa8ae441181392b2b158b4fa6b",
+      "content_type": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "rust-license-mit",
+      "url": "https://raw.githubusercontent.com/rust-lang/rust/f8297e351a40c1439a467bbbb6879088047f50b3/LICENSE-MIT",
+      "retrieved_at": "2026-10-16T16:46:12.843429+00:00",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/rust-lang/rust/f8297e351a40c1439a467bbbb6879088047f50b3/LICENSE-MIT",
+      "bytes": 1068,
+      "sha256": "b71bd43a069ca0641a9ecfe585ca7b3c53b5cc1608f8b68321168698e28b5ea1",
+      "content_type": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "rust-license-apache",
+      "url": "https://raw.githubusercontent.com/rust-lang/rust/f8297e351a40c1439a467bbbb6879088047f50b3/LICENSE-APACHE",
+      "retrieved_at": "2026-10-16T16:46:12.907525+00:00",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/rust-lang/rust/f8297e351a40c1439a467bbbb6879088047f50b3/LICENSE-APACHE",
+      "bytes": 9723,
+      "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a",
+      "content_type": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "rust-copyright",
+      "url": "https://raw.githubusercontent.com/rust-lang/rust/f8297e351a40c1439a467bbbb6879088047f50b3/COPYRIGHT",
+      "retrieved_at": "2026-10-16T16:46:12.976578+00:00",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/rust-lang/rust/f8297e351a40c1439a467bbbb6879088047f50b3/COPYRIGHT",
+      "bytes": 1571,
+      "sha256": "172020dbfd5b53a226dfde77616190a48dcff519b0bc0e6deb91a8450782c4af",
+      "content_type": "text/plain; charset=utf-8"
+    }
+  ],
+  "crates": [
+    {
+      "name": "vte",
+      "version": "0.15.0",
+      "archive_url": "https://static.crates.io/crates/vte/vte-0.15.0.crate",
+      "archive_sha256": "a5924018406ce0063cd67f8e008104968b74b563ee1b85dde3ed1f7cb87d3dbd",
+      "license_expression": "Apache-2.0 OR MIT",
+      "repository": "https://github.com/alacritty/vte",
+      "metadata_url": "https://crates.io/api/v1/crates/vte/0.15.0",
+      "metadata_response_sha256": "cf3eac59a6ff2c1fba117b5270f33d18f3d265877edd6d9bba9e7f0bd91a3d13",
+      "retrieved_at": "2026-10-16T16:46:12.976763+00:00",
+      "yanked_at_retrieval": false,
+      "lock_dependencies": null,
+      "review_role": "rejected-lexer-comparator",
+      "archive_verified": true,
+      "notices": [
+        {
+          "member": "LICENSE-APACHE",
+          "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+        },
+        {
+          "member": "LICENSE-MIT",
+          "sha256": "e4c9b06fa850cb9b540a5e400e9f6394cf15efcf4098144de477d1d3dae10150"
+        }
+      ],
+      "reviewed_members": {
+        ".cargo_vcs_info.json": "cf13a95671c273e60e9f2e72a382bcd3defcc64a94f8d85cda2deea59671bdfe",
+        "Cargo.toml": "06bfdd57dec95f9172d84e867e9fcdd02c46eb5008b5d7e75848d76cbfaa96ef",
+        "Cargo.toml.orig": "180c11737a8870eca54a25ee3c1ad3455a814ec35664bf09a68e1293fe2f8809",
+        "src/lib.rs": "fac2b9feef901019e1fcb3d413238d3b032001395abd8e727c26b4cafffba758",
+        "src/params.rs": "a305b112e6779d14537fd420aad45722b9cde756aba75153ac8560b7aa7d4c4a"
+      },
+      "archive_bytes": 57487,
+      "vcs": {
+        "git": {
+          "sha1": "3b3da71c34cc1256c7e20981cf03f8eb95e08ffc"
+        },
+        "path_in_vcs": ""
+      },
+      "build_script_present": false
+    },
+    {
+      "name": "rustix",
+      "version": "1.1.5",
+      "archive_url": "https://static.crates.io/crates/rustix/rustix-1.1.5.crate",
+      "archive_sha256": "891efababe418670775f199f0d233d84843c227a0949a883ce15b37c78d6629d",
+      "license_expression": "Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT",
+      "repository": "https://github.com/bytecodealliance/rustix",
+      "metadata_url": "https://crates.io/api/v1/crates/rustix/1.1.5",
+      "metadata_response_sha256": "43532f84d422179783de734eb325d5558f119b706749d8b9e06bd28e85bcc150",
+      "retrieved_at": "2026-10-16T16:46:12.995441+00:00",
+      "yanked_at_retrieval": false,
+      "lock_dependencies": [
+        "bitflags",
+        "errno",
+        "libc",
+        "linux-raw-sys",
+        "windows-sys"
+      ],
+      "review_role": "selected-draft-OS-source",
+      "archive_verified": true,
+      "notices": [
+        {
+          "member": "COPYRIGHT",
+          "sha256": "377c2e7c53250cc5905c0b0532d35973392af16ffb9596a41d99d202cf3617c9"
+        },
+        {
+          "member": "LICENSE-APACHE",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+        },
+        {
+          "member": "LICENSE-Apache-2.0_WITH_LLVM-exception",
+          "sha256": "268872b9816f90fd8e85db5a28d33f8150ebb8dd016653fb39ef1f94f2686bc5"
+        },
+        {
+          "member": "LICENSE-MIT",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+        }
+      ],
+      "reviewed_members": {
+        ".cargo_vcs_info.json": "d766d6d4817f42bf7f7b9bcee48065d461050af04e1042a6b56d67eba21c6eeb",
+        "Cargo.toml": "f57824af546c008210d8d6d63bc0fe866a3887d06100469448de3432ffa108ec",
+        "Cargo.toml.orig": "1e162d556c992b8bd5c4d4d7256f6783d95be1e75143edeaa43c92055a57bc8a",
+        "src/io/read_write.rs": "84930810319605109d5d0d592f1470213ab7d009e1f30b49ee4e2de71afe8ba9",
+        "src/process/id.rs": "71d82dcce9d3cad4bf4cbfa343be688146829e8d111934e16b5766e066ead36a",
+        "src/process/ioctl.rs": "93ed942bc6da8e8213a2e2531dc7c99f26fd9f0b805494afc9c5f300cac5acc3",
+        "src/pty.rs": "8ccdcd92b4c7a452da1068b44b196836f694fa46fa22c446a7f9e1d1dc4172c7",
+        "src/termios/tc.rs": "34a9ba54a0207aad1aa5be7adff79708e91623e3bc5a1a2cac756d66519deafe"
+      },
+      "archive_bytes": 425681,
+      "vcs": {
+        "git": {
+          "sha1": "287214b889865d8e1406a0ee71cc409b6f6191c8"
+        },
+        "path_in_vcs": ""
+      },
+      "build_script_present": true
+    },
+    {
+      "name": "bitflags",
+      "version": "2.13.2",
+      "archive_url": "https://static.crates.io/crates/bitflags/bitflags-2.13.2.crate",
+      "archive_sha256": "3ded4057c258ba199e2d26386d3af3780957ecaee6c4ef4041c6b4b8b97c0b06",
+      "license_expression": "MIT OR Apache-2.0",
+      "repository": "https://github.com/bitflags/bitflags",
+      "metadata_url": "https://crates.io/api/v1/crates/bitflags/2.13.2",
+      "metadata_response_sha256": "6195a424e3f3a334fe447e65b8c78c0399588ecba4808c5054e78720307c44d9",
+      "retrieved_at": "2026-10-16T16:46:13.082186+00:00",
+      "yanked_at_retrieval": false,
+      "lock_dependencies": [],
+      "review_role": "selected-draft-OS-source",
+      "archive_verified": true,
+      "notices": [
+        {
+          "member": "LICENSE-APACHE",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+        },
+        {
+          "member": "LICENSE-MIT",
+          "sha256": "6485b8ed310d3f0340bf1ad1f47645069ce4069dcc6bb46c7d5c6faf41de1fdb"
+        }
+      ],
+      "reviewed_members": {
+        ".cargo_vcs_info.json": "a747ede97b611a74546490982a8c9434e9de1e3a96827d9eccb5a78a1a1eaee0",
+        "Cargo.toml": "562e660adbb084de042fc9ecc5ac7ba32b5f565d53188823bab9159a027b2b44",
+        "Cargo.toml.orig": "5556d6c09fb1d46628bfddace388f99cc80cfb982149d70b2ee62760003b7f84"
+      },
+      "archive_bytes": 51678,
+      "vcs": {
+        "git": {
+          "sha1": "80ce9b545acb0bd42150695fc351889cac1d8eb4"
+        },
+        "path_in_vcs": ""
+      },
+      "build_script_present": false
+    },
+    {
+      "name": "linux-raw-sys",
+      "version": "0.12.1",
+      "archive_url": "https://static.crates.io/crates/linux-raw-sys/linux-raw-sys-0.12.1.crate",
+      "archive_sha256": "32a66949e030da00e8c7d4434b251670a91556f4144941d37452769c25d58a53",
+      "license_expression": "Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT",
+      "repository": "https://github.com/sunfishcode/linux-raw-sys",
+      "metadata_url": "https://crates.io/api/v1/crates/linux-raw-sys/0.12.1",
+      "metadata_response_sha256": "14d61093a6d30d018383e791e5417814d3412f2555a6674935b948f9fb071d02",
+      "retrieved_at": "2026-10-16T16:46:13.108377+00:00",
+      "yanked_at_retrieval": false,
+      "lock_dependencies": [],
+      "review_role": "selected-draft-OS-source",
+      "archive_verified": true,
+      "notices": [
+        {
+          "member": "COPYRIGHT",
+          "sha256": "3290ae0fbc9ddb77d2239121d710f0bb9d31b3b4744e6d97fe01e652b4c1870b"
+        },
+        {
+          "member": "LICENSE-APACHE",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+        },
+        {
+          "member": "LICENSE-Apache-2.0_WITH_LLVM-exception",
+          "sha256": "268872b9816f90fd8e85db5a28d33f8150ebb8dd016653fb39ef1f94f2686bc5"
+        },
+        {
+          "member": "LICENSE-MIT",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+        }
+      ],
+      "reviewed_members": {
+        ".cargo_vcs_info.json": "0f0336b3256fb3cdc36d5fa37e55aa842697370c810f32ee08f242daa989a26c",
+        "Cargo.toml": "1d24fe227d87b23fc5220ddf2ca4708e5e0d794a3f77961b71cd8140bf33faa5",
+        "Cargo.toml.orig": "c972347a632304bfd9e9283040f7ae31dc2376d409f1d6c87a3269c5d47445cf"
+      },
+      "archive_bytes": 3006116,
+      "vcs": {
+        "git": {
+          "sha1": "0e2918cf3e366d9c923d4ca05f169b49d826db56"
+        },
+        "path_in_vcs": ""
+      },
+      "build_script_present": false
+    },
+    {
+      "name": "libc",
+      "version": "0.2.190",
+      "archive_url": "https://static.crates.io/crates/libc/libc-0.2.190.crate",
+      "archive_sha256": "ce5d3ddc6d3fa000eb1536d85e147bfe31aacaba692ed6a876f95cb7c855be78",
+      "license_expression": "MIT OR Apache-2.0",
+      "repository": "https://github.com/rust-lang/libc",
+      "metadata_url": "https://crates.io/api/v1/crates/libc/0.2.190",
+      "metadata_response_sha256": "8b3fb4a453f9c47eb7c8c1edb5bddf6a1ed55f8943a475fbb2f7a9f244bfed1f",
+      "retrieved_at": "2026-10-16T16:46:13.123808+00:00",
+      "yanked_at_retrieval": false,
+      "lock_dependencies": [],
+      "review_role": "conditional-target-not-selected",
+      "archive_verified": true,
+      "notices": [
+        {
+          "member": "LICENSE-APACHE",
+          "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+        },
+        {
+          "member": "LICENSE-MIT",
+          "sha256": "123a331b5dbf04c30097fa43b8f858bc85df671fe776de498d01f3d6b7c1f69e"
+        }
+      ],
+      "reviewed_members": {
+        ".cargo_vcs_info.json": "31d02ca77457dd6bb5165f2316690793216b264672a889ebf60e5b0063cf0f88",
+        "Cargo.toml": "5d410962aefee7ac5916c9cdd915a717228576dbe3c8a09460fd58c4ec751e2c",
+        "Cargo.toml.orig": "ab34aba558d89fa12007d30943c1762c44950b19882d94a4451df42a84e79bf2"
+      },
+      "archive_bytes": 853678,
+      "vcs": {
+        "git": {
+          "sha1": "7b0ab5528dc7f361f3a0b4c06c2cad9971617f75"
+        },
+        "path_in_vcs": ""
+      },
+      "build_script_present": true
+    },
+    {
+      "name": "errno",
+      "version": "0.3.14",
+      "archive_url": "https://static.crates.io/crates/errno/errno-0.3.14.crate",
+      "archive_sha256": "39cab71617ae0d63f51a36d69f866391735b51691dbda63cf6f96d042b63efeb",
+      "license_expression": "MIT OR Apache-2.0",
+      "repository": "https://github.com/lambda-fairy/rust-errno",
+      "metadata_url": "https://crates.io/api/v1/crates/errno/0.3.14",
+      "metadata_response_sha256": "d5c6da58825a40d034f9c8be17c8788c4213d24b0b81bb6da49f386f490c80fb",
+      "retrieved_at": "2026-10-16T16:46:13.175861+00:00",
+      "yanked_at_retrieval": false,
+      "lock_dependencies": [
+        "libc",
+        "windows-sys"
+      ],
+      "review_role": "conditional-target-not-selected",
+      "archive_verified": true,
+      "notices": [
+        {
+          "member": "LICENSE-APACHE",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+        },
+        {
+          "member": "LICENSE-MIT",
+          "sha256": "8764a597675778ddfd4e25f81b08a05dbcf089ac05662df7613fe67f150e3aa2"
+        }
+      ],
+      "reviewed_members": {
+        ".cargo_vcs_info.json": "27df27e26defb9e10fa3f2f00e800657237bae0c33dc00c38fbd1c4d4ed47fdd",
+        "Cargo.toml": "a25f16ccaa127602fc0cc9d1c80186619a0b8f42331a27b6f04b6bfa4aa29de2",
+        "Cargo.toml.orig": "d6bf736fd0ecec39ee8ace1ad1c3e514e82fe22779d2c13eea0875960fe7037e"
+      },
+      "archive_bytes": 12002,
+      "vcs": {
+        "git": {
+          "sha1": "ffc03bfb9eb491013567115e6eea560948cd9e52"
+        },
+        "path_in_vcs": ""
+      },
+      "build_script_present": false
+    },
+    {
+      "name": "windows-sys",
+      "version": "0.61.2",
+      "archive_url": "https://static.crates.io/crates/windows-sys/windows-sys-0.61.2.crate",
+      "archive_sha256": "ae137229bcbd6cdf0f7b80a31df61766145077ddf49416a728b02cb3921ff3fc",
+      "license_expression": "MIT OR Apache-2.0",
+      "repository": "https://github.com/microsoft/windows-rs",
+      "metadata_url": "https://crates.io/api/v1/crates/windows-sys/0.61.2",
+      "metadata_response_sha256": "6a417f6d3c80b3c166f7304440dda1ecaca90ad938eaca928cd8d1c32666f8a6",
+      "retrieved_at": "2026-10-16T16:46:13.184441+00:00",
+      "yanked_at_retrieval": false,
+      "lock_dependencies": [
+        "windows-link"
+      ],
+      "review_role": "conditional-target-not-selected",
+      "archive_verified": false,
+      "notices": [],
+      "reviewed_members": {},
+      "notice_gap": "Archive not acquired; only locked checksum and current registry metadata verified. Conditional Windows artifacts are outside selected Linux target; no source/notice verification claim."
+    },
+    {
+      "name": "windows-link",
+      "version": "0.2.1",
+      "archive_url": "https://static.crates.io/crates/windows-link/windows-link-0.2.1.crate",
+      "archive_sha256": "f0805222e57f7521d6a62e36fa9163bc891acd422f971defe97d64e70d0a4fe5",
+      "license_expression": "MIT OR Apache-2.0",
+      "repository": "https://github.com/microsoft/windows-rs",
+      "metadata_url": "https://crates.io/api/v1/crates/windows-link/0.2.1",
+      "metadata_response_sha256": "0cb0720bc005ccab7ce8b106d39780a3f29ecdd5fb51b79345ea7b6856abcf0c",
+      "retrieved_at": "2026-10-16T16:46:13.260826+00:00",
+      "yanked_at_retrieval": false,
+      "lock_dependencies": [],
+      "review_role": "conditional-target-not-selected",
+      "archive_verified": false,
+      "notices": [],
+      "reviewed_members": {},
+      "notice_gap": "Archive not acquired; only locked checksum and current registry metadata verified. Conditional Windows artifacts are outside selected Linux target; no source/notice verification claim."
+    },
+    {
+      "name": "serde",
+      "version": "1.0.229",
+      "archive_url": "https://static.crates.io/crates/serde/serde-1.0.229.crate",
+      "archive_sha256": "4148590afebada386688f18773da617792bf2ef03ffc1e4cbd2b1d45b023e0ba",
+      "license_expression": "MIT OR Apache-2.0",
+      "repository": "https://github.com/serde-rs/serde",
+      "metadata_url": "https://crates.io/api/v1/crates/serde/1.0.229",
+      "metadata_response_sha256": "0753df5bd0a6782b7e9b449d9bb33d6b6df4136815fe19a55107490641c5577c",
+      "retrieved_at": "2026-10-16T16:46:13.287100+00:00",
+      "yanked_at_retrieval": false,
+      "lock_dependencies": [
+        "serde_core",
+        "serde_derive"
+      ],
+      "review_role": "selected-draft-codec-source-or-build-closure",
+      "archive_verified": true,
+      "notices": [
+        {
+          "member": "LICENSE-APACHE",
+          "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+        },
+        {
+          "member": "LICENSE-MIT",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+        }
+      ],
+      "reviewed_members": {
+        ".cargo_vcs_info.json": "a5356e10a935346365e8744c75a7a6eb0ee0edbfb8074b712b19953c6e02e57e",
+        "Cargo.toml": "6883caefd46e86eb15d22d3a6d274ad304c5e7934ab70eb58d81b7c4a29ef9db",
+        "Cargo.toml.orig": "137d4b56580e6b18d0cad4a86aea12a8b83b8f985a931b089de553161c35af56"
+      },
+      "archive_bytes": 83669,
+      "vcs": {
+        "git": {
+          "sha1": "7fc3b4c30c94f73a96ebd1553f2b090d928fc3a8"
+        },
+        "path_in_vcs": "serde"
+      },
+      "build_script_present": true
+    },
+    {
+      "name": "serde_core",
+      "version": "1.0.229",
+      "archive_url": "https://static.crates.io/crates/serde_core/serde_core-1.0.229.crate",
+      "archive_sha256": "67dca2c9c51e58a4791a4b1ed58308b39c64224d349a935ab5039aa360942a48",
+      "license_expression": "MIT OR Apache-2.0",
+      "repository": "https://github.com/serde-rs/serde",
+      "metadata_url": "https://crates.io/api/v1/crates/serde_core/1.0.229",
+      "metadata_response_sha256": "b1a4441596456b3ea1c5d5a849362a7c9a3d45b3e2354c763468d64ba3832ea5",
+      "retrieved_at": "2026-10-16T16:46:13.289291+00:00",
+      "yanked_at_retrieval": false,
+      "lock_dependencies": [
+        "serde_derive"
+      ],
+      "review_role": "selected-draft-codec-source-or-build-closure",
+      "archive_verified": true,
+      "notices": [
+        {
+          "member": "LICENSE-APACHE",
+          "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+        },
+        {
+          "member": "LICENSE-MIT",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+        }
+      ],
+      "reviewed_members": {
+        ".cargo_vcs_info.json": "7ca00590d04aedf8f24c48a1d56f7201cc12fb884918496f43534e766d406ae6",
+        "Cargo.toml": "c6049e170e4f7c2b48749fefab59db583bfac4e466cde6d0c53e4f49bc5044f7",
+        "Cargo.toml.orig": "2f3b7354d4f734e80c0e01ea399fb43c87cb393a84666f43d597f66af5450409"
+      },
+      "archive_bytes": 63100,
+      "vcs": {
+        "git": {
+          "sha1": "7fc3b4c30c94f73a96ebd1553f2b090d928fc3a8"
+        },
+        "path_in_vcs": "serde_core"
+      },
+      "build_script_present": true
+    },
+    {
+      "name": "serde_derive",
+      "version": "1.0.229",
+      "archive_url": "https://static.crates.io/crates/serde_derive/serde_derive-1.0.229.crate",
+      "archive_sha256": "e7a5d71263a5a7d47b41f6b3f06ba276f10cc18b0931f1799f710578e2309348",
+      "license_expression": "MIT OR Apache-2.0",
+      "repository": "https://github.com/serde-rs/serde",
+      "metadata_url": "https://crates.io/api/v1/crates/serde_derive/1.0.229",
+      "metadata_response_sha256": "5aadb3609271ffbed0f15782d7c84bbca82f143cee1840d7826cd69cf05935be",
+      "retrieved_at": "2026-10-16T16:46:13.305366+00:00",
+      "yanked_at_retrieval": false,
+      "lock_dependencies": [
+        "proc-macro2",
+        "quote",
+        "syn 3.0.9"
+      ],
+      "review_role": "selected-draft-codec-source-or-build-closure",
+      "archive_verified": true,
+      "notices": [
+        {
+          "member": "LICENSE-APACHE",
+          "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+        },
+        {
+          "member": "LICENSE-MIT",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+        }
+      ],
+      "reviewed_members": {
+        ".cargo_vcs_info.json": "0b5d17eb470ba78f4d915159f7545c9178e21e63b52e1c033f6c4cb97a0f188a",
+        "Cargo.toml": "d2581160ffa61baa386f882e08b0db20051dc3c782a82268d6473998b61c926e",
+        "Cargo.toml.orig": "c8e1a7cff52301a94da8bb1a1eeff9e729bf0c5cab63945a1633b7808f82c91c",
+        "src/de/struct_.rs": "7b26982ce59504a9bb5a18c3ab56eee2d75e70fd465774ff035d15c50452c118"
+      },
+      "archive_bytes": 59864,
+      "vcs": {
+        "git": {
+          "sha1": "7fc3b4c30c94f73a96ebd1553f2b090d928fc3a8"
+        },
+        "path_in_vcs": "serde_derive"
+      },
+      "build_script_present": false
+    },
+    {
+      "name": "serde_json",
+      "version": "1.0.154",
+      "archive_url": "https://static.crates.io/crates/serde_json/serde_json-1.0.154.crate",
+      "archive_sha256": "e7e9cc8b1b85264074fbcc02a88680c4096b1e47df8f739dceb03bf482f04bd6",
+      "license_expression": "MIT OR Apache-2.0",
+      "repository": "https://github.com/serde-rs/json",
+      "metadata_url": "https://crates.io/api/v1/crates/serde_json/1.0.154",
+      "metadata_response_sha256": "095c8ff42bd49ceffa653f28b7175d847b6c62377e7e9cd67af6ff520bad2748",
+      "retrieved_at": "2026-10-16T16:46:13.345275+00:00",
+      "yanked_at_retrieval": false,
+      "lock_dependencies": [
+        "itoa",
+        "memchr",
+        "serde",
+        "serde_core",
+        "zmij"
+      ],
+      "review_role": "selected-draft-codec-source-or-build-closure",
+      "archive_verified": true,
+      "notices": [
+        {
+          "member": "LICENSE-APACHE",
+          "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+        },
+        {
+          "member": "LICENSE-MIT",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+        }
+      ],
+      "reviewed_members": {
+        ".cargo_vcs_info.json": "a9a6d9ef759ddad8ea9dcfb0940bfbe8f0ed0b632573f7c2c777b14b711b4ece",
+        "Cargo.toml": "548aafeb7c702b69b9de950033f10b59f70baf38592d275d8ca8cff19f7750c3",
+        "Cargo.toml.orig": "51f085a96d8951975aeef57cfa97851325d30f854a559d57de5eb2632c826d34",
+        "src/de.rs": "cb55666913c47d86130e7bd48a9c35081ea9a4bb0e2c45ab6429912d905629c5",
+        "src/map.rs": "1ba8afd6c643740462171713fd523966920bd726af37963cb8f21e76e9beb69f",
+        "src/value/de.rs": "ceda1bf415aafde89caa83bf275811b70d393717d4e1038e0c61822d2da02993"
+      },
+      "archive_bytes": 158079,
+      "vcs": {
+        "git": {
+          "sha1": "20572a6d066958542d79cdd6cf1a7cd9f0c8e1f8"
+        },
+        "path_in_vcs": ""
+      },
+      "build_script_present": true
+    },
+    {
+      "name": "itoa",
+      "version": "1.0.18",
+      "archive_url": "https://static.crates.io/crates/itoa/itoa-1.0.18.crate",
+      "archive_sha256": "8f42a60cbdf9a97f5d2305f08a87dc4e09308d1276d28c869c684d7777685682",
+      "license_expression": "MIT OR Apache-2.0",
+      "repository": "https://github.com/dtolnay/itoa",
+      "metadata_url": "https://crates.io/api/v1/crates/itoa/1.0.18",
+      "metadata_response_sha256": "4054ae12a4a301657aab506820fa646f5d1a700b1ecca7f8d636c369621c75e9",
+      "retrieved_at": "2026-10-16T16:46:13.383236+00:00",
+      "yanked_at_retrieval": false,
+      "lock_dependencies": [],
+      "review_role": "selected-draft-codec-source-or-build-closure",
+      "archive_verified": true,
+      "notices": [
+        {
+          "member": "LICENSE-APACHE",
+          "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+        },
+        {
+          "member": "LICENSE-MIT",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+        }
+      ],
+      "reviewed_members": {
+        ".cargo_vcs_info.json": "e0165305f3b22a9ab4217a121f85379aa56c2675caa7afedc0a7468fc187600b",
+        "Cargo.toml": "894c215e4e7e973b556b0e9627bf9b6a719a043fac9b5af9838660816392a09f",
+        "Cargo.toml.orig": "44ca1ae5d9b48743305b57f3367051289512037e7836b8b3693b68d48dec0483"
+      },
+      "archive_bytes": 15935,
+      "vcs": {
+        "git": {
+          "sha1": "af77385d0daf4d0e949e81f2588be2e44f69f086"
+        },
+        "path_in_vcs": ""
+      },
+      "build_script_present": false
+    },
+    {
+      "name": "memchr",
+      "version": "2.8.3",
+      "archive_url": "https://static.crates.io/crates/memchr/memchr-2.8.3.crate",
+      "archive_sha256": "cf8baf1c55e62ffcace7a9f06f4bd9cd3f0c4beb022d3b367256b91b87513d98",
+      "license_expression": "Unlicense OR MIT",
+      "repository": "https://github.com/BurntSushi/memchr",
+      "metadata_url": "https://crates.io/api/v1/crates/memchr/2.8.3",
+      "metadata_response_sha256": "2c8c3e3edccb4b93080e0d24ee10fdac5c9bc4b9a35469137e37c864ddaa23aa",
+      "retrieved_at": "2026-10-16T16:46:13.392377+00:00",
+      "yanked_at_retrieval": false,
+      "lock_dependencies": [],
+      "review_role": "selected-draft-codec-source-or-build-closure",
+      "archive_verified": true,
+      "notices": [
+        {
+          "member": "LICENSE-MIT",
+          "sha256": "0f96a83840e146e43c0ec96a22ec1f392e0680e6c1226e6f3ba87e0740af850f"
+        },
+        {
+          "member": "UNLICENSE",
+          "sha256": "7e12e5df4bae12cb21581ba157ced20e1986a0508dd10d0e8a4ab9a4cf94e85c"
+        }
+      ],
+      "reviewed_members": {
+        ".cargo_vcs_info.json": "739b57f156ae78ce5ad0f2bc44ff727f1a9d48e743bc266e8e3ab8c35baa5ecb",
+        "Cargo.toml": "a14f68b8fa55f15fd03b15dced37bcf66a0a628f568eedc82817cdb7f9281951",
+        "Cargo.toml.orig": "2d004168044e88b00f971e65d7e6c988a555aa00d7ef4d0ceb5b5a9c228fb0c9"
+      },
+      "archive_bytes": 99165,
+      "vcs": {
+        "git": {
+          "sha1": "5fdb40c054e1fff359a2f7bdf7f87a13b34b465d"
+        },
+        "path_in_vcs": ""
+      },
+      "build_script_present": false
+    },
+    {
+      "name": "zmij",
+      "version": "1.0.23",
+      "archive_url": "https://static.crates.io/crates/zmij/zmij-1.0.23.crate",
+      "archive_sha256": "29666d0abbfad1e3dc4dcf6144730dd3a3ab225bbbdac83319345b1b44ccfc1b",
+      "license_expression": "MIT",
+      "repository": "https://github.com/dtolnay/zmij",
+      "metadata_url": "https://crates.io/api/v1/crates/zmij/1.0.23",
+      "metadata_response_sha256": "3857bb056c08ceba170494ea9b2f6f739210724ca4aab254a483a40a46a79077",
+      "retrieved_at": "2026-10-16T16:46:13.428778+00:00",
+      "yanked_at_retrieval": false,
+      "lock_dependencies": [],
+      "review_role": "selected-draft-codec-source-or-build-closure",
+      "archive_verified": true,
+      "notices": [
+        {
+          "member": "LICENSE-MIT",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+        }
+      ],
+      "reviewed_members": {
+        ".cargo_vcs_info.json": "97a320dc3ca5574ec142d18738f57ffb627cf2751f373a98251db59e7a104ca1",
+        "Cargo.toml": "b31420c7a806fae5b9ea2438dd4cbb99dcb3a22da67697fdf2776cc44a69527e",
+        "Cargo.toml.orig": "eb5f807eae822d14db0855ecda0291410aeabba2342acab11860526378a97cd7"
+      },
+      "archive_bytes": 28612,
+      "vcs": {
+        "git": {
+          "sha1": "7b7cc48b58028e8af7be87e94c0c1c8936f1a57c"
+        },
+        "path_in_vcs": ""
+      },
+      "build_script_present": true
+    },
+    {
+      "name": "proc-macro2",
+      "version": "1.0.107",
+      "archive_url": "https://static.crates.io/crates/proc-macro2/proc-macro2-1.0.107.crate",
+      "archive_sha256": "985e7ec9bb745e6ce6535b544d84d6cd6f7ad8bd711c398938ae983b91a766d9",
+      "license_expression": "MIT OR Apache-2.0",
+      "repository": "https://github.com/dtolnay/proc-macro2",
+      "metadata_url": "https://crates.io/api/v1/crates/proc-macro2/1.0.107",
+      "metadata_response_sha256": "d3426184f1f1c9708917e61d04785ec3342baf444e3f173ba0b9644a50540811",
+      "retrieved_at": "2026-10-16T16:46:13.454766+00:00",
+      "yanked_at_retrieval": false,
+      "lock_dependencies": [
+        "unicode-ident"
+      ],
+      "review_role": "selected-draft-codec-source-or-build-closure",
+      "archive_verified": true,
+      "notices": [
+        {
+          "member": "LICENSE-APACHE",
+          "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+        },
+        {
+          "member": "LICENSE-MIT",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+        }
+      ],
+      "reviewed_members": {
+        ".cargo_vcs_info.json": "0a870b23ea0c10231ed5a850b8fe8f23dd74926e90594e49a35a7e1b5e8a92f5",
+        "Cargo.toml": "6bdbe54a7f052e552dcfca90351764476e2767237ec3f954df8bd9f602861056",
+        "Cargo.toml.orig": "e04a009c48ea3e9b017807ea9183e330cc909a9cc0e754c5c6b3f7c0b29fb9de"
+      },
+      "archive_bytes": 59588,
+      "vcs": {
+        "git": {
+          "sha1": "ed8a5497669cd63db33bf24646f261b012bbbc4a"
+        },
+        "path_in_vcs": ""
+      },
+      "build_script_present": true
+    },
+    {
+      "name": "quote",
+      "version": "1.0.47",
+      "archive_url": "https://static.crates.io/crates/quote/quote-1.0.47.crate",
+      "archive_sha256": "1fbf4db142a473a8d80c26bbf18454ed458bf8d26c8219c331daecfdbd079001",
+      "license_expression": "MIT OR Apache-2.0",
+      "repository": "https://github.com/dtolnay/quote",
+      "metadata_url": "https://crates.io/api/v1/crates/quote/1.0.47",
+      "metadata_response_sha256": "33a2b8781dac355c53fba012edf8015953dd9d33010d5075f537bb6e450730df",
+      "retrieved_at": "2026-10-16T16:46:13.472630+00:00",
+      "yanked_at_retrieval": false,
+      "lock_dependencies": [
+        "proc-macro2"
+      ],
+      "review_role": "selected-draft-codec-source-or-build-closure",
+      "archive_verified": true,
+      "notices": [
+        {
+          "member": "LICENSE-APACHE",
+          "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+        },
+        {
+          "member": "LICENSE-MIT",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+        }
+      ],
+      "reviewed_members": {
+        ".cargo_vcs_info.json": "1452b78f41bb8c7dbf526da57f134ac6d75cf80b7cc539494bab5e133907ce0e",
+        "Cargo.toml": "13d8c50837f14aff48cd622349f98fb2c46350b7a0c08fd574cf7de4def27d06",
+        "Cargo.toml.orig": "acbbe8c10dc81f648339333c8fa3e0aa787ad5887b105d1947bc522553d87d73"
+      },
+      "archive_bytes": 31622,
+      "vcs": {
+        "git": {
+          "sha1": "723dcb47d3f0ddc896e17287c8a8d3f2ea2317d5"
+        },
+        "path_in_vcs": ""
+      },
+      "build_script_present": true
+    },
+    {
+      "name": "syn",
+      "version": "3.0.9",
+      "archive_url": "https://static.crates.io/crates/syn/syn-3.0.9.crate",
+      "archive_sha256": "d78c8dee4c7bf0e14673097256fed6142ce9d3b85a408189d07482442145823b",
+      "license_expression": "MIT OR Apache-2.0",
+      "repository": "https://github.com/dtolnay/syn",
+      "metadata_url": "https://crates.io/api/v1/crates/syn/3.0.9",
+      "metadata_response_sha256": "97435c277087abf818bd79132dae376dc1f14e41c44f2548b802801c5ba90348",
+      "retrieved_at": "2026-10-16T16:46:13.532314+00:00",
+      "yanked_at_retrieval": false,
+      "lock_dependencies": [
+        "proc-macro2",
+        "quote",
+        "unicode-ident"
+      ],
+      "review_role": "selected-draft-codec-source-or-build-closure",
+      "archive_verified": true,
+      "notices": [
+        {
+          "member": "LICENSE-APACHE",
+          "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+        },
+        {
+          "member": "LICENSE-MIT",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+        }
+      ],
+      "reviewed_members": {
+        ".cargo_vcs_info.json": "cee294e3a4f8d4422a82e49ee3224414ea309f9c2e717533d97f0c960f3b8eab",
+        "Cargo.toml": "b6f7f6069d92142d3e294f84855a68049bebc5b886c557ed4ae980ddbc866e1c",
+        "Cargo.toml.orig": "d80272529ba81ff84369a6dd390a1eb3de56e01cdc7633e81a7cd7f9512d41cc"
+      },
+      "archive_bytes": 313970,
+      "vcs": {
+        "git": {
+          "sha1": "7c44a5565b4421035101cc16184e9af08ab5fc77"
+        },
+        "path_in_vcs": ""
+      },
+      "build_script_present": false
+    },
+    {
+      "name": "unicode-ident",
+      "version": "1.0.27",
+      "archive_url": "https://static.crates.io/crates/unicode-ident/unicode-ident-1.0.27.crate",
+      "archive_sha256": "a2c754d6c33795a1c324727428e5a7dedb5b06195f9890bdbcba760d3e246563",
+      "license_expression": "(MIT OR Apache-2.0) AND Unicode-3.0",
+      "repository": "https://github.com/dtolnay/unicode-ident",
+      "metadata_url": "https://crates.io/api/v1/crates/unicode-ident/1.0.27",
+      "metadata_response_sha256": "ef2781d672d654b7cb61dd94227f155c075cba901457995cfe2fee01ab44dc7f",
+      "retrieved_at": "2026-10-16T16:46:13.579629+00:00",
+      "yanked_at_retrieval": false,
+      "lock_dependencies": [],
+      "review_role": "selected-draft-codec-source-or-build-closure",
+      "archive_verified": true,
+      "notices": [
+        {
+          "member": "LICENSE-APACHE",
+          "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+        },
+        {
+          "member": "LICENSE-MIT",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+        },
+        {
+          "member": "LICENSE-UNICODE",
+          "sha256": "f7db81051789b729fea528a63ec4c938fdcb93d9d61d97dc8cc2e9df6d47f2a1"
+        }
+      ],
+      "reviewed_members": {
+        ".cargo_vcs_info.json": "68a4d49004541c1a4bfe6564b7c8e9853de2c3a5fa528c98cc6017e6103c146b",
+        "Cargo.toml": "c0e96a9c7ee62f5f9ab12de69e0ad44826ad753911d47638f605c936f7ea2c1c",
+        "Cargo.toml.orig": "f8e378f36485876a74dfc98cec2612cad5f585903dc9f38ffe7a43f622426ed1",
+        "src/tables.rs": "88cc4f427e7335cda9549cf07e3068a78c53f54804ae3057f184295872eb40a4"
+      },
+      "archive_bytes": 48807,
+      "vcs": {
+        "git": {
+          "sha1": "c1ac3afb721f3cea6527bc2255340a04d0de3ca0"
+        },
+        "path_in_vcs": ""
+      },
+      "build_script_present": false,
+      "declared_unicode_version": "18.0.0"
+    },
+    {
+      "name": "unicode-segmentation",
+      "version": "1.13.3",
+      "archive_url": "https://static.crates.io/crates/unicode-segmentation/unicode-segmentation-1.13.3.crate",
+      "archive_sha256": "c6f5d3c3b1bf09027a88a6bc961fc00497d651009560b5463668dc81b0fa87a8",
+      "license_expression": "MIT OR Apache-2.0",
+      "repository": "https://github.com/unicode-rs/unicode-segmentation",
+      "metadata_url": "https://crates.io/api/v1/crates/unicode-segmentation/1.13.3",
+      "metadata_response_sha256": "50b9b556657a326a13a67e40b81b3b72f9f61e484683559783e825c71c8d3807",
+      "retrieved_at": "2026-10-16T16:46:13.580849+00:00",
+      "yanked_at_retrieval": false,
+      "lock_dependencies": [],
+      "review_role": "rejected-for-Unicode18-terminal-semantics",
+      "archive_verified": true,
+      "notices": [
+        {
+          "member": "COPYRIGHT",
+          "sha256": "23860c2a7b5d96b21569afedf033469bab9fe14a1b24a35068b8641c578ce24d"
+        },
+        {
+          "member": "LICENSE-APACHE",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+        },
+        {
+          "member": "LICENSE-MIT",
+          "sha256": "7b63ecd5f1902af1b63729947373683c32745c16a10e8e6292e2e2dcd7e90ae0"
+        }
+      ],
+      "reviewed_members": {
+        ".cargo_vcs_info.json": "b097b6f2be940cb52648843af7279db66a305750f0b30f342590f9a2c52fa62e",
+        "Cargo.toml": "86f0e8158aae32d3791f182cf50131f678462da65a713b18cab6c0b5638f1a50",
+        "Cargo.toml.orig": "af7b6699725f8ae6a3f4bed18b3dafd35e5f90c1851f09362b62f6354cb1d690",
+        "src/tables.rs": "089c221918a60e8672ed8eda73d27f195dcc404f91b9e71b57c0b5e348e7aeef"
+      },
+      "archive_bytes": 112325,
+      "vcs": {
+        "git": {
+          "sha1": "66a032fd8d667bc47ac5b640b151dff3f5356d07"
+        },
+        "path_in_vcs": ""
+      },
+      "build_script_present": false,
+      "declared_unicode_version": "17.0.0"
+    },
+    {
+      "name": "unicode-width",
+      "version": "0.2.2",
+      "archive_url": "https://static.crates.io/crates/unicode-width/unicode-width-0.2.2.crate",
+      "archive_sha256": "b4ac048d71ede7ee76d585517add45da530660ef4390e49b098733c6e897f254",
+      "license_expression": "MIT OR Apache-2.0",
+      "repository": "https://github.com/unicode-rs/unicode-width",
+      "metadata_url": "https://crates.io/api/v1/crates/unicode-width/0.2.2",
+      "metadata_response_sha256": "693c1a642fa4fc49bc02e757cbcb906f77f675284dbf1a89f2286fa42391189c",
+      "retrieved_at": "2026-10-16T16:46:13.609120+00:00",
+      "yanked_at_retrieval": false,
+      "lock_dependencies": [],
+      "review_role": "rejected-for-Unicode18-terminal-semantics",
+      "archive_verified": true,
+      "notices": [
+        {
+          "member": "COPYRIGHT",
+          "sha256": "23860c2a7b5d96b21569afedf033469bab9fe14a1b24a35068b8641c578ce24d"
+        },
+        {
+          "member": "LICENSE-APACHE",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+        },
+        {
+          "member": "LICENSE-MIT",
+          "sha256": "7b63ecd5f1902af1b63729947373683c32745c16a10e8e6292e2e2dcd7e90ae0"
+        }
+      ],
+      "reviewed_members": {
+        ".cargo_vcs_info.json": "2b3ffdf5745bce739a2d8c7c277074ec5f1753df8323746cc012ca2c2fe2d0b0",
+        "Cargo.toml": "dbf0a72e293238d87afd46f58ba597408f40c86e372a1d0b271c89fb4c3639c4",
+        "Cargo.toml.orig": "89226314e939630cee63bbcaadb4710c9809e57a3117853fb8d443f0641563f1",
+        "src/tables.rs": "4c3e673da24634c269562ca4d3652b494542c78cafe56da69d23df9178adffd4"
+      },
+      "archive_bytes": 282768,
+      "vcs": {
+        "git": {
+          "sha1": "9d98411769fe13c7c18cab0b3fbbab29ba8350ea"
+        },
+        "path_in_vcs": ""
+      },
+      "build_script_present": false,
+      "declared_unicode_version": "17.0.0"
+    }
+  ]
+}
