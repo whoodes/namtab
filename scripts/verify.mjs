@@ -79,6 +79,7 @@ const steps = [
       "apps",
       "packages",
       "tests/system",
+      "tests/mk1/outer-screen.mjs",
       "tests/fuzz",
       "tests/assessment",
       "tests/ea1",

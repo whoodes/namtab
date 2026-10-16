@@ -23,7 +23,7 @@ docs:
 	.venv-docs/bin/python -B scripts/check-doc-links.py
 	.venv-docs/bin/python -m mkdocs build --strict
 check:
-	$(PNPM) exec prettier --check scripts apps packages tests/system tests/fuzz tests/assessment tests/ea1 package.json tsconfig.json mkdocs.yml pnpm-workspace.yaml .github
+	$(PNPM) exec prettier --check scripts apps packages tests/system tests/mk1/outer-screen.mjs tests/fuzz tests/assessment tests/ea1 package.json tsconfig.json mkdocs.yml pnpm-workspace.yaml .github
 	cargo fmt --all -- --check
 	cargo clippy --workspace --all-targets --locked -- -D warnings
 	node scripts/generate-bindings.mjs --check
@@ -46,7 +46,7 @@ provenance:
 	node scripts/verify-provenance.mjs
 format:
 	cargo fmt --all
-	$(PNPM) exec prettier --write scripts apps packages tests/system tests/fuzz tests/assessment tests/ea1 package.json tsconfig.json mkdocs.yml pnpm-workspace.yaml .github
+	$(PNPM) exec prettier --write scripts apps packages tests/system tests/mk1/outer-screen.mjs tests/fuzz tests/assessment tests/ea1 package.json tsconfig.json mkdocs.yml pnpm-workspace.yaml .github
 
 # Separate experimental engine assessment from foundation checks.
 include make/assessment.mk

@@ -120,6 +120,7 @@ class Tui:
         self.output = bytearray()
         self.truncated = False
         self.closed = False
+        self.screen_cache = (-1, "")
         self.lock = threading.Lock()
         self.thread = threading.Thread(target=self.drain, daemon=True)
         self.thread.start()
@@ -156,6 +157,16 @@ class Tui:
     def mark(self):
         with self.lock:
             return len(self.output)
+
+    def screen(self):
+        # Independent read-only observer of OUTER Ratatui paint. It never feeds
+        # replies/input or supplies the owned application's canonical state.
+        with self.lock:
+            data = bytes(self.output)
+        if self.screen_cache[0] != len(data):
+            result = subprocess.run(["node", str(Path(__file__).with_name("outer-screen.mjs"))], input=data, capture_output=True, timeout=5, check=True)
+            self.screen_cache = (len(data), "\n".join(json.loads(result.stdout)))
+        return self.screen_cache[1]
 
     def stop(self):
         if self.process.poll() is None:
@@ -355,27 +366,18 @@ class Journey:
         require(self.socket_path.stat().st_mode & 0o777 == 0o600, "socket mode")
         self.passed("real_startup", session=self.first, owner=self.tui_endpoint, source="real broker + worker + controlling PTY + TUI process")
 
-    def type_command(self, session_id, command, marker, wait_prompt=True):
-        # Feed ordinary keyboard events exactly once. Waiting for canonical echo
-        # avoids hiding dropped human keys with retries or timing assumptions.
-        typed = ""
-        for character in command:
-            self.tui.send(character.encode("ascii"))
-            typed += character
-            def echoed(session):
-                screen = session["screen"]
-                current = screen["lines"][screen["cursor_row"]][:screen["cursor_col"]]
-                return current == "mk1$ " + typed
-            self.wait_session(session_id, echoed, "canonical current-cursor echo of synthetic human prefix " + repr(typed))
+    def type_command(self, session_id, command, marker, wait_prompt=True, expected_markers=1):
+        # One real host-PTY burst, exactly once: no per-character echo pacing,
+        # automatic retries or suffix repair. A refusal must remain a failure.
         paint_mark = self.tui.mark()
-        self.tui.send(b"\r")
-        self.wait_session(session_id, lambda s: marker in [line.strip() for line in s["screen"]["lines"]], "real command output " + marker)
+        self.tui.send(command.encode("ascii") + b"\r")
+        self.wait_session(session_id, lambda s: [line.strip() for line in s["screen"]["lines"]].count(marker) == expected_markers, "actual command output count " + marker)
         if wait_prompt:
             self.wait_session(session_id, self.at_prompt, "canonical prompt after real command")
             self.wait(lambda: b"mk1$" in self.tui.text_after(paint_mark), "frontend paints fresh prompt before next command")
         else:
             self.wait(lambda: marker.encode() in self.tui.text_after(paint_mark), "frontend paints synthetic foreground output")
-        self.record["human_commands"].append({"session": session_id, "command": command, "actual_output_marker": marker})
+        self.record["human_commands"].append({"session": session_id, "command": command, "actual_output_marker": marker, "expected_markers": expected_markers, "delivery": "one unpaced host-PTY write, no retry"})
 
     @staticmethod
     def at_prompt(session):
@@ -385,6 +387,10 @@ class Journey:
     def shells_and_takeover(self):
         self.type_command(self.first, "printf x>>tui-count;echo MK1_TUI_ONE", "MK1_TUI_ONE")
         require((self.workspace / "tui-count").read_bytes() == b"x", "first real command side effect")
+        self.type_command(self.first, "printf y>>burst-count;echo MK1_BURST_REPEAT", "MK1_BURST_REPEAT")
+        require((self.workspace / "burst-count").read_bytes() == b"y", "first repeated burst effect")
+        self.type_command(self.first, "printf y>>burst-count;echo MK1_BURST_REPEAT", "MK1_BURST_REPEAT", expected_markers=2)
+        require((self.workspace / "burst-count").read_bytes() == b"yy", "exactly two repeated burst effects")
         self.tui.prefix(b"n")
         snapshot = self.wait_snapshot(lambda s: len(s["sessions"]) == 2, "second real PTY")
         self.second = next(s["id"] for s in snapshot["sessions"] if s["id"] != self.first)
@@ -392,12 +398,14 @@ class Journey:
         time.sleep(0.1)
         self.tui.prefix(b"t")
         self.wait_session(self.second, lambda s: s["owner"] == self.tui_endpoint, "TUI takes selected second session")
+        self.wait(lambda: "Input re-armed" in self.tui.screen(), "TUI completes fresh takeover queue drain before typing")
         self.type_command(self.second, "echo MK1_TUI_TWO", "MK1_TUI_TWO")
         require(not any(line.strip() == "MK1_TUI_TWO" for line in self.session(self.first)["screen"]["lines"]), "session input leaked to wrong canonical session")
-        self.type_command(self.second, "echo MK1_SLEEPING;sleep 5", "MK1_SLEEPING", wait_prompt=False)
+        self.type_command(self.second, "echo MK1_SLEEPING;sleep 30;echo natural>interrupt-completed", "MK1_SLEEPING", wait_prompt=False)
         paint_mark = self.tui.mark()
         self.tui.send(b"\x03")
-        self.wait_session(self.second, self.at_prompt, "shell returns after synthetic foreground Ctrl-C")
+        self.wait_session(self.second, self.at_prompt, "shell returns before finite sleep could complete after Ctrl-C")
+        require(not (self.workspace / "interrupt-completed").exists(), "foreground command naturally completed; interruption not established")
         self.wait(lambda: b"mk1$" in self.tui.text_after(paint_mark), "frontend paints post-interrupt prompt")
         self.type_command(self.second, "echo MK1_AFTER_INTERRUPT", "MK1_AFTER_INTERRUPT")
         self.tui.prefix(b"\t")
@@ -424,7 +432,8 @@ class Journey:
         refused = self.mutate(self.agent, {"op": "input", "session": self.first, "generation": old_generation, "revision": current["screen"]["revision"], "mode_revision": current["screen"]["mode_revision"], "policy": "observed", "intent": {"kind": "text", "text": "echo SHOULD_NOT_EXECUTE"}})
         require(not refused["ok"] and refused["error"] == "writer_or_generation_stale", "old writer generation was not refused")
         self.descendants()
-        self.passed("human_typing_session_switch_agent_resume_takeover", first=self.first, second=self.second, old_generation=old_generation, new_generation=current["generation"], refusal=refused["error"], ctrl_c="synthetic foreground sleep interrupted; shell remained usable, not a universal stop guarantee", agent_status="declared connected endpoint; command output observed, no model inference")
+        self.wait(lambda: "Input re-armed" in self.tui.screen(), "TUI completes human handoff re-arm")
+        self.passed("human_typing_session_switch_agent_resume_takeover", first=self.first, second=self.second, old_generation=old_generation, new_generation=current["generation"], refusal=refused["error"], ctrl_c="shell returned within 8 seconds during finite sleep30 and natural-completion sentinel absent; not a universal stop guarantee", agent_status="declared connected endpoint; command output observed, no model inference")
 
     def agent_input(self, current, intent):
         # Observe immediately before constructing each new application mutation.
@@ -432,6 +441,32 @@ class Journey:
         current = next(s for s in snapshot["sessions"] if s["id"] == current["id"])
         response = self.agent.call({"op": "input", "session": current["id"], "generation": current["generation"], "revision": current["screen"]["revision"], "mode_revision": current["screen"]["mode_revision"], "policy": "observed", "intent": intent})
         require(response["ok"] and response["receipt"]["state"] == "applied", "agent input refused; never automatically retried: " + str(response.get("error")))
+
+    def refusal_stops_suffix(self):
+        # Own child only. Queue a whole burst while its view is stale, then
+        # force a writer change. No event timing is disguised as a retry.
+        os.kill(self.tui.process.pid, signal.SIGSTOP)
+        try:
+            before = self.session(self.first)
+            taken = self.mutate(self.observer, {"op": "take_control", "session": self.first, "generation": before["generation"], "force": True})
+            require(taken["ok"], "synthetic refusal setup human takeover failed")
+            held = self.session(self.first)
+            self.tui.send(b"exit\r\x07techo SHOULD_NOT_EXECUTE\r")
+        finally:
+            os.kill(self.tui.process.pid, signal.SIGCONT)
+        self.wait(lambda: "INPUT PAUSED" in self.tui.screen(), "first refused key latches the actual TUI")
+        current = self.session(self.first)
+        require(current["owner"] == self.observer.endpoint and current["generation"] == held["generation"], "queued recovery gesture incorrectly reacquired writer")
+        require(current["process"] == "running" and current["screen"]["revision"] == held["screen"]["revision"], "refused command suffix changed the PTY")
+        self.tui.send(b"\x1b[200~later paste\x1b[201~")
+        self.wait(lambda: "INPUT PAUSED" in self.tui.screen(), "subsequent paste cannot clear pause")
+        require(self.session(self.first)["screen"]["revision"] == held["screen"]["revision"], "paused paste reached application")
+        self.tui.prefix(b"t")
+        self.wait(lambda: "Input re-armed" in self.tui.screen(), "fresh deliberate recovery completes queue quarantine")
+        current = self.session(self.first)
+        require(current["owner"] == self.tui_endpoint and current["generation"] > held["generation"], "fresh recovery did not establish a new generation")
+        self.type_command(self.first, "echo MK1_AFTER_REFUSAL", "MK1_AFTER_REFUSAL")
+        self.passed("refused_prefix_suppresses_queued_suffix_and_requires_fresh_rearm", withheld="exit, queued recovery and later paste", original_generation=held["generation"], rearmed_generation=current["generation"], no_input_replay=True)
 
     def managed_and_receipts(self):
         operation = {"op": "run", "task": "literal-argv", "argv": ["/usr/bin/printf", "%s", "literal;$(touch SHOULD_NOT_EXIST)"]}
@@ -458,7 +493,11 @@ class Journey:
         capacity = self.mutate(self.agent, {"op": "run", "task": "over-cap", "argv": ["/bin/true"]})
         require(not capacity["ok"] and capacity["error"] == "attempt_capacity_two_total", "two-attempt lifetime cap not enforced")
         self.tui.prefix(b"b")
-        self.wait(lambda: b"Task review" in self.tui.text_after() and b"separate-streams" in self.tui.text_after(), "actual task review rendering")
+        # Ratatui emits differential ANSI; observe the outer screen rather
+        # than grepping arbitrary contiguous words from historical paint.
+        self.wait(lambda: "Task review" in self.tui.screen(), "actual task-review screen")
+        self.tui.send(b"\t")
+        self.wait(lambda: "Task review 2/2: separate-streams" in self.tui.screen() and "native-outnative-tail" in self.tui.screen(), "selected second task rendered from actual outer paint")
         before = [s["screen"]["lines"] for s in self.snapshot()["sessions"]]
         mark = self.tui.mark()
         self.tui.send(b"z")
@@ -498,7 +537,7 @@ class Journey:
         mark = self.tui.mark()
         os.kill(self.process.pid, signal.SIGSTOP)  # Only our still-owned child.
         try:
-            self.wait(lambda: b"DISCONNECTED" in self.tui.text_after(mark) or b"LAST OBSERVED" in self.tui.text_after(mark), "actual TUI detects blocked live broker", timeout=6)
+            self.wait(lambda: "LAST OBSERVED" in self.tui.screen(), "actual TUI detects blocked live broker", timeout=6)
         finally:
             os.kill(self.process.pid, signal.SIGCONT)
         # The controlled process stop can interrupt other timed socket reads as
@@ -517,6 +556,9 @@ class Journey:
         after = self.session(self.first)
         require(after["owner"] == before["owner"] and after["generation"] == before["generation"], "frontend reconnect altered writer identity/generation")
         require((self.workspace / "tui-count").read_bytes() == b"x", "old human command was replayed")
+        self.wait(lambda: "Input paused" in self.tui.screen() or "INPUT PAUSED" in self.tui.screen(), "live reconnect preserves input pause")
+        self.tui.prefix(b"t")
+        self.wait(lambda: "Input re-armed" in self.tui.screen(), "explicit fresh takeover re-arms only after queue drain")
         self.type_command(self.first, "echo MK1_RESUMED", "MK1_RESUMED")
         self.passed("actual_tui_disconnect_explicit_live_resume_no_replay", fault="SIGSTOP/SIGCONT of own live broker", generation=after["generation"], input_replays_observed=0)
 
@@ -589,6 +631,7 @@ class Journey:
         try:
             self.start()
             self.shells_and_takeover()
+            self.refusal_stops_suffix()
             self.managed_and_receipts()
             self.artifacts_and_cli()
             self.live_tui_reconnect()
