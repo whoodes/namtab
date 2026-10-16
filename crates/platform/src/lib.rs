@@ -1,4 +1,10 @@
-//! Allocation validation only; no PTY/process/runtime implementation yet.
+//! Linux MK1 process and PTY primitives, without terminal or dispatch authority.
+//!
+//! These are local developer-host processes, not a sandbox. The caller owns
+//! authorization, capture policy, command limits and terminal interpretation.
+//! A PTY merges stdout/stderr; managed pipes retain their separate identity.
+#[cfg(target_os = "linux")]
+pub mod local_process;
 use project_x_domain::Context;
 pub const MAX_CELLS: u32 = 80_000;
 pub fn checked_cells(cols: u16, rows: u16) -> Option<usize> {

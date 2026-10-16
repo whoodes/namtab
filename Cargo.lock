@@ -588,6 +588,7 @@ name = "project-x-platform"
 version = "0.1.0"
 dependencies = [
  "project-x-domain",
+ "rustix",
 ]
 
 [[package]]
@@ -609,6 +610,14 @@ dependencies = [
  "project-x-protocol",
  "serde_json",
  "sha2",
+]
+
+[[package]]
+name = "project-x-terminal"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
