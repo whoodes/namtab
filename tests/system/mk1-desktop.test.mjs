@@ -138,15 +138,18 @@ test("MK1 desktop keeps layout-consumed text distinct from modified keys", () =>
     assert.equal(mk1.normalizeKey(key(value)).intent.key, value);
 });
 
-test("MK1 desktop leaves native copy/paste/meta shortcuts and rejects composition", () => {
+test("MK1 desktop leaves native paste/meta shortcuts and rejects composition", () => {
   for (const event of [
     key("v", { ctrlKey: true }),
-    key("c", { ctrlKey: true, shiftKey: true }),
     key("Insert", { shiftKey: true }),
     key("q", { metaKey: true }),
     key("Control"),
   ])
     assert.equal(mk1.normalizeKey(event).native, true);
+  assert.deepEqual(
+    mk1.normalizeKey(key("C", { ctrlKey: true, shiftKey: true })),
+    { intent: { kind: "key", key: "C", ctrl: true, alt: false, shift: true } },
+  );
   for (const event of [
     key("a", { isComposing: true }),
     key("Dead"),
