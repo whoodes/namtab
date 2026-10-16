@@ -81,9 +81,9 @@ class ExternalResources(HTMLParser):
             self.unsupported = True
         attrs = dict(attrs)
         if (tag in {'style', 'object', 'embed', 'iframe', 'frame', 'frameset', 'base', 'svg', 'math', 'audio', 'video', 'source', 'track', 'applet', 'portal'}
-                or any(name.startswith('on') or name in {'srcset', 'srcdoc', 'formaction', 'ping'} for name in attrs)
+                or any(name.startswith('on') or name in {'srcset', 'srcdoc', 'formaction', 'ping', 'background', 'manifest'} for name in attrs)
                 or tag == 'form' and attrs.get('action')
-                or tag == 'meta' and attrs.get('http-equiv', '').lower() == 'refresh'):
+                or tag == 'meta' and attrs.get('http-equiv', '').strip().lower() == 'refresh'):
             self.unsupported = True
         if 'style' in attrs:
             style = re.sub(r'\s+', '', attrs['style']).lower().rstrip(';')

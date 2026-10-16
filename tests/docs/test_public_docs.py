@@ -91,6 +91,10 @@ class PublicArtifactTests(unittest.TestCase):
             '<script>fetch("https://example.invalid/")',
             '<img src="https://example.invalid/image.png" src="image.png">',
             '<meta http-equiv="REFRESH" content="0;url=https://example.invalid/">',
+            '<meta http-equiv=" refresh " content="0;url=https://example.invalid/">',
+            '<body background="https://example.invalid/image.png">Text</body>',
+            '<table background="https://example.invalid/image.png"><tr><td>Text</td></tr></table>',
+            '<html manifest="https://example.invalid/cache.manifest">Text</html>',
         ]:
             with self.subTest(markup=markup):
                 (self.site / 'index.html').write_text(markup)
