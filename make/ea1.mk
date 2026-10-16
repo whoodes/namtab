@@ -4,7 +4,7 @@ ifndef EA1_EVIDENCE_DIR
 EA1_EVIDENCE_DIR := evidence/ea1-runs/$(shell python3 -c 'import uuid; print(uuid.uuid4().hex)')
 endif
 export EA1_EVIDENCE_DIR
-EA1_RECORD := python3 -B scripts/record-command.py --evidence-dir $(EA1_EVIDENCE_DIR)/commands --input crates/engine/native/boundary.c --input crates/engine/native/boundary.h --input crates/engine/src/ffi.rs --input crates/engine/src/main.rs --input crates/protocol/src/internal_engine.rs --input Cargo.lock --input evidence/ea1/artifact-pin.json --input tests/ea1/worker_test.py --input tests/ea1/evidence_dir.py
+EA1_RECORD := python3 -B scripts/record-command.py --ea1 --evidence-dir "$(EA1_EVIDENCE_DIR)/commands" --input crates/engine/native/boundary.c --input crates/engine/native/boundary.h --input crates/engine/src/ffi.rs --input crates/engine/src/main.rs --input crates/protocol/src/internal_engine.rs --input Cargo.lock --input evidence/ea1/artifact-pin.json --input tests/ea1/worker_test.py --input tests/ea1/evidence_dir.py
 ea1-build:
 	$(EA1_RECORD) --name build -- cargo build --locked -p project-x-engine
 ea1-test: ea1-build ea1-shared

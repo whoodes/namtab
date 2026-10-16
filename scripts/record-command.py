@@ -2,6 +2,7 @@
 import argparse
 import datetime
 import json
+import importlib.util
 import os
 from pathlib import Path
 import subprocess
@@ -13,6 +14,7 @@ p.add_argument('--name', required=True)
 p.add_argument('--cwd', default='.')
 p.add_argument('--evidence-dir', default='evidence/engine-assessment/commands')
 p.add_argument('--input', action='append', default=[])
+p.add_argument('--ea1', action='store_true', help='Confine EA1 evidence before dispatch or recorder writes')
 p.add_argument('--timeout', type=int, default=300)
 p.add_argument('command', nargs=argparse.REMAINDER)
 a = p.parse_args()
@@ -23,6 +25,13 @@ if not folder.is_relative_to(ROOT / 'evidence') or not a.name or any(c not in 'a
     raise ValueError('Expected evidence subdirectory and lowercase command name')
 if not cwd.is_relative_to(ROOT) or not command:
     raise ValueError('Expected project-local cwd and command')
+if a.ea1:
+    # Reuse the worker harness guard before launching even a failed command.
+    spec = importlib.util.spec_from_file_location('ea1_evidence_dir', ROOT / 'tests/ea1/evidence_dir.py')
+    ea1 = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(ea1)
+    if folder != ea1.EVIDENCE / 'commands':
+        raise ValueError('EA1 command reports must use the selected fresh run commands directory without redirects')
 env = dict(os.environ)
 node = (ROOT / '.node-version').read_text().strip()
 env.update({'PATH':str(ROOT / f'.tools/node/node-v{node}-linux-x64/bin')+os.pathsep+env['PATH'], 'CARGO_HOME':str(ROOT/'.cache/cargo'), 'PIP_CACHE_DIR':str(ROOT/'.cache/pip'), 'XDG_CACHE_HOME':str(ROOT/'.cache/xdg'), 'XDG_DATA_HOME':str(ROOT/'.cache/xdg-data'), 'XDG_STATE_HOME':str(ROOT/'.cache/xdg-state'), 'ZIG_GLOBAL_CACHE_DIR':str(ROOT/'.cache/engine-assessment/zig-global'), 'ZIG_LOCAL_CACHE_DIR':str(ROOT/'.cache/engine-assessment/zig-local'), 'NPM_CONFIG_USERCONFIG':'/dev/null','NPM_CONFIG_GLOBALCONFIG':'/dev/null'})
