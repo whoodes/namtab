@@ -144,10 +144,18 @@ pub struct Receipt {
     pub delivered_bytes: usize,
 }
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+pub struct EndpointView {
+    pub id: String,
+    /// A declared role on the trusted developer host, not human/model presence.
+    pub role: Role,
+    pub connected: bool,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Snapshot {
     pub version: String,
     pub epoch: String,
     pub endpoint: String,
+    pub endpoints: Vec<EndpointView>,
     pub sessions: Vec<Session>,
     pub attempts: Vec<Attempt>,
     pub artifacts: Vec<Artifact>,

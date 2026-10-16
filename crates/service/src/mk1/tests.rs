@@ -285,8 +285,12 @@ fn live_resume_is_endpoint_bound_and_old_epoch_tokens_fail() {
     assert_eq!(endpoint.as_deref(), Some(h.human.as_str()));
     let other = Harness::new();
     assert!(!other.broker.hello(2, Role::Human, Some(token)).0.ok);
-    assert!(h.broker.hello(3, Role::Human, None).0.ok);
-    assert!(h.broker.hello(3, Role::Human, None).0.ok);
+    for _ in 0..14 {
+        let (response, endpoint) = h.broker.hello(3, Role::Human, None);
+        assert!(response.ok);
+        h.broker.disconnect(&endpoint.unwrap());
+    }
+    assert_eq!(h.broker.snapshot(&h.human).unwrap().endpoints.len(), 16);
     assert_eq!(
         h.broker.hello(3, Role::Human, None).0.error.as_deref(),
         Some("endpoint_capacity")
@@ -540,7 +544,9 @@ fn raw_public_socket_exchange_binds_endpoint_and_rejects_untyped_operations() {
             resume: None,
         },
     };
-    assert!(exchange(&serde_json::to_vec(&hello).unwrap()).ok);
+    let hello_response = exchange(&serde_json::to_vec(&hello).unwrap());
+    assert!(hello_response.ok);
+    let connected_endpoint = hello_response.endpoint.unwrap();
     let malformed =
         exchange(br#"{"version":"namtab.mk1/1","id":2,"operation":{"op":"observe","extra":true}}"#);
     assert!(!malformed.ok);
@@ -551,10 +557,31 @@ fn raw_public_socket_exchange_binds_endpoint_and_rejects_untyped_operations() {
     };
     let response = exchange(&serde_json::to_vec(&observe).unwrap());
     assert!(response.ok);
-    assert!(response.snapshot.unwrap().attempts.is_empty());
+    let snapshot = response.snapshot.unwrap();
+    assert!(snapshot.attempts.is_empty());
+    let endpoint = snapshot
+        .endpoints
+        .iter()
+        .find(|value| value.id == connected_endpoint)
+        .unwrap();
+    assert!(endpoint.connected);
+    assert_eq!(endpoint.role, Role::Human);
+    let serialized = serde_json::to_string(&snapshot.endpoints).unwrap();
+    assert!(!serialized.contains("resume"));
+    assert!(!serialized.contains("label"));
     drop(reader);
     drop(client);
     thread.join().unwrap();
+    assert!(
+        !h.broker
+            .snapshot(&h.human)
+            .unwrap()
+            .endpoints
+            .iter()
+            .find(|value| value.id == connected_endpoint)
+            .unwrap()
+            .connected
+    );
 }
 
 #[test]
@@ -1036,4 +1063,95 @@ fn agent_observed_input_keeps_immediate_pending_output_refusal() {
     assert_eq!(response.receipt.unwrap().delivered_bytes, 0);
     assert_eq!(h.broker.human_waiters.load(Ordering::Acquire), 0);
     assert_eq!(h.broker.worker.outstanding(), 0);
+}
+
+#[test]
+fn repeated_socket_launches_retain_sixteen_endpoints_and_old_resume_receipts() {
+    use std::io::{BufReader, Write};
+    use std::os::unix::net::UnixStream;
+    let mut h = Harness::new();
+    let owned = h.shell();
+    let old_token = h.broker.state.lock().unwrap().endpoints[&h.human]
+        .resume
+        .clone();
+    h.broker.disconnect(&h.human);
+    let exchange_connection = |role: Role, resume: Option<String>, read_receipt: bool| {
+        let (mut client, server) = UnixStream::pair().unwrap();
+        let broker = Arc::clone(&h.broker);
+        let thread = std::thread::spawn(move || server::connection(server, broker));
+        let mut reader = BufReader::new(client.try_clone().unwrap());
+        let mut call = |id, operation| {
+            let request = Request {
+                version: wire::VERSION.into(),
+                id,
+                operation,
+            };
+            let mut body = serde_json::to_vec(&request).unwrap();
+            body.push(b'\n');
+            client.write_all(&body).unwrap();
+            serde_json::from_slice::<Response>(
+                &worker::line(&mut reader, wire::MAX_FRAME).unwrap().unwrap(),
+            )
+            .unwrap()
+        };
+        let hello = call(
+            1,
+            Op::Hello {
+                label: "repeated local client".into(),
+                role: role.clone(),
+                resume,
+            },
+        );
+        if hello.ok {
+            let snapshot = call(2, Op::Observe {}).snapshot.unwrap();
+            let own = snapshot
+                .endpoints
+                .iter()
+                .find(|endpoint| Some(&endpoint.id) == hello.endpoint.as_ref())
+                .unwrap();
+            assert!(own.connected);
+            assert_eq!(own.role, role);
+            if read_receipt {
+                assert_eq!(
+                    call(3, Op::Receipt { request_id: 10 })
+                        .receipt
+                        .unwrap()
+                        .operation,
+                    "create_session"
+                );
+            }
+        }
+        drop(reader);
+        drop(client);
+        thread.join().unwrap();
+        hello
+    };
+    for _ in 0..14 {
+        let hello = exchange_connection(Role::Agent, None, false);
+        assert!(hello.ok);
+        let endpoint = hello.endpoint.unwrap();
+        assert!(
+            !h.broker
+                .snapshot(&h.human)
+                .unwrap()
+                .endpoints
+                .iter()
+                .find(|value| value.id == endpoint)
+                .unwrap()
+                .connected
+        );
+    }
+    let snapshot = h.broker.snapshot(&h.human).unwrap();
+    assert_eq!(snapshot.endpoints.len(), 16);
+    assert_eq!(snapshot.sessions[0].owner, owned.owner);
+    assert_eq!(
+        exchange_connection(Role::Agent, None, false)
+            .error
+            .as_deref(),
+        Some("endpoint_capacity")
+    );
+    let resumed = exchange_connection(Role::Human, Some(old_token), true);
+    assert!(resumed.ok);
+    assert_eq!(resumed.endpoint.as_deref(), Some(h.human.as_str()));
+    assert_eq!(h.broker.snapshot(&h.human).unwrap().endpoints.len(), 16);
 }

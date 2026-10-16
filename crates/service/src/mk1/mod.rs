@@ -260,7 +260,7 @@ impl Broker {
                 .find(|(_, value)| value.resume == resume && value.role == role)
                 .map(|(id, _)| id.clone())
         } else {
-            if state.endpoints.len() >= 4 {
+            if state.endpoints.len() >= 16 {
                 return (self.fail(id, "endpoint_capacity"), None);
             }
             let endpoint = format!("e{}", state.endpoints.len() + 1);
@@ -773,6 +773,15 @@ impl Broker {
             version: wire::VERSION.into(),
             epoch: self.epoch.clone(),
             endpoint: endpoint.into(),
+            endpoints: state
+                .endpoints
+                .iter()
+                .map(|(id, value)| wire::EndpointView {
+                    id: id.clone(),
+                    role: value.role.clone(),
+                    connected: value.connected,
+                })
+                .collect(),
             sessions: state
                 .sessions
                 .values()
