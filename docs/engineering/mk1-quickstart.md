@@ -23,11 +23,13 @@ The default public socket is `.artifacts/mk1/socket`, inside an owned mode-0700 
 
 An existing socket is refused; **do not blindly remove it or its journal**. It may represent a live owner. After an abnormal stop, use a fresh private run directory with the explicit `namtabd` arguments in the broker README, and give that public socket to both clients. Linux socket pathname length is at most 107 UTF-8 bytes; use a short path inside this project. Reconnecting a view differs from restarting the daemon, worker or OS process.
 
-## First feel: zero-agent shell
+## First feel: agentic work, with a useful shell
 
 The TUI creates the first clean-rc Bash session if there is none, takes its unowned writer and sizes it to the available viewport. Otherwise it attaches read-only: **Ctrl-G, then t** explicitly takes input. Type a simple command such as `printf 'hello from MK1\n'` and press Enter. Arrows, Tab, Backspace, Home/End and supported modifiers are application input; Ctrl-C is delivered as terminal input, not a promise that all work/descendants stopped.
 
-The desktop exposes Create shell, select session, Take input / Force takeover, Release and explicit Resize. Click the terminal viewport (which focuses its keyboard field) or the labelled Terminal keyboard field before typing. Ctrl-G then Escape returns keyboard focus to session controls; Ctrl-G twice sends literal application Ctrl-G. Select screen text outside that field and use ordinary Ctrl-C for browser copy; inside the field Ctrl-C is application input. It shows the same canonical screen as the TUI. Focus is distinct from ownership; switching sessions or losing window focus clears queued stale input. A passive view does not resize or take ownership automatically.
+The desktop starts with shared tasks and attributed activity. **Define a task** records a bounded instruction and declared artifact paths for protocol clients to observe; it does not launch a model or schedule work. A selected contract has an immutable revision, and attempts explicitly bind that revision. The separate **Run a local command** disclosure invokes clean Bash with the entered shell syntax through a managed attempt; it is explicit human local execution, not interpretation of an agent goal. Literal argv stays available in advanced controls.
+
+**Shell** activity exposes Create shell, select session, Take input / Force takeover, Release and explicit Resize. Click the terminal viewport (which focuses its keyboard field) or the labelled Terminal keyboard field before typing. Ctrl-G then Escape returns keyboard focus to session controls; Ctrl-G twice sends literal application Ctrl-G. Select screen text outside that field and use ordinary Ctrl-C for browser copy; inside the field Ctrl-C is application input. It shows the same canonical screen as the TUI. Focus is distinct from ownership; switching sessions or losing window focus clears queued stale input. A passive view does not resize or take ownership automatically.
 
 TUI controls use **Ctrl-G followed by**:
 
@@ -42,27 +44,31 @@ TUI controls use **Ctrl-G followed by**:
 | `q` | Detach the TUI; leave the daemon/session running |
 | Ctrl-G | Send a literal application Ctrl-G; prefix timeout/unknown commands send no application input |
 
-In TUI task review, Tab selects the next managed attempt; Up/Down and PageUp/PageDown scroll its evidence. Task state and explicit artifact references precede bounded stdout/stderr. This is a small review view, not a full diff/search workflow.
+In TUI task review, Tab selects the next managed attempt; Up/Down and PageUp/PageDown scroll its evidence. Task state, exact launch endpoint/request, revision-bound instructions and explicit artifact references precede bounded stdout/stderr. The TUI displays shared contracts read-only; define them through the portal or typed CLI. This is a small review view, not a full diff/search workflow.
 
 Outer host terminals lose some physical key/layout/modifier distinctions and have Escape ambiguity. The TUI refuses unavailable facts instead of reconstructing them. The desktop knows more browser key identities but is not full IME, accessibility or layout qualification.
 
 ## Native work and safe handoff
 
-Use the desktop managed-argv form or **Ctrl-G a** in the TUI. An array such as `["/usr/bin/printf", "native stdout\n"]` is executed directly, with distinct stdout/stderr and actual process exit/drain state. It is not implicitly interpreted by a shell. Use short finite commands: MK1 has no managed-attempt cancellation operation or UI, and takeover of a PTY does not stop managed work. These facts differ from a persistent PTY shell, where the engine does not invent per-command exit status or command boundaries.
+Use **Run a local command** in the desktop for explicit clean-Bash shell syntax, its advanced literal-argv option, or **Ctrl-G a** in the TUI for a JSON argv array. An array such as `["/usr/bin/printf", "native stdout\n"]` is executed directly, with distinct stdout/stderr and actual process exit/drain state. It is not implicitly interpreted by a shell. Use short finite commands: MK1 has no managed-attempt cancellation operation or UI, and takeover of a PTY does not stop managed work. These facts differ from a persistent PTY shell, where the engine does not invent per-command exit status or command boundaries.
 
-For an agent interface without paid-model integration, keep one typed CLI connection open:
+For real scripted agent integration without paid models, keep two typed CLI connections open alongside either or both frontends (four connections total):
 
 ```sh
 make mk1-agent
 ```
 
-Enter one operation JSON object per line. The client supplies the version, monotonic request ID and outer envelope:
+Enter one operation JSON object per line. The client supplies the version, monotonic request ID and outer envelope; the positional `run TASK PROGRAM...` shortcut is ad hoc, so use JSON `run` with `task_revision` for a shared contract. These are protocol clients, not autonomous models. The shared task capability is `shared_tasks_v1`; absent capability means unsupported, never implied legacy support:
 
 ```json
 {"op":"observe"}
-{"op":"run","task":"native-demo","argv":["/usr/bin/printf","hello from an agent\n"]}
+{"op":"define_task","task":"native-demo","goal":"Produce two independent observations for human review.","expected_artifacts":[]}
 {"op":"observe"}
 ```
+
+From either client, observe that contract's **actual** `revision`, then submit `run` with `task:"native-demo"`, `task_revision` set to that exact value and the desired literal `argv`. Missing/stale revisions refuse. A run receipt's typed `attempt_started` result identifies the attempt; its `origin.endpoint` and `origin.request_id` distinguish identical numeric IDs from different clients. Separate streams/exit belong to that managed attempt. A free-form task label without a registered contract remains explicitly ad hoc. Contract goals/expected paths are data, not execution grants, scheduling or proof of artifact production.
+
+An agent can explicitly release a PTY writer and another can take the observed new generation. Human takeover fences both old writers' future input; existing processes/effects continue. Both clients show shared-task activity rather than inventing model progress. A contract has no automatic success/completion state.
 
 For application control, first observe the actual session ID/generation/revisions, take an unowned writer with `force:false`, then submit `input` with `policy:"observed"` and those exact facts. Do not copy stale example IDs, infer mode from output or automatically retry a lost input response. Named keys/text/paste share the same worker encoder as human input. A human can explicitly force takeover; a declared agent cannot force it. Connection/declared-role and managed-process facts are not evidence of an LLM thinking or a task being semantically complete.
 
@@ -70,12 +76,27 @@ Artifact registration explicitly associates a bounded workspace file with a task
 
 ## Supported boundaries and stopping point
 
+- Four immutable RAM task contracts, each with a single-line goal of at most 512 UTF-8 bytes and at most two declared relative artifact paths; no contract editing, autonomous task dispatcher, dependency scheduler or model integration. Define a new task for a changed instruction.
 - Four connected clients and sixteen retained identities per daemon; prefer explicit live reconnect over creating identities repeatedly. The clients show declared agent connection facts, not model activity. Receipts/journal also have finite caps documented in the broker contract.
 - Two total PTYs and two total managed attempts per daemon, including finished records; explicit capacity errors do not imply success. This deliberately small lifetime budget is for MK1 evaluation.
 - Width-one ASCII/Latin-1 except soft hyphen, monochrome frontend projection, selected cursor/mode/key/query behavior. No history/search/reflow, wide/grapheme/bidi support, mouse navigation, general Vim/less compatibility or arbitrary enhanced keyboard protocol. Unsupported enhanced negotiation fences input until a supported reset/new session. Display replacement markers remain observations, not valid committed input.
 - Bracketed paste must be enabled by the application; at most 8,180 content bytes fit the single-write envelope. No silent unbracketed multiline paste, raw-byte bypass, automatic suffix resend or guessed prompt safety. Partial/unknown delivery fences further input; a new session is the bounded recovery path.
+- After any refused/uncertain application input, both frontends pause and discard queued suffixes. Inspect the application (a command may be incomplete), then explicitly Take/Re-arm; TUI uses Ctrl-G t. Focus/observe/reconnect never silently clear the pause. Queued recovery gestures are discarded too. Same-UID delayed software input cannot be attested as a physical human gesture.
 - Ordinary human-live input tolerates echo-only screen changes while retaining original owner, generation, mode and geometry fences. Exact agent input stays revision-bound. Neither policy promises application understanding or absence of observation/action races.
 - No output/input content is journaled. Metadata receipts reserve before effects; completion persistence failure is uncertainty. Live reconnect is supported; daemon/worker loss does not restore screens/processes or authorize old mutation replay.
 - Developer-host filesystem/network access is unenforced; same-UID matching does not attest a real human or protect against hostile same-UID programs. Detach/takeover do not stop prior work. Abrupt daemon death may leave descendants/effects; MK1 is not containment or crash-recovery qualification.
 
 Use MK1 to assess typing feel, visibility of ownership/status, navigation between two sessions/tasks and the usefulness of truthful native evidence. After verified handoff, implementation stops for user feedback. Broader compatibility, hardening, polish and full NG1 remain separate work.
+
+## Reproduce engine evidence
+
+After `make mk1-build`, the active CI lane runs both real harnesses in fresh isolated namespaces, preserving any live evaluation session:
+
+```sh
+python3 -B tests/mk1/e2e.py --bin-dir "$PWD/target/debug" --terminfo "$PWD/.artifacts/terminfo" --artifacts "$PWD/.artifacts/mk1-use-a-fresh-id"
+python3 -B tests/mk1/agents.py --bin-dir "$PWD/target/debug" --terminfo "$PWD/.artifacts/terminfo" --artifacts "$PWD/.artifacts/mk1-agents-use-a-fresh-id"
+```
+
+The first checks whole-command bursts, exact repeats, foreground interruption before a finite natural completion, task selection, suffix fencing, live reconnect and deliberate re-arm. The second checks two concurrent scripted agents against one immutable contract, precise endpoint/request attribution, duplicate/conflict/stale-revision refusal, explicit agent handoff and real TUI takeover while another PTY emits 32 KiB over a finite interval. File observations/reviews remain separate from sealed producer causality.
+
+The agent harness retains raw monotonic RPC samples: 30 observations, control receipts and logical-End input receipts in each quiet/noisy phase (180 total), environment, commands and binary hashes. Debug-build samples include client overhead, worker/service work and required metadata fsync; p50/p95/p99 are descriptive small-sample values, not achieved SLOs, input-to-photon/render/model latency or comparative speed. Its takeover-to-observed-rearm timing includes polling and the outer-screen test observer. No observed measurement justifies weakening durability/freshness gates. Real Electron screenshots/journeys remain separate from headless CI; human feel and broader accessibility/compatibility await evaluation.

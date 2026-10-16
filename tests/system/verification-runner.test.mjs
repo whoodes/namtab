@@ -30,6 +30,7 @@ const args = process.argv.slice(2);
 appendFileSync("commands.jsonl", JSON.stringify({ bin, args }) + "\\n");
 console.log("stub " + bin);
 if ((process.env.VERIFY_TEST_FAILURE === "check" && bin === "cargo" && args[0] === "test") ||
+    (process.env.VERIFY_TEST_FAILURE === "coordination" && args.includes("tests/mk1/agents.py")) ||
     (process.env.VERIFY_TEST_FAILURE === "journey" && args.includes("tests/mk1/e2e.py")) ||
     (process.env.VERIFY_TEST_FAILURE === "version" && bin === "rustc")) process.exitCode = 1;
 `;
@@ -99,7 +100,11 @@ test("both verification scopes retain Cargo coverage and all discovered system t
     const journey = report.checks.findIndex(
       (c) => c.name === "mk1-real-journeys",
     );
-    assert.ok(launch >= 0 && journey > launch);
+    const agents = report.checks.findIndex(
+      (c) => c.name === "mk1-two-agent-journeys",
+    );
+    assert.ok(launch >= 0 && journey > launch && agents > journey);
+    assert.ok(report.checks[agents].command.includes("tests/mk1/agents.py"));
     assert.deepEqual(report.checks[launch].command, [
       "python3",
       "-B",
@@ -142,6 +147,19 @@ test("a failed real MK1 journey fails the active lane without erasing other chec
   assert.equal(result.status, 1, result.stderr);
   assert.equal(
     report.checks.find((c) => c.name === "mk1-real-journeys").verdict,
+    "FAIL",
+  );
+  assert.equal(
+    report.checks.find((c) => c.name === "strict-mkdocs").verdict,
+    "PASS",
+  );
+});
+
+test("a failed two-agent coordination journey fails the active lane", () => {
+  const { result, report } = verify(["--source-foundation"], "coordination");
+  assert.equal(result.status, 1, result.stderr);
+  assert.equal(
+    report.checks.find((c) => c.name === "mk1-two-agent-journeys").verdict,
     "FAIL",
   );
   assert.equal(
