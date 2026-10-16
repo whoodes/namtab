@@ -21,6 +21,17 @@ test("raw X4 wrapper preserves the original report and still exits nonzero", () 
   const report = JSON.parse(result.stdout);
   assert.equal(report.gate, "X4");
   assert.equal(report.verdict, "FAIL");
+  assert.deepEqual(
+    report.results.map((c) => [c.name, c.atAttach, c.afterContinuation]),
+    [
+      ["plain", true, true],
+      ["saved-cursor", true, false],
+      ["scroll-region", true, false],
+      ["custom-tabs", true, false],
+      ["alternate", true, true],
+      ["partial-csi", true, false],
+    ],
+  );
   assert.deepEqual(readFileSync("evidence/engine-continuation.json"), original);
 });
 
