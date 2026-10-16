@@ -485,6 +485,35 @@ fn review_text(snapshot: &Snapshot, selected: usize) -> String {
             a.exit_code,
             if a.truncated { " | truncated" } else { "" },
         ));
+        text.push_str(&match &a.origin {
+            Some(origin) => format!(
+                "Launch endpoint {} | request {}\n",
+                label(&origin.endpoint),
+                origin.request_id
+            ),
+            None => "Launch origin unavailable from this server.\n".into(),
+        });
+        if let Some(revision) = &a.task_revision {
+            text.push_str(&format!("Bound task revision: {}\n", label(revision)));
+            if let Some(contract) = snapshot
+                .tasks
+                .iter()
+                .find(|t| t.task == a.task && t.revision == *revision)
+            {
+                text.push_str(&format!(
+                    "Declared instruction: {}\nExpected paths (not completion): {}\n",
+                    label(&contract.goal),
+                    contract
+                        .expected_artifacts
+                        .iter()
+                        .map(|p| label(p))
+                        .collect::<Vec<_>>()
+                        .join(", ")
+                ));
+            }
+        } else {
+            text.push_str("Ad-hoc label; no shared contract binding.\n");
+        }
     } else {
         text.push_str("No managed task yet. Ctrl-G a opens literal argv.\n");
     }
@@ -1426,5 +1455,29 @@ mod tests {
         ));
         assert_eq!(state.scroll, 0);
         assert_eq!(state.selected, 0);
+    }
+    #[test]
+    fn task_review_uses_exact_origin_and_contract_revision_without_label_inference() {
+        let mut snapshot = fixture();
+        snapshot.attempts[0].origin = Some(p::AttemptOrigin {
+            endpoint: "agent-a".into(),
+            request_id: 42,
+        });
+        snapshot.tasks.push(p::TaskContract {
+            task: snapshot.attempts[0].task.clone(),
+            revision: "sha256:current".into(),
+            goal: "shared instruction".into(),
+            expected_artifacts: vec!["expected.txt".into()],
+        });
+        let unbound = review_text(&snapshot, 0);
+        assert!(unbound.contains("Launch endpoint agent-a | request 42"));
+        assert!(unbound.contains("Ad-hoc label"));
+        assert!(!unbound.contains("shared instruction"));
+        snapshot.attempts[0].task_revision = Some("sha256:older".into());
+        assert!(!review_text(&snapshot, 0).contains("shared instruction"));
+        snapshot.attempts[0].task_revision = Some("sha256:current".into());
+        let bound = review_text(&snapshot, 0);
+        assert!(bound.contains("Declared instruction: shared instruction"));
+        assert!(bound.contains("Expected paths (not completion): expected.txt"));
     }
 }
