@@ -11,6 +11,14 @@ const fixture = JSON.parse(
   ),
 );
 const clone = () => structuredClone(fixture);
+const reference = (value) => {
+  assert.ok(typeof value === "string" && value.length > 0, "missing reference");
+  assert.match(
+    value,
+    /^[A-Za-z0-9][A-Za-z0-9@._:-]{0,127}$/,
+    "invalid synthetic reference",
+  );
+};
 const decimal = (value) => {
   assert.match(value, /^(0|[1-9][0-9]{0,19})$/);
   const n = BigInt(value);
@@ -23,6 +31,7 @@ function checkAttribution(example) {
   const operations = new Set();
   const executions = new Map();
   const keys = new Set();
+  const attempts = new Map();
   for (const launch of example.launches) {
     for (const key of [
       "run",
@@ -33,7 +42,15 @@ function checkAttribution(example) {
       "taskRevision",
       "contextRevision",
     ])
-      assert.equal(typeof launch[key], "string");
+      reference(launch[key]);
+    const pinned = [launch.taskRevision, launch.contextRevision];
+    if (attempts.has(launch.attempt))
+      assert.deepEqual(
+        attempts.get(launch.attempt),
+        pinned,
+        "attempt binding changed",
+      );
+    else attempts.set(launch.attempt, pinned);
     assert.ok(decimal(launch.sequence) > 0n);
     const key = JSON.stringify([launch.requestNamespace, launch.sequence]);
     assert.ok(!keys.has(key), "one issued key cannot create two launches");
@@ -71,6 +88,16 @@ function checkAttribution(example) {
 }
 
 function checkDependency(evidence) {
+  // Classification is trusted fixture input, never authentication by string.
+  for (const key of [
+    "selectedArtifact",
+    "validationArtifact",
+    "selectedContext",
+    "validationContext",
+    "quality",
+    "requiredQuality",
+  ])
+    reference(evidence[key]);
   assert.equal(evidence.selectedArtifact, evidence.validationArtifact);
   assert.equal(evidence.selectedContext, evidence.validationContext);
   assert.equal(evidence.validationState, "passed");
@@ -115,6 +142,15 @@ test("distinct issued namespaces can use sequence1 with independent origins", ()
   const collision = clone();
   collision.launches[1].requestNamespace = "req-A";
   assert.throws(() => checkAttribution(collision), /two launches/);
+  const repinned = clone();
+  repinned.launches[1].attempt = "A1";
+  repinned.streams[1].attempt = "A1";
+  assert.throws(() => checkAttribution(repinned), /attempt binding changed/);
+  // One attempt can legitimately have multiple executions with unchanged pins.
+  repinned.launches[1].contextRevision = "CA@1";
+  checkAttribution(repinned);
+  repinned.launches[1].taskRevision = "T@2";
+  assert.throws(() => checkAttribution(repinned), /attempt binding changed/);
 });
 
 test("per-stream attribution survives cross-stream reorder; gaps stay explicit", () => {
@@ -138,6 +174,21 @@ test("per-stream attribution survives cross-stream reorder; gaps stay explicit",
 
 test("exact dependency evidence cannot follow a changed selection or agent claim", () => {
   checkDependency(fixture.dependency);
+  assert.throws(
+    () =>
+      checkDependency({ validationState: "passed", factSource: "validator" }),
+    /missing reference/,
+  );
+  for (const value of [undefined, null, ""])
+    for (const keys of [
+      ["selectedArtifact", "validationArtifact"],
+      ["selectedContext", "validationContext"],
+      ["quality", "requiredQuality"],
+    ]) {
+      const missing = { ...fixture.dependency };
+      for (const key of keys) missing[key] = value;
+      assert.throws(() => checkDependency(missing), /missing reference/);
+    }
   for (const patch of [
     { selectedArtifact: "R2" },
     { selectedContext: "CA@2" },
