@@ -160,6 +160,9 @@ function shape(r) {
     r.deadline > 0 &&
     r.deadline <= 5 &&
     Number.isInteger(r.epoch) &&
+    r.epoch >= 1 &&
+    r.epoch <= BOUNDS.generations &&
+    ["NA", "NB"].includes(r.namespace) &&
     r.binding &&
     Object.keys(r.binding).sort().join() ===
       "assignment,attempt,capability,context,control,epoch,guard,run,task,writer" &&
@@ -169,9 +172,10 @@ function shape(r) {
         r.binding[k] >= 1 &&
         r.binding[k] <= BOUNDS.generations,
     ) &&
-    ["attempt", "task", "context"].every(
-      (k) => typeof r.binding[k] === "string" && r.binding[k].length > 0,
-    )
+    actors.includes(r.binding.run) &&
+    ["A1", "A2"].includes(r.binding.attempt) &&
+    ["T1", "T2"].includes(r.binding.task) &&
+    r.binding.context === "C1"
   );
 }
 
@@ -481,6 +485,8 @@ export function step(before, action) {
         result = no("no-matching-call");
         break;
       }
+      if (action.terminal !== undefined && typeof action.terminal !== "boolean")
+        break;
       if (
         action.count !== "unknown" &&
         (!Number.isInteger(action.count) ||

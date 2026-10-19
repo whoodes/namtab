@@ -365,7 +365,10 @@ test("independent obligation audit kills run, assignment and suffix-check omissi
   const before = r.state;
   const forged = step(before, { type: "authorize-write", operation: "O1" });
   forged.event.authorized.start = 1;
-  assert.throws(() => audit(before, forged), /suffix skipped/);
+  assert.throws(
+    () => audit(before, forged),
+    /event\/state call token mismatch/,
+  );
 });
 
 test("bounded graph explores interleavings and nondeterministic result choices", (t) => {
@@ -500,10 +503,7 @@ test("forged evidence cannot change a binding, invent certainty or attribute ano
   assert.throws(() => audit(before, crossResult), /cross-attributed result/);
   const certainty = step(before, { type: "lose-ack", operation: "O1" });
   certainty.state.operations.O1.delivery = "zero";
-  assert.throws(
-    () => audit(before, certainty),
-    /terminal delivery|unresolved call/,
-  );
+  assert.throws(() => audit(before, certainty), /lost ACK became certainty/);
   for (const count of [-1, 4, 0.5, null]) {
     const bad = step(before, {
       type: "write-result",
@@ -542,4 +542,81 @@ test("closed runs do not reopen on reconnect; finite sequence/generation bounds 
   const exhausted = q.state;
   assert.equal(q.do({ type: "takeover", to: "RA" }).ok, false);
   assert.deepEqual(q.state, exhausted);
+});
+
+test("finite request alphabets reject oversized/unknown references without retaining or consuming", () => {
+  const r = assigned();
+  const base = intent(r.state);
+  for (const field of ["attempt", "task", "context", "run"])
+    for (const value of ["unknown", "x".repeat(8192)]) {
+      const request = { ...base, binding: { ...base.binding, [field]: value } };
+      assert.equal(
+        r.do({ type: "submit", actor: "RA", request }).reason,
+        "preflight",
+      );
+      assert.equal(r.state.namespaces.NA.consumed, 0);
+      assert.deepEqual(r.state.bindings, {});
+    }
+  for (const patch of [{ namespace: ["NA"] }, { epoch: 9 }])
+    assert.equal(
+      r.do({ type: "submit", actor: "RA", request: { ...base, ...patch } })
+        .reason,
+      "preflight",
+    );
+  assert.equal(submit(r, base), "O1");
+});
+
+test("auditor rejects event/state token mismatch and cross-operation authorization", () => {
+  const r = assigned();
+  submit(r);
+  submit(r, intent(r.state, "RA", 2));
+  const before = r.state;
+  const good = step(before, { type: "authorize-write", operation: "O1" });
+  audit(before, good);
+  const wrongOffset = structuredClone(good);
+  wrongOffset.state.operations.O1.flight.start = 1;
+  wrongOffset.state.operations.O1.flight.length = 2;
+  assert.throws(
+    () => audit(before, wrongOffset),
+    /event\/state call token mismatch/,
+  );
+  const other = step(before, { type: "authorize-write", operation: "O2" });
+  audit(before, other);
+  other.event.authorized.operation = "O1";
+  other.event.authorized.id = "O1:1";
+  assert.throws(
+    () => audit(before, other),
+    /another operation|operation mismatch/,
+  );
+  const wrongReturn = structuredClone(good);
+  wrongReturn.result.value.start = 1;
+  assert.throws(
+    () => audit(before, wrongReturn),
+    /returned\/event call token mismatch/,
+  );
+});
+
+test("unknown syscall evidence cannot be forged into zero or partial certainty", () => {
+  for (const prefix of [0, 1]) {
+    const r = assigned();
+    submit(r);
+    call(r);
+    if (prefix) {
+      finish(r, 1);
+      call(r);
+    }
+    const before = r.state;
+    const unknown = step(before, {
+      type: "write-result",
+      operation: "O1",
+      call: before.operations.O1.flight.id,
+      count: "unknown",
+    });
+    audit(before, unknown);
+    unknown.state.operations.O1.delivery = prefix ? "partial" : "zero";
+    assert.throws(
+      () => audit(before, unknown),
+      /unknown result became certainty/,
+    );
+  }
 });

@@ -17,6 +17,50 @@ export function audit(before, transition) {
     event.authorized ? 1 : 0,
     "unrecorded/duplicate call",
   );
+  for (const [id, op] of Object.entries(after.operations)) {
+    const previous = before.operations[id];
+    assert.equal(
+      op.calls - (previous?.calls ?? 0),
+      event.authorized?.operation === id ? 1 : 0,
+      "call counter attributed to another operation",
+    );
+    if (!previous?.flight && op.flight)
+      assert.equal(event.authorized?.operation, id, "unlogged flight");
+  }
+  if (event.authorized) {
+    const { operation, ...token } = event.authorized;
+    assert.equal(
+      event.type,
+      "authorize-write",
+      "call outside write authorization",
+    );
+    assert.equal(event.operation, operation, "action/event operation mismatch");
+    assert.equal(
+      after.active,
+      operation,
+      "authorized operation differs from queue owner",
+    );
+    assert.deepEqual(
+      after.operations[operation]?.flight,
+      token,
+      "event/state call token mismatch",
+    );
+    assert.equal(
+      after.operations[operation]?.phase,
+      "in-flight",
+      "authorized call not in flight",
+    );
+    assert.equal(
+      transition.result.ok,
+      true,
+      "authorized call reported refusal",
+    );
+    assert.deepEqual(
+      transition.result.value,
+      token,
+      "returned/event call token mismatch",
+    );
+  }
   for (const [id, old] of Object.entries(before.operations)) {
     const next = after.operations[id];
     assert.ok(next, "operation forgotten");
@@ -32,6 +76,101 @@ export function audit(before, transition) {
         event.count,
         "invented delivery extent",
       );
+    }
+    if (old.flight && next.flight)
+      assert.deepEqual(next.flight, old.flight, "in-flight token changed");
+    if (old.flight && !next.flight) {
+      assert.equal(
+        event.type,
+        "write-result",
+        "call disappeared without result",
+      );
+      assert.equal(event.operation, id, "call completed by another operation");
+      assert.equal(
+        event.call,
+        old.flight.id,
+        "call completed by another token",
+      );
+    }
+    if (old.delivery === "unknown" && old.phase === "closed")
+      assert.equal(next.delivery, "unknown", "closed unknown became certainty");
+    if (old.flight && event.operation === id && event.type === "lose-ack") {
+      assert.equal(next.phase, "closing", "lost ACK reopened dispatch");
+      assert.equal(next.delivery, "unknown", "lost ACK became certainty");
+      assert.deepEqual(
+        next.flight,
+        old.flight,
+        "lost ACK released unresolved call",
+      );
+    }
+    if (
+      old.flight &&
+      event.operation === id &&
+      event.type === "write-result" &&
+      event.call === old.flight.id
+    ) {
+      const validCount =
+        event.count === "unknown" ||
+        (Number.isInteger(event.count) &&
+          event.count >= 0 &&
+          event.count <= old.flight.length);
+      const validTerminal =
+        event.terminal === undefined || typeof event.terminal === "boolean";
+      if (validCount && validTerminal) {
+        assert.equal(transition.result.ok, true, "valid result lost");
+        assert.equal(next.flight, null, "result did not retire call token");
+        if (event.count === "unknown") {
+          assert.equal(
+            next.delivery,
+            "unknown",
+            "unknown result became certainty",
+          );
+          assert.equal(
+            next.known,
+            old.known,
+            "unknown invented a proven prefix",
+          );
+          assert.equal(next.phase, "closed", "unknown result reopened suffix");
+        } else {
+          assert.equal(
+            next.known,
+            old.known + event.count,
+            "result extent differs",
+          );
+          if (
+            old.phase === "closing" ||
+            event.terminal === true ||
+            next.known === old.bytes.length
+          ) {
+            const expected =
+              next.known === old.bytes.length && next.known > 0
+                ? "full"
+                : next.known > 0
+                  ? "partial"
+                  : "zero";
+            assert.equal(
+              next.phase,
+              "closed",
+              "terminal result reopened suffix",
+            );
+            assert.equal(next.delivery, expected, "known result mislabeled");
+          } else {
+            assert.equal(
+              next.phase,
+              "suffix",
+              "nonterminal result lost suffix",
+            );
+            assert.equal(
+              next.delivery,
+              "pending",
+              "pending result became certainty",
+            );
+          }
+        }
+      } else {
+        assert.equal(transition.result.ok, false, "malformed result accepted");
+        assert.deepEqual(next, old, "malformed result changed operation");
+      }
     }
     assert.equal(next.bytes, old.bytes, "frozen payload changed");
     assert.ok(
