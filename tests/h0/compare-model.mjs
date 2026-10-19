@@ -2,11 +2,32 @@
 // neither a bisimulation nor a model of the real PTY's parser/concurrency.
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { initial, intent, step } from "../models/h0-write-safety/model.mjs";
 import { audit } from "../models/h0-write-safety/invariants.mjs";
 
 export function compare(report) {
   assert.equal(report.profile, "h0-pty-once/0+px-dev-text-0");
+  const digest = (s) => createHash("sha256").update(s).digest("hex");
+  assert.equal(
+    report.context_sha256,
+    digest(JSON.stringify(report.provenance)),
+  );
+  assert.equal(
+    report.task_sha256,
+    digest(
+      "h0-pty-once/0: two scripted clients; one context/attempt; handoff; no automatic retry",
+    ),
+  );
+  assert.equal(report.replies, 1);
+  assert.equal(report.reply_evidence.length, 1);
+  assert.equal(report.reply_evidence[0].bytes_hex, "1b5b306e");
+  assert.equal(report.reply_evidence[0].delivery, "full");
+  assert.equal(report.reply_evidence[0].accepted, 4);
+  assert.equal(
+    report.reply_evidence[0].source_revision,
+    report.reply_evidence[0].output_event + 1,
+  );
   const records = report.receipts;
   assert.ok(Array.isArray(records));
   const fullA = records.find(
@@ -106,6 +127,12 @@ if (process.argv[1]?.endsWith("compare-model.mjs") && process.argv[2]) {
   console.log(compare(report));
   for (const change of [
     (r) => {
+      r.provenance.capture = "unreviewed";
+    },
+    (r) => {
+      r.reply_evidence[0].bytes_hex = "1b5b316e";
+    },
+    (r) => {
       r.receipts.find(
         (x) => x.origin.run === "run-0" && x.sequence === 3,
       ).calls = 1;
@@ -127,6 +154,6 @@ if (process.argv[1]?.endsWith("compare-model.mjs") && process.argv[2]) {
     );
   }
   console.log(
-    "PASS: stale-call, cross-context and false-full corruption sensitivity",
+    "PASS: manifest, exact-reply, stale-call, cross-context and false-full corruption sensitivity",
   );
 }

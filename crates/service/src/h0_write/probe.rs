@@ -31,6 +31,15 @@ pub struct Provenance {
     pub geometry: (u16, u16),
 }
 #[derive(serde::Serialize)]
+pub struct ReplyEvidence {
+    pub output_event: u16,
+    pub source_revision: u64,
+    pub guard: u16,
+    pub bytes_hex: String,
+    pub delivery: Delivery,
+    pub accepted: Option<usize>,
+}
+#[derive(serde::Serialize)]
 pub struct Report {
     pub provenance: Provenance,
     pub context_sha256: String,
@@ -39,6 +48,7 @@ pub struct Report {
     pub checks: Vec<String>,
     pub receipts: Vec<Receipt>,
     pub replies: usize,
+    pub reply_evidence: Vec<ReplyEvidence>,
     pub output_bytes: usize,
     pub limits: String,
 }
@@ -416,16 +426,15 @@ pub fn run(config: Config) -> Result<Report, Box<dyn std::error::Error>> {
     while broker.core.lock().unwrap().replies.is_empty() {
         pump(&broker, &mut reader, &mut output, b"h0$ ", deadline)?;
     }
-    require(
-        broker
-            .core
-            .lock()
-            .unwrap()
-            .replies
-            .iter()
-            .any(|r| r.delivery == Delivery::Full && r.requested == 4),
-        "canonical_reply_not_delivered",
-    )?;
+    {
+        let core = broker.core.lock().unwrap();
+        require(
+            core.replies.len() == 1
+                && core.replies[0].delivery == Delivery::Full
+                && core.replies[0].bytes == b"\x1b[0n",
+            "canonical_reply_not_exactly_once_dsr_0",
+        )?;
+    }
     require(
         !output.windows(23).any(|w| w == b"SHOULD_NEVER_BE_WRITTEN"),
         "stale_bytes_observed",
@@ -444,7 +453,14 @@ pub fn run(config: Config) -> Result<Report, Box<dyn std::error::Error>> {
         provenance, context_sha256, task_sha256,
         profile: PROFILE.into(),
         checks: vec!["two_socket_pair_clients_distinct_namespace_sequence_1", "real_pty_text_enter_and_observed_markers", "transfer_stale_queued_intent_zero_calls", "reconnect_original_receipt_no_writer_regrant", "canonical_dsr_single_reply_independent_of_run", "owned_direct_child_reaped"].into_iter().map(str::to_owned).collect(),
-        receipts, replies: core.replies.len(), output_bytes: output.len(),
+        receipts,
+        replies: core.replies.len(),
+        reply_evidence: core.replies.iter().map(|r| ReplyEvidence {
+            output_event: r.event, source_revision: r.source_revision, guard: r.guard,
+            bytes_hex: r.bytes.iter().map(|b| format!("{b:02x}")).collect(),
+            delivery: r.delivery.clone(), accepted: r.accepted,
+        }).collect(),
+        output_bytes: output.len(),
         limits: "Scripted clients only; one merged PTY stream, no universal shell-command/output attribution; RAM-only receipts, no durability/crash recovery/capacity/GUI/model or latency qualification.".into(),
     };
     // Synthetic output explicitly retained by this test only, not general capture.

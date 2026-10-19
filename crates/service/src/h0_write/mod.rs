@@ -47,6 +47,7 @@ struct Record {
 #[derive(Clone, serde::Serialize)]
 struct ReplyRecord {
     event: u16,
+    source_revision: u64,
     guard: u16,
     requested: usize,
     accepted: Option<usize>,
@@ -586,6 +587,7 @@ impl<W: WriteOnce> Core<W> {
             }
             self.replies.push(ReplyRecord {
                 event: self.output_event,
+                source_revision: self.frame.revision,
                 guard: self.guard,
                 requested: replies.len(),
                 bytes: replies,
