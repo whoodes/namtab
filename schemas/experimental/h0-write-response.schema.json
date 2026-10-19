@@ -1,0 +1,307 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Response",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "format": "uint16",
+      "maximum": 65535,
+      "minimum": 0
+    },
+    "result": {
+      "$ref": "#/$defs/Result_of_Body_or_string"
+    },
+    "version": {
+      "$ref": "#/$defs/Version"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "id",
+    "result"
+  ],
+  "$defs": {
+    "Binding": {
+      "type": "object",
+      "properties": {
+        "assignment": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "attempt": {
+          "type": "string"
+        },
+        "capability": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "cols": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "connection": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "context": {
+          "type": "string"
+        },
+        "control": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "epoch": {
+          "type": "string"
+        },
+        "guard": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "incarnation": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "mode_revision": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0
+        },
+        "namespace": {
+          "type": "string"
+        },
+        "principal": {
+          "type": "string"
+        },
+        "profile": {
+          "type": "string"
+        },
+        "revision": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0
+        },
+        "rows": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "run": {
+          "type": "string"
+        },
+        "session": {
+          "type": "string"
+        },
+        "task": {
+          "type": "string"
+        },
+        "writer": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "epoch",
+        "principal",
+        "run",
+        "namespace",
+        "connection",
+        "control",
+        "capability",
+        "session",
+        "incarnation",
+        "context",
+        "task",
+        "attempt",
+        "assignment",
+        "writer",
+        "guard",
+        "revision",
+        "mode_revision",
+        "cols",
+        "rows",
+        "profile"
+      ]
+    },
+    "Body": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "observation"
+            },
+            "value": {
+              "$ref": "#/$defs/Observation"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "receipt"
+            },
+            "value": {
+              "$ref": "#/$defs/Receipt"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        }
+      ]
+    },
+    "Delivery": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "in_flight",
+        "full",
+        "zero",
+        "partial",
+        "unknown",
+        "transferred"
+      ]
+    },
+    "Observation": {
+      "type": "object",
+      "properties": {
+        "active": {
+          "type": "boolean"
+        },
+        "binding": {
+          "$ref": "#/$defs/Binding"
+        },
+        "holder": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "input_known": {
+          "type": "boolean"
+        },
+        "output_pending": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "binding",
+        "input_known",
+        "output_pending",
+        "active"
+      ]
+    },
+    "Receipt": {
+      "type": "object",
+      "properties": {
+        "accepted": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint",
+          "minimum": 0
+        },
+        "calls": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "delivery": {
+          "$ref": "#/$defs/Delivery"
+        },
+        "origin": {
+          "description": "Frozen admission origin, never rewritten to a successor holder.",
+          "$ref": "#/$defs/Binding"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "requested": {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0
+        },
+        "sequence": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sequence",
+        "origin",
+        "delivery",
+        "requested",
+        "reason",
+        "calls"
+      ]
+    },
+    "Result_of_Body_or_string": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "Ok": {
+              "$ref": "#/$defs/Body"
+            }
+          },
+          "required": [
+            "Ok"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "Err": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "Err"
+          ]
+        }
+      ]
+    },
+    "Version": {
+      "type": "string",
+      "enum": [
+        "namtab.h0-write/0"
+      ]
+    }
+  }
+}

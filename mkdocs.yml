@@ -49,6 +49,7 @@ nav:
       - "Acceptance catalog / G6 budgets": "engineering/07-validation-roadmap-and-risks.md"
       - "Repository and practices": "engineering/14-repository-and-engineering-practices.md"
       - "Dependencies and provenance policy": "engineering/15-dependencies-and-supply-chain.md"
+      - "H0 headless write experiment": "engineering/h0-headless-write-experiment.md"
       - "Tests and CI lanes": "engineering/16-test-and-ci-strategy.md"
       - "Contributor workflow": "engineering/contributing.md"
       - "Current source ledger": "engine/research.md"

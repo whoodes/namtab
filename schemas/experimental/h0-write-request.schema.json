@@ -1,0 +1,306 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Request",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "format": "uint16",
+      "maximum": 65535,
+      "minimum": 0
+    },
+    "operation": {
+      "$ref": "#/$defs/Operation"
+    },
+    "version": {
+      "$ref": "#/$defs/Version"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "id",
+    "operation"
+  ],
+  "$defs": {
+    "Binding": {
+      "type": "object",
+      "properties": {
+        "assignment": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "attempt": {
+          "type": "string"
+        },
+        "capability": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "cols": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "connection": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "context": {
+          "type": "string"
+        },
+        "control": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "epoch": {
+          "type": "string"
+        },
+        "guard": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "incarnation": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "mode_revision": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0
+        },
+        "namespace": {
+          "type": "string"
+        },
+        "principal": {
+          "type": "string"
+        },
+        "profile": {
+          "type": "string"
+        },
+        "revision": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0
+        },
+        "rows": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "run": {
+          "type": "string"
+        },
+        "session": {
+          "type": "string"
+        },
+        "task": {
+          "type": "string"
+        },
+        "writer": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "epoch",
+        "principal",
+        "run",
+        "namespace",
+        "connection",
+        "control",
+        "capability",
+        "session",
+        "incarnation",
+        "context",
+        "task",
+        "attempt",
+        "assignment",
+        "writer",
+        "guard",
+        "revision",
+        "mode_revision",
+        "cols",
+        "rows",
+        "profile"
+      ]
+    },
+    "Intent": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "text"
+            },
+            "text": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "text"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "enter"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    },
+    "Operation": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "type": "string",
+              "const": "observe"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "op"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "binding": {
+              "$ref": "#/$defs/Binding"
+            },
+            "intent": {
+              "$ref": "#/$defs/Intent"
+            },
+            "op": {
+              "type": "string",
+              "const": "queue"
+            },
+            "sequence": {
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            },
+            "ttl_ms": {
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "op",
+            "sequence",
+            "binding",
+            "ttl_ms",
+            "intent"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "type": "string",
+              "const": "dispatch"
+            },
+            "sequence": {
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "op",
+            "sequence"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "type": "string",
+              "const": "query"
+            },
+            "sequence": {
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "op",
+            "sequence"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "binding": {
+              "$ref": "#/$defs/Binding"
+            },
+            "op": {
+              "type": "string",
+              "const": "transfer"
+            },
+            "sequence": {
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            },
+            "target_run": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "op",
+            "sequence",
+            "binding",
+            "target_run"
+          ]
+        }
+      ]
+    },
+    "Version": {
+      "type": "string",
+      "enum": [
+        "namtab.h0-write/0"
+      ]
+    }
+  }
+}
