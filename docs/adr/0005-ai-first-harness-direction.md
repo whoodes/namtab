@@ -1,6 +1,6 @@
 # ADR E5: AI-first harness around the owned terminal engine
 
-**Status: user-chosen direction, 2026-10-19; detailed architecture and delivery gates proposed.** Supersedes E4's two-initial-frontend commitment and baseline A1/A9's Electron default. Retains E4's project-owned semantics, authority boundaries and historical evidence. This decision does not authorize runtime implementation or merging the alignment PR.
+**Status: user-chosen direction, 2026-10-19; detailed architecture and delivery gates proposed.** Supersedes E4's two-initial-frontend commitment and baseline A1/A9's Electron default. Retains E4's project-owned semantics, authority boundaries and historical evidence. This decision alone grants no runtime or merge authority. PR52 was separately owner-approved and merged; current H0 contracts/interface drafting grants no future PR merge or implementation authority.
 
 ## Decision
 
@@ -42,7 +42,7 @@ Freeze Electron as historical MK1 source/evidence. Keep `apps/desktop`, related 
 
 The [current delivery table](../engine/delivery-and-validation.md#current-harness-milestones) owns H0–H2 proposals and issue mapping. H0 reviews contracts, scale tuple and interface choice; H1 proves coordinated scheduling/observation; H2 proves admitted real-agent integration and the selected emulator interaction. Compatibility qualification (#3) remains scoped; exact recovery (#5) stays later; broader future work (#6) and historical evidence (#24) remain separate. Bring coordination (#4) forward rather than deferring it behind a dual-frontend gate.
 
-N0 design and MK1 delivery remain historical accepted outcomes. Old N1/NG1's dual-client qualification is **unearned and superseded as the current gate**, not silently completed. Residual N1 criteria get explicit review/dispositions and successor references. No dates, owners, capacity or numerical SLO are invented. A future runtime step requires separate authorization; the current authorized result is an issue-linked **draft** docs/planning PR, not a merge.
+N0 design and MK1 delivery remain historical accepted outcomes. Old N1/NG1's dual-client qualification is **unearned and superseded as the current gate**, not silently completed. Residual N1 criteria get explicit review/dispositions and successor references. No dates, owners, capacity or numerical SLO are invented. A future runtime step requires separate authorization; the original alignment result was an issue-linked docs/planning draft. It was separately approved and merged in [PR52](https://github.com/whoodes/namtab/pull/52). Current H0 drafting produces a new issue-linked draft; subsequent merges and runtime work require separate approval.
 
 ## Rejected approaches and next decisions
 

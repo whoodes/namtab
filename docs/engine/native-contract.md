@@ -360,6 +360,10 @@ Hand-authored data in `tests/fixtures/native-ownership/` records cross-client qu
 
 Future V03/V10/V11 models must independently enumerate first/suffix gates and move each fence immediately before/after authorization, OS completion and ACK loss; they must challenge these oracles rather than generate expectations from the writer being tested. Real endpoint/PTY, protected UI, scheduling and secret-exposure tests remain NOT RUN. Original X4/EA1 evidence and FAIL outcomes are unchanged.
 
+## H0 run and coordination overlay
+
+The [H0 admission proposal](h0-harness-contracts.md#work-identity-and-admission-overlay) scopes agent-run/assignment concepts and an external-agent-first boundary against these existing contracts. It is a proposed design overlay with test-only traces, not a new admitted wire API or replacement receipt/identity algorithm. Run/assignment spelling, schema migration and admission remain pending. The source-of-truth rules above still govern capabilities, task revisions, exact operation origins, final writer fencing and unknown effects.
+
 ## Coordination and integration limits
 
 Parallel agents own separate attempts/processes/interactive writers by default. Dependencies become ready only at recorded revisions. A group budget constrains admissions, output, retained evidence and concurrency; it is not a claim to control an agent's unmediated provider/network calls. Conflicting worktrees/artifact publication need an explicit integration decision. One agent cannot mutate another's writer context by changing a task label.
