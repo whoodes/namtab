@@ -536,3 +536,17 @@ fn fenced_unresolved_call_still_occupies_capacity_and_duplicate_feed_cannot_repl
     assert_eq!(c.writer.writes.len(), 1);
     assert!(!c.known());
 }
+
+#[test]
+fn refused_nonholder_transfer_cannot_close_another_runs_queued_intent() {
+    let mut c = core();
+    queue(&mut c, 0, 1);
+    let original = c.runs[0].records[&1].receipt.clone();
+    let receipt = c
+        .transfer(c.endpoint(1), 1, c.binding(1), "run-0", [11; 32])
+        .unwrap();
+    assert_eq!(receipt.delivery, Delivery::Zero);
+    assert_eq!(c.runs[0].records[&1].receipt, original);
+    dispatch(&mut c, 0, 1);
+    assert_eq!(c.writer.writes.len(), 1);
+}

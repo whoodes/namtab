@@ -368,7 +368,9 @@ impl<W: WriteOnce> Core<W> {
                 deadline,
             },
         );
-        self.fence_queued("authority_changed_before_call");
+        if receipt.delivery == Delivery::Transferred {
+            self.fence_queued("authority_changed_before_call");
+        }
         Ok(receipt)
     }
     fn advance_assignment(&mut self) -> Answer<()> {
