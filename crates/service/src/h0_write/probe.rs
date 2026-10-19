@@ -234,15 +234,6 @@ pub fn run(config: Config) -> Result<Report, Box<dyn std::error::Error>> {
     let mut epoch = [0_u8; 16];
     File::open("/dev/urandom")?.read_exact(&mut epoch)?;
     let epoch = epoch.iter().map(|b| format!("{b:02x}")).collect();
-    let worker = Worker::start(&config.worker, &workspace)?;
-    let rpc::Reply::Frame(frame) = worker.call(rpc::Operation::New {
-        session: "session-0".into(),
-        cols: 80,
-        rows: 24,
-    })?
-    else {
-        return Err("new_frame_required".into());
-    };
     let mut spec = CommandSpec::new("/bin/bash", &workspace);
     spec.args = ["--noprofile", "--norc"].map(Into::into).into();
     spec.env = [
@@ -304,6 +295,15 @@ pub fn run(config: Config) -> Result<Report, Box<dyn std::error::Error>> {
     let task_sha256 = digest(
         b"h0-pty-once/0: two scripted clients; one context/attempt; handoff; no automatic retry",
     );
+    let worker = Worker::start(&config.worker, &workspace)?;
+    let rpc::Reply::Frame(frame) = worker.call(rpc::Operation::New {
+        session: "session-0".into(),
+        cols: 80,
+        rows: 24,
+    })?
+    else {
+        return Err("new_frame_required".into());
+    };
     let platform::PtyProcess {
         mut process,
         mut reader,

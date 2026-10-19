@@ -3,6 +3,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
+import { isAbsolute } from "node:path";
 import { initial, intent, step } from "../models/h0-write-safety/model.mjs";
 import { audit } from "../models/h0-write-safety/invariants.mjs";
 
@@ -18,6 +19,49 @@ export function compare(report) {
     digest(
       "h0-pty-once/0: two scripted clients; one context/attempt; handoff; no automatic retry",
     ),
+  );
+  const p = report.provenance;
+  assert.equal(p.version, "namtab.h0-write/0");
+  assert.equal(p.profile, report.profile);
+  assert.equal(p.capture, "off; explicit synthetic fixture output only");
+  assert.equal(p.program, "/bin/bash");
+  assert.deepEqual(p.argv, ["--noprofile", "--norc"]);
+  assert.deepEqual(p.geometry, [80, 24]);
+  assert.ok(
+    typeof p.cwd === "string" &&
+      isAbsolute(p.cwd) &&
+      p.cwd.endsWith("/workspace"),
+  );
+  assert.deepEqual(p.environment, [
+    ["PATH", "/usr/bin:/bin"],
+    ["LC_ALL", "C.UTF-8"],
+    ["TERM", "dumb"],
+    ["HOME", "/nonexistent"],
+    ["HISTFILE", "/dev/null"],
+    ["INPUTRC", "/dev/null"],
+    ["BASH_ENV", "/dev/null"],
+    ["ENV", "/dev/null"],
+    ["PS1", "h0$ "],
+  ]);
+  for (const field of ["worker_sha256", "pty_helper_sha256", "program_sha256"])
+    assert.match(p[field], /^[0-9a-f]{64}$/u);
+  for (const direction of ["request", "response"]) {
+    assert.equal(
+      p[`${direction}_schema_sha256`],
+      digest(
+        readFileSync(
+          new URL(
+            `../../schemas/experimental/h0-write-${direction}.schema.json`,
+            import.meta.url,
+          ),
+        ),
+      ),
+    );
+  }
+  assert.ok(
+    Number.isInteger(report.output_bytes) &&
+      report.output_bytes > 0 &&
+      report.output_bytes <= 65536,
   );
   assert.equal(report.replies, 1);
   assert.equal(report.reply_evidence.length, 1);
@@ -40,17 +84,39 @@ export function compare(report) {
     (r) => r.origin.run === "run-1" && r.sequence === 1,
   );
   assert.ok(fullA && staleA && fullB);
-  for (const r of [fullA, staleA, fullB]) {
-    assert.equal(r.origin.context, report.context_sha256);
-    assert.equal(r.origin.task, report.task_sha256);
-    assert.equal(r.origin.attempt, "attempt-0");
+  for (const [r, index, generation] of [
+    [fullA, 0, 1],
+    [staleA, 0, 1],
+    [fullB, 1, 2],
+  ]) {
+    const o = r.origin;
+    assert.equal(o.context, report.context_sha256);
+    assert.equal(o.task, report.task_sha256);
+    assert.equal(o.attempt, "attempt-0");
+    assert.equal(o.session, "session-0");
+    assert.equal(o.incarnation, 1);
+    assert.equal(o.profile, report.profile);
+    assert.equal(o.cols, 80);
+    assert.equal(o.rows, 24);
+    assert.equal(o.principal, `principal-${index}`);
+    assert.equal(o.namespace, `namespace-${index}`);
+    assert.equal(o.connection, 1);
+    assert.equal(o.control, 1);
+    assert.equal(o.capability, 1);
+    assert.equal(o.assignment, generation);
+    assert.equal(o.writer, generation);
+    assert.equal(o.guard, 1);
+    assert.match(o.epoch, /^[0-9a-f]{32}$/u);
+    for (const field of ["revision", "mode_revision"])
+      assert.ok(
+        Number.isInteger(o[field]) && o[field] > 0 && o[field] <= 65535,
+      );
   }
   assert.equal(fullA.origin.epoch, staleA.origin.epoch);
   assert.equal(fullA.origin.epoch, fullB.origin.epoch);
-  assert.notEqual(fullA.origin.principal, fullB.origin.principal);
-  assert.notEqual(fullA.origin.namespace, fullB.origin.namespace);
-  assert.equal(fullA.origin.assignment, staleA.origin.assignment);
-  assert.ok(fullB.origin.assignment > staleA.origin.assignment);
+  assert.equal(fullA.requested, Buffer.byteLength("printf 'H0_A_DONE\\n'"));
+  assert.equal(fullB.requested, Buffer.byteLength("printf 'H0_B_DONE\\n'"));
+  assert.equal(staleA.requested, Buffer.byteLength("SHOULD_NEVER_BE_WRITTEN"));
   let state = initial();
   const apply = (event) => {
     const transition = step(state, event);
@@ -126,6 +192,29 @@ if (process.argv[1]?.endsWith("compare-model.mjs") && process.argv[2]) {
   const report = JSON.parse(readFileSync(process.argv[2], "utf8"));
   console.log(compare(report));
   for (const change of [
+    (r) => {
+      r.receipts[0].requested = 0;
+      r.receipts[0].accepted = 0;
+    },
+    (r) => {
+      r.receipts.find(
+        (x) => x.origin.run === "run-1" && x.sequence === 1,
+      ).origin.writer = 1;
+    },
+    (r) => {
+      r.receipts.find(
+        (x) => x.origin.run === "run-1" && x.sequence === 1,
+      ).origin.session = "session-other";
+    },
+    (r) => {
+      r.provenance.version = "namtab.mk1/1";
+      r.provenance.capture = "on";
+      r.context_sha256 = createHash("sha256")
+        .update(JSON.stringify(r.provenance))
+        .digest("hex");
+      for (const receipt of r.receipts)
+        receipt.origin.context = r.context_sha256;
+    },
     (r) => {
       r.provenance.capture = "unreviewed";
     },

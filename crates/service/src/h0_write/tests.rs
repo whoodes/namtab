@@ -7,10 +7,14 @@ use std::collections::VecDeque;
 struct Spy {
     writes: Vec<Vec<u8>>,
     outcomes: VecDeque<io::Result<usize>>,
+    after_write: Option<Box<dyn FnMut() + Send>>,
 }
 impl WriteOnce for Spy {
     fn write_once(&mut self, bytes: &[u8]) -> io::Result<usize> {
         self.writes.push(bytes.to_vec());
+        if let Some(after) = &mut self.after_write {
+            after();
+        }
         self.outcomes.pop_front().unwrap_or(Ok(bytes.len()))
     }
 }
@@ -549,4 +553,27 @@ fn refused_nonholder_transfer_cannot_close_another_runs_queued_intent() {
     assert_eq!(c.runs[0].records[&1].receipt, original);
     dispatch(&mut c, 0, 1);
     assert_eq!(c.writer.writes.len(), 1);
+}
+
+#[test]
+fn every_reply_rechecks_deadline_after_the_previous_call_returns() {
+    use std::sync::Arc;
+    let mut c = core();
+    for _ in 0..2 {
+        let mut frame = c.frame.clone();
+        frame.revision += 1;
+        c.canonical(frame, b"\x1b[0n".to_vec()).unwrap();
+    }
+    let clock = Arc::new(Mutex::new(c.expires - Duration::from_millis(1)));
+    let after = Arc::clone(&clock);
+    let expired = c.expires;
+    c.writer.after_write = Some(Box::new(move || *after.lock().unwrap() = expired));
+    assert_eq!(
+        c.flush_replies_with_clock(|| *clock.lock().unwrap()),
+        Err("experiment_deadline_expired")
+    );
+    assert_eq!(c.writer.writes.len(), 1);
+    assert_eq!(c.replies[0].delivery, Delivery::Full);
+    assert_eq!(c.replies[1].delivery, Delivery::Zero);
+    assert!(!c.known());
 }

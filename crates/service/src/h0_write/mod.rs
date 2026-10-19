@@ -598,7 +598,10 @@ impl<W: WriteOnce> Core<W> {
         Ok(())
     }
     fn flush_replies(&mut self) -> Answer<()> {
-        if Instant::now() >= self.expires {
+        self.flush_replies_with_clock(Instant::now)
+    }
+    fn flush_replies_with_clock(&mut self, mut now: impl FnMut() -> Instant) -> Answer<()> {
+        if now() >= self.expires {
             self.poison("experiment_deadline_expired");
             return Err("experiment_deadline_expired");
         }
@@ -612,6 +615,12 @@ impl<W: WriteOnce> Core<W> {
             if !self.known() || self.pending_output || self.replies[index].guard != self.guard {
                 self.replies[index].delivery = Delivery::Zero;
                 continue;
+            }
+            // Each reply is a distinct syscall, even in the same flush batch.
+            // The previous call may have crossed expiry while in the kernel.
+            if now() >= self.expires {
+                self.poison("experiment_deadline_expired");
+                return Err("experiment_deadline_expired");
             }
             self.calls = self.calls.checked_add(1).ok_or("call_budget_exhausted")?;
             self.replies[index].delivery = Delivery::InFlight;
