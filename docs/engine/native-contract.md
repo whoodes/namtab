@@ -123,7 +123,7 @@ Illustrative finite traces, to be challenged by future schema/runtime tests rath
 - RB connects twice, loses one connection and later reconnects. Endpoint count changes; run/attempt identities and original receipts do not. Without fresh authority/epoch evidence it can inspect only what its current read grant permits and cannot act using a cached writer token.
 - An adapter reports a completed turn while the managed process drains output and its artifact validation is missing. Turn status is a reported fact; dependency/acceptance remains unsatisfied.
 
-Durable transaction layout, the precise final-dispatch synchronization seam, decoder bounds and cancellation/retention costs require admission and real race/fault tests before runtime claims. No test-only string classification authenticates a run or validator. Unmediated tools/model calls remain unenforced/unknown; same-UID developer-host limitations remain in force.
+PR54 accepted these rules for bounded design/model work. The test-only `h0-write-model/0` now exercises the lifecycle/write subset described in the [model validation limits](../engineering/16-test-and-ci-strategy.md#h0-lifecycle-and-write-safety-model). It does not implement this contract in the service or certify every example above. Durable transaction layout, the precise final-dispatch synchronization seam, decoder bounds and cancellation/retention costs still require admission and real race/fault tests before runtime claims. No test-only string classification authenticates a run or validator. Unmediated tools/model calls remain unenforced/unknown; same-UID developer-host limitations remain in force.
 
 ## Receipt admission, retention and reconciliation
 

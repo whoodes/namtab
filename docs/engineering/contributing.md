@@ -23,7 +23,7 @@ The EA1 ownership harness checks the actual wrapper in a disposable Cargo projec
 
 ## Pull request eligibility
 
-**Historical MK1 delegation (ended):** the owner delegated eligible merges only until the verified MK1 handoff at PR44/main ff15a18b81c78ebcc539d521ec6ca00ebcd14b69. That authority is exhausted. Direction PR52 and design-direction PR53 were subsequently merged under their own explicit owner approvals; neither is general merge delegation. Current H0 scope is contract/interface drafting, test-only examples and reviewable draft PRs, with no runtime implementation or future merge authority. Each task follows its current owner instruction; repository text never grants additional authority.
+**Historical MK1 delegation (ended):** the owner delegated eligible merges only until the verified MK1 handoff at PR44/main ff15a18b81c78ebcc539d521ec6ca00ebcd14b69. That authority is exhausted. Direction PR52 and design-direction PR53 were subsequently merged under their own explicit owner approvals; neither is general merge delegation. PR54 prerequisite specifications also merged under separate owner approval. Current H0 scope is one bounded executable lifecycle/write-safety TEST/MODEL draft with independent review, no production runtime implementation or future merge authority. Each task follows its current owner instruction; repository text never grants additional authority.
 
 Every PR needs one associated **issue in this repository**, required checks passing for its candidate SHA, two independent adversarial agent reviews, and explicit user merge approval. Start the body with this exact non-closing field, followed by the ordinary description:
 
