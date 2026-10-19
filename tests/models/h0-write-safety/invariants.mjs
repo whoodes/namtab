@@ -4,6 +4,8 @@ import assert from "node:assert/strict";
 
 export function audit(before, transition) {
   const { state: after, event } = transition;
+  if (event.type === "write-result" && !transition.result.ok)
+    assert.deepEqual(after, before, "refused write result changed state");
   const callsBefore = Object.values(before.operations).reduce(
     (n, o) => n + o.calls,
     0,
@@ -68,6 +70,12 @@ export function audit(before, transition) {
     if (!old.reply)
       assert.deepEqual(next.binding, old.binding, "intent binding changed");
     if (next.known > old.known) {
+      assert.ok(old.flight, "delivery without authorized call");
+      assert.equal(
+        transition.result.ok,
+        true,
+        "refused result invented delivery",
+      );
       assert.equal(event.type, "write-result", "prefix without result");
       assert.equal(event.operation, id, "cross-attributed result");
       assert.equal(event.call, old.flight?.id, "result for wrong call");

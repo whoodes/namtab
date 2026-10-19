@@ -620,3 +620,29 @@ test("unknown syscall evidence cannot be forged into zero or partial certainty",
     );
   }
 });
+
+test("no-call or refused results cannot invent a proven full prefix", () => {
+  const r = assigned();
+  submit(r);
+  const before = r.state;
+  const refused = step(before, {
+    type: "write-result",
+    operation: "O1",
+    count: 3,
+  });
+  assert.equal(refused.result.ok, false);
+  audit(before, refused);
+  for (const pretendSuccess of [false, true]) {
+    const forged = structuredClone(refused);
+    forged.state.operations.O1.known = 3;
+    forged.state.operations.O1.phase = "closed";
+    forged.state.operations.O1.delivery = "full";
+    if (pretendSuccess) forged.result = { ok: true, value: "result-recorded" };
+    assert.throws(
+      () => audit(before, forged),
+      pretendSuccess
+        ? /delivery without authorized call/
+        : /refused write result changed state/,
+    );
+  }
+});
