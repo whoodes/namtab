@@ -2,14 +2,14 @@
 
 **Build an AI-first execution and coordination harness around a custom owned terminal engine, intended to scale cleanly to dozens of agents.** [ADR E5](adr/0005-ai-first-harness-direction.md) owns the 2026-10-19 direction and supersession; [manifesto](product/manifesto.md) states priorities. Electron is outside active product scope. The retained host TUI is diagnostic/attach tooling. Emulator presentation form/renderer and exact load workload are open; a standalone native window and 32-client target are proposals.
 
-**MK1 is delivered**, merged in [PR44](https://github.com/whoodes/namtab/pull/44) at `ff15a18b81c78ebcc539d521ec6ca00ebcd14b69`: a finite owned core/worker, real local execution, experimental task/receipt contracts and TUI/Electron demonstrations. This is not full NG1, a model integration or dozens-agent qualification. Historical X4/EA1 remain **FAIL**; Apache-2.0 remains a recommendation, not a license. The current authorized change is docs/planning with a draft PR; runtime implementation and merging remain outside it.
+**MK1 is delivered**, merged in [PR44](https://github.com/whoodes/namtab/pull/44) at `ff15a18b81c78ebcc539d521ec6ca00ebcd14b69`: a finite owned core/worker, real local execution, experimental task/receipt contracts and TUI/Electron demonstrations. This is not full NG1, a model integration or dozens-agent qualification. Historical X4/EA1 remain **FAIL**; Apache-2.0 remains a recommendation, not a license. PR52 merged direction/planning under separate approval. The current authorized step is H0 contract/interface drafting with test-only examples and a new draft PR; runtime implementation and future merges remain outside it.
 
 ## Reading order
 
 1. [Direction and open choices](adr/0005-ai-first-harness-direction.md), then [executive scope](engine/index.md): native value, owned/reused components, useful slice versus v1 and non-goals.
 2. [Human experience](ux/11-human-experience-spec.md): steering, focused activity, review and takeover. The [prior host profile](ux/13-dual-frontend-and-host-tui.md) is retained diagnostic/history guidance, not a second product commitment.
 3. [Native contract](engine/native-contract.md) → [compatibility core](engine/compatibility-and-core.md) → [runtime/recovery](engine/runtime-persistence-security.md): authoritative identities, state and failure boundaries.
-4. [Delivery and validation](engine/delivery-and-validation.md): H0–H2 current proposals, preserved N/NG qualification history, traceability, risks and unresolved decisions.
+4. [H0 admission/workload](engine/h0-harness-contracts.md), [criterion dispositions](engine/h0-residual-criteria.md) and [interface decision analysis](ux/h0-interface-decision.md): concrete recommendations and owner decisions, not implementation. [Delivery](engine/delivery-and-validation.md) owns the H0–H2 roadmap, traceability and risks.
 5. For engineering preparation, read [repository practices](engineering/14-repository-and-engineering-practices.md), [dependency inventory](engineering/15-dependencies-and-supply-chain.md), [CI strategy](engineering/16-test-and-ci-strategy.md) and [contributor workflow](engineering/contributing.md).
 
 ## Documentation ownership
@@ -31,7 +31,10 @@ Each row has one authoritative owner. Other pages summarize and link rather than
 | Proposed dependency admissions, current pin references and upgrades | [Dependencies](engineering/15-dependencies-and-supply-chain.md) | Lockfiles and dated provenance records establish actual artifacts |
 | Quality dimensions, T/N acceptance catalog and numerical performance budgets | [Acceptance and budgets](engineering/07-validation-roadmap-and-risks.md) | [CI/DF cases and all-process measurement method](engineering/16-test-and-ci-strategy.md) |
 | Compatibility qualification matrix, milestones, V/NG gates, risk register, open decisions | [Delivery](engine/delivery-and-validation.md) | [Prototype entrypoint](engineering/12-prototype-plan.md) routes to the same sequence |
-| Current research facts, revisions and evidence gaps | [Source ledger S01–S32/H01](engine/research.md) | [Requirement traceability](engine/delivery-and-validation.md#requirement-traceability) |
+| H0 admission, external-agent responsibility and workload proposal | [H0 proposal](engine/h0-harness-contracts.md) | Native contract remains owner of public identity/receipt/input rules |
+| Criterion-level legacy disposition review | [H0 residual register](engine/h0-residual-criteria.md) | Original issue criteria and pinned MK1 evidence are retained |
+| Presentation-form alternatives and feasibility recommendation | [H0 interface analysis](ux/h0-interface-decision.md) | Human UX/renderer contracts remain distinct; no framework selected |
+| Current research facts, revisions and evidence gaps | [Source ledger S01–S32/H01 and H0](engine/research.md) | [Requirement traceability](engine/delivery-and-validation.md#requirement-traceability) |
 
 ## Status and terminology
 

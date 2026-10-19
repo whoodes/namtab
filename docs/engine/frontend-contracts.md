@@ -2,6 +2,8 @@
 
 **Current scope owner: [E5](../adr/0005-ai-first-harness-direction.md).** The custom emulator's presentation form/renderer is open. Electron is historical MK1, and the host TUI is optional diagnostic/attach tooling. Detailed frame/input/selection/authority rules remain reusable proposals; prior two-client/DOM release requirements below are superseded, not new harness acceptance.
 
+[H0 presentation analysis](../ux/h0-interface-decision.md) compares native-window, host-terminal, browser and headless forms. Native-window feasibility is recommended for owner review; form/renderer remain unselected.
+
 ## Current harness presentation boundary
 
 The selected interface and agent adapters consume one authorized model. Keep per-session state/input/reply authority in the owned core/broker boundary, ephemeral focus/selection in presentation, explicit action receipts, revision-bound evidence and gaps/unknowns. No UI or adapter opens private storage or managed PTYs. Proposed subscriptions/deltas/condition waits require H0 contracts and H1 validation before replacing MK1 snapshots. Keep critical human keyboard, actual accessibility, input-to-paint and takeover evidence in the eventual emulator gate. A standalone window, a GPU renderer and an exact client count remain decisions, not assumptions.

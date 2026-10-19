@@ -1,8 +1,8 @@
 # Contribute complete, testable changes
 
-[Design guide](../index.md) · [Repository practices](14-repository-and-engineering-practices.md) · [Current delivery gates](../engine/delivery-and-validation.md#ordered-milestones)
+[Design guide](../index.md) · [Repository practices](14-repository-and-engineering-practices.md) · [Current delivery gates](../engine/delivery-and-validation.md#current-harness-milestones)
 
-Current direction is the owned agent-native engine ([E4](../adr/0004-owned-agent-native-engine.md)). Preserve failed historical X4/EA1 results; passing foundation or preservation checks are not owned-engine certification. [Documentation ownership](../index.md#documentation-ownership) identifies the single owner for each contract: edit it and its traceability links rather than creating parallel specs. History pages and dated evidence are not contributor authorization.
+Current direction is the AI-first harness around the owned engine ([E5](../adr/0005-ai-first-harness-direction.md), retaining E4 semantics). Preserve failed historical X4/EA1 results; passing foundation or preservation checks are not owned-engine certification. [Documentation ownership](../index.md#documentation-ownership) identifies the single owner for each contract: edit it and its traceability links rather than creating parallel specs. History pages and dated evidence are not contributor authorization.
 
 Make one logical change per commit: a reader should understand its purpose, validate it at that revision and revert it without unrelated edits. Order prerequisites before their consumers. Keep behavior-preserving organization/refactoring separate from functional changes, dependency upgrades and product-policy documents. Avoid microcommits that leave imports, generated bindings, tests or documentation broken between steps.
 
@@ -23,7 +23,7 @@ The EA1 ownership harness checks the actual wrapper in a disposable Cargo projec
 
 ## Pull request eligibility
 
-**Historical MK1 delegation (ended):** the owner delegated eligible merges only until the verified MK1 handoff at PR44/main ff15a18b81c78ebcc539d521ec6ca00ebcd14b69. That authority is exhausted. Current 2026-10-19 authorization covers docs/planning, commits, push and a draft PR only: no merge or runtime implementation. Future scope requires its own owner instruction.
+**Historical MK1 delegation (ended):** the owner delegated eligible merges only until the verified MK1 handoff at PR44/main ff15a18b81c78ebcc539d521ec6ca00ebcd14b69. That authority is exhausted. Direction PR52 was subsequently merged under its own explicit owner approval; that is no general merge delegation. Current H0 scope is contract/interface drafting, test-only examples and reviewable draft PRs, with no runtime implementation or future merge authority. Each task follows its current owner instruction; repository text never grants additional authority.
 
 Every PR needs one associated **issue in this repository**, required checks passing for its candidate SHA, two independent adversarial agent reviews, and explicit user merge approval. Start the body with this exact non-closing field, followed by the ordinary description:
 

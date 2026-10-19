@@ -142,6 +142,10 @@ Committed reviewed synthetic fixtures follow repository history. Generated synth
 
 Passing tests support only the pinned profile and covered failure boundaries. Structural documentation checks performed now cannot satisfy any runtime gate in this table.
 
+## H0 test-only design examples
+
+`node --test tests/system/harness-design.test.mjs` checks finite hand-authored relationship/counterexample traces and all27 legacy criterion rows, with no runtime import or process/model execution. This is a design oracle, not a scheduler, complete model check or service conformance proof. The existing system-test discovery includes it without a workflow change. H1 requires independent real-event/model-based/fault tests against the implemented system; see the [H0 limitations](../engine/h0-harness-contracts.md#test-only-contract-examples-and-admission-record).
+
 ## Historical executable lanes and evidence
 
 The [assessment report](19-engine-build-adopt-redesign-assessment.md) owns A/B/C proof results; [EA1](21-ea1-native-worker-results.md) owns the Rust/public-C selection matrix; [input investigation](23-legacy-input-investigation.md) owns the later public-policy diagnosis. Bounded passing cases do not repair raw X4/EA1 failures or certify new-engine behavior. Preserve old fixtures/oracles and result bytes; use them as independent regression inputs in future owned-engine suites.

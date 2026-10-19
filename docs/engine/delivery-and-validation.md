@@ -6,7 +6,7 @@ The first MK1 owned finite core/worker and real Linux PTY/managed-process primit
 
 ## Current harness milestones
 
-**Current planning owner under [E5](../adr/0005-ai-first-harness-direction.md), 2026-10-19.** H0–H2 are proposed acceptance gates for the user-chosen harness direction. The current authorization covers docs/planning and a draft PR only; no runtime work or merge. Exact workload, UI form/framework, model integration boundary and admission tuple remain open. “Dozens” is an ambition, not qualification. A standalone native window and exact 32-client workload are proposals only.
+**Current planning owner under [E5](../adr/0005-ai-first-harness-direction.md), 2026-10-19.** H0–H2 are proposed acceptance gates for the user-chosen harness direction. PR52 direction/planning merged with explicit owner approval. Current authorization covers H0 contract/interface design, test-only examples and a new draft PR; no runtime work or subsequent merge. Exact workload, UI form/framework, model integration boundary and admission tuple remain open. “Dozens” is an ambition, not qualification. A standalone native window and exact 32-client workload are proposals only.
 
 | Milestone | Required outcome and dependency | Evidence / failure gate |
 | --- | --- | --- |
@@ -18,7 +18,7 @@ The inherited G6 figures below and in the [budget catalog](../engineering/07-val
 
 ### Planning reconciliation and issue ownership
 
-[Alignment issue45](https://github.com/whoodes/namtab/issues/45) owns this docs/planning draft; it does not implement the following gates. [Project2](https://github.com/users/whoodes/projects/2) remains private. No dates or owners are assigned.
+[Alignment issue45](https://github.com/whoodes/namtab/issues/45) completed the direction/planning change in PR52; it implements none of the following runtime gates. [Project2](https://github.com/users/whoodes/projects/2) remains private. No dates or owners are assigned.
 
 | Current milestone | Issue / outcome | Native prerequisites |
 | --- | --- | --- |
@@ -28,7 +28,7 @@ The inherited G6 figures below and in the [budget catalog](../engineering/07-val
 | [H2 admitted integration proof](https://github.com/whoodes/namtab/milestone/8) | [#50 real-agent adapter proof](https://github.com/whoodes/namtab/issues/50) | #46/#4; headless adapter proof need not await #47; credentials/export/spending/security admission remains separate |
 | H2 | [#51 selected emulator integration](https://github.com/whoodes/namtab/issues/51) | #4/#47/#50, including their transitive H1 prerequisites |
 
-All future work is Backlog, not running. A Ready card would mean ready only for its explicitly authorized scope, not authority to execute it.
+Issue45 is complete after PR52. Issues46/47 are authorized for H0 drafting/review only; later implementation remains Backlog. A Ready card means eligible only for its explicitly authorized scope, not authority to execute it. [H0 admission/workload](h0-harness-contracts.md), [27 criterion dispositions](h0-residual-criteria.md) and [interface alternatives](../ux/h0-interface-decision.md) are proposed review inputs; neither issue nor H0 is complete until required owner choices are recorded.
 
 Legacy #2 and #17–#21/#23 remain open/Backlog with #46 as their scope-review prerequisite; MK1/PR44 does not complete them wholesale.
 
@@ -208,7 +208,7 @@ These new **whole-product** ranges differ from report 19's historical core-only 
 | RE15 Provider spend/delegation escapes limits / medium-high | Scheduler/adapters: parent ceilings, distinguish hard mediated limits from advisory reports | T10/NG3; unmediated CLI calls cannot acquire a fictitious hard spend cap |
 | RE16 Update/migration destroys live work or evidence / high | Store/distribution: preflight/backup, compatible keeper lifecycle and explicit drain | T9/T11/T12 and CI4 package/logout/rollback checks; no automatic old-grant restore |
 
-The sole current open-decision register follows. Closed for design: owned Rust semantics/FSM; no legacy core authority; E5 harness-first scope with emulator presentation open; native pipe + PTY paths; classic default with explicit enhancements; one reply owner; no-capture default; exact-version v1 restore only; one proposed cohesive new package; no stable plugin ABI. The [dated primitive selection](../engineering/15-dependencies-and-supply-chain.md#n0-primitive-and-data-selection-2026-10-16) supplies an exact finite draft tuple, not owner/engineering admission. Pending: admission of its feature/target/notice closure and limits, matching later Unicode18 algorithms/data; DOM painting viability; host width/IME/a11y; OS runtime enforcement/PTY lifecycle; detailed MOK variants; full checkpoint cost and G6. Funding/team assignments and the project license remain owner decisions. No new software or license is adopted here.
+The sole current open-decision register follows. Closed for design: owned Rust semantics/FSM; no legacy core authority; E5 harness-first scope with emulator presentation open; native pipe + PTY paths; classic default with explicit enhancements; one reply owner; no-capture default; exact-version v1 restore only; one proposed cohesive new package; no stable plugin ABI. The [dated primitive selection](../engineering/15-dependencies-and-supply-chain.md#n0-primitive-and-data-selection-2026-10-16) supplies an exact finite draft tuple, not owner/engineering admission. Pending: admission of its feature/target/notice closure and limits, matching later Unicode18 algorithms/data; the [H0 presentation-form/renderer decision](../ux/h0-interface-decision.md); host width/IME/a11y; OS runtime enforcement/PTY lifecycle; detailed MOK variants; full checkpoint cost and G6. Funding/team assignments and the project license remain owner decisions. No new software or license is adopted here.
 
 If a gate fails, first distinguish a test/oracle error, a profile difference and a real design defect. Fix or explicitly reduce an unadvertised scope. Never weaken an advertised critical workflow silently. If owned-state security/performance or sustainable ownership cannot be demonstrated within the declared funding/timebox, pause the affected release and make an explicit product/funding decision. Reconsidering ownership would require a new owner decision, not an engineer quietly embedding a legacy emulator.
 

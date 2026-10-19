@@ -1,0 +1,118 @@
+{
+  "profile": "harness-contract-review/0",
+  "provenance": "Hand-authored design examples, 2026-10-19; no runtime, SDK or measured trace.",
+  "launches": [
+    {
+      "run": "RA",
+      "requestNamespace": "req-A",
+      "sequence": "1",
+      "operation": "O1",
+      "attempt": "A1",
+      "execution": "E1",
+      "taskRevision": "T@1",
+      "contextRevision": "CA@1"
+    },
+    {
+      "run": "RB",
+      "requestNamespace": "req-B",
+      "sequence": "1",
+      "operation": "O2",
+      "attempt": "A2",
+      "execution": "E2",
+      "taskRevision": "T@1",
+      "contextRevision": "CB@1"
+    }
+  ],
+  "streams": [
+    {
+      "execution": "E1",
+      "attempt": "A1",
+      "stream": "stdout",
+      "offset": "0",
+      "length": "3",
+      "gap": false
+    },
+    {
+      "execution": "E2",
+      "attempt": "A2",
+      "stream": "stderr",
+      "offset": "0",
+      "length": "4",
+      "gap": false
+    },
+    {
+      "execution": "E1",
+      "attempt": "A1",
+      "stream": "stderr",
+      "offset": "0",
+      "length": "2",
+      "gap": false
+    },
+    {
+      "execution": "E1",
+      "attempt": "A1",
+      "stream": "stdout",
+      "offset": "3",
+      "length": "2",
+      "gap": false
+    }
+  ],
+  "dependency": {
+    "selectedArtifact": "R1",
+    "validationArtifact": "R1",
+    "validationState": "passed",
+    "validationContext": "CA@1",
+    "selectedContext": "CA@1",
+    "factSource": "validator",
+    "quality": "mutable",
+    "requiredQuality": "mutable"
+  },
+  "writer": [
+    { "kind": "takeoverAcknowledged", "generation": "2", "owner": "human" },
+    {
+      "kind": "input",
+      "generation": "1",
+      "owner": "RA",
+      "disposition": "refused",
+      "effect": "zero"
+    },
+    {
+      "kind": "input",
+      "generation": "2",
+      "owner": "human",
+      "disposition": "admitted",
+      "effect": "full"
+    }
+  ],
+  "unknown": {
+    "operation": "O1",
+    "delivery": "unknown",
+    "automaticNextAction": "query",
+    "processState": "running"
+  },
+  "populations": {
+    "connected": 4,
+    "runs": 2,
+    "commands": 2,
+    "ptys": 1,
+    "mediatedModelRequests": 0,
+    "unmediatedModelRequests": "unknown"
+  },
+  "populationRecords": {
+    "connections": ["EA", "EB", "EH", "ED"],
+    "runs": ["RA", "RB"],
+    "executions": ["E1", "E2"],
+    "sessions": ["S1"],
+    "mediatedCalls": []
+  },
+  "originalCriterionCounts": {
+    "2": 3,
+    "17": 3,
+    "18": 3,
+    "19": 3,
+    "20": 3,
+    "21": 3,
+    "23": 4,
+    "4": 5
+  }
+}
