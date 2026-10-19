@@ -40,7 +40,7 @@ No new dependency is selected or installed by this document. Apache-2.0 remains 
 
 ## Useful slice versus v1 versus vision
 
-**First working slice (N1):** one local managed pipe attempt and one interactive shell session; a small owned UTF-8/VT profile; native operation/receipt/observe APIs; human takeover; one useful terminal viewport in each frontend; memory-only output; reconnect to a surviving owner. Demonstrate one agent-native workflow and a zero-agent shell without requiring broad compatibility or durable engine recovery first. All unsupported features are visible and unadvertised.
+**Historical first-slice plan (N1):** managed pipe and interactive shell execution, a finite owned terminal profile, typed receipts, takeover, live-owner reconnect and minimal paired viewports. MK1 delivered a bounded subset, not full NG1. This retains the old rationale; [H0–H2](delivery-and-validation.md#current-harness-milestones) replace it as the current plan. No second product frontend follows from the historical slice.
 
 **v1 target (N2–N4):** bounded Linux modern-text compatibility, tested Bash/readline + less + Vim profiles, negotiated keyboard/paste/mouse/focus, the selected emulator and optional diagnostics, task/artifact review, bounded parallelism and fairness, authenticated local IPC, explicit runtime profiles, opt-in same-version complete checkpoints/tails and tested unknown outcomes. No shipping claim until the corresponding gates pass. v1 engineering admission is not conditioned on passing an old engine's adoption gate.
 

@@ -135,10 +135,10 @@ Committed reviewed synthetic fixtures follow repository history. Generated synth
 | I8 — Finite and honest loss | Floods/slow clients/full disk/large cells/replies; T2/T9/DF08 | CI1 caps, CI2, CI3/CI4/G6/V15 |
 | I9 — History not execution replay | Rebuild checkpoint+events, missing canonical state, reboot/remote unknown; T9/DF05 | CI1 model, CI2/G3/V12/V13 |
 | I10 — Versioned scoped extensions | Schema drift, old/unknown fields, malicious adapter, failed migration; T10/T11/T15 | CI1 generation/boundary, CI2/G2/G8 |
-| I11 — Basic offline use | Both clients zero-agent/no-account; clean package without provider/network; J01/DF07 | CI1 contracts, CI2/CI4/G1 |
+| I11 — Basic offline use | Selected emulator zero-agent/no-account; clean package without provider/network; J01/DF07 | CI1 contracts, CI2/CI4/G1 |
 | I12 — Claims reflect enforcement | Controller/runtime badges, unsupported-host denial and mutable input limits; T7/DF01/DF06 | CI1 projection, CI2/CI4/G4/G5 |
 | I13 — Core agent navigation | N01–N16, exact target/prefix, UI commands zero managed application-input bytes; T13/DF02–DF04 | CI1 minimal, CI2/CI4/G7/V10/V16 |
-| I14 — Two clients, one authority | Forbidden imports/endpoints, shared decisions, client-specific key limits, cross-client attach/takeover; T14/T15/DF01–DF08 | CI1 boundary/contracts, CI2/CI4/G8 |
+| I14 — Harness clients, one authority | Forbidden imports/endpoints, shared decisions, client-specific key limits, cross-client attach/takeover; T14/T15/DF01–DF08 | CI1 boundary/contracts, CI2/CI4/G8 |
 
 Passing tests support only the pinned profile and covered failure boundaries. Structural documentation checks performed now cannot satisfy any runtime gate in this table.
 

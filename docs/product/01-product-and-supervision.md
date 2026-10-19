@@ -31,7 +31,7 @@ Across the staged product scope (not all mandatory in N1): a custom emulator int
 
 Non-goals for initial releases: replacing Bash or POSIX; reimplementing editors/debuggers; a universal shell AST safety classifier; making arbitrary programs transactional; guaranteeing that a model is honest; automatically merging all changes; transparent process migration between hosts; exactly-once external side effects; recording every secret safely; deterministic execution replay; supporting every terminal graphics extension at launch. Windows and macOS are future ports, not implicit compatibility promises.
 
-Both frontends use public broker APIs; neither reads private persistence or managed PTY internals, and neither owns permission enforcement. Semantic parity does not mean identical pixels, physical key representability or native accessibility.
+All admitted clients use public broker APIs; none reads private persistence or managed PTY internals or owns permission enforcement. Semantic parity does not mean identical pixels, physical key representability or native accessibility.
 
 Terminal use must remain worthwhile with no configured agents. Users can also launch agent CLIs without task integration. Conversely, managed background execution need not render a pane until inspection is useful.
 

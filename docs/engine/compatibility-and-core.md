@@ -4,7 +4,7 @@
 
 [Campaign](index.md) · [Native contract](native-contract.md) · [Recovery](runtime-persistence-security.md) · [Validation matrix](delivery-and-validation.md#compatibility-matrix)
 
-**Proposed design.** No new parser or engine implementation exists. Sources S02–S16/S20–S22 distinguish OS contracts, standards and implementation practice; decisions below define namtab profiles rather than universal terminal behavior.
+**Profile design and qualification limits.** MK1 implements an owned finite core/worker; it does not qualify the complete proposed profile, public contract or broader terminal behavior below. Sources S02–S16/S20–S22 distinguish OS contracts, standards and implementation practice; decisions below define namtab profiles rather than universal terminal behavior.
 
 ## Execution boundary
 
@@ -31,7 +31,7 @@ Profiles are immutable versioned feature manifests, shared by parser, encoder, t
 | Negotiated keyboard capabilities | Ordinary classic legacy default; separate MOK and Kitty enhancement levels; explicit query/set/push/pop/reset policies | N1 may advertise none. v1 certification specifies supported levels, precedence, stacks and format variants. Do not advertise an incomplete Kitty flag or collapse MOK into “enhanced=true”. |
 | Later profiles | Graphics, richer text/bidi, extended device controls or alternate encodings | Separate version and memory/security/compatibility gates; never silently enabled by a renderer or TERM string. |
 
-The N0 table below is a finite **accepted-for-drafting recommendation**, awaiting named owner/reviewer acceptance in NG0; it does not mark NG0 or NG1 passed. Its private profile is distinct from the later v1 `project-x` entry. Changing an accepted manifest's behavior requires a new profile version. An optional xterm-compatible TERM alias needs a separate demonstrated compatibility claim; it is excluded from this profile. Query replies describe implemented state, never a copied xterm identity.
+The N0 table below preserves the finite **accepted-for-drafting recommendation**. Bounded N0/MK1 admission was subsequently recorded in the [admission record](../engineering/mk1-scope-and-admission.md); the complete table still needs qualification and does not mark full NG1 passed. Its private profile is distinct from the later v1 `project-x` entry. Changing an accepted manifest's behavior requires a new profile version. An optional xterm-compatible TERM alias needs a separate demonstrated compatibility claim; it is excluded from this profile. Query replies describe implemented state, never a copied xterm identity.
 
 ## Finite N1 development profile
 
@@ -89,7 +89,7 @@ The [single reply authority](#single-reply-authority) applies to every row. A ta
 
 ### Truthful TERM and terminfo plan
 
-`TERM=px-dev-text-0` names only this private profile. No TERM aliases; no `use=xterm*`, `use=ansi`, `COLORTERM=truecolor`, `Tc`/`RGB`, `colors=256`, copied xterm DA or remote fallback to xterm. Both frontends launch the same inner TERM/profile; the outer TUI's TERM and decoder capabilities are independent. An entry is not yet created/installed. N1 must compile its reviewed source into a project/user-local directory, pass its path explicitly to the child (`TERMINFO`, with inherited search paths reviewed), and refuse full profile launch if the child cannot find the exact entry. No global writes or automatic remote installation. An opaque `ssh` target needs a separately available matching remote entry or an explicitly different qualified profile.
+`TERM=px-dev-text-0` names only this private profile. No TERM aliases; no `use=xterm*`, `use=ansi`, `COLORTERM=truecolor`, `Tc`/`RGB`, `colors=256`, copied xterm DA or remote fallback to xterm. Admitted clients use the same inner TERM/profile; the outer TUI's TERM and decoder capabilities are independent. This is the historical `px-dev-text-0` terminfo proposal, not the delivered MK1 entry: MK1 uses the separate local `namtab-mk1` entry or explicit `TERM=dumb` fallback documented in its [quickstart](../engineering/mk1-quickstart.md). Qualifying this full profile requires compiling its reviewed source into a project/user-local directory, passing its path explicitly to the child (`TERMINFO`, with inherited search paths reviewed), and refusing full profile launch if the child cannot find the exact entry. No global writes or automatic remote installation. An opaque `ssh` target needs a separately available matching remote entry or an explicitly different qualified profile.
 
 The following is the **entire proposed terminfo allowlist**, using S09 names. Parameter placeholders below describe emitted bytes, not a tested `tic` source. Missing capabilities stay absent; do not inherit an entry's extras. Numeric `cols/lines` describe the launch tuple (PTY size remains separately observable); publish a generated exact launch entry or verify the chosen library's resize handling before certification.
 
@@ -122,7 +122,7 @@ That equivalence concerns successful bounded reductions with available resources
 
 ### N0-05 bounded continuation proposal
 
-This is the proposed state/FSM design for [N0-05 #11](https://github.com/whoodes/namtab/issues/11), grounded in the finite `px-dev-text-0` manifest above. It is ready for contract/oracle review, **not owner acceptance, implemented behavior, NG0 or permission to start N1**. Values marked P below are deliberate private-profile choices. The complete later v1 inventory remains explicit; an absent feature has an explicit absent/default state, not an undocumented dependency object. No upstream lexer, Unicode data or codec is adopted here.
+This is the proposed state/FSM design for [N0-05 #11](https://github.com/whoodes/namtab/issues/11), grounded in the finite `px-dev-text-0` manifest above. This is the historical contract/oracle proposal, not evidence of full implementation or qualification. Later bounded N0/MK1 admission and finite core implementation are separate; the complete state contract below remains subject to its validation gates. Values marked P below are deliberate private-profile choices. The complete later v1 inventory remains explicit; an absent feature has an explicit absent/default state, not an undocumented dependency object. No upstream lexer, Unicode data or codec is adopted here.
 
 The byte FSM and semantic dispatch are separate. The FSM emits a complete control/text action only after validating syntax, arity and bounds; the semantic reducer validates the entire action before changing cells/modes or proposing a reply. For example, `CSI 31;3m` changes no attributes because 3 is unsupported; a large CUU clamps once instead of stepping its count. Unknown input caused by missing events is different from bytes intentionally consumed by this specified ignore policy.
 
@@ -158,7 +158,7 @@ The public `processed_frontier` names only fully reduced keeper events. Retain o
 
 ## Complete semantic state
 
-The checklist below owns the state inventory; it is not a public wire schema or a second native authority. Every admitted field needs an initial value, transition/reset/resize rule, import bound and continuation challenge. The development initial state is the finite table's state at the caller's valid launch geometry; no default size is invented. Geometry/profile/options are admitted ordered inputs, never read from a renderer. Both host TUI and Electron project this same committed state.
+The checklist below owns the state inventory; it is not a public wire schema or a second native authority. Every admitted field needs an initial value, transition/reset/resize rule, import bound and continuation challenge. The development initial state is the finite table's state at the caller's valid launch geometry; no default size is invented. Geometry/profile/options are admitted ordered inputs, never read from a renderer. Admitted human and agent clients project this same committed state; presentation cannot add terminal authority.
 
 | State family / checklist | `px-dev-text-0` representation and initial state | Later v1 expansion / owner gate |
 | --- | --- | --- |
@@ -263,7 +263,7 @@ Synthetic expected-byte/state cases in repository path `tests/fixtures/native-pr
 | Enhancement prerequisites; R10, V10 | No Kitty/MOK advertised in N1; exact future level/stack/reset/format/precedence tables required before admission. |
 | Sources/conflicts/access; R06/R07, V06/V07 | S07 syntax versus S08 configurable de facto semantics and S09 advertisement are distinguished; dedicated 1049 save, strict SGR/arity, distinct keypad and NumLock choices are P. The [dated source follow-up](research.md#n0-source-review-2026-10-16) narrows S01 access for two Issue8 pages (fresh HTTP200), while preserving prior HTTP403 evidence. Full interface mapping, direct DEC and Bash-manual access review remain gaps; no normative conformance certification is invented. |
 
-**Owner/reviewer acceptance remains open:** accept or revise the private TERM name/allowlist, narrow text repertoire, strict unsupported/SGR/arity policy, exact limits, save/reset/buffer behavior, and paste policies as one immutable manifest. The drafting recommendation is not an owner decision or permission to start N1. Timebox further S01/direct-DEC/source-conflict review to the N0 source review; if access remains unavailable, retain the gap, use explicitly reviewed P fixtures for this private profile, and defer any unadvertised compatibility claim. No numeric research timebox, funding assignment, Unicode expansion, license decision or NG0 acceptance is inferred here.
+**Historical profile review checklist; full qualification remains open:** accept or revise the private TERM name/allowlist, narrow text repertoire, strict unsupported/SGR/arity policy, exact limits, save/reset/buffer behavior, and paste policies as one immutable manifest. The drafting recommendation alone was not implementation permission; bounded MK1 was later separately admitted. Current harness implementation requires a new scoped authorization under E5. Timebox further S01/direct-DEC/source-conflict review to the N0 source review; if access remains unavailable, retain the gap, use explicitly reviewed P fixtures for this private profile, and defer any unadvertised compatibility claim. No numeric research timebox, funding assignment, Unicode expansion, license decision or NG0 acceptance is inferred here.
 
 ## Single reply authority
 
