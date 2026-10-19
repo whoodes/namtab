@@ -1,14 +1,16 @@
 # Repository foundation and engineering practices
 
+**Direction alignment:** [E5](../adr/0005-ai-first-harness-direction.md) owns the AI-first harness and open emulator stack. This inventory keeps current source/build checks intact; target entries/older packaging discussion do not require Electron or choose a replacement framework. No package/dependency/CI migration is part of this change.
+
 [Index](../index.md) · [Dependencies](15-dependencies-and-supply-chain.md) · [Tests/CI](16-test-and-ci-strategy.md) · [Target runtime modules](../engine/runtime-persistence-security.md#module-and-process-design)
 
-**Actual foundation versus proposed product.** Current source has eight Rust/four TS workspace packages. The active-source CI lane covers seven Rust crates, excluding only the historical binary-only `project-x-engine` from active Clippy/tests; the worker remains a workspace member and historical source/gates remain intact. The owned finite core/worker and real Linux PTY/managed primitives have targeted tests; MK1 adds a live local broker, public clients and minimal TUI/Electron views; it is not full NG1 or production qualification. [E4](../adr/0004-owned-agent-native-engine.md) chooses owned semantics; [runtime](../engine/runtime-persistence-security.md#module-and-process-design) owns the target graph. This page owns repository layout, actual dependency checks, schema/workflow/release policy.
+**Actual foundation versus proposed product.** Current source has eight Rust/four TS workspace packages. The active-source CI lane covers seven Rust crates, excluding only the historical binary-only `project-x-engine` from active Clippy/tests; the worker remains a workspace member and historical source/gates remain intact. The owned finite core/worker and real Linux PTY/managed primitives have targeted tests; MK1 adds a live local broker, public clients and minimal TUI/Electron views; it is not full NG1 or production qualification. [E5](../adr/0005-ai-first-harness-direction.md) retains E4 owned semantics and supersedes product frontend scope; [runtime](../engine/runtime-persistence-security.md#module-and-process-design) owns the target graph. This page owns repository layout, actual dependency checks, schema/workflow/release policy.
 
 The historical worker requires the evaluated local artifact for workspace builds; [EA1 reproduction](21-ea1-native-worker-results.md#results-and-reproduction) records preparation and limits. Its raw selection gate remains FAIL. A different runner/artifact is not automatically qualified. Current commands/prerequisites are in root README and Makefile; historical reports preserve their exact earlier tuples.
 
 ## Concrete proposed layout and ownership
 
-Use one repository, Cargo + pnpm and one product version. Current foundation: eight Rust and four TS packages. This includes one experimental binary-only native engine package (justified unsafe/ABI/process boundary), with desktop + protocol as shipping TS and the old engine-host/terminal-adapter retained as assessment references until deliberately retired. Avoid separate FFI/wrapper/wire/worker microcrates. Rust edition 2024, resolver 3 and compiler 1.91.0 are pinned for the current foundation; that is not shipping-platform certification. [Cargo workspaces](https://doc.rust-lang.org/cargo/reference/workspaces.html)
+Use one repository, Cargo + pnpm and one product version. Current foundation: eight Rust and four TS packages. This includes one experimental binary-only native engine package (justified unsafe/ABI/process boundary), with existing TS tooling/protocol/reference packages and historical Electron MK1 retained; the future emulator stack remains unselected. Avoid separate FFI/wrapper/wire/worker microcrates. Rust edition 2024, resolver 3 and compiler 1.91.0 are pinned for the current foundation; that is not shipping-platform certification. [Cargo workspaces](https://doc.rust-lang.org/cargo/reference/workspaces.html)
 
 ```text
 project-x/                         TARGET with explicit future entries; actual manifests are authoritative
@@ -24,7 +26,7 @@ project-x/                         TARGET with explicit future entries; actual m
     engine/                        preserved EA1 experimental binary-only worker; historical failed gate
     terminal/                      owned finite pure core + private worker; MK1 tests, not full qualification
   apps/
-    desktop/                       MK1 vanilla-JS main/preload/renderer; proposed richer UI later
+    desktop/                       frozen historical MK1 vanilla-JS main/preload/renderer; no active Electron product work
     engine-host/                   current xterm reference/assessment utility; not revised shipping target
   packages/
     protocol/                      generated TS public DTOs/validators + small IPC client
@@ -93,11 +95,11 @@ Recommend **pnpm with conventional node_modules**, a single root lockfile and ex
 | pnpm | Workspaces and local-only workspace protocol; explicit build-script policy | Recommended: clear workspace dependencies and one reviewed lock; symlinks/Electron packaging and settings-version compatibility are bootstrap gates |
 | npm | Built-in workspace support and its own lockfile/CI installation flow | Best fallback if pnpm integration adds sustained packaging cost; fewer developer prerequisites, less reason to change once proven |
 | Yarn | Plug'n'Play is a supported alternative installation model | Credible with node_modules mode; PnP adds resolution/tooling changes without a demonstrated need here |
-| Bun | Workspace support | Do not add another runtime/package-manager compatibility surface while Node/Electron are already required |
+| Bun | Workspace support | Do not add another runtime/package-manager compatibility surface while existing Node tooling already supplies the reference/check infrastructure; Electron is historical MK1 only |
 
 Primary references: [pnpm workspaces](https://pnpm.io/workspaces), [npm workspaces](https://docs.npmjs.com/cli/v11/using-npm/workspaces/), [Yarn PnP](https://yarnpkg.com/features/pnp), [Bun workspaces](https://bun.sh/docs/pm/workspaces). These facts do not establish comparative install speed or security. Bootstrap now selects pnpm 10.32.1 and Node 24.21.0, with local checks described in [18](18-foundation-gate-results.md). Upstream settings vary by release; verify the selected binary rather than copying settings across major versions.
 
-Recommend TypeScript strict checking, React, Vite for renderer bundling, explicit Node-target builds for Electron main/preload (and reference engine experiments), and Electron Forge for assembly/DEB making. Do not depend on an experimental Forge/Vite integration plugin: compose renderer build and packaging with small scripts. Prototype must prove pnpm dependency collection, separate Node bundling, native Rust resources, CSP and offline package completeness. [Vite guide](https://vite.dev/guide/), [Electron Forge](https://www.electronforge.io/)
+**Historical frontend build proposal, superseded by E5:** TypeScript/React/Vite/Electron Forge are not the selected future emulator stack. Existing strict TS/Node builds and MK1 main/preload sources remain checked for preservation. Do not depend on an experimental Forge/Vite integration plugin: compose renderer build and packaging with small scripts. Prototype must prove pnpm dependency collection, separate Node bundling, native Rust resources, CSP and offline package completeness. [Vite guide](https://vite.dev/guide/), [Electron Forge](https://www.electronforge.io/)
 
 ## Schema ownership and duplicated state
 
@@ -129,7 +131,7 @@ PR descriptions identify behavior, authority/evidence changes, migrations, depen
 
 Use one product 0.x version/tag for service, keeper, CLI/TUI, desktop and engine host; maintain separate protocol/schema/config/interpretation versions in the release manifest. Internal crates/packages are unpublished by default. Breaking private prototype contracts are allowed only with explicit incompatibility, migration/export handling and no resurrection of grants. Public API stability and previous-client windows begin when a public release contract is intentionally adopted. No permanent plugin ABI or automatic cross-version keeper migration.
 
-The sole future engineering sequence is [N0–N5](../engine/delivery-and-validation.md#ordered-milestones). Start from this verified foundation and extend contracts/owned core before claiming live product behavior. Config/database upgrades preflight capacity and preserve compatible exports/backups; rollback does not blindly downgrade newer stores. Review lockfiles, release SBOM/notices and source provenance before distribution. Apache-2.0 remains a project-license recommendation, with no legal file created here.
+The current proposed sequence is [H0–H2](../engine/delivery-and-validation.md#current-harness-milestones); N0–N5/NG gates retain historical qualification detail. Start from delivered finite MK1, then review contracts and evidence before making broader harness or compatibility claims. Config/database upgrades preflight capacity and preserve compatible exports/backups; rollback does not blindly downgrade newer stores. Review lockfiles, release SBOM/notices and source provenance before distribution. Apache-2.0 remains a project-license recommendation, with no legal file created here.
 
 ## Native-worker boundary after the assessment
 

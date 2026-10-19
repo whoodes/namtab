@@ -1,12 +1,14 @@
 # Prototype entrypoint
 
+**Current direction: [E5](../adr/0005-ai-first-harness-direction.md).** MK1 is delivered; this change is docs/planning with a draft PR only. No runtime work, frontend removal or merge is authorized.
+
 [Index](../index.md) · [Scope](../engine/index.md) · [Canonical delivery plan](../engine/delivery-and-validation.md#ordered-milestones)
 
-**MK1 engineering authorized; broader qualification remains planned.** The [MK1 admission](mk1-scope-and-admission.md) owns the first hands-on stopping point; finite core/worker and Linux process primitives are implemented with targeted tests, the [MK1 quickstart](mk1-quickstart.md) owns actual local launch and finite limits, without claiming full NG1. The only current engineering sequence is [N0–N5 / NG0–NG4](../engine/delivery-and-validation.md#ordered-milestones), with deliverables, dependencies, success/stop criteria, staffing and open questions in that owner document. This page preserves earlier entrypoints without maintaining another plan.
+**MK1 engineering authorized; broader qualification remains planned.** The [MK1 admission](mk1-scope-and-admission.md) owns the first hands-on stopping point; finite core/worker and Linux process primitives are implemented with targeted tests, the [MK1 quickstart](mk1-quickstart.md) owns actual local launch and finite limits, without claiming full NG1. The current proposed sequence is [H0–H2](../engine/delivery-and-validation.md#current-harness-milestones); N/NG is retained qualification history, with deliverables, dependencies, success/stop criteria, staffing and open questions in that owner document. This page preserves earlier entrypoints without maintaining another plan.
 
 ## Order and stopping rules
 
-Start with N0's finite profile/contracts/independent fixtures and N1's useful native pipe + PTY shell slice in both clients. NG1 must show native evidence value and useful zero-agent use; neither a PTY-only API nor a backend-only demo suffices. N2/N3/N4 qualify distinct compatibility, supervised-use and recovery claims. Failure stops the dependent claim; explicit scope reduction cannot rewrite an existing advertised requirement.
+Start with H0 contracts/workload and emulator/adapter decisions, then H1 coordinated scheduling/observations, then admitted H2 integration proof. Exact client count and native-window form remain proposals. MK1's two-client proof is historical and full NG1 remains unearned. Failure stops the dependent claim; no scope change relabels an old failure as success.
 
 ## PP1: falsifying the default early
 

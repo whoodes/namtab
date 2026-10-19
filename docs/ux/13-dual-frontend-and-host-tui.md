@@ -1,5 +1,7 @@
 # Two initial frontends and the host-terminal TUI
 
+**Scope update — [E5](../adr/0005-ai-first-harness-direction.md), 2026-10-19.** Historical dual-frontend design and retained host diagnostic profile. The two-initial-frontends/Electron commitment is superseded; the host TUI is diagnostic/attach tooling, not a second required product. Preserve its decoding/TERM/SSH limits and MK1 evidence without selecting the future emulator form.
+
 > **Current host profile design; unimplemented.** [E4](../adr/0004-owned-agent-native-engine.md) owns engine choice. This page owns outer-host capabilities, nesting, TUI layout and legitimate frontend differences.
 
 [Index](../index.md) · [Shared human UX](11-human-experience-spec.md) · [Repository boundaries](../engineering/14-repository-and-engineering-practices.md) · [Current qualification gates](../engine/delivery-and-validation.md#ordered-milestones)

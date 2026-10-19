@@ -1,20 +1,20 @@
-# Owned agent-native engine: scope and initial design
+# AI-first harness and owned terminal engine
 
 [Design index](../index.md) · [Ownership decision](../adr/0004-owned-agent-native-engine.md) · [Source ledger](research.md) · [Delivery and traceability](delivery-and-validation.md)
 
-Decision date and research retrieval date: **2026-10-15**. **Chosen by the owner:** build namtab's agent-native engine. **Accepted for design:** the boundaries below. **Pending implementation and measurement:** every new engine capability. This campaign changes the design, not executable code, dependencies, licenses or the historical gate results.
+**Direction updated 2026-10-19; research ledger retrieved 2026-10-15.** E5 owns current scope. MK1 is implemented at its recorded finite boundary; proposed harness scale, model integration and broader qualification remain pending. This alignment changes documentation/planning only.
 
 ## Executive decision
 
-Own the session/event model, terminal compatibility semantics, incremental parser state, logical input policy, observations and complete-state format in Rust. Build native operations around identified work and explicit evidence; provide a PTY compatibility layer for unmodified shells and interactive programs. A third-party legacy emulator will not determine native state behind an adapter. Reuse OS facilities, Unicode algorithms/data, UI libraries and storage primitives where their contracts fit.
+[ADR E5](../adr/0005-ai-first-harness-direction.md) records the user-chosen **AI-first execution/coordination harness around a custom owned terminal engine**, with optimized control intended for dozens of agents. Electron is out of active product scope. The emulator's presentation form and rendering stack are unresolved; the host TUI remains a diagnostic/attach tool, not a mandatory second product frontend. Ordinary Linux shell/CLI/TUI compatibility and excellent human intervention remain explicit goals.
 
-The engine is broader than a VT emulator but narrower than an operating system or autonomous coding platform. Its pure compatibility core interprets bytes; the surrounding session service coordinates execution, evidence and authority. Neither the core nor an application-output marker can grant permission. Native callers can request a managed process directly without manufacturing a shell command or reverse-engineering its screen. Interactive legacy programs remain useful, with uncertainty disclosed.
+MK1 is **delivered** at `ff15a18b81c78ebcc539d521ec6ca00ebcd14b69` ([PR44](https://github.com/whoodes/namtab/pull/44)): finite Rust core/worker, real PTY/managed execution, typed receipts, shared immutable task declarations, exact attempt origins and bounded clients. Its four live clients/two lifetime PTYs/two managed attempts and two scripted-agent proof do not establish dozens-agent scale or model integration. Full NG1 was not earned. Historical X4/EA1 remain FAIL.
 
-This direction is justified by the desired native contract and long-term ownership. Three failed aliases or an incomplete serializer do not by themselves establish that a full engine is economically necessary. [E1–E3](../adr/0003-legacy-input-public-policy.md) and reports 18–23 retain the earlier adoption rationale and failures. **Original X4 and libghostty EA1 remain FAIL.** Their regression inputs are useful; neither old candidate test becomes the new product definition. No EA2, SDK patch, dependency replacement or production engine is delivered here.
+Own native work/control and terminal semantics; reuse reviewed OS/text/font/rendering primitives where justified. The pure core has no process/grant/dispatch authority. The broker controls admission and evidence; keepers own process/PTY facts; presentation consumes canonical state. Task readiness, resource admission, process exit, artifact validation and acceptance remain distinct. No opaque-shell command inference, replayed unknown effect or model-status claim creates authority.
 
 ## Read the design
 
-The [design guide](../index.md#reading-order) owns reading order and the [authoritative document map](../index.md#documentation-ownership). Follow native operations → compatibility core → runtime/recovery for implementation contracts, and shared UX → host profile → frontend integration for human behavior. [Delivery](delivery-and-validation.md) is the only current roadmap/risk/open-decision register; [research](research.md) is the current source ledger. Earlier adoption mechanisms and their recommendations are historical.
+The [design guide](../index.md#reading-order) owns reading order and the [authoritative document map](../index.md#documentation-ownership). Follow native operations → compatibility core → runtime/recovery for implementation contracts, and human UX → presentation contract; prior host profile is diagnostic reference for human behavior. [Delivery](delivery-and-validation.md) is the only current roadmap/risk/open-decision register; [research](research.md) is the current source ledger. Earlier adoption mechanisms and their recommendations are historical.
 
 ## What is native about it
 
@@ -33,16 +33,16 @@ Notifications, approvals, event APIs and control sockets already exist in Warp, 
 | Input policies and typed keyboard capabilities | OS/host event facts; protocol specifications | Do not infer lost physical keys, consumed modifiers or IME facts |
 | Cell/grapheme model, snapshots, deltas and recovery envelope | Unicode data/segmentation/width primitives, reviewed codecs/hashes | Freeze versions and tailoring; library-private state is not checkpointable by assumption |
 | Process/session lifecycle policy and keeper protocol | Linux PTYs, termios, process groups, pidfds, cgroups; reviewed Rust OS wrappers | Kernel processes, shell semantics and runtime isolation remain separate |
-| Presentation contracts, accessibility mapping, selection provenance | Ratatui/Crossterm; Electron/browser text, fonts/shaping, OS accessibility | Frontends cache presentation, never parse inner VT or choose canonical widths |
+| Presentation contracts, accessibility mapping, selection provenance | Existing Ratatui diagnostics; future presentation/text/font/accessibility stack pending E5 decision | Frontends cache presentation, never parse inner VT or choose canonical widths |
 | Journal/capture policy, migrations and integrity validation | SQLite and filesystem durability primitives | Storage transactions do not make PTY delivery transactional |
 
 No new dependency is selected or installed by this document. Apache-2.0 remains a project-license recommendation, not adoption. Standards, Unicode data, reused code, fonts and test corpora each need provenance/license review before incorporation.
 
 ## Useful slice versus v1 versus vision
 
-**First working slice (N1):** one local managed pipe attempt and one interactive shell session; a small owned UTF-8/VT profile; native operation/receipt/observe APIs; human takeover; one useful terminal viewport in each frontend; memory-only output; reconnect to a surviving owner. Demonstrate one agent-native workflow and a zero-agent shell without requiring broad compatibility or durable engine recovery first. All unsupported features are visible and unadvertised.
+**Historical first-slice plan (N1):** managed pipe and interactive shell execution, a finite owned terminal profile, typed receipts, takeover, live-owner reconnect and minimal paired viewports. MK1 delivered a bounded subset, not full NG1. This retains the old rationale; [H0–H2](delivery-and-validation.md#current-harness-milestones) replace it as the current plan. No second product frontend follows from the historical slice.
 
-**v1 target (N2–N4):** bounded Linux modern-text compatibility, tested Bash/readline + less + Vim profiles, negotiated keyboard/paste/mouse/focus, both useful frontends, task/artifact review, bounded parallelism and fairness, authenticated local IPC, explicit runtime profiles, opt-in same-version complete checkpoints/tails and tested unknown outcomes. No shipping claim until the corresponding gates pass. v1 engineering admission is not conditioned on passing an old engine's adoption gate.
+**v1 target (N2–N4):** bounded Linux modern-text compatibility, tested Bash/readline + less + Vim profiles, negotiated keyboard/paste/mouse/focus, the selected emulator and optional diagnostics, task/artifact review, bounded parallelism and fairness, authenticated local IPC, explicit runtime profiles, opt-in same-version complete checkpoints/tails and tested unknown outcomes. No shipping claim until the corresponding gates pass. v1 engineering admission is not conditioned on passing an old engine's adoption gate.
 
 **Later:** additional shells/TUIs and SSH helper transport, richer native application adapters, more graphics/text profiles, cross-version migration and broader OS support. macOS/Windows require native lifecycle and rendering qualification; no Linux-equivalence assumption. A legacy `ssh` process is available earlier as an opaque local PTY program.
 
@@ -50,4 +50,6 @@ Non-goals: universal VT/ECMA conformance, an invented shell/OS/libc, universal T
 
 ## Current engineering gate
 
-The completed campaign chose ownership; later authorized N0 work develops reviewed contracts, experimental public schema/DTO artifacts and independent fixture data. The [NG0 review packet](delivery-and-validation.md#ng0-review-packet-draft) owns current input revisions, review status and pending owner decisions. These static artifacts are not an owned engine or NG0 acceptance. N1 needs separate authorization and a bounded acceptance tuple; no broad emulator rewrite, all-xterm port, legacy authority or crate-per-subsystem follows automatically. [Delivery](delivery-and-validation.md#ordered-milestones) remains the single implementation sequence and failure-criteria owner.
+Current authorization is a bounded docs/ADR/README/planning change, an issue-linked **draft PR** and independent review; no merge or runtime implementation. [H0–H2](delivery-and-validation.md#current-harness-milestones) own proposed successor acceptance. H0 resolves contracts/workload and interface/adapters; H1 proves scheduling, targeted observations and coordination; H2 proves admitted real-agent and emulator integration. Exact counts, numerical targets, providers and UI framework require review and owner decisions.
+
+Preserve the [MK1 run/limits](../engineering/mk1-quickstart.md), source/tests and historical native pins. New measurements must distinguish connected versus runnable agents, managed jobs, PTYs and provider/model cost; include p50/p95/p99 control/observation/input/paint with workload/hardware and all-process bounds. No existing benchmark earns the new gate.

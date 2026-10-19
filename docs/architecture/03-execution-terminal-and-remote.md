@@ -1,8 +1,10 @@
 # Execution, process ownership and remote sessions
 
+**E5 scope:** [AI-first harness direction](../adr/0005-ai-first-harness-direction.md) controls current product scope. Detailed contracts below remain proposed beyond the explicitly delivered MK1 subset. Agent adapters and the selected emulator share authority; prior two-client references do not mandate Electron or a second product frontend.
+
 [Index](../index.md) · [Native contract](../engine/native-contract.md) · [PTY/pipe semantics](../engine/compatibility-and-core.md#execution-boundary) · [Isolation](04-isolation-security-and-approvals.md)
 
-**Accepted-for-design boundaries; lifecycle/platform implementation pending.** This page owns OS launch/process control, optional integrations and remote transport distinctions. Terminal parsing/input is owned by the core specification, not repeated here.
+**Accepted-for-design boundaries; finite MK1 lifecycle/platform primitives delivered, broader qualification pending.** This page owns OS launch/process control, optional integrations and remote transport distinctions. Terminal parsing/input is owned by the core specification, not repeated here.
 
 ## Frontend and host-terminal boundaries
 
