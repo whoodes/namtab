@@ -4,7 +4,7 @@
 
 ## Status and measurement discipline
 
-This page owns cross-cutting quality dimensions **G0–G8**, suite catalog **T1–T15**, navigation cases **N01–N16**, and the numerical **G6** baseline. They are proposed criteria, not passing results or a second roadmap. [N0–N5/NG0–NG4](../engine/delivery-and-validation.md#ordered-milestones) owns delivery; its R/V table traces sources to design and validation. [CI0–CI4/DF01–DF08](16-test-and-ci-strategy.md) owns execution lanes and dual-client cases.
+This page owns cross-cutting quality dimensions **G0–G8**, suite catalog **T1–T15**, navigation cases **N01–N16**, and the inherited numerical **G6 reference proposal**. They are proposed criteria, not passing results or a second roadmap. [H0–H2](../engine/delivery-and-validation.md#current-harness-milestones) owns current proposed delivery; N/NG is retained qualification history; its R/V table traces sources to design and validation. [CI0–CI4/DF01–DF08](16-test-and-ci-strategy.md) owns execution lanes and dual-client cases.
 
 Choose the advertised profile first, then applicable cases. No test catalog makes every shell, protocol or platform mandatory at the first slice. Every result must state source/build, hardware, workload, capture mode, sample count, percentile method and evidence. Stale-authority/correctness invariants do not become optional when latency is poor. Randomized testing supports bounded claims, not universal proof.
 
@@ -24,7 +24,7 @@ Human decision backlog feeds admission control. Do not increase agent concurrenc
 
 ## Proposed measurable gates
 
-G identifiers are **quality dimensions**, not delivery stages or superseded engine selection tests. Current NG gates select their applicable evidence.
+G identifiers are quality dimensions. H0 selects their applicable successor evidence; old NG mappings below are retained qualification references, not current two-client gates.
 
 | Quality dimension | Required evidence / current delivery mapping |
 | --- | --- |
@@ -33,14 +33,14 @@ G identifiers are **quality dimensions**, not delivery stages or superseded engi
 | G2 — Audit and authority | NG1/NG3 lifecycle/lease/approval/revision tests; exceptions visible; output cannot grant authority |
 | G3 — Durability and recovery | NG1 live-owner attach versus NG4 complete terminal recovery; NG3 domain/receipt faults; reconciled or explicit unknown, no duplicate effects |
 | G4 — Enforced isolation | NG3 each claimed runtime passes filesystem/network/socket/credential/descendant/control-unavailability negative tests; fail admission if unsupported |
-| G5 — Human and accessibility | Both clients' critical keyboard/actual screen-reader workflows pass predeclared formative criteria; comparative productivity needs a separate adequate study |
+| G5 — Human and accessibility | The selected emulator's critical keyboard/actual screen-reader workflows pass predeclared formative criteria; comparative productivity needs a separate adequate study |
 | G6 — Load and responsiveness | Numerical baseline below; NG3 qualifies full declared workload, N1 reports its smaller measured workload without a full G6 claim |
 | G7 — Agent navigation | N01–N16 for published inner profiles; outer key aliases disclosed; structured/raw share authority; UI commands emit zero managed application-input bytes; stale not-yet-started input rejected |
-| G8 — Dual frontend and foundation | DF01–DF08 shared truth, attach/takeover, host capabilities, accessibility and import/schema boundaries; neither frontend deferred from a claimed release |
+| G8 — Client authority and foundation | Applicable DF01–DF08 cases preserve shared truth, attach/takeover, capability/accessibility and import/schema boundaries; H0 selects clients, not two mandatory products |
 
 ## Performance and resource budgets
 
-**Sole numerical product-performance baseline; provisional, unmeasured.** Reference qualification machine: dedicated Linux x86_64 desktop/VM, **8 vCPU, 16 GiB RAM, SSD-class local storage, 1920×1080 display**. Record exact CPU/GPU/drivers/fonts/scaling, virtualization, OS and display/host profiles; this is not inspected current-host hardware. Run TUI-only (Electron absent), desktop-only and both against one shared backend/session set. [All-process methodology](16-test-and-ci-strategy.md#all-process-performance) owns accounting and actual-paint measurement.
+**Historical G6 reference workload; provisional, unmeasured, not the current approved harness target.** H0 must select the successor agent/process/PTY populations and hardware/limits. In particular 32 sessions below is not an approved exact 32-agent/client requirement. Reference qualification machine: dedicated Linux x86_64 desktop/VM, **8 vCPU, 16 GiB RAM, SSD-class local storage, 1920×1080 display**. Record exact CPU/GPU/drivers/fonts/scaling, virtualization, OS and display/host profiles; this is not inspected current-host hardware. The old qualification compared two frontends; new evidence covers the selected emulator, actual protocol/load clients and optional diagnostics. [All-process methodology](16-test-and-ci-strategy.md#all-process-performance) owns accounting and actual-paint measurement.
 
 | Target / allocation | Provisional value and interpretation |
 | --- | --- |
@@ -55,7 +55,7 @@ G identifiers are **quality dimensions**, not delivery stages or superseded engi
 | Visible presentation cadence | Aim for 60 Hz when hardware permits; a presentation target, not a parser scheduling clock |
 | Later vision scale | 128 inspected sessions; requires a new memory/output budget and human study before any readiness claim |
 
-Queue/history limits are **included allocations**, not independent promises of simultaneous full occupancy. All service/keeper/core/TUI/Electron processes and view caches count; no Node engine fallback belongs to the owned shipping design. Measure the outer emulator/multiplexer separately and as total deployment footprint; it is not free. Tighten admitted concurrency or buffers explicitly if baseline memory leaves too little headroom.
+Queue/history limits are **included allocations**, not independent promises of simultaneous full occupancy. All admitted harness/keeper/core/adapter/emulator/diagnostic processes and view caches count; no Node engine fallback belongs to the owned shipping design. Measure the outer emulator/multiplexer separately and as total deployment footprint; it is not free. Tighten admitted concurrency or buffers explicitly if baseline memory leaves too little headroom.
 
 Report end-to-end **p50/p95/p99/max**, not only the target percentile, for control/observations/input/rendering and takeover; report model inference/provider/application time separately. Include floods, query storms, disk saturation, cap crossings, slow clients, cancellation, fairness, resize and IME. Hidden surfaces may skip paint, never parser bytes. No Rust speed-superiority claim or achieved benchmark follows.
 
@@ -78,7 +78,7 @@ Capture quotas/retention, artifact-copy budgets and metadata reserve have one ow
 | T11 — Plugins/migrations | Hung/crashed/malicious adapter, capability escalation, old client, unknown enum/critical field, failed migration/rollback | Core terminal survives; fail closed for security semantics; backups usable |
 | T12 — Human/load/distribution | Notification storm, huge diff, 32/128 session views, keyboard/screen reader, GPU fallback, install/upgrade/remove | Usable review/control under load; explicit lifecycle; no deletion of unowned work |
 | T13 — Agentic navigation | N01–N16: keys, modes, interactive application journeys, focus/identity, partial input, sensitive prompts, floods | Observe-act-observe works without agent-specific hooks; no byte-delivery/semantic-success conflation |
-| T14 — Dual frontend | DF01–DF08: TUI/desktop/API parity, writer endpoint, prefix/outer decoding, sizing, review, detach/SSH, accessibility | Same authority/evidence, honest physical/rendering differences, no private endpoint or persistence access |
+| T14 — Retained client-boundary cases | Applicable DF01–DF08: client/API truth, writer endpoint, input decoding, sizing, review, detach/SSH, accessibility; old TUI/Electron pairing is historical | Same authority/evidence, honest physical/rendering differences, no private endpoint or persistence access |
 | T15 — Foundation and supply chain | Import DAG, Rust/TS schema drift, duplicate Crossterm, locked tools, hostile build scripts, packaging/SBOM gaps | CI boundary checks block forbidden edges, source/ABI/notice gaps explicit; no privileged untrusted-PR job |
 
 Use paired pipe and PTY fixtures to show their different behavior rather than forcing equality. Use property-based chunking tests, subprocess/job-control integration tests, protocol conformance, GUI/accessibility testing, and sandbox negative tests at their appropriate boundaries. Differential comparison with reference terminals identifies differences; a majority vote is not necessarily the specification. Do not normalize away bugs in fixtures just to match a candidate engine.
@@ -114,7 +114,7 @@ G7 applies to the [published qualification matrix](../engine/delivery-and-valida
 
 ## Staged roadmap
 
-Use [N0–N5 and NG0–NG4](../engine/delivery-and-validation.md#ordered-milestones). This replaces the old P/PP progression; there is no second active product-stage table. N1 is a useful narrow native+shell slice in both clients, N2 qualifies classic compatibility, N3 qualifies supervised/resource/isolation/UX use, and N4 qualifies opt-in recovery. Recovery-state design starts at N0 without requiring full durability before a useful live terminal.
+Use [H0–H2 current proposals](../engine/delivery-and-validation.md#current-harness-milestones). N/NG and P/PP are historical delivery references. MK1 delivered only its finite slice; current coordination/scale is unqualified, compatibility stays scoped and exact recovery remains later. The G/T/N catalog retains meaningful criteria without imposing Electron or an unchosen replacement interface.
 
 ## Risk register
 

@@ -1,5 +1,7 @@
 # Try MK1 locally
 
+**Scope update — [E5](../adr/0005-ai-first-harness-direction.md), 2026-10-19.** Reproduction instructions below describe the delivered finite MK1, including its historical Electron client. Electron is frozen outside active product scope; the TUI remains diagnostic/attach tooling. Do not stop/restart existing user sessions as part of documentation work.
+
 [Scope and owner admission](mk1-scope-and-admission.md) · [Design guide](../index.md) · [Core limits](https://github.com/whoodes/namtab/blob/main/crates/terminal/README.md) · [Broker limits](https://github.com/whoodes/namtab/blob/main/crates/service/src/mk1/README.md)
 
 MK1 is the first hands-on human-feel slice. The commands below use real local processes, the owned terminal worker and one shared backend; no model, playback or mock terminal is required. This is not full NG1, a secure sandbox, a general-purpose terminal release or performance qualification. Use ordinary non-sensitive development commands; default capture is off, but live screens/streams are present in RAM.

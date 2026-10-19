@@ -1,5 +1,5 @@
 site_name: namtab
-site_description: Local engineering evidence and agent-first terminal design
+site_description: AI-first harness direction, owned terminal design and retained engineering evidence
 site_dir: .artifacts/site
 strict: true
 theme:
@@ -23,13 +23,13 @@ nav:
   - "Scope and product":
       - "Manifesto": "product/manifesto.md"
       - "Executive engine scope": "engine/index.md"
-      - "Ownership decision E4": "adr/0004-owned-agent-native-engine.md"
+      - "Current direction E5": "adr/0005-ai-first-harness-direction.md"
+      - "Owned semantics E4 (scope updated)": "adr/0004-owned-agent-native-engine.md"
       - "Baseline decision register": "architecture/10-recommended-baseline-and-adrs.md"
       - "Personas and supervision": "product/01-product-and-supervision.md"
       - "Evidence and coordination": "product/02-work-evidence-and-coordination.md"
   - "Human experience":
-      - "Shared / desktop UX": "ux/11-human-experience-spec.md"
-      - "Host TUI and parity": "ux/13-dual-frontend-and-host-tui.md"
+      - "Human steering and intervention": "ux/11-human-experience-spec.md"
       - "Canonical frontend integration": "engine/frontend-contracts.md"
   - "Architecture contracts":
       - "Native work and control": "engine/native-contract.md"
@@ -40,7 +40,7 @@ nav:
       - "Domain storage and extensions": "architecture/05-architecture-storage-and-extensions.md"
   - "Delivery and engineering":
       - "Milestones / traceability / risks": "engine/delivery-and-validation.md"
-      - "Try MK1 locally": "engineering/mk1-quickstart.md"
+      - "Reproduce delivered MK1": "engineering/mk1-quickstart.md"
       - "MK1 scope and owner admission": "engineering/mk1-scope-and-admission.md"
       - "Prototype entrypoint": "engineering/12-prototype-plan.md"
       - "Acceptance catalog / G6 budgets": "engineering/07-validation-roadmap-and-risks.md"
@@ -50,6 +50,7 @@ nav:
       - "Contributor workflow": "engineering/contributing.md"
       - "Current source ledger": "engine/research.md"
   - "History (superseded plans, preserved results)":
+      - "Prior dual frontend / host diagnostic profile": "ux/13-dual-frontend-and-host-tui.md"
       - "Technology comparisons": "research/06-technology-distribution-and-compatibility.md"
       - "Prior source / decision ledger": "research/08-research-and-decisions.md"
       - "Prior self-reviews": "reviews/09-self-review-and-coverage.md"

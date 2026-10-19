@@ -1,5 +1,7 @@
 # ADR E4: own an agent-native engine with terminal compatibility
 
+**Scope update, 2026-10-19:** [ADR E5](0005-ai-first-harness-direction.md) retains this owned-semantics decision but supersedes the two-initial-frontend/Electron commitments below. Those paragraphs preserve the earlier rationale, not current product scope. MK1 was delivered; E5's future harness scale and renderer remain unqualified.
+
 Date: **2026-10-15**. **Owner-chosen direction; accepted for design.** Implementation, dependency choices, compatibility certification and performance remain pending. [Campaign executive summary](../engine/index.md) · [Research](../engine/research.md) · [Delivery gates](../engine/delivery-and-validation.md)
 
 ## Decision and scope

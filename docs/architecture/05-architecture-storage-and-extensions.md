@@ -1,5 +1,7 @@
 # Domain storage, API evolution and extensions
 
+**E5 scope:** [AI-first harness direction](../adr/0005-ai-first-harness-direction.md) controls current product scope. Detailed contracts below remain proposed beyond the explicitly delivered MK1 subset. Agent adapters and the selected emulator share authority; prior two-client references do not mandate Electron or a second product frontend.
+
 [Index](../index.md) · [Runtime/process graph](../engine/runtime-persistence-security.md#module-and-process-design) · [Native API](../engine/native-contract.md) · [Security](04-isolation-security-and-approvals.md)
 
 **Accepted-for-design; full store/IPC implementation pending.** This page owns domain journal/projection durability, evidence-object publication, subscriptions, API evolution and extension/migration lifecycle. The engine runtime specification owns canonical event application and terminal-state recovery.

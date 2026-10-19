@@ -1,5 +1,7 @@
 # Compatibility boundary and owned core
 
+**Current scope:** [E5](../adr/0005-ai-first-harness-direction.md) retains owned semantics and compatibility boundaries. A finite core/worker is delivered in MK1; the broader state/text/input/checkpoint proposals below remain unqualified. Prior dual-frontend requirements are superseded.
+
 [Campaign](index.md) · [Native contract](native-contract.md) · [Recovery](runtime-persistence-security.md) · [Validation matrix](delivery-and-validation.md#compatibility-matrix)
 
 **Proposed design.** No new parser or engine implementation exists. Sources S02–S16/S20–S22 distinguish OS contracts, standards and implementation practice; decisions below define namtab profiles rather than universal terminal behavior.
@@ -192,7 +194,7 @@ The N0-05 synthetic review data in `tests/fixtures/native-state/` (provenance in
 | Snapshot/recovery negatives; R11–R13, V11–V13 | At each eligible cut, compare uninterrupted versus exact-tuple decoded state plus the same suffix. Inspect hidden state/effect identities in both, but dispatch none during replay. Reject omitted discard/UTF-8/slot state, incompatible policy/oversized import, missing tail, lost receipt identity and a visible frame presented as complete state. Do not wait for ground to hide missing continuation. |
 | One canonical presentation; R16, V16 | Two simultaneous clients and reconnect project the same revision/occupancy; disposing caches never changes modes/line IDs or proposes replies. A fresh frame cannot grant a writer or clear unknown interpretation. |
 
-**Owner/reviewer gates remain open:** accept or revise this bounded dev representation/FSM/cap/work proposal together with the existing private manifest; independently review the synthetic oracles in N0-07; pin actual primitives/data/codec provenance in N0-08; reconcile public/native and receipt boundaries in N0-02/03/06; qualify implementation, actual memory/CPU/fairness and both clients later. The design deliberately selects no numeric later-v1 string/grapheme/stack/import cap. Those features remain unadvertised until their exact limits and overflow/continuation tests are reviewed. No staffing, timebox, license, NG0 or runtime acceptance is inferred.
+**Historical N0 proposal checklist; broader qualification remains open:** accept or revise this bounded dev representation/FSM/cap/work proposal together with the existing private manifest; independently review the synthetic oracles in N0-07; pin actual primitives/data/codec provenance in N0-08; reconcile public/native and receipt boundaries in N0-02/03/06; qualify implementation, actual memory/CPU/fairness and both clients later. The design deliberately selects no numeric later-v1 string/grapheme/stack/import cap. Those features remain unadvertised until their exact limits and overflow/continuation tests are reviewed. No staffing, timebox, license, NG0 or runtime acceptance is inferred.
 
 ## Unicode, reflow and rendering boundary
 
@@ -202,7 +204,7 @@ Keep stream byte offsets, Unicode scalars, grapheme clusters, logical lines, ter
 
 For v1, primary-buffer soft-wrapped logical lines reflow on resize under the published policy; N1 uses the explicit crop/no-reflow policy above. Hard breaks and alternate-screen content do not magically become reflowable prose. Map history/selection anchors or invalidate them explicitly; cap shrink/expansion work. Resizing and subsequent application repaint are separate events. v1 terminal cells use logical order without full bidi reordering; expose that limitation, safe bidi markers in review chrome, and readable logical inspection. Full bidirectional terminal editing requires a later profile and mapping tests, not an assertion that Unicode storage implies bidi support.
 
-Shaping, font fallback, ligatures and rasterization are presentation concerns constrained by canonical occupancy. They cannot change agent cell positions. Electron and the outer TUI host may paint differently; that is a visible capability/quality issue, not permission for two width authorities.
+Shaping, font fallback, ligatures and rasterization are presentation concerns constrained by canonical occupancy. They cannot change agent cell positions. Different admitted presentation profiles may paint differently; that is a visible capability/quality issue, not permission for two width authorities.
 
 ## Input policy
 

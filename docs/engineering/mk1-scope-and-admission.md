@@ -1,5 +1,7 @@
 # MK1: first hands-on prototype
 
+**Scope update — [E5](../adr/0005-ai-first-harness-direction.md), 2026-10-19.** This is the preserved MK1 admission/delivery record. MK1 merged in PR44 at ff15a18b81c78ebcc539d521ec6ca00ebcd14b69 and stopped for feedback. Its delegated merge authority ended; it is not authority for current implementation or merging.
+
 MK1 is a **working human-feel evaluation**, not full NG1, a final prototype or a production terminal. This record admits bounded engineering against design baseline `a408dbc7e4a4eda51ba668fa93f0235514bd8786`; it does not certify unimplemented behavior. The [delivery contract](../engine/delivery-and-validation.md) retains the later qualification gates.
 
 ## Owner decision and responsibility

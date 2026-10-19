@@ -1,15 +1,15 @@
 # namtab design guide
 
-**Build a project-owned Rust agent-native terminal engine, with a compatibility boundary for existing Linux programs and two first-class human frontends: host-terminal TUI and Electron.** [Manifesto](product/manifesto.md) states the priorities; [ADR E4](adr/0004-owned-agent-native-engine.md) records the ownership decision and rejected alternatives.
+**Build an AI-first execution and coordination harness around a custom owned terminal engine, intended to scale cleanly to dozens of agents.** [ADR E5](adr/0005-ai-first-harness-direction.md) owns the 2026-10-19 direction and supersession; [manifesto](product/manifesto.md) states priorities. Electron is outside active product scope. The retained host TUI is diagnostic/attach tooling. Emulator presentation form/renderer and exact load workload are open; a standalone native window and 32-client target are proposals.
 
-The owned engine is **not implemented**. Existing code is a bounded foundation plus historical xterm/libghostty experiments; no live product frontend, supervisor or PTY runtime exists. Their X4/EA1 gates remain **FAIL**, independently of passing foundation/document checks. The ownership decision changes the roadmap, not those results. Apache-2.0 remains a recommendation, not an adopted license.
+**MK1 is delivered**, merged in [PR44](https://github.com/whoodes/namtab/pull/44) at `ff15a18b81c78ebcc539d521ec6ca00ebcd14b69`: a finite owned core/worker, real local execution, experimental task/receipt contracts and TUI/Electron demonstrations. This is not full NG1, a model integration or dozens-agent qualification. Historical X4/EA1 remain **FAIL**; Apache-2.0 remains a recommendation, not a license. The current authorized change is docs/planning with a draft PR; runtime implementation and merging remain outside it.
 
 ## Reading order
 
-1. [Executive scope](engine/index.md): native value, owned/reused components, useful slice versus v1 and non-goals.
-2. [Human experience](ux/11-human-experience-spec.md) and [host-TUI profile](ux/13-dual-frontend-and-host-tui.md): ordinary terminal first, scalable supervision, review and takeover.
+1. [Direction and open choices](adr/0005-ai-first-harness-direction.md), then [executive scope](engine/index.md): native value, owned/reused components, useful slice versus v1 and non-goals.
+2. [Human experience](ux/11-human-experience-spec.md): steering, focused activity, review and takeover. The [prior host profile](ux/13-dual-frontend-and-host-tui.md) is retained diagnostic/history guidance, not a second product commitment.
 3. [Native contract](engine/native-contract.md) → [compatibility core](engine/compatibility-and-core.md) → [runtime/recovery](engine/runtime-persistence-security.md): authoritative identities, state and failure boundaries.
-4. [Delivery and validation](engine/delivery-and-validation.md): N0–N5, NG0–NG4, requirement/source/design/test traceability, estimates, risks and unresolved decisions.
+4. [Delivery and validation](engine/delivery-and-validation.md): H0–H2 current proposals, preserved N/NG qualification history, traceability, risks and unresolved decisions.
 5. For engineering preparation, read [repository practices](engineering/14-repository-and-engineering-practices.md), [dependency inventory](engineering/15-dependencies-and-supply-chain.md), [CI strategy](engineering/16-test-and-ci-strategy.md) and [contributor workflow](engineering/contributing.md).
 
 ## Documentation ownership
@@ -18,7 +18,7 @@ Each row has one authoritative owner. Other pages summarize and link rather than
 
 | Decision or contract | Authoritative location | Supporting detail |
 | --- | --- | --- |
-| Ownership choice and supersession | [ADR E4](adr/0004-owned-agent-native-engine.md) | [Baseline decision register](architecture/10-recommended-baseline-and-adrs.md) |
+| Current direction and supersession | [ADR E5](adr/0005-ai-first-harness-direction.md), retaining E4 owned semantics | [Baseline decision register](architecture/10-recommended-baseline-and-adrs.md) |
 | Product scope, owned/reused components, v1 exclusions | [Engine scope](engine/index.md) | [Personas/attention](product/01-product-and-supervision.md), [manifesto](product/manifesto.md) |
 | Native identities, operations, receipts, observations, writer fencing | [Native contract](engine/native-contract.md) | [Artifact/validation/dependency policy](product/02-work-evidence-and-coordination.md) |
 | PTY/pipe semantics, parser/state, Unicode, input encoding, query replies | [Compatibility and core](engine/compatibility-and-core.md) | [Process ownership, optional adapters and remote modes](architecture/03-execution-terminal-and-remote.md) |
@@ -42,7 +42,7 @@ Each row has one authoritative owner. Other pages summarize and link rather than
 
 Use **owned terminal core** for the pure reducer/state/input library; **terminal worker** for its process; **service/broker** for domain authority; **keeper** for PTY/pipe handles and observed process facts. The product engine includes native work/control, not just VT emulation. A frontend's presentation cache is never another interpretation owner. “Raw terminal view” means canonical terminal presentation, not a PTY bypass. “Raw input” is a separately granted operation.
 
-**N0–N5** is the only current delivery sequence; **NG0–NG4** are its acceptance gates. **G0–G8** are cross-cutting quality dimensions, **T/N/DF/V** identify test catalogs, and **CI0–CI4** identify lanes. Old **P/PP**, **X1–X6** and **EA** adoption progressions are historical. Private experimental wire versions, a future product v1, snapshot schemas, Unicode versions and upstream library versions are distinct namespaces.
+**H0–H2** is the current proposed harness sequence. **N0–N5 / NG0–NG4** preserve prior qualification rationale; N0 design/MK1 are accepted only at their recorded scope, not full NG1. Compatibility/recovery/future items retain explicit successor links. **G0–G8** are cross-cutting quality dimensions, **T/N/DF/V** identify test catalogs, and **CI0–CI4** identify lanes. Old **P/PP**, **X1–X6** and **EA** adoption progressions are historical. Private experimental wire versions, a future product v1, snapshot schemas, Unicode versions and upstream library versions are distinct namespaces.
 
 ## Design invariants
 
@@ -63,7 +63,7 @@ These identifiers are the common vocabulary for all documents. They are requirem
 | I11 | No network service, model subscription, or particular agent is required for basic terminal use. Remote/cloud features are explicit opt-ins. |
 | I12 | The interface identifies which capabilities are observed, cooperatively reported, or enforced. Strong enforcement is advertised only for a verified runtime profile. |
 | I13 | Agentic navigation is core: application input and terminal UI commands have separate authority/routes, every action targets an explicit session/view context, and observed transitions are distinguished from successful byte delivery. |
-| I14 | Two initial human frontends share broker semantics and evidence, with honest capability differences. Neither owns authority, opens private persistence or reaches managed PTY/keeper/engine internals; outer TUI terminal I/O is separate. |
+| I14 | Harness clients and the selected emulator interface share authoritative identities/evidence with honest capability differences. No client owns broker authority, private persistence or managed PTYs. A second product frontend is not required; retained diagnostic TUI outer I/O is separate. |
 
 ## Historical record
 
@@ -80,4 +80,4 @@ Audited all 37 documentation pages, README, evidence index, navigation and contr
 
 Second review challenged accidental legacy authority, frontend state duplication, replay/retry promises, privacy, zero-agent UX and solo-team maintenance cost. Repairs include one renderer default (DOM first, acceleration measured), no Node fallback in the owned runtime, one current module graph, and clear evidence/proposal namespaces. Fresh inspection hashes and check results live in repository path `evidence/docs-consolidation/`; this is a documentation audit, not a runtime result. No new research, dependency/runtime change or engine work occurred.
 
-Current bounded engineering: [MK1 scope, owner admission and stop condition](engineering/mk1-scope-and-admission.md). This supersedes the earlier pending-start disposition, not later qualification requirements.
+MK1 admission and delivery are retained in the [scope record](engineering/mk1-scope-and-admission.md) and [quickstart](engineering/mk1-quickstart.md). Current work is the E5 docs/planning alignment; no runtime restart, removal or implementation follows.

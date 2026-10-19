@@ -1,5 +1,7 @@
 # Tests, CI lanes and dual-frontend validation
 
+**Current scope: [E5](../adr/0005-ai-first-harness-direction.md).** Keep active foundation, governance, publication guards and existing useful MK1 assertions unchanged. Future harness qualification selects applicable client/DF cases under H0; historical paired TUI/Electron fixtures are not two product requirements. This docs/planning PR changes no CI job or runtime test.
+
 [Index](../index.md) · [T/N acceptance and G6 budgets](07-validation-roadmap-and-risks.md) · [Repository](14-repository-and-engineering-practices.md) · [Owned-engine V/NG plan](../engine/delivery-and-validation.md)
 
 **Target infrastructure with a bounded executable subset.** This page owns CI0–CI4, DF01–DF08, invariant-to-lane mapping, artifact safety and measurement method. [Delivery](../engine/delivery-and-validation.md) owns published qualification profiles, engine V families, milestones and current risks; [07](07-validation-roadmap-and-risks.md) owns T/N cases and numerical budgets. These catalogs compose rather than define competing release plans.
@@ -26,11 +28,11 @@ This separates active source contracts from an unadopted historical SDK without 
 | --- | --- | --- |
 | Domain / domain | Unit and Proptest command/state traces for lifecycle, dependency revisions, approvals, leases, budgets, evidence expiry; injected monotonic/wall clocks and IDs | Reference model independently states permitted transitions; do not merely round-trip the production function. Shrink failures and retain sanitized seeds. A bounded model is not a universal proof |
 | Synchronization / service | Small model-based races for generation fences, reserve/consume/dispatch, receipt pruning and cancellation; optional Loom for actual shared-memory primitives | Exercise before/after boundaries and bounded interleavings. Loom does not explore arbitrary Tokio, SQLite, FDs or kernel behavior |
-| Protocol / protocol + both clients | Valid/invalid schema corpus; frame fragmentation/size/depth/credit; duplicate keys; decimal-string overflow; lossless path bytes; unknown fields; version/capability negotiation | Rust and TS validate identical fixtures. Domain authority decisions come from one broker, not two replicated validators |
+| Protocol / protocol + admitted clients | Valid/invalid schema corpus; frame fragmentation/size/depth/credit; duplicate keys; decimal-string overflow; lossless path bytes; unknown fields; version/capability negotiation | Rust and TS validate identical fixtures. Domain authority decisions come from one broker, not two replicated validators |
 | Owned core / future terminal; historical adapter references | Byte/resize/options golden histories, per-boundary chunking, seeded mutation, differential references, reply/query event counts | Compare cells/cursor/modes/attributes/frontier and continuation, not just screenshots. Reference disagreement creates a triage item, not majority-vote truth |
 | PTY/process / platform + keeper | Disposable real PTY sessions: shells, foreground pipelines, raw mode, `/dev/tty`, EOF, echo, signal handlers, descendants retaining slave, leader exit, detached jobs | Managed launch/wait/status and merged PTY stream verified separately from pipe stdout/stderr. Mock PTYs cannot establish job control |
 | Frontend behavior / console + desktop | Ratatui TestBackend snapshots/reducer tests; React Testing Library/Vitest; identical broker scenario server; typed requests asserted | Proves view mapping, keyboard routes and displayed state only. A simulated grid/DOM does not establish real emulator input, IME, GPU or screen-reader support |
-| Full system / service + test owner | Real broker/engine/keepers, both clients, controlled CLI/TUI/editor/REPL fixtures, local fake agent/provider and side-effect counter | Verify observed transitions and artifact/process results, including unknowns. No live model/service or user credentials required |
+| Full system / service + test owner | Real broker/engine/keepers, admitted clients, controlled CLI/TUI/editor/REPL fixtures, local fake agent/provider and side-effect counter | Verify observed transitions and artifact/process results, including unknowns. No live model/service or user credentials required |
 | Runtime/distribution / security + packaging | Rootless-profile negative tests in disposable qualified VMs; install/update/logout/migration/fault and all-process load | Host controls must actually be available. A skip is not G4 evidence; packages need clean-machine and real-display checks |
 
 Tools are selected in [15](15-dependencies-and-supply-chain.md#test-and-quality-dependencies). Primary methodology references: [Proptest](https://proptest-rs.github.io/proptest/intro.html), [Loom](https://github.com/tokio-rs/loom), [Ratatui TestBackend](https://ratatui.rs/concepts/backends/), [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/), [cargo-fuzz](https://rust-fuzz.github.io/book/cargo-fuzz.html). Tool availability is not evidence these product tests exist.
@@ -58,9 +60,9 @@ Run N01–N16 over native agent API and each human frontend where the outer host
 | DF03 — Input nesting | Ctrl+G quote/timeout, outer tmux/screen and SSH escape collisions, lone Escape/Alt, missing enhanced reports, paste containing prefix characters | T3/T13/T14, N07/N12/N15, NG2/NG3 |
 | DF04 — Display and geometry | Both clients' canonical frame bases/deltas and late attach, one size owner, cropped mirror, rapid/tiny resize, Unicode/font mismatch | T2/T4/T14, V08/V16, NG1/NG2 |
 | DF05 — Attach and loss | Detach/suspend/resume either client, kill UI, lose SSH, reconnect after keeper/broker/engine loss, capture off/on | T9/T10/T14, G3; no direct private-store/PTY recovery route |
-| DF06 — Review and protection | Review one revision on both clients; mutate context; old approval fails; known protected prompt/clipboard/paste routes cannot confirm a broker grant; uncertified outer paste separation denies TUI Allow | T5/T7/T8/T14, G2/G5; compromised host UI limits remain |
+| DF06 — Review and protection | Review one revision through each selected client profile; mutate context; old approval fails; known protected prompt/clipboard/paste routes cannot confirm a broker grant; uncertified outer paste separation denies TUI Allow | T5/T7/T8/T14, G2/G5; compromised host UI limits remain |
 | DF07 — Accessibility and configuration | Keyboard-only control, actual screen-reader/host pair, linear mode, ASCII/mono, shared TOML migration and unsupported keymap feedback | T12/T14/T15, G5/G8; no forced font/shell changes |
-| DF08 — Load and separation | TUI-only, desktop-only and both attached at G6 load; UI/backpressure failure never weakens admission; clients cannot reach private endpoints | T7/T12/T14/T15, G6/G8, V15/V16 |
+| DF08 — Load and separation | Selected emulator plus agent/diagnostic clients at the H0 workload; UI/backpressure failure never weakens admission; clients cannot reach private endpoints | T7/T12/T14/T15, G6/G8, V15/V16 |
 
 ## Crash, storage, runtime and unknown effects
 
@@ -101,15 +103,15 @@ One diagnostic rerun may classify an infrastructure/timing failure, but retain t
 | TUI over SSH to installed backend host | Remote outer latency, terminal capability loss, detach/service/logout semantics | Local latency budget or transparent remote process ownership after disconnect |
 | macOS/Windows future native hosts | Client/backend compile smoke early; later native PTY/ConPTY, process, credential, assistive, installer certification | POSIX parity from compilation; Linux container enforcement without explicit VM |
 
-Record the initial outer-terminal versions during N2/N3, selecting at least a common Linux desktop emulator, namtab Electron, and tmux nested inside a certified emulator. SSH is a transport overlay; Linux virtual console/basic-color behavior has a separate reduced profile. Do not advertise a named emulator/version until tested. This avoids fabricating a support list from project popularity.
+For retained host diagnostics, record actual outer-terminal versions and a bounded declared host/multiplexer profile; Electron is not a required harness target. SSH is a transport overlay; Linux virtual console/basic-color behavior has a separate reduced profile. Do not advertise a named emulator/version until tested. This avoids fabricating a support list from project popularity.
 
-Playwright's Electron automation is explicitly experimental. Browser accessibility scans identify some violations, not complete accessibility: keyboard, reading order, actual screen readers and critical human tasks still require manual evidence. [Electron automation](https://playwright.dev/docs/api/class-electron), [accessibility limitations](https://playwright.dev/docs/accessibility-testing)
+Historical MK1 option: Playwright's Electron automation is explicitly experimental; it is not a selected harness dependency. Browser accessibility scans identify some violations, not complete accessibility: keyboard, reading order, actual screen readers and critical human tasks still require manual evidence. [Electron automation](https://playwright.dev/docs/api/class-electron), [accessibility limitations](https://playwright.dev/docs/accessibility-testing)
 
 ## All-process performance
 
 The [draft manifesto](../product/manifesto.md) makes responsiveness a product priority. Measure end-to-end p50/p95/p99 separately for terminal/control, observations, input and visible paint; keep model inference separate. Report human-input priority, fairness, bounded queues/memory, backpressure and cancellation behavior under load. The linked G6 budgets remain provisional; this adds no achieved result or numerical SLO.
 
-Use [G6's single machine/load/target definition](07-validation-roadmap-and-risks.md#performance-and-resource-budgets) in three runs: TUI only, desktop only, both sharing one backend. Include Rust service/keepers/console/core worker, Electron main/render/GPU and all caches/queues/indexes. Historical Node/FFI engine measurements are separate comparison runs, never a hidden shipping fallback. TUI encode/flush timing is insufficient: measure actual controlled outer-emulator paint. Measure clean-shell readiness separately from arbitrary rc startup.
+H0 must select the mixed agent/process/PTY/hardware tuple and numerical gates; [inherited G6](07-validation-roadmap-and-risks.md#performance-and-resource-budgets) is only a reference proposal. Test the selected emulator, actual agents/load clients and optional diagnostics against one authoritative backend. Include Rust service/keepers/core, adapter/model-client overhead, selected renderer and all caches/queues/indexes. Report external provider latency/cost separately. Historical Node/FFI engine measurements are separate comparison runs, never a hidden shipping fallback. TUI encode/flush timing is insufficient: measure actual controlled outer-emulator paint. Measure clean-shell readiness separately from arbitrary rc startup.
 
 For TUI tests report controlled host-emulator/tmux memory/CPU both separately and as complete end-to-end footprint, plus incremental impact versus an idle host; user-owned outer processes are not silently free. Report OS cache and child tool memory separately. Record visible geometry/surfaces, frame cadence, CPU/GPU, parser lag, control latency, dropped display frames and evidence gaps. Remote SSH adds measured network latency outside the local target. No claim of 128-session readiness before its own new budget/study. A shared backend is not evidence that doubled frontend state fits the budget.
 
@@ -123,9 +125,9 @@ Committed reviewed synthetic fixtures follow repository history. Generated synth
 
 | Invariant | Important falsifier / test ownership | Blocking lane/gate |
 | --- | --- | --- |
-| I1 — Legacy without hooks | Clean shell/menu/editor/REPL in both clients with all adapters off; T3/N01–N06 | CI1 smoke, CI2, CI4/G1 |
+| I1 — Legacy without hooks | Clean shell/menu/editor/REPL in selected client profiles with all adapters off; T3/N01–N06 | CI1 smoke, CI2, CI4/G1 |
 | I2 — Distinct lifetimes | Closing/detaching view never completes task; leader exit versus descendants; T1/T6/DF05 | CI1 model, CI2/G3 |
-| I3 — Honest binding/quality | Source/dependency/integration mutation, output expiry/gaps, exception display in both clients; T1/DF01 | CI1/CI2/G2 |
+| I3 — Honest binding/quality | Source/dependency/integration mutation, output expiry/gaps, exception display in selected client profiles; T1/DF01 | CI1/CI2/G2 |
 | I4 — Data not authority | Spoofed shell markers/OSC/dialogs/import config cannot grant or run; T7/DF06 | CI1 denial, CI2/G2/G4 |
 | I5 — One mediated writer | Three clients race takeover/partial write/disconnect; T5/DF02 | CI1 model, CI2/G7 |
 | I6 — Fresh grants, unknown reconciliation | Context changes, lost receipt/consumption crash; no repeated key/effect; T5/T9/N11 | CI1/CI2/G2/G3 |

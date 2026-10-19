@@ -1,15 +1,15 @@
 # Baseline decision register
 
-[Index / document owners](../index.md#documentation-ownership) · [ADR E4](../adr/0004-owned-agent-native-engine.md) · [Current milestones](../engine/delivery-and-validation.md#ordered-milestones)
+[Index / document owners](../index.md#documentation-ownership) · [Current ADR E5](../adr/0005-ai-first-harness-direction.md) · [Current milestones](../engine/delivery-and-validation.md#ordered-milestones)
 
-**Current as consolidated 2026-10-15.** This register records defaults and rationale, not a second architecture specification. Accepted-for-design and recommended choices remain unimplemented or measurement-gated. Historical A identifiers remain stable for citations; adoption-specific choices are superseded by E4. Actual artifact versions are recorded in locks and dated evidence, not implied by a recommended technology.
+**Scope revised 2026-10-19 under E5; prior consolidation 2026-10-15 retained.** This register records defaults and rationale, not a second architecture specification. Detailed design recommendations remain measurement-gated; the finite MK1 implementation is delivered. Historical A identifiers remain stable for citations; adoption-specific choices are superseded by E4; E5 supersedes dual-frontend scope and the Electron default. Actual artifact versions are recorded in locks and dated evidence, not implied by a recommended technology.
 
 ## Executive decision summary
 
 | Area | Decision / status | Contract owner and unresolved condition |
 | --- | --- | --- |
-| Native engine | Project-owned Rust work/control model and compatibility core; owner-chosen | [E4](../adr/0004-owned-agent-native-engine.md), [scope](../engine/index.md); NG0–NG4 unearned |
-| Initial clients | Ratatui/Crossterm host TUI and Electron/TS/React desktop; recommended | [UX](../ux/11-human-experience-spec.md), [host profile](../ux/13-dual-frontend-and-host-tui.md); both required, real accessibility/rendering unqualified |
+| Native engine | AI-first harness and project-owned Rust work/control/compatibility core; owner-chosen | [E4](../adr/0004-owned-agent-native-engine.md), [scope](../engine/index.md); MK1 finite subset delivered; broader qualification unearned |
+| Human interface | Custom emulator serving the AI-first harness; form/renderer pending | [E5](../adr/0005-ai-first-harness-direction.md), [UX](../ux/11-human-experience-spec.md); Electron frozen as MK1 history, TUI diagnostic/attach only |
 | Canonical state/input | One owned interpreter and reply source, semantic/cell presentation | [Core](../engine/compatibility-and-core.md), [frontend seam](../engine/frontend-contracts.md); no frontend parser or PTY access |
 | Runtime/lifetime | Rust service, independent keepers, multiplexed owned terminal worker | [Runtime](../engine/runtime-persistence-security.md); process boundaries do not establish a sandbox |
 | Native execution | Typed managed pipes plus explicit PTY compatibility | [Native contract](../engine/native-contract.md), [execution](03-execution-terminal-and-remote.md); no shell-prompt success oracle |
@@ -23,11 +23,11 @@
 
 ## ADR-A1 — Frontend and language boundary
 
-Rust owns service/domain/OS/CLI/TUI and the owned core; TypeScript owns Electron UI. The two clients serve complementary host/desktop needs without duplicating authority. Electron is recommended for rich review/accessibility and a controlled browser runtime, not proven lower memory or faster rendering. Historical alternatives/rationale remain in [technology comparisons](../research/06-technology-distribution-and-compatibility.md#desktop-and-terminal-alternatives); [dependencies](../engineering/15-dependencies-and-supply-chain.md#rust-tui-choice) owns the Rust TUI comparison. Current renderer selection is [DOM first, gated acceleration](../engine/frontend-contracts.md#text-rendering-selection-and-accessibility).
+**Prior dual-frontend/Electron recommendation superseded by [E5](../adr/0005-ai-first-harness-direction.md).** Rust owns the existing core, service/domain, OS and public CLI boundary. The custom emulator's presentation form and renderer/framework remain open; neither a native window nor a new UI toolkit is selected. Retain TS/pnpm/reference and Electron MK1 source/tests for reproducibility; do not infer shipping dependencies from their presence. Host TUI is diagnostic/attach tooling. Human UX and client authority constraints apply to the selected interface; old DOM/React/Forge options are historical rationale, not current defaults.
 
 ## ADR-A2 — One interpretation authority, replaceable presentation
 
-E4 replaces adopted emulator semantics with owned parser/state/input. The [core contract](../engine/compatibility-and-core.md) owns modes, replies and complete semantic state; the [native contract](../engine/native-contract.md) owns admission/receipts. Both frontends render projections. X4/EA1 remain historical failures, not new-engine criteria or implicit fallback permission.
+E4 replaces adopted emulator semantics with owned parser/state/input. The [core contract](../engine/compatibility-and-core.md) owns modes, replies and complete semantic state; the [native contract](../engine/native-contract.md) owns admission/receipts. Every admitted client renders/consumes authorized projections; no second product frontend is required. X4/EA1 remain historical failures, not new-engine criteria or implicit fallback permission.
 
 ## ADR-A3 — Supervision and actual process guarantees
 
@@ -35,11 +35,9 @@ E4 replaces adopted emulator semantics with owned parser/state/input. The [core 
 
 ## ADR-A4 — Linux and eventual desktop ports
 
-**Recommended; qualification pending N2/N3.** Build against Ubuntu 24.04 LTS userland for x86_64. Certify maintained 24.04 and 26.04 installations; for Electron, Wayland is primary and X11 a tested compatibility path. Host TUI profiles are independently certified and do not require a desktop display server. This is a product support target, not a claim about this VM or every Ubuntu flavor. Native package first; no silent startup-file changes or required account. Exact dependency/kernel patch floors are fixed from the prototype build and security inventory, rather than invented here. Canonical's lifecycle page documents both LTS lines. [Ubuntu lifecycle](https://ubuntu.com/about/release-cycle)
+The exercised MK1 tuple is Ubuntu 22.04 x86_64, not a support certification. Existing Ubuntu 24.04/26.04 release targets remain unqualified compatibility proposals; H0 must declare the next actual OS/hardware/display or headless workload. Do not couple that choice to Electron or assume a graphical native window. Native packaging and later macOS/Windows paths require their own renderer, PTY/process, accessibility, IPC and dependency review. They are not part of this alignment.
 
-Package aligned core/CLI/TUI (including the qualified native engine) and desktop artifacts under one product tuple; both frontends are initial release scope. Package Linux user-level supervisor/keeper lifecycle explicitly; background service starts on demand, not automatically at login. Closing a desktop view or detaching a TUI releases its endpoint leases and unsent input while processes can continue; desktop last-window quit offers keep-running versus explicit termination. TUI detach restores outer terminal modes on normal exit; a killed client may need manual host recovery. Logout stops local owned work by default, with any unattended/linger mode an informed opt-in. Update only after compatible runners are retained or work is intentionally drained. Do not inherit a service-manager kill policy that contradicts advertised GUI persistence.
-
-Later: macOS Apple Silicon first, Windows 11 x64 first, each with an OS version still supported by the selected Electron release. macOS needs its own PTY/session/credential and sandbox/VM decisions. Windows uses ConPTY and Job Objects where applicable; Ctrl-C, descendants, resize, paths, ACLs and IPC require native contracts. WSL is a separate Linux remote/runtime target, not equivalent to native Windows process control. Restricted Linux containers on macOS/Windows require an explicit Linux VM/remote host; do not relabel them native host confinement. [Microsoft ConPTY](https://learn.microsoft.com/en-us/windows/console/creating-a-pseudoconsole-session), [Job Objects](https://learn.microsoft.com/en-us/windows/win32/procthread/job-objects)
+Lifecycle semantics remain: closing/detaching presentation differs from stopping owned work; unsent input is discarded, old leases never resurrect implicitly, and an explicit process action cannot promise all descendants/remote effects stopped. MK1 keeps authority across live reconnect as documented; future service-manager/logout policy must be admitted separately. No startup/security/global configuration changes are implied.
 
 ## ADR-A5 — Enforced execution without building a container platform
 
@@ -74,12 +72,12 @@ The [runtime contract](../engine/runtime-persistence-security.md#ipc-configurati
 
 ## ADR-A9 — Two frontends, one authority
 
-[Shared human UX](../ux/11-human-experience-spec.md), [host limits/parity](../ux/13-dual-frontend-and-host-tui.md) and [frame integration](../engine/frontend-contracts.md) own the presentation contracts. Focus/selection are not input ownership. Neither client reads private persistence or reaches managed PTY/keeper/worker endpoints. DF01–DF08 tests their common semantics with honest physical/accessibility differences.
+**Historical title/anchor retained; two-frontends requirement superseded by E5.** The current invariant is one authoritative harness/terminal model across agent adapters, selected emulator and optional diagnostics. Focus/selection do not grant writer ownership. Clients cannot read private persistence, access managed PTYs or dispatch replies. Retain historical DF fixtures and Electron tests; future qualification chooses applicable client profiles after H0 instead of requiring a retired client.
 
 ## ADR-A10 — Small workspaces and measured engineering gates
 
-[Repository practices](../engineering/14-repository-and-engineering-practices.md) owns layout, schemas, typed errors/logging and release versions; [CI](../engineering/16-test-and-ci-strategy.md) owns lanes. The linked repository inventory now includes the owned finite `crates/terminal` core/worker and real Linux primitives. This is not yet an integrated app or full qualification. No microcrate hierarchy, generic workflow framework or public plugin ecosystem is a prerequisite for N1.
+[Repository practices](../engineering/14-repository-and-engineering-practices.md) owns layout, schemas, typed errors/logging and release versions; [CI](../engineering/16-test-and-ci-strategy.md) owns lanes. The linked repository inventory now includes the owned finite `crates/terminal` core/worker and real Linux primitives. MK1 is integrated and delivered at its finite boundary; full harness/terminal qualification remains unearned. No microcrate hierarchy, generic workflow framework or public plugin ecosystem is a prerequisite for N1.
 
 ## Coherent stopping point
 
-Use [N0–N5](../engine/delivery-and-validation.md#ordered-milestones), the [current risk/open-decision register](../engine/delivery-and-validation.md#risk-register-and-remaining-decisions) and [G6 budget owner](../engineering/07-validation-roadmap-and-risks.md#performance-and-resource-budgets). PP/P adoption plans are historical. A useful narrow dual-client slice precedes full v1 compatibility, resource, isolation and durable-recovery qualification. No implementation or performance result is implied by this consolidation.
+Use [H0–H2 current proposals](../engine/delivery-and-validation.md#current-harness-milestones) and the retained [N/NG history](../engine/delivery-and-validation.md#ordered-milestones), the [current risk/open-decision register](../engine/delivery-and-validation.md#risk-register-and-remaining-decisions) and [G6 budget owner](../engineering/07-validation-roadmap-and-risks.md#performance-and-resource-budgets). PP/P adoption plans are historical. The delivered MK1 dual-client slice is historical evidence; the proposed harness gates govern new coordination, scale and emulator work. No implementation or performance result is implied by this consolidation.

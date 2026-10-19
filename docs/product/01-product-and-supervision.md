@@ -1,5 +1,7 @@
 # Product and supervision
 
+**Current direction:** [E5](../adr/0005-ai-first-harness-direction.md) prioritizes the AI-first execution/coordination harness and custom emulator; presentation form is open. MK1 is delivered. Older frontend examples do not require Electron or a second product frontend.
+
 [Index](../index.md) · [Work model](02-work-evidence-and-coordination.md) · [Validation gates](../engineering/07-validation-roadmap-and-risks.md)
 
 ## Product thesis and assumptions
@@ -8,7 +10,7 @@ Build a standalone terminal where humans and agents share useful operating conte
 
 Assumptions to validate: initial users are developers on Linux; agents can run as ordinary CLI processes; many useful outcomes are files, diffs, test results, or decisions; people need to interrupt and resume work without reconstructing context. Administrative and research workflows also matter, but not every operation has a Git revision or a deterministic result. The domain supports non-Git artifacts and external targets with explicit identity and freshness limitations.
 
-The [human experience specification](../ux/11-human-experience-spec.md) owns concrete layouts, shortcuts, focus/selection, approvals, recovery states and J01–J09 journeys. It has the same release authority as the agent contract. Two initial frontends share those semantics: a polished host-terminal TUI and the Electron desktop emulator. [13](../ux/13-dual-frontend-and-host-tui.md) owns parity, nested input, host capabilities and TUI-specific behavior. The desktop owns native windows/fonts; the TUI owns safe control rendering inside an existing terminal. Optional shell/prompt integration is separate and no Zsh/theme is required. A CLI can automate the same broker and a daemon outlives both clients. This is not a backend-only scope. No model needs to be embedded in the terminal; providers and agent CLIs are replaceable participants.
+The [human experience specification](../ux/11-human-experience-spec.md) owns concrete layouts, shortcuts, focus/selection, approvals, recovery states and J01–J09 journeys. It has the same release authority as the agent contract. The custom emulator serves that human contract; presentation form/renderer remain open, and the retained host TUI is diagnostic tooling.
 
 ## Personas and jobs
 
@@ -25,7 +27,7 @@ Initial ownership is one local user. Multi-person simultaneous editing, enterpri
 
 ## Scope and non-goals
 
-Across the staged product scope (not all mandatory in N1): both TUI and Electron clients; Linux shells and inherited environment use; agentic navigation of CLI/TUI/REPL/editor interfaces; panes and windows; live and detached sessions; parallel tasks and dependencies; artifacts and review; attention routing; human control; bounded scheduling; local durable history; optional SSH and structured remote execution; replaceable adapters; explicit trust and capture settings.
+Across the staged product scope (not all mandatory in N1): a custom emulator interface (form pending); Linux shells and inherited environment use; agentic navigation of CLI/TUI/REPL/editor interfaces; panes and windows; live and detached sessions; parallel tasks and dependencies; artifacts and review; attention routing; human control; bounded scheduling; local durable history; optional SSH and structured remote execution; replaceable adapters; explicit trust and capture settings.
 
 Non-goals for initial releases: replacing Bash or POSIX; reimplementing editors/debuggers; a universal shell AST safety classifier; making arbitrary programs transactional; guaranteeing that a model is honest; automatically merging all changes; transparent process migration between hosts; exactly-once external side effects; recording every secret safely; deterministic execution replay; supporting every terminal graphics extension at launch. Windows and macOS are future ports, not implicit compatibility promises.
 

@@ -1,5 +1,7 @@
 # Research campaign and primary-source ledger
 
+**Ledger scope:** sources/retrieval observations below preserve their recorded dates; they are not the current installation or product inventory. E5 changes product scope without repeating this research. MK1 later delivered finite owned runtime/TUI/Electron evidence; Electron is now historical. See [current direction](../adr/0005-ai-first-harness-direction.md).
+
 [Campaign](index.md) · [Compatibility decisions](compatibility-and-core.md) · [Traceability](delivery-and-validation.md#requirement-traceability)
 
 Entries S01–S32 describe retrievals on **2026-10-15**, using available web tools and local committed source/evidence. The separately dated N0 section adds fresh observations without rewriting those historical claims. “Read” means the relevant documentation or source sections were retrieved, not that the entire standard or implementation was audited. The campaign examined five questions: what execution facts the OS can supply; what compatibility actually means; what agent interfaces already offer; what complete continuation requires; and what two human frontends must still implement. No live compatibility, timing, font or application experiment was run.
