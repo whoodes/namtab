@@ -44,4 +44,4 @@ reducer; it is independent of actual child exit and never resurrects a process.
 Run `cargo test -p project-x-terminal --offline` and
 `cargo clippy -p project-x-terminal --all-targets --offline -- -D warnings` with
 the project-local Cargo cache. Existing historical engine experiments remain
-separate. This crate does not adopt a project license.
+separate. Original crate code uses [Apache-2.0 with explicit third-party boundaries](../../docs/licensing.md).

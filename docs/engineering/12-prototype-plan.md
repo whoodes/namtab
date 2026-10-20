@@ -24,7 +24,7 @@ Historical labels now route to [shared UX](../ux/11-human-experience-spec.md), [
 
 ## PP7–PP8: release and usability decisions
 
-[CI4 release scope](16-test-and-ci-strategy.md#ci-lanes-and-practical-cost), [human validation](../product/01-product-and-supervision.md#product-validation) and [N/NG delivery](../engine/delivery-and-validation.md) replace the old release/usability prototypes. Formative studies identify blockers; they do not establish population-level superiority. License adoption remains pending.
+[CI4 release scope](16-test-and-ci-strategy.md#ci-lanes-and-practical-cost), [human validation](../product/01-product-and-supervision.md#product-validation) and [N/NG delivery](../engine/delivery-and-validation.md) replace the old release/usability prototypes. Formative studies identify blockers; they do not establish population-level superiority. Original material uses [Apache-2.0](../licensing.md); release-specific dependency and notice clearance remains separate.
 
 ## Foundation bootstrap after separate engineering authorization
 
