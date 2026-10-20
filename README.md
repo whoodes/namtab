@@ -13,10 +13,11 @@ The current [direction decision](docs/adr/0005-ai-first-harness-direction.md) pr
 - **Rust:** protocol/schema ownership, pure domain/receipt models, platform boundary, local supervisor/receipt journal, public client and Ratatui/Crossterm TUI; the original offline diagnostic remains available. The separate historical EA1 worker has no PTY or grant authority.
 - **Owned engine, implemented finite subset:** `crates/terminal` owns bounded parser/state/input/reply semantics and a private worker. No history/reflow/checkpoint import or full profile qualification; see its [limits](crates/terminal/README.md). A legacy emulator is not native authority.
 - **Headless H0 experiment:** two supervisor-issued scripted clients, exact run/assignment/context receipts and one final single-write PTY boundary; [reproduce it](tests/h0/README.md). This is not a public native API, durable dispatcher or model integration.
-- **Producer→consumer experiment:** [narrow managed workflow](docs/engineering/producer-consumer-experiment.md) with two scripted run endpoints, one exact artifact dependency, scoped observations and human takeover fencing. In-process handles, no external model/transport or capacity qualification. `make flow-build`, then the [isolated reproduction](docs/engineering/producer-consumer-experiment.md#reproduce).
 - **Retained human clients, historical MK1:** host TUI and sandboxed Electron views of the same canonical service model. Neither owns permissions, private storage, or application PTYs. Electron MK1 runtime remains in `apps/desktop/mk1` for reproduction; no runtime/tests/dependencies are removed by the direction change. The new emulator interface is undecided.
 
 See the [architecture and authoritative document map](docs/index.md), [engine scope](docs/engine/index.md), and [ownership ADR](docs/adr/0004-owned-agent-native-engine.md). Internal `project-x-*` package names and `px-*` experimental profiles remain to avoid an unrelated wire/package rename.
+
+**Producer→consumer experiment:** [narrow managed workflow](docs/engineering/producer-consumer-experiment.md) with two scripted run endpoints, one exact artifact dependency, scoped observations and human takeover fencing. In-process handles, no external model/transport or capacity qualification. `make flow-build`, then the [isolated reproduction](docs/engineering/producer-consumer-experiment.md#reproduce).
 
 ## Development
 

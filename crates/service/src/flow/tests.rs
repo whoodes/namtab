@@ -322,3 +322,35 @@ fn artifact_bytes_cannot_diverge_from_the_pinned_reference() {
     assert_eq!(r.calls, 0);
     assert_eq!(r.state, State::Fenced);
 }
+
+#[test]
+fn result_and_artifact_reserve_journal_slots_atomically() {
+    for occupied in [126, 127, 128] {
+        let mut c = core();
+        queue(&mut c, Run::Producer, 1);
+        let (origin, _) = c.launch(Run::Producer, 1, |_, _| Ok(())).unwrap();
+        while c.events.len() < occupied {
+            c.event("fill", None, None, 0, &[]).unwrap();
+        }
+        let receipt = c.complete(&origin, &outcome(0, true, CONTENT)).unwrap();
+        assert_eq!(receipt.exit_code, Some(0));
+        assert!(receipt.drained);
+        assert_eq!(receipt.calls, 1);
+        if occupied == 126 {
+            assert_eq!(receipt.state, State::Completed);
+            assert!(c.artifact.is_some());
+            assert_eq!(c.events.len(), 128);
+        } else {
+            assert_eq!(receipt.state, State::Failed);
+            assert_eq!(receipt.reason, "event_capacity_result_incomplete");
+            assert!(!c.known);
+            assert!(c.artifact.is_none());
+            assert_eq!(c.events.len(), occupied);
+        }
+        assert_eq!(c.takeover(1).unwrap(), 2);
+        let (duplicate, _) = c
+            .launch::<()>(Run::Producer, 1, |_, _| panic!("journal failure retried"))
+            .unwrap();
+        assert_eq!(duplicate, receipt);
+    }
+}

@@ -34,6 +34,9 @@ pub struct Report {
     receipts: Vec<Receipt>,
     artifact: Option<Artifact>,
     updates: Vec<Observation>,
+    final_human: Vec<Observation>,
+    final_consumer: Vec<Observation>,
+    takeover_ack: Body,
     output_counts: Vec<[usize; 2]>,
     takeover_us: Option<u128>,
     takeover_during_running_output: bool,
@@ -108,6 +111,25 @@ impl Client {
         match self.call(Operation::Observe { after })? {
             Body::Observation { value } => Ok(value),
             _ => Err("observation_required".into()),
+        }
+    }
+    fn pages(&mut self) -> Result<Vec<Observation>, String> {
+        let mut after = 0;
+        let mut pages = Vec::new();
+        loop {
+            let page = self.observe(after)?;
+            if page.cursor < after
+                || (page.more && page.cursor == after)
+                || pages.len() > wire::MAX_EVENTS
+            {
+                return Err("invalid_pagination".into());
+            }
+            after = page.cursor;
+            let more = page.more;
+            pages.push(page);
+            if !more {
+                return Ok(pages);
+            }
         }
     }
     fn queue(&mut self, sequence: u16, dependency: Option<Artifact>) -> Result<Receipt, String> {
@@ -223,6 +245,7 @@ pub fn run(
     let mut updates = Vec::new();
     let takeover_us;
     let takeover_during_running_output;
+    let takeover_ack;
     if fault {
         takeover_us = None;
         takeover_during_running_output = false;
@@ -237,13 +260,13 @@ pub fn run(
         )?;
         receipts.push(result);
         let before = human.observe(0)?;
-        human.call(Operation::Takeover {
+        takeover_ack = human.call(Operation::Takeover {
             expected_control: before.control,
         })?;
         updates.push(consumer.observe(0)?);
     } else if noisy_takeover {
         // Scoped join also reaps our fixed child on an early observer error.
-        let (elapsed, observed, receipt, cut) =
+        let (elapsed, observed, receipt, cut, taken) =
             thread::scope(|scope| -> Result<_, Box<dyn std::error::Error>> {
                 let dispatch = scope.spawn(|| producer.dispatch(1));
                 let deadline = Instant::now() + Duration::from_secs(3);
@@ -278,8 +301,9 @@ pub fn run(
                     consumer.queue(1, None).is_err(),
                     "old_agent_admitted_after_takeover",
                 )?;
-                Ok((elapsed, observed, receipt, cut))
+                Ok((elapsed, observed, receipt, cut, taken))
             })?;
+        takeover_ack = taken;
         takeover_us = Some(elapsed);
         takeover_during_running_output = true;
         receipts.push(receipt);
@@ -319,12 +343,14 @@ pub fn run(
         )?;
         receipts.push(result);
         let before = human.observe(0)?;
-        human.call(Operation::Takeover {
+        takeover_ack = human.call(Operation::Takeover {
             expected_control: before.control,
         })?;
         updates.push(view);
         updates.push(human.observe(0)?);
     }
+    let final_human = human.pages()?;
+    let final_consumer = consumer.pages()?;
     let locked = core.lock().unwrap();
     let mut counts = vec![[0_usize; 2]; 2];
     for e in &locked.events {
@@ -342,7 +368,7 @@ pub fn run(
             "consumer_literal_argv_bytes_not_observed",
         )?;
     }
-    let report=Report{provenance,context,checks:vec!["missing_dependency_refused","issued_endpoint_attribution","scoped_output_and_shared_artifact","human_takeover_future_effects_fenced","bounded_streams_and_receipts"].into_iter().map(str::to_owned).collect(),receipts,artifact:locked.artifact.as_ref().map(|a|a.0.clone()),updates,output_counts:counts,takeover_us,takeover_during_running_output,limits:"Synthetic in-process protocol handles, not external agents/models. Managed pipes only; no PTY/terminal input/reply/GUI/durable recovery/capacity or hard latency qualification. Takeover fences future mediated actions, not child effects.".into()};
+    let report=Report{provenance,context,checks:vec!["missing_dependency_refused","issued_endpoint_attribution","scoped_output_and_shared_artifact","human_takeover_future_effects_fenced","bounded_streams_and_receipts"].into_iter().map(str::to_owned).collect(),receipts,artifact:locked.artifact.as_ref().map(|a|a.0.clone()),updates,final_human,final_consumer,takeover_ack,output_counts:counts,takeover_us,takeover_during_running_output,limits:"Synthetic in-process protocol handles, not external agents/models. Managed pipes only; no PTY/terminal input/reply/GUI/durable recovery/capacity or hard latency qualification. Takeover fences future mediated actions, not child effects.".into()};
     fs::write(
         artifacts.join("report.json"),
         serde_json::to_vec_pretty(&report)?,

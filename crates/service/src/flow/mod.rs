@@ -312,7 +312,17 @@ impl Core {
                 outcome.stdout.clone(),
             ));
         }
-        let event = self.event("result", Some(origin.origin.clone()), None, 0, &[]);
+        // Publication and its result cut are one bounded metadata decision.
+        // Reserve both slots before either append; never leave a successful
+        // receipt when its required publication evidence cannot be retained.
+        let needed = 1 + usize::from(artifact.is_some());
+        let event = if self.events.len() + needed > wire::MAX_EVENTS {
+            self.known = false;
+            self.fence();
+            Err("event_capacity_result_incomplete")
+        } else {
+            self.event("result", Some(origin.origin.clone()), None, 0, &[])
+        };
         let r = &mut self.records[index(origin.origin.run)]
             .get_mut(&origin.sequence)
             .unwrap()
