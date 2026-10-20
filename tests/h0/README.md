@@ -16,4 +16,4 @@ Reports bind an exact immutable context digest of prelaunch executable/schema ha
 
 ## Separate managed producer-consumer proof
 
-[Profile, limits and reproduction](../../docs/engineering/producer-consumer-experiment.md) own the new `namtab.flow/0` tuple. `flow.py` independently audits real reports, rejects nine corruptions and exercises normal, noisy takeover, nonzero exit and output-cap cases. It is included in the active lane and never connects to a user daemon. In-process issued handles and managed pipes do not extend this earlier socket-pair/PTY proof or certify a public adapter.
+[Profile, limits and reproduction](../../docs/engineering/producer-consumer-experiment.md) own the new `namtab.flow/0` tuple. `flow.py` independently audits real reports, rejects deliberately corrupted receipts and observations and exercises normal, noisy takeover, nonzero exit and output-cap cases. It is included in the active lane and never connects to a user daemon. In-process issued handles and managed pipes do not extend this earlier socket-pair/PTY proof or certify a public adapter.
