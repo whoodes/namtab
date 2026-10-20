@@ -2,7 +2,7 @@
 
 **Current scope owner: [E5](../adr/0005-ai-first-harness-direction.md).** The custom emulator's presentation form/renderer is open. Electron is historical MK1, and the host TUI is optional diagnostic/attach tooling. Detailed frame/input/selection/authority rules remain reusable proposals; prior two-client/DOM release requirements below are superseded, not new harness acceptance.
 
-[H0 presentation analysis](../ux/h0-interface-decision.md) compares native-window, host-terminal, browser and headless forms. Native-window feasibility before toolkit selection was owner-approved with PR53; the study remains unexecuted and shipping form/renderer unselected.
+[H0 presentation analysis](../ux/h0-interface-decision.md) compares native-window, host-terminal, browser and headless forms. Native-window feasibility before toolkit selection was owner-approved with PR53; the [source/host study](../ux/h0-interface-decision.md#bounded-native-stack-study-2026-10-20) is recorded, while actual graphical/input/IME/a11y feasibility is NOT RUN and shipping form/renderer remains unselected.
 
 ## Current harness presentation boundary
 
