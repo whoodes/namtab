@@ -74,9 +74,17 @@ const permitted = {
 };
 for (const root of ["apps", "packages"])
   for (const dir of await readdir(root)) {
-    const p = JSON.parse(
-      await readFile(root + "/" + dir + "/package.json", "utf8"),
-    );
+    let contents;
+    try {
+      contents = await readFile(root + "/" + dir + "/package.json", "utf8");
+    } catch (error) {
+      // A normal checkout may leave ignored build output from a retired app.
+      // Missing active packages still fail the exact package-count check below.
+      if (error.code === "ENOENT") continue;
+      throw error;
+    }
+    const p = JSON.parse(contents);
+    assert.ok(!js.has(p.name), "Duplicate TS package: " + p.name);
     assert.ok(
       Object.hasOwn(permitted, p.name),
       "Unreviewed TS package: " + p.name,

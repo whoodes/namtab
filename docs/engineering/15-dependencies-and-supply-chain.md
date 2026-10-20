@@ -1,6 +1,6 @@
 # Dependency choices, provenance and supply chain
 
-**E5 scope update:** Electron and its proposed packaging/rendering stack are frozen historical MK1/assessment entries, not future product dependencies. The retired app and dedicated launch/test/workspace plumbing have been removed; the pnpm lock change removes only its local-only workspace importer, with no registry version/integrity changes. Project-local cached runtimes are untouched. The custom emulator form/renderer and model adapter need separate H0 admission; nothing is installed or selected here.
+**E5 scope update:** Electron and its proposed packaging/rendering stack are frozen historical MK1/assessment entries, not future product dependencies. The retired app and dedicated launch/test/workspace plumbing have been removed; the pnpm lock change removes only its local-only workspace importer, with no registry version/integrity changes. Project-local cached runtimes are untouched. The manual EA1 provenance harness verifies the original archived pnpm bytes/hash first and admits only that exact importer deletion; registry/policy/other importer changes fail. This is a narrow cleanup allowance, not a new native qualification or waiver of historical build/context limits. The custom emulator form/renderer and model adapter need separate H0 admission; nothing is installed or selected here.
 
 [Index](../index.md) · [Repository](14-repository-and-engineering-practices.md) · [CI](16-test-and-ci-strategy.md) · [Current reuse/source ledger](../engine/research.md)
 
