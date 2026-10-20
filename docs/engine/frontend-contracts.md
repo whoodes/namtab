@@ -12,7 +12,7 @@ The selected interface and agent adapters consume one authorized model. Keep per
 
 **Product integration design; the minimal real MK1 clients are scoped below.** This page owns the canonical projection/rendering seam and the native-process-to-interactive handoff. Human layout, shortcuts, review, appearance, configuration and states have one owner in UX 11; host decoding/TERM/SSH differences have one owner in UX 13.
 
-The [MK1 quickstart](../engineering/mk1-quickstart.md) describes the current minimal real TUI/Electron clients and their explicit limits. The richer workflows below remain design obligations, not shipped accessibility, compatibility or performance qualification.
+The [MK1 quickstart](../engineering/mk1-quickstart.md) distinguishes the retained diagnostic TUI from removed historical Electron source and their explicit limits; the latter requires the pinned pre-cleanup revision. The richer workflows below remain design obligations, not shipped accessibility, compatibility or performance qualification.
 
 ## One model, two useful clients
 

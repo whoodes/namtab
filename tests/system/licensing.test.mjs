@@ -51,7 +51,7 @@ test("all first-party Cargo and npm packages declare their own license", () => {
   )
     .split("\0")
     .filter(Boolean);
-  assert.equal(manifests.length, 6);
+  assert.equal(manifests.length, 4);
   for (const file of manifests) {
     const pkg = JSON.parse(readFileSync(resolve(root, file), "utf8"));
     assert.equal(pkg.license, "Apache-2.0", file);

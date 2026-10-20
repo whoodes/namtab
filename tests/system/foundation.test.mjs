@@ -4,7 +4,7 @@ import { execFileSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import { CanonicalProbe } from "../../packages/terminal-adapter/dist/node.js";
 import { encodeText } from "../../packages/terminal-adapter/dist/index.js";
-import { normalize } from "../../apps/desktop/dist/input.js";
+import { normalize } from "../assessment/input-normalizer.mjs";
 import { continuation, cases, create, feed, view } from "./engine-probe.mjs";
 import { evaluate, event } from "./key-helper-probe.mjs";
 import validate from "../../packages/protocol/src/validate.generated.mjs";
@@ -34,7 +34,7 @@ test("shared wire shape and bounded decimal semantics", async () => {
   assert.equal(isDecimalU64("18446744073709551615"), true);
   // TS validator consumes parsed values only: duplicate-key wire decoding is not implemented here.
 });
-test("synthetic Crossterm and desktop key intents agree", () => {
+test("synthetic Crossterm and retained key-intent oracle agree", () => {
   const rust = JSON.parse(
     execFileSync(
       "cargo",

@@ -1,8 +1,0 @@
-{
-  "name": "@project-x/mk1-desktop-runtime",
-  "private": true,
-  "version": "0.0.0",
-  "type": "commonjs",
-  "main": "main.cjs",
-  "license": "Apache-2.0"
-}
