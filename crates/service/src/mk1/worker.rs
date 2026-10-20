@@ -155,10 +155,18 @@ impl Worker {
         result
     }
     #[cfg(test)]
+    #[allow(
+        dead_code,
+        reason = "MK1-only test diagnostic; shared worker is also built by the H0 library tests"
+    )]
     pub fn process_id(&self) -> u32 {
         self.process.lock().unwrap().id()
     }
     #[cfg(test)]
+    #[allow(
+        dead_code,
+        reason = "MK1-only test diagnostic; shared worker is also built by the H0 library tests"
+    )]
     pub fn outstanding(&self) -> usize {
         self.outstanding.load(Ordering::Acquire)
     }

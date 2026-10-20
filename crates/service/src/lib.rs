@@ -1,4 +1,8 @@
-//! Offline admission harness only, not a broker, persistence layer or dispatcher.
+//! Offline admission helpers and a separately admitted local H0 experiment.
+//! Neither is a product native API or durable dispatcher.
+pub mod h0_write;
+#[path = "mk1/worker.rs"]
+mod terminal_worker;
 use project_x_domain::{Admission, Context, Ledger};
 use project_x_protocol::{DecodeError, InputRequest};
 use sha2::{Digest, Sha256};

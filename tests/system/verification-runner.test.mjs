@@ -32,11 +32,17 @@ console.log("stub " + bin);
 if ((process.env.VERIFY_TEST_FAILURE === "check" && bin === "cargo" && args[0] === "test") ||
     (process.env.VERIFY_TEST_FAILURE === "coordination" && args.includes("tests/mk1/agents.py")) ||
     (process.env.VERIFY_TEST_FAILURE === "journey" && args.includes("tests/mk1/e2e.py")) ||
+    (process.env.VERIFY_TEST_FAILURE === "h0" && bin === "namtab-h0-probe") ||
+    (process.env.VERIFY_TEST_FAILURE === "comparison" && args.includes("tests/h0/compare-model.mjs")) ||
     (process.env.VERIFY_TEST_FAILURE === "version" && bin === "rustc")) process.exitCode = 1;
 `;
   for (const name of ["cargo", "rustc", "node", "git", "python3"])
     writeFileSync(root + "/bin/" + name, stub, { mode: 0o755 });
   writeFileSync(root + "/.venv-docs/bin/python", stub, { mode: 0o755 });
+  const target =
+    resolve(root, extraEnv.CARGO_TARGET_DIR || "target") + "/debug";
+  mkdirSync(target, { recursive: true });
+  writeFileSync(target + "/namtab-h0-probe", stub, { mode: 0o755 });
   const result = spawnSync(
     process.execPath,
     [root + "/scripts/verify.mjs", ...args],
@@ -174,11 +180,31 @@ test("real journey binaries follow Cargo's native target directory", () => {
     CARGO_TARGET_DIR: ".artifacts/isolated-target",
   });
   assert.equal(result.status, 0, result.stderr);
+  assert.match(
+    report.checks.find((c) => c.name === "h0-real-single-write-handoff")
+      .command[0],
+    /\/\.artifacts\/isolated-target\/debug\/namtab-h0-probe$/u,
+  );
   for (const name of ["mk1-real-journeys", "mk1-two-agent-journeys"]) {
     const command = report.checks.find((c) => c.name === name).command;
     assert.match(
       command[command.indexOf("--bin-dir") + 1],
       /\/\.artifacts\/isolated-target\/debug$/u,
+    );
+  }
+});
+
+test("headless runtime and independent comparison failures fail the active lane", () => {
+  for (const [failure, name] of [
+    ["h0", "h0-real-single-write-handoff"],
+    ["comparison", "h0-model-subset-comparison"],
+  ]) {
+    const { result, report } = verify(["--source-foundation"], failure);
+    assert.equal(result.status, 1, result.stderr);
+    assert.equal(report.checks.find((c) => c.name === name).verdict, "FAIL");
+    assert.equal(
+      report.checks.find((c) => c.name === "strict-mkdocs").verdict,
+      "PASS",
     );
   }
 });

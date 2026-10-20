@@ -171,3 +171,30 @@ for (const [argument, name, stem] of [
     }
   }
 }
+
+// Local headless proof only: separate schema, no stable frontend/agent SDK export.
+for (const direction of ["request", "response"]) {
+  const raw = execFileSync(
+    "cargo",
+    [
+      "run",
+      "--quiet",
+      "--locked",
+      "-p",
+      "project-x-protocol",
+      "--example",
+      "export-h0-write-schema",
+      "--",
+      direction,
+    ],
+    { encoding: "utf8" },
+  );
+  const file = `schemas/experimental/h0-write-${direction}.schema.json`;
+  if (process.argv.includes("--check")) {
+    if ((await readFile(file, "utf8")) !== raw)
+      throw new Error("H0 schema drift: " + file);
+  } else {
+    await mkdir(dirname(file), { recursive: true });
+    await writeFile(file, raw);
+  }
+}
