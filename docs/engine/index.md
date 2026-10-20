@@ -36,7 +36,7 @@ Notifications, approvals, event APIs and control sockets already exist in Warp, 
 | Presentation contracts, accessibility mapping, selection provenance | Existing Ratatui diagnostics; future presentation/text/font/accessibility stack pending E5 decision | Frontends cache presentation, never parse inner VT or choose canonical widths |
 | Journal/capture policy, migrations and integrity validation | SQLite and filesystem durability primitives | Storage transactions do not make PTY delivery transactional |
 
-No new dependency is selected or installed by this document. Apache-2.0 remains a project-license recommendation, not adoption. Standards, Unicode data, reused code, fonts and test corpora each need provenance/license review before incorporation.
+No new dependency is selected or installed by this document. Original first-party material now uses [Apache-2.0 with explicit third-party exceptions](../licensing.md). Standards, Unicode data, reused code, fonts and test corpora each need provenance/license review before incorporation.
 
 ## Useful slice versus v1 versus vision
 

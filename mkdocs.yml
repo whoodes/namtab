@@ -20,6 +20,7 @@ validation:
     unrecognized_links: warn
 nav:
   - "Design guide / document owners": "index.md"
+  - "License and third-party notices": "licensing.md"
   - "Scope and product":
       - "Manifesto": "product/manifesto.md"
       - "Executive engine scope": "engine/index.md"

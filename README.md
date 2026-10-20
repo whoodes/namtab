@@ -61,4 +61,4 @@ Follow the [contributor workflow](docs/engineering/contributing.md): logical, se
 
 This is an unqualified prototype, not a sandbox for hostile programs or a safe place for credentials/private sessions. Local same-UID transport checks are not human attestation or protection from hostile same-UID programs. Restricted runtime isolation and durable secure capture remain unimplemented. No dedicated security reporting policy or support commitment is published in this repository.
 
-**No project license has been adopted.** Apache-2.0 remains a recommendation, not a license grant. Dependencies and retained source/evidence have their own provenance and licensing obligations; see [dependency policy](docs/engineering/15-dependencies-and-supply-chain.md).
+Original namtab material is licensed under [Apache-2.0](LICENSE). Third-party code, data, fonts and retained artifacts keep their own terms; see [license scope and notices](docs/licensing.md). This is not binary redistribution clearance.
