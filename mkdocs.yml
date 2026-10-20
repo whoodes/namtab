@@ -33,7 +33,7 @@ nav:
   - "Human experience":
       - "Human steering and intervention": "ux/11-human-experience-spec.md"
       - "Canonical frontend integration": "engine/frontend-contracts.md"
-      - "H0 interface alternatives (proposal)": "ux/h0-interface-decision.md"
+      - "H0 interface / native feasibility study": "ux/h0-interface-decision.md"
   - "Architecture contracts":
       - "Native work and control": "engine/native-contract.md"
       - "H0 harness admission / workload": "engine/h0-harness-contracts.md"
