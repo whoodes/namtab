@@ -198,3 +198,27 @@ for (const direction of ["request", "response"]) {
     await writeFile(file, raw);
   }
 }
+
+// Flow experiment has no public SDK export; Rust decoding/admission remain authoritative.
+for (const direction of ["request", "response"]) {
+  const raw = execFileSync(
+    "cargo",
+    [
+      "run",
+      "--quiet",
+      "--locked",
+      "-p",
+      "project-x-protocol",
+      "--example",
+      "export-flow-schema",
+      "--",
+      direction,
+    ],
+    { encoding: "utf8" },
+  );
+  const file = `schemas/experimental/flow-${direction}.schema.json`;
+  if (process.argv.includes("--check")) {
+    if ((await readFile(file, "utf8")) !== raw)
+      throw new Error("Flow schema drift: " + file);
+  } else await writeFile(file, raw);
+}

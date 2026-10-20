@@ -17,6 +17,8 @@ The current [direction decision](docs/adr/0005-ai-first-harness-direction.md) pr
 
 See the [architecture and authoritative document map](docs/index.md), [engine scope](docs/engine/index.md), and [ownership ADR](docs/adr/0004-owned-agent-native-engine.md). Internal `project-x-*` package names and `px-*` experimental profiles remain to avoid an unrelated wire/package rename.
 
+**Producer→consumer experiment:** [narrow managed workflow](docs/engineering/producer-consumer-experiment.md) with two scripted run endpoints, one exact artifact dependency, scoped observations and human takeover fencing. In-process handles, no external model/transport or capacity qualification. `make flow-build`, then the [isolated reproduction](docs/engineering/producer-consumer-experiment.md#reproduce).
+
 ## Development
 
 The exercised local tuple is Ubuntu 22.04 x86_64, Python 3.10/venv, Rust/Cargo **1.91.0** with rustfmt/Clippy, Node **24.21.0**, pnpm **10.32.1**, and MkDocs **1.6.1**. Future shipping Ubuntu targets are design goals, not supported-platform claims. Tool and dependency pins live in the toolchain file, manifests, and lockfiles.

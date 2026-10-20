@@ -34,6 +34,7 @@ if ((process.env.VERIFY_TEST_FAILURE === "check" && bin === "cargo" && args[0] =
     (process.env.VERIFY_TEST_FAILURE === "journey" && args.includes("tests/mk1/e2e.py")) ||
     (process.env.VERIFY_TEST_FAILURE === "h0" && bin === "namtab-h0-probe") ||
     (process.env.VERIFY_TEST_FAILURE === "comparison" && args.includes("tests/h0/compare-model.mjs")) ||
+    (process.env.VERIFY_TEST_FAILURE === "flow" && args.includes("tests/h0/flow.py")) ||
     (process.env.VERIFY_TEST_FAILURE === "version" && bin === "rustc")) process.exitCode = 1;
 `;
   for (const name of ["cargo", "rustc", "node", "git", "python3"])
@@ -198,6 +199,7 @@ test("headless runtime and independent comparison failures fail the active lane"
   for (const [failure, name] of [
     ["h0", "h0-real-single-write-handoff"],
     ["comparison", "h0-model-subset-comparison"],
+    ["flow", "h0-producer-consumer"],
   ]) {
     const { result, report } = verify(["--source-foundation"], failure);
     assert.equal(result.status, 1, result.stderr);

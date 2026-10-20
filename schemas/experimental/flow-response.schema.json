@@ -1,0 +1,436 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Response",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "format": "uint16",
+      "maximum": 65535,
+      "minimum": 0
+    },
+    "result": {
+      "$ref": "#/$defs/Result_of_Body_or_string"
+    },
+    "version": {
+      "$ref": "#/$defs/Version"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "id",
+    "result"
+  ],
+  "$defs": {
+    "Artifact": {
+      "type": "object",
+      "properties": {
+        "bytes": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "context": {
+          "type": "string"
+        },
+        "epoch": {
+          "type": "string"
+        },
+        "producer_attempt": {
+          "type": "string"
+        },
+        "revision": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "sha256": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "epoch",
+        "context",
+        "producer_attempt",
+        "revision",
+        "sha256",
+        "bytes"
+      ]
+    },
+    "Binding": {
+      "type": "object",
+      "properties": {
+        "attempt": {
+          "type": "string"
+        },
+        "connection": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "context": {
+          "type": "string"
+        },
+        "control": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "epoch": {
+          "type": "string"
+        },
+        "profile": {
+          "type": "string"
+        },
+        "run": {
+          "$ref": "#/$defs/Run"
+        },
+        "task": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "epoch",
+        "context",
+        "run",
+        "task",
+        "attempt",
+        "connection",
+        "control",
+        "profile"
+      ]
+    },
+    "Body": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "observation"
+            },
+            "value": {
+              "$ref": "#/$defs/Observation"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "receipt"
+            },
+            "value": {
+              "$ref": "#/$defs/Receipt"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "control": {
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "taken"
+            },
+            "running": {
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "control",
+            "running"
+          ]
+        }
+      ]
+    },
+    "Event": {
+      "type": "object",
+      "properties": {
+        "bytes": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "id": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "kind": {
+          "type": "string"
+        },
+        "offset": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "origin": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Binding"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sha256": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "stream": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Stream"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "offset",
+        "bytes"
+      ]
+    },
+    "Observation": {
+      "type": "object",
+      "properties": {
+        "admission_known": {
+          "type": "boolean"
+        },
+        "artifact": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Artifact"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "binding": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Binding"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "control": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "cursor": {
+          "description": "Global scanned cut, including filtered events. Advance only to this cut.",
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Event"
+          }
+        },
+        "human": {
+          "type": "boolean"
+        },
+        "more": {
+          "type": "boolean"
+        },
+        "receipts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Receipt"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "control",
+        "human",
+        "admission_known",
+        "receipts",
+        "events",
+        "cursor",
+        "more"
+      ]
+    },
+    "Receipt": {
+      "type": "object",
+      "properties": {
+        "calls": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "dependency": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Artifact"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "drained": {
+          "type": "boolean"
+        },
+        "exit_code": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "int32"
+        },
+        "origin": {
+          "$ref": "#/$defs/Binding"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "sequence": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "state": {
+          "$ref": "#/$defs/State"
+        },
+        "stderr_bytes": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "stdout_bytes": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "stdout_sha256": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sequence",
+        "origin",
+        "state",
+        "calls",
+        "reason",
+        "drained",
+        "stdout_bytes",
+        "stderr_bytes"
+      ]
+    },
+    "Result_of_Body_or_string": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "Ok": {
+              "$ref": "#/$defs/Body"
+            }
+          },
+          "required": [
+            "Ok"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "Err": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "Err"
+          ]
+        }
+      ]
+    },
+    "Run": {
+      "type": "string",
+      "enum": [
+        "producer",
+        "consumer"
+      ]
+    },
+    "State": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "running",
+        "completed",
+        "failed",
+        "fenced",
+        "unknown"
+      ]
+    },
+    "Stream": {
+      "type": "string",
+      "enum": [
+        "stdout",
+        "stderr"
+      ]
+    },
+    "Version": {
+      "type": "string",
+      "enum": [
+        "namtab.flow/0"
+      ]
+    }
+  }
+}
