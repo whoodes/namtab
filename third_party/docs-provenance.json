@@ -1,0 +1,435 @@
+{
+  "version": "2.11.8",
+  "registry_integrity": "sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==",
+  "sources": [
+    {
+      "id": "popper-registry",
+      "url": "https://registry.npmjs.org/@popperjs/core/2.11.8",
+      "retrieved_at": "2026-10-20T01:14:26.967135+00:00",
+      "http_status": 200,
+      "bytes": 5591,
+      "sha256": "82f5f9623e631f9d7692ed16d06d994bf3c2abdeeac4e9a60db4d29984ecee89"
+    },
+    {
+      "id": "popper-archive",
+      "url": "https://registry.npmjs.org/@popperjs/core/-/core-2.11.8.tgz",
+      "retrieved_at": "2026-10-20T01:14:27.155234+00:00",
+      "http_status": 200,
+      "bytes": 388028,
+      "sha256": "8e09bdfa912035668e62cea61321bce27cbd011b85672055db25d271bd63af49"
+    },
+    {
+      "id": "bootstrap-dist-js",
+      "url": "https://raw.githubusercontent.com/twbs/bootstrap/v5.3.2/dist/js/bootstrap.bundle.min.js",
+      "retrieved_at": "2026-10-20T01:14:27.390671+00:00",
+      "http_status": 200,
+      "bytes": 80663,
+      "sha256": "82f64f62bb03c1bc1824b0f9c9e05f70dba33e146818e63cdf5c306c8cf3dedd"
+    },
+    {
+      "id": "bootstrap-dist-map",
+      "url": "https://raw.githubusercontent.com/twbs/bootstrap/v5.3.2/dist/js/bootstrap.bundle.min.js.map",
+      "retrieved_at": "2026-10-20T01:14:27.572299+00:00",
+      "http_status": 200,
+      "bytes": 331886,
+      "sha256": "19a5b0b88d24d6b154c4462896c9631c0b317d71f22eebbf0b9e405db4351fd1"
+    }
+  ],
+  "bootstrap_js_and_map_byte_identical_to_tag": true,
+  "included_popper_modules": [
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/enums.js",
+      "tar_member": "package/lib/enums.js",
+      "bytes": 1335,
+      "sha256": "086a7301f1cf3f83306c96149b0567f98a348dd258a693ba83c70786755df84c",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/dom-utils/getNodeName.js",
+      "tar_member": "package/lib/dom-utils/getNodeName.js",
+      "bytes": 114,
+      "sha256": "5dd3625ea7fc6c00559d575988c0f8d8d3a78ddb36c7544929181ea037a3748a",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/dom-utils/getWindow.js",
+      "tar_member": "package/lib/dom-utils/getWindow.js",
+      "bytes": 273,
+      "sha256": "3e76e1dc883b283100a6e8b9dad16b529006e509423f250126352c7cbc381bd6",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/dom-utils/instanceOf.js",
+      "tar_member": "package/lib/dom-utils/instanceOf.js",
+      "bytes": 621,
+      "sha256": "d16d28b0de3d7151e0356429832d668efc515849f256bf3c41ed20baf1dadb77",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/modifiers/applyStyles.js",
+      "tar_member": "package/lib/modifiers/applyStyles.js",
+      "bytes": 2527,
+      "sha256": "99a3070b335a00b5918a189aed054a406a55a7ac6478ead3cdda568b5f4e9bbc",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/utils/getBasePlacement.js",
+      "tar_member": "package/lib/utils/getBasePlacement.js",
+      "bytes": 125,
+      "sha256": "03d59389aec95bdcef34ae6535cf301c1c6bcc5f5d3bc38a07225058b6e9f256",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/utils/math.js",
+      "tar_member": "package/lib/utils/math.js",
+      "bytes": 84,
+      "sha256": "74f8519105dcd69d00523539a50b342932b63de0b4f86f7d36fe11043dde541f",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/utils/userAgent.js",
+      "tar_member": "package/lib/utils/userAgent.js",
+      "bytes": 301,
+      "sha256": "47933880a9ae2c21896314d83b864eda21d9c40e858398049178bd57f6b2d413",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/dom-utils/isLayoutViewport.js",
+      "tar_member": "package/lib/dom-utils/isLayoutViewport.js",
+      "bytes": 159,
+      "sha256": "10240845c667ebe892003a384cb6b80de68e0c5e1eb8e9fda9acc99ab6f3c2d0",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/dom-utils/getBoundingClientRect.js",
+      "tar_member": "package/lib/dom-utils/getBoundingClientRect.js",
+      "bytes": 1371,
+      "sha256": "898036238a79e90728cf82166999569fc6e99a6c7e9283c611c78d9a8a0e61cd",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/dom-utils/getLayoutRect.js",
+      "tar_member": "package/lib/dom-utils/getLayoutRect.js",
+      "bytes": 767,
+      "sha256": "32fbfa6791e4abf23d3c7d0598f6ab5a71b36ea80094e25f2d4fff15f4831e44",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/dom-utils/contains.js",
+      "tar_member": "package/lib/dom-utils/contains.js",
+      "bytes": 677,
+      "sha256": "44782eef6a54b0ec8b9f7fbef5858152812a408a6b576521a9db82394e2ea04b",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/dom-utils/getComputedStyle.js",
+      "tar_member": "package/lib/dom-utils/getComputedStyle.js",
+      "bytes": 148,
+      "sha256": "e5eea602da99a00d0ca4ae8d5948a3ff24a9f737a3d0179cebb5845dad2c17b7",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/dom-utils/isTableElement.js",
+      "tar_member": "package/lib/dom-utils/isTableElement.js",
+      "bytes": 162,
+      "sha256": "254d16e0c2ca9216ba271f2bb67681e023e6a83fe37905c103db2cf03f0d23b9",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/dom-utils/getDocumentElement.js",
+      "tar_member": "package/lib/dom-utils/getDocumentElement.js",
+      "bytes": 311,
+      "sha256": "90b1d04869a3ab9b9f97c4187a75789ac64d9e197536c835897c2daa342ef11f",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/dom-utils/getParentNode.js",
+      "tar_member": "package/lib/dom-utils/getParentNode.js",
+      "bytes": 759,
+      "sha256": "58b66021c6fc2777c3f70096fc774ced21325331591dcb0619f4972fb2dccdf8",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/dom-utils/getOffsetParent.js",
+      "tar_member": "package/lib/dom-utils/getOffsetParent.js",
+      "bytes": 2613,
+      "sha256": "ee40b626ea4d326a1c201b5e832e54ef144340b0bf2da26b2c8a081b18a5622a",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/utils/getMainAxisFromPlacement.js",
+      "tar_member": "package/lib/utils/getMainAxisFromPlacement.js",
+      "bytes": 127,
+      "sha256": "05e4fb4f299eb28636e7a0543998ae2e1e2665ba508cf157baec90212ba85243",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/utils/within.js",
+      "tar_member": "package/lib/utils/within.js",
+      "bytes": 262,
+      "sha256": "71973a211d1a9bd3500977e90dbf34f00620638183db307e8107c3265cd9da06",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/utils/mergePaddingObject.js",
+      "tar_member": "package/lib/utils/mergePaddingObject.js",
+      "bytes": 184,
+      "sha256": "ee4d20b372d6fa2f59bd3db3be03cca8334e1c62e48aec0b62a9b3e89fea3167",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/utils/getFreshSideObject.js",
+      "tar_member": "package/lib/utils/getFreshSideObject.js",
+      "bytes": 117,
+      "sha256": "75b4105c96ec450a48aabdb2c3312fef9409bff8b48f8db5472e9c6eb3d67c73",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/utils/expandToHashMap.js",
+      "tar_member": "package/lib/utils/expandToHashMap.js",
+      "bytes": 159,
+      "sha256": "6311bd085b19434d282ead35f0b055e53b05f43d6087db6b9181209b821b14ec",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/modifiers/arrow.js",
+      "tar_member": "package/lib/modifiers/arrow.js",
+      "bytes": 3423,
+      "sha256": "fad8745ef0cec2e9f29b28351d8930689f2419c4a39262f54fa1713301f215de",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/utils/getVariation.js",
+      "tar_member": "package/lib/utils/getVariation.js",
+      "bytes": 85,
+      "sha256": "9f7e8d8220b3f7e7324ef196b9e7beab6f11999ebaf06ea50da2cf1647b72613",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/modifiers/computeStyles.js",
+      "tar_member": "package/lib/modifiers/computeStyles.js",
+      "bytes": 5711,
+      "sha256": "1dc69d5213e5ad0777a380cb15fcd4d3237084f0b40a0db4fdeb203ff863ec6c",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/modifiers/eventListeners.js",
+      "tar_member": "package/lib/modifiers/eventListeners.js",
+      "bytes": 1330,
+      "sha256": "6d10614b494320d1dd278b26c1707aa1f8191ef39875984cf1d51bac7cbfd9e9",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/utils/getOppositePlacement.js",
+      "tar_member": "package/lib/utils/getOppositePlacement.js",
+      "bytes": 248,
+      "sha256": "da8c5eca0bfb47dc264b210bf898ff8fef6978a50f2156c07953f0f60b06ac84",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/utils/getOppositeVariationPlacement.js",
+      "tar_member": "package/lib/utils/getOppositeVariationPlacement.js",
+      "bytes": 209,
+      "sha256": "cfe050ffd9cd04791b30010c65ce97db022678ca8446a2c000c72e4af1b96cd0",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/dom-utils/getWindowScroll.js",
+      "tar_member": "package/lib/dom-utils/getWindowScroll.js",
+      "bytes": 258,
+      "sha256": "f69800ff6922ba9a967d7247e587f0ec9048ef5674523e17a428df43419f1f0f",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/dom-utils/getWindowScrollBarX.js",
+      "tar_member": "package/lib/dom-utils/getWindowScrollBarX.js",
+      "bytes": 721,
+      "sha256": "d1c58ddf75df61254077ee3a66564b8e9070c26b5f69a2eb6ff65ea7fb536827",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/dom-utils/isScrollParent.js",
+      "tar_member": "package/lib/dom-utils/isScrollParent.js",
+      "bytes": 440,
+      "sha256": "9cd30c21e4430f16e3dabc83c7d45af54a238cabbdf2201a1233bf04424ec169",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/dom-utils/getScrollParent.js",
+      "tar_member": "package/lib/dom-utils/getScrollParent.js",
+      "bytes": 546,
+      "sha256": "b72c8afb2d2b4f61c83c5414674b7a4fdade95d5e158f21519f32a60a0fb937e",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/dom-utils/listScrollParents.js",
+      "tar_member": "package/lib/dom-utils/listScrollParents.js",
+      "bytes": 1177,
+      "sha256": "129a81b6681a9663513fafdc77e660d1bf4e303858b930642105b041c42ca063",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/utils/rectToClientRect.js",
+      "tar_member": "package/lib/utils/rectToClientRect.js",
+      "bytes": 191,
+      "sha256": "4ca3a45346846f7ae258725985596972dff818b6eeb406f1c8851f17783d9a08",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/dom-utils/getClippingRect.js",
+      "tar_member": "package/lib/dom-utils/getClippingRect.js",
+      "bytes": 3400,
+      "sha256": "a080edbb637840ba2000bc5ef036d7bd1eb816339477ab7f6a5ab0bf819f01f8",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/dom-utils/getViewportRect.js",
+      "tar_member": "package/lib/dom-utils/getViewportRect.js",
+      "bytes": 881,
+      "sha256": "d214bcfbf9c40bdf33d6af6b06d27b95bfaf9cc8f1ea0d78ab374c88b8586f8a",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/dom-utils/getDocumentRect.js",
+      "tar_member": "package/lib/dom-utils/getDocumentRect.js",
+      "bytes": 1227,
+      "sha256": "0f1019d09ca7b81a9603f17d1e04aadfd406dead7c8312c172f75b94efb8e6b3",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/utils/computeOffsets.js",
+      "tar_member": "package/lib/utils/computeOffsets.js",
+      "bytes": 1738,
+      "sha256": "384b1106a643ea4b6eb6e93c4c2620847e6be982ba2879dfb743a97b42c494a1",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/utils/detectOverflow.js",
+      "tar_member": "package/lib/utils/detectOverflow.js",
+      "bytes": 3528,
+      "sha256": "14e77225787d5de1f01e68cfee18a38efec8eb8176427c43332b63a9d9d91c07",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/utils/computeAutoPlacement.js",
+      "tar_member": "package/lib/utils/computeAutoPlacement.js",
+      "bytes": 1681,
+      "sha256": "3428e76ca879e1c4c9460f85d353ea86b79f46a0352e6be8f720b26f5c04da32",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/modifiers/flip.js",
+      "tar_member": "package/lib/modifiers/flip.js",
+      "bytes": 4910,
+      "sha256": "bbc932e69fec06f8f91d53e6bb32925df65a5816d4a2406cf97ed4545efd0cb6",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/modifiers/hide.js",
+      "tar_member": "package/lib/modifiers/hide.js",
+      "bytes": 1954,
+      "sha256": "259ad59cefcfd33be71822653c7135440c8f0084bdc889e3671d4668a1ec2be8",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/modifiers/offset.js",
+      "tar_member": "package/lib/modifiers/offset.js",
+      "bytes": 1613,
+      "sha256": "6e99824040b6fe242f7c0dc892b880da15c1b62332805e1d590ee809d70090a9",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/modifiers/popperOffsets.js",
+      "tar_member": "package/lib/modifiers/popperOffsets.js",
+      "bytes": 706,
+      "sha256": "6bb3b09cc35762c59092c17e2b4d7fc8d1ebdab5dff23e298f2fd5f607c5ad7f",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/modifiers/preventOverflow.js",
+      "tar_member": "package/lib/modifiers/preventOverflow.js",
+      "bytes": 6585,
+      "sha256": "0070d3663d0dfb74239970302a2833ef7fc952341dfc438c7d208b0f0626924d",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/utils/getAltAxis.js",
+      "tar_member": "package/lib/utils/getAltAxis.js",
+      "bytes": 79,
+      "sha256": "90441cdf16c770891f40c523c18faa65d53afdafcf43216cb60b2835f8aca917",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/dom-utils/getCompositeRect.js",
+      "tar_member": "package/lib/dom-utils/getCompositeRect.js",
+      "bytes": 2072,
+      "sha256": "a9899d556c805da74d7d795e04d9397fba00c5b18013548fb5f8d977bc852a60",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/dom-utils/getNodeScroll.js",
+      "tar_member": "package/lib/dom-utils/getNodeScroll.js",
+      "bytes": 396,
+      "sha256": "b555e6fec6fba79f6769356873591964f6ce766f9733072964a3775eb251d7fe",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/dom-utils/getHTMLElementScroll.js",
+      "tar_member": "package/lib/dom-utils/getHTMLElementScroll.js",
+      "bytes": 142,
+      "sha256": "6f4dc8c434a0a505a9f31f348bea11917b819704d199c47c75695827c13c896e",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/utils/orderModifiers.js",
+      "tar_member": "package/lib/utils/orderModifiers.js",
+      "bytes": 1240,
+      "sha256": "90184ede782ffb1021583397e16507f73960cd93d2bde80b7b42d111f616b84f",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/createPopper.js",
+      "tar_member": "package/lib/createPopper.js",
+      "bytes": 7344,
+      "sha256": "f9939ec81f7feaec3131624f824e6417ab944c06029d977ae7a818feb6ec6f27",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/utils/debounce.js",
+      "tar_member": "package/lib/utils/debounce.js",
+      "bytes": 302,
+      "sha256": "30bce1b3ef4b3153a3c455bf48d8d17c8f7a6b062298b300520573b5d4ce88b7",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/utils/mergeByName.js",
+      "tar_member": "package/lib/utils/mergeByName.js",
+      "bytes": 524,
+      "sha256": "c5c562283381de46b56107ed19e2a344c57a0c3ac115afc9d375aa1dcfa9be1c",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/popper-lite.js",
+      "tar_member": "package/lib/popper-lite.js",
+      "bytes": 603,
+      "sha256": "74b3f8baa7b206ec62875e5a4a3fdee7cc862e20ed41264238c5180d7e66d765",
+      "match": true
+    },
+    {
+      "source_map_path": "../../node_modules/@popperjs/core/lib/popper.js",
+      "tar_member": "package/lib/popper.js",
+      "bytes": 1090,
+      "sha256": "24263c9d2dad6c3aaf208b58ac10994dbb3a83bb0e2e81297a17d0015ed7f6fc",
+      "match": true
+    }
+  ],
+  "all_included_modules_match": true,
+  "license_sha256": "bf67e2c9b7974543bb18ced3a0b37f53729aaff953b442dd89a3adaf90fd93e8",
+  "limits": "Exact checked byte/source-family correspondence, not independent signature verification or full JS build reproduction. No package install/execution. The included source subset matches this package; version string alone is not used as proof.",
+  "mkdocs_wheel": {
+    "version": "1.6.1",
+    "filename": "mkdocs-1.6.1-py3-none-any.whl",
+    "sha256": "db91759624d1647f3f34aa0c3f327dd2601beae39a366d6e064c03468d35c20e",
+    "verification": "All24 static site assets are byte-identical to the named members of the hash-locked wheel. The original dependency lock remains unchanged."
+  }
+}

@@ -42,6 +42,10 @@ All 19 acquired crate archives match fresh official registry checksums and the u
 
 Rust 1.91.0's observed compiler commit is `f8297e351a40c1439a467bbbb6879088047f50b3`; exact checked UTF-8 source, Rust license/COPYRIGHT bytes and the local compiler binary hash are pinned in the records. This is a local tool/source observation, not a fresh signed-distribution check, complete compiler/sysroot notice inventory or reproducible-build claim. Existing Node/pnpm/docs and EA1 tool records keep their independent scope. This dated source review did not adopt a project license. Original first-party material was subsequently licensed under [Apache-2.0](../licensing.md); exact target/feature and release notice/advisory review remain separate.
 
+## First-party license and docs distribution
+
+Original material uses [Apache-2.0 with third-party exceptions](../licensing.md). The docs-only manifest and Popper source correspondence record live under repository `third_party/`; they cover the exact pinned site assets, not a Rust/native/desktop release SBOM. The public artifact must include all complete upstream notice texts in `docs/licenses/` and reject changed/unattributed assets. Retained source records, earlier license-pending observations and immutable evidence remain historical, not current grant policy.
+
 ## Rust TUI choice
 
 | Choice | Verified basis | Maintainability/interoperability assessment | Accessibility and decision |

@@ -2,6 +2,7 @@ site_name: namtab
 site_description: AI-first harness direction, owned terminal design and retained engineering evidence
 site_dir: .artifacts/site
 strict: true
+copyright: "Original namtab material is Apache-2.0; upstream assets retain their terms."
 theme:
   name: mkdocs
   navigation_depth: 3
