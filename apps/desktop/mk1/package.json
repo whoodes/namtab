@@ -3,5 +3,6 @@
   "private": true,
   "version": "0.0.0",
   "type": "commonjs",
-  "main": "main.cjs"
+  "main": "main.cjs",
+  "license": "Apache-2.0"
 }

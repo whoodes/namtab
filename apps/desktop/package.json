@@ -6,5 +6,6 @@
   "dependencies": {
     "@project-x/protocol": "workspace:*",
     "@project-x/terminal-adapter": "workspace:*"
-  }
+  },
+  "license": "Apache-2.0"
 }

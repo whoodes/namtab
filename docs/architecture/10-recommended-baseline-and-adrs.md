@@ -19,7 +19,7 @@
 | Storage | SQLite journal/projections + policy-scoped objects; accepted for design | [Domain storage](05-architecture-storage-and-extensions.md#storage-and-durability), [terminal recovery](../engine/runtime-persistence-security.md#complete-snapshots-and-journal-cuts) |
 | IPC/extensions | Bounded local authenticated JSON; built-in then out-of-process adapters | [Runtime IPC](../engine/runtime-persistence-security.md#ipc-configuration-and-extension-scope), [extension lifecycle](05-architecture-storage-and-extensions.md#versioned-apis-and-plugins); private versioned interfaces, no stable plugin ABI |
 | Repository | Cargo + pnpm; owned finite terminal package now included | [Repository target/actual](../engineering/14-repository-and-engineering-practices.md); no package migration yet |
-| License | Apache-2.0 recommended only | A8 below; owner adoption and release-specific dependency clearance pending |
+| License | Apache-2.0 for original first-party material; owner-approved2026-10-20 | [Scope/notices](../licensing.md); release-specific dependency clearance remains pending |
 
 ## ADR-A1 — Frontend and language boundary
 
@@ -66,7 +66,7 @@ The [runtime contract](../engine/runtime-persistence-security.md#ipc-configurati
 
 ## ADR-A8 — License and dependency maintenance
 
-**Recommendation only; owner decision pending.** Apache-2.0's explicit patent-license model and permissive integration fit the intended extensibility. MIT is a credible simpler alternative; copyleft expresses a different distribution goal. No LICENSE or legal grant is added. [Apache text](https://www.apache.org/licenses/LICENSE-2.0.txt) is not transitive clearance.
+**Owner-approved2026-10-20:** original first-party material uses standard Apache-2.0. [License scope and notices](../licensing.md) own the grant boundary; dependencies retain their terms. Its permissive integration and express patent provisions motivated the choice. No ownership transfer, CLA or transitive binary clearance follows.
 
 [Dependency admission/upgrade policy](../engineering/15-dependencies-and-supply-chain.md) owns provenance, notices, advisory/SBOM gaps and replacement costs. Fonts, Unicode data and corpora require their own review. Historical Ghostty/xterm/Zig are experiment-only unless a later explicit shipping decision says otherwise; there is no automatic second-engine fallback.
 
