@@ -68,7 +68,6 @@ for (const p of metadata.packages) {
 }
 const js = new Map();
 const permitted = {
-  "@project-x/desktop": ["@project-x/protocol", "@project-x/terminal-adapter"],
   "@project-x/engine-host": ["@project-x/terminal-adapter"],
   "@project-x/protocol": [],
   "@project-x/terminal-adapter": [],
@@ -77,6 +76,10 @@ for (const root of ["apps", "packages"])
   for (const dir of await readdir(root)) {
     const p = JSON.parse(
       await readFile(root + "/" + dir + "/package.json", "utf8"),
+    );
+    assert.ok(
+      Object.hasOwn(permitted, p.name),
+      "Unreviewed TS package: " + p.name,
     );
     const dependencies = Object.keys(p.dependencies ?? {});
     const local = dependencies.filter((x) => x.startsWith("@project-x/"));
@@ -95,22 +98,15 @@ for (const root of ["apps", "packages"])
       if (!file.endsWith(".ts") || file === "generated.ts") continue;
       const content = await readFile(root + "/" + dir + "/src/" + file, "utf8");
       assert.ok(!/\._core\b/u.test(content), "Private xterm graph traversal");
-      if (dir === "desktop")
-        assert.ok(
-          !/['"](?:node:|@project-x\/terminal-adapter\/node|.*crates\/|.*schemas\/private)/u.test(
-            content,
-          ),
-          "Renderer capability boundary",
-        );
       if (dir !== "terminal-adapter")
         assert.ok(!/['"]@xterm\//u.test(content), "Direct engine import");
     }
   }
 acyclic(js);
 assert.equal(metadata.packages.length, 8);
-assert.equal(js.size, 4);
+assert.equal(js.size, 3);
 console.log(
-  "Boundary checks passed: eight Rust crates (seven active, engine is binary-only EA1), four TS packages, allowed edges acyclic. Static checks do not enforce runtime authority.",
+  "Boundary checks passed: eight Rust crates (seven active, engine is binary-only EA1), three TS packages, allowed edges acyclic. Static checks do not enforce runtime authority.",
 );
 
 // The MK1 service imports same-build worker values, never a second reducer.

@@ -37,6 +37,8 @@ MK1 was delivered and merged in [PR44](https://github.com/whoodes/namtab/pull/44
 
 MK1 admits four live clients, two lifetime PTYs/two managed attempts and four immutable RAM contracts. Its broker mutex/shared worker, whole snapshots and artifact rereads need reassessment for scale; increasing constants does not prove fairness or capacity. The two scripted-agent journeys and descriptive small-sample RPC timings remain evidence only for their recorded workload/build. They are neither LLM workflows nor rendering/model latency results.
 
+**Follow-up, 2026-10-20 ([issue61](https://github.com/whoodes/namtab/issues/61)):** the owner separately authorized removing the retired Electron app and dedicated build/launch/test plumbing. Its source is preserved at [pre-cleanup revision eb7bbb2](https://github.com/whoodes/namtab/tree/eb7bbb2ddcecac646bcf4f8a45eac13d8af57bf0/apps/desktop); immutable evidence and required notice records remain in this checkout. No replacement renderer is selected. The original direction-only preservation instruction below describes that earlier change, not a requirement to retain obsolete app files forever.
+
 Freeze Electron as historical MK1 source/evidence. Keep `apps/desktop`, related packages, locks, tests, launch commands and reproducibility references; this documentation step removes no runtime or CI assertions. Preserve original eight commits, 201 protected evidence files, original native pin and failed X4/EA1 records. Existing sessions and the legacy staged worktree are not cleanup targets. No project license or repository/Project visibility change follows.
 
 ## Delivery and decision discipline

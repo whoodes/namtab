@@ -1,6 +1,6 @@
 # Tests, CI lanes and dual-frontend validation
 
-**Current scope: [E5](../adr/0005-ai-first-harness-direction.md).** Keep active foundation, governance, publication guards and existing useful MK1 assertions unchanged. Future harness qualification selects applicable client/DF cases under H0; historical paired TUI/Electron fixtures are not two product requirements. The separately admitted [headless write experiment](h0-headless-write-experiment.md) adds an isolated Rust/PTY proof and restricted model comparison to the active lane, without changing job scope or historical gates.
+**Current scope: [E5](../adr/0005-ai-first-harness-direction.md).** Keep active foundation, governance, publication guards and useful Rust/PTY/contract assertions. Electron-only tests were removed with the retired app; synthetic named-key/modifier oracle assertions remain explicitly test-only support under `tests/assessment`. Future harness qualification selects applicable client/DF cases under H0; historical paired TUI/Electron fixtures are not two product requirements. The separately admitted [headless write experiment](h0-headless-write-experiment.md) adds an isolated Rust/PTY proof and restricted model comparison to the active lane, without changing job scope or historical gates.
 
 [Index](../index.md) · [T/N acceptance and G6 budgets](07-validation-roadmap-and-risks.md) · [Repository](14-repository-and-engineering-practices.md) · [Owned-engine V/NG plan](../engine/delivery-and-validation.md)
 

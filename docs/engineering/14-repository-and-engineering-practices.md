@@ -1,16 +1,16 @@
 # Repository foundation and engineering practices
 
-**Direction alignment:** [E5](../adr/0005-ai-first-harness-direction.md) owns the AI-first harness and open emulator stack. This inventory keeps current source/build checks intact; target entries/older packaging discussion do not require Electron or choose a replacement framework. No package/dependency/CI migration is part of this change.
+**Direction alignment:** [E5](../adr/0005-ai-first-harness-direction.md) owns the AI-first harness and open emulator stack. The retired Electron app and its dedicated build/launch/test plumbing are removed under [issue61](https://github.com/whoodes/namtab/issues/61). Historical packaging discussion does not choose a replacement framework; Rust, shared protocol/reference tooling and original evidence remain.
 
 [Index](../index.md) · [Dependencies](15-dependencies-and-supply-chain.md) · [Tests/CI](16-test-and-ci-strategy.md) · [Target runtime modules](../engine/runtime-persistence-security.md#module-and-process-design)
 
-**Actual foundation versus proposed product.** Current source has eight Rust/four TS workspace packages. The active-source CI lane covers seven Rust crates, excluding only the historical binary-only `project-x-engine` from active Clippy/tests; the worker remains a workspace member and historical source/gates remain intact. The owned finite core/worker and real Linux PTY/managed primitives have targeted tests; MK1 adds a live local broker, public clients and minimal TUI/Electron views; it is not full NG1 or production qualification. [E5](../adr/0005-ai-first-harness-direction.md) retains E4 owned semantics and supersedes product frontend scope; [runtime](../engine/runtime-persistence-security.md#module-and-process-design) owns the target graph. This page owns repository layout, actual dependency checks, schema/workflow/release policy.
+**Actual foundation versus proposed product.** Current source has eight Rust/three TS workspace packages. The active-source CI lane covers seven Rust crates, excluding only the historical binary-only `project-x-engine` from active Clippy/tests; the worker remains a workspace member and historical source/gates remain intact. The owned finite core/worker and real Linux PTY/managed primitives have targeted tests; MK1 adds a live local broker, public clients and a minimal diagnostic TUI (the delivered Electron demonstration is now source-history only); it is not full NG1 or production qualification. [E5](../adr/0005-ai-first-harness-direction.md) retains E4 owned semantics and supersedes product frontend scope; [runtime](../engine/runtime-persistence-security.md#module-and-process-design) owns the target graph. This page owns repository layout, actual dependency checks, schema/workflow/release policy.
 
 The historical worker requires the evaluated local artifact for workspace builds; [EA1 reproduction](21-ea1-native-worker-results.md#results-and-reproduction) records preparation and limits. Its raw selection gate remains FAIL. A different runner/artifact is not automatically qualified. Current commands/prerequisites are in root README and Makefile; historical reports preserve their exact earlier tuples.
 
 ## Concrete proposed layout and ownership
 
-Use one repository, Cargo + pnpm and one product version. Current foundation: eight Rust and four TS packages. This includes one experimental binary-only native engine package (justified unsafe/ABI/process boundary), with existing TS tooling/protocol/reference packages and historical Electron MK1 retained; the future emulator stack remains unselected. Avoid separate FFI/wrapper/wire/worker microcrates. Rust edition 2024, resolver 3 and compiler 1.91.0 are pinned for the current foundation; that is not shipping-platform certification. [Cargo workspaces](https://doc.rust-lang.org/cargo/reference/workspaces.html)
+Use one repository, Cargo + pnpm and one product version. Current foundation: eight Rust and three TS packages. This includes one experimental binary-only native engine package (justified unsafe/ABI/process boundary), with existing TS tooling/protocol/reference packages retained; retired Electron source is pinned in [historical reproduction](mk1-quickstart.md); the future emulator stack remains unselected. Avoid separate FFI/wrapper/wire/worker microcrates. Rust edition 2024, resolver 3 and compiler 1.91.0 are pinned for the current foundation; that is not shipping-platform certification. [Cargo workspaces](https://doc.rust-lang.org/cargo/reference/workspaces.html)
 
 ```text
 project-x/                         TARGET with explicit future entries; actual manifests are authoritative
@@ -26,7 +26,6 @@ project-x/                         TARGET with explicit future entries; actual m
     engine/                        preserved EA1 experimental binary-only worker; historical failed gate
     terminal/                      owned finite pure core + private worker; MK1 tests, not full qualification
   apps/
-    desktop/                       frozen historical MK1 vanilla-JS main/preload/renderer; no active Electron product work
     engine-host/                   current xterm reference/assessment utility; not revised shipping target
   packages/
     protocol/                      generated TS public DTOs/validators + small IPC client
@@ -44,7 +43,7 @@ project-x/                         TARGET with explicit future entries; actual m
   docs/adr/                        current ownership ADR + retained historical decisions
 ```
 
-The current [E4 module target](../engine/runtime-persistence-security.md#module-and-process-design) now has one owned library/worker package, not FFI/wrapper microcrates. The graph/checks below describe all eight current Rust workspace packages, including the historical worker, and four TS packages; the seven-crate active-source test selection is a separate coverage boundary. Future implementation must explicitly extend import checks while preserving old gates. New contract semantics live in the engine campaign; the MK1 platform adds only the existing pinned rustix instance and its explicitly reviewed public features.
+The current [E4 module target](../engine/runtime-persistence-security.md#module-and-process-design) now has one owned library/worker package, not FFI/wrapper microcrates. The graph/checks below describe all eight current Rust workspace packages, including the historical worker, and three TS packages; the seven-crate active-source test selection is a separate coverage boundary. Future implementation must explicitly extend import checks while preserving old gates. New contract semantics live in the engine campaign; the MK1 platform adds only the existing pinned rustix instance and its explicitly reviewed public features.
 
 The authorized bootstrap moved the 18 canonical documents into docs/ topic directories, rewrote relative links and added strict MkDocs navigation. evidence/docs-migration.json preserves the old→new map and original/migration hashes; there are no divergent design copies. Do not create an empty directory for every proposed module. Rust service integration tests live with the service; shared fixtures live under tests, not another application crate. CLI and TUI share the client and invocation model but have separate command routing/output. A CLI JSON invocation must not initialize raw mode or a full-screen TUI.
 
@@ -54,7 +53,7 @@ The authorized bootstrap moved the 18 canonical documents into docs/ topic direc
 | Protocol maintainer | protocol: narrow wire DTOs/limits; generated artifacts | Importing domain internals or policy evaluation; schema validation is not authorization |
 | Execution maintainer | platform and keeper modules: managed PTY, identity, runtime controls | Frontend event handling or acceptance decisions |
 | Service maintainer | service: domain↔wire mapping, store, admission, private engine/keeper IPC | Giving clients store/PTY FDs; deriving grants from UI state |
-| Client maintainers | client, console and desktop client code: projection/cache and user intent | service/platform/store imports, DB paths, private engine/keeper IPC |
+| Client maintainers | client and console code (future emulator client remains undecided): projection/cache and user intent | service/platform/store imports, DB paths, private engine/keeper IPC |
 | Engine maintainer | owned terminal library/worker target; preserved EA1 public-C and xterm assessment references | Grant creation, filesystem launch authority, UI-specific semantic TUI guesses |
 | Test/distribution maintainer | fixtures, system lanes, packaging/provenance | Privileged PR runners, silent dependency downloads in product startup |
 
@@ -62,7 +61,7 @@ One person may fill several roles; responsibilities do not imply six teams. Secu
 
 ## Acyclic dependency graph
 
-Arrows mean imports/compile dependencies, not runtime authority. The diagram combines current reference packages with the experimental native worker/internal DTO namespace. Actual import checks enforce eight Rust/four TS workspace packages and require a binary-only historical engine depending only on protocol among application crates. Seven Rust crates participate in active-source Clippy/tests; this does not change membership or qualify the historical worker. Private wire DTOs remain a leaf data definition, not policy; no domain→wire dependency is added.
+Arrows mean imports/compile dependencies, not runtime authority. The diagram combines current reference packages with the experimental native worker/internal DTO namespace. Actual import checks enforce eight Rust/three TS workspace packages and require a binary-only historical engine depending only on protocol among application crates. Seven Rust crates participate in active-source Clippy/tests; this does not change membership or qualify the historical worker. Private wire DTOs remain a leaf data definition, not policy; no domain→wire dependency is added.
 
 ```mermaid
 flowchart TD
@@ -73,12 +72,10 @@ flowchart TD
     Service --> Platform[platform]
     Platform --> Domain
     Service --> Terminal[terminal: same-build worker DTOs; no second reducer]
-    Desktop[desktop] --> TSWire[TS protocol + client]
-    Desktop --> Adapter[reference terminal-adapter input types]
+    TSWire[TS protocol + client] --> Schema[generated public schema]
     Engine[reference TS engine-host] --> AdapterNode[reference terminal-adapter node entry]
     Native[EA1 native engine worker] --> Wire
     Wire --> Private[internal engine DTO namespace]
-    TSWire --> Schema[generated public schema]
     Private --> PrivateSchema[generated private schema]
 ```
 
@@ -88,18 +85,18 @@ Current checks use Cargo metadata and selected package/source rules to enforce a
 
 ## JS/TS workspace and build choice
 
-Recommend **pnpm with conventional node_modules**, a single root lockfile and explicit workspace references. Keep a pinned packageManager field/tool checksum and an exact supported Node LTS toolchain; do not assume Corepack or a globally installed manager. Electron has its own embedded runtime; the engine-host is an assessment reference, and the owned shipping path has no separate Node engine runtime. Do not force their version numbers to match. No Nx/Turborepo/custom build graph initially.
+Recommend **pnpm with conventional node_modules**, a single root lockfile and explicit workspace references. Keep a pinned packageManager field/tool checksum and an exact supported Node LTS toolchain; do not assume Corepack or a globally installed manager. The retired Electron artifact had its own embedded runtime; the retained engine-host is an assessment reference, and the owned shipping path has no separate Node engine runtime. Do not force their version numbers to match. No Nx/Turborepo/custom build graph initially.
 
 | Alternative | Verified capability | Assessment for this repository |
 | --- | --- | --- |
-| pnpm | Workspaces and local-only workspace protocol; explicit build-script policy | Recommended: clear workspace dependencies and one reviewed lock; symlinks/Electron packaging and settings-version compatibility are bootstrap gates |
+| pnpm | Workspaces and local-only workspace protocol; explicit build-script policy | Recommended: clear workspace dependencies and one reviewed lock; symlink layout and settings-version compatibility are bootstrap gates; retired Electron packaging is historical |
 | npm | Built-in workspace support and its own lockfile/CI installation flow | Best fallback if pnpm integration adds sustained packaging cost; fewer developer prerequisites, less reason to change once proven |
 | Yarn | Plug'n'Play is a supported alternative installation model | Credible with node_modules mode; PnP adds resolution/tooling changes without a demonstrated need here |
 | Bun | Workspace support | Do not add another runtime/package-manager compatibility surface while existing Node tooling already supplies the reference/check infrastructure; Electron is historical MK1 only |
 
 Primary references: [pnpm workspaces](https://pnpm.io/workspaces), [npm workspaces](https://docs.npmjs.com/cli/v11/using-npm/workspaces/), [Yarn PnP](https://yarnpkg.com/features/pnp), [Bun workspaces](https://bun.sh/docs/pm/workspaces). These facts do not establish comparative install speed or security. Bootstrap now selects pnpm 10.32.1 and Node 24.21.0, with local checks described in [18](18-foundation-gate-results.md). Upstream settings vary by release; verify the selected binary rather than copying settings across major versions.
 
-**Historical frontend build proposal, superseded by E5:** TypeScript/React/Vite/Electron Forge are not the selected future emulator stack. Existing strict TS/Node builds and MK1 main/preload sources remain checked for preservation. Do not depend on an experimental Forge/Vite integration plugin: compose renderer build and packaging with small scripts. Prototype must prove pnpm dependency collection, separate Node bundling, native Rust resources, CSP and offline package completeness. [Vite guide](https://vite.dev/guide/), [Electron Forge](https://www.electronforge.io/)
+**Historical frontend build proposal, superseded by E5:** TypeScript/React/Vite/Electron Forge are not the selected future emulator stack. Existing strict TS/Node reference builds remain checked; retired MK1 main/preload/renderer source is preserved in Git history, not the active workspace. Do not depend on an experimental Forge/Vite integration plugin: compose renderer build and packaging with small scripts. Prototype must prove pnpm dependency collection, separate Node bundling, native Rust resources, CSP and offline package completeness. [Vite guide](https://vite.dev/guide/), [Electron Forge](https://www.electronforge.io/)
 
 ## Schema ownership and duplicated state
 
@@ -107,7 +104,7 @@ Rust public wire DTOs in protocol are the source for Schemars schema export; gen
 
 Represent sequence/offset/large timestamp integers as bounded decimal strings on the wire, not JS Number values beyond safe precision. Linux paths have lossless byte representation plus escaped display text. Validate frame length/depth/counts before allocation, reject duplicate decoded object keys at every depth before generic JSON maps erase them, and fail closed for unknown authorization fields. The runtime owner defines bounded raw decoding, private identity and DTO↔core conversion; schema derives and parsed-value validation alone do not enforce those boundaries. Optional descriptive enums may display unknown. Wire generation is currently checked; future config generation and compatibility examples must be checked, never hand-edited generated TS plus separately maintained Rust definitions.
 
-TS protocol package exposes separate browser-safe types/validators and a Node-only public IPC client entry. Electron main owns that client; isolated renderer code uses a narrow validated preload interface, never node:net or arbitrary IPC. Main/preload validate sender, target view and action shape before forwarding; broker repeats authorization. Build/import checks prevent bundling the Node entry into a renderer. This split is inside one package, not three micro-packages.
+TS protocol retains browser-safe types/validators and a Node-only public IPC client entry for reference tooling. The retired Electron main/preload boundary is historical; no browser application remains checked here. Future presentation integration must separately admit its process/IPC boundary and must not bundle private Node/engine access into an untrusted renderer.
 
 Broker owns tasks/grants/receipts; keepers own delivery/process facts; canonical engine owns terminal interpretation. Frontends own only ephemeral selection/focus/layout and versioned read caches. They must not implement a second policy engine, infer acceptance from a local status string, or repair revisions optimistically. Display pending requests separately from committed state. Reconnect discards unconfirmed cache authority and fetches snapshot+cursor. Backend domain fixtures verify decisions; shared wire fixtures verify both clients interpret the same result. Avoid a cross-language generic UI state machine that binds the entire product to one widget model.
 
@@ -129,14 +126,14 @@ PR descriptions identify behavior, authority/evidence changes, migrations, depen
 
 ## Release, migration and realistic bootstrap
 
-Use one product 0.x version/tag for service, keeper, CLI/TUI, desktop and engine host; maintain separate protocol/schema/config/interpretation versions in the release manifest. Internal crates/packages are unpublished by default. Breaking private prototype contracts are allowed only with explicit incompatibility, migration/export handling and no resurrection of grants. Public API stability and previous-client windows begin when a public release contract is intentionally adopted. No permanent plugin ABI or automatic cross-version keeper migration.
+Use one product 0.x version/tag for service, keeper, CLI/TUI and any later admitted emulator; reference engine-host has no separate product release; maintain separate protocol/schema/config/interpretation versions in the release manifest. Internal crates/packages are unpublished by default. Breaking private prototype contracts are allowed only with explicit incompatibility, migration/export handling and no resurrection of grants. Public API stability and previous-client windows begin when a public release contract is intentionally adopted. No permanent plugin ABI or automatic cross-version keeper migration.
 
 The current proposed sequence is [H0–H2](../engine/delivery-and-validation.md#current-harness-milestones); N0–N5/NG gates retain historical qualification detail. Start from delivered finite MK1, then review contracts and evidence before making broader harness or compatibility claims. Config/database upgrades preflight capacity and preserve compatible exports/backups; rollback does not blindly downgrade newer stores. Review lockfiles, release SBOM/notices and source provenance before distribution. Original first-party material uses [Apache-2.0](../licensing.md); release-specific upstream notice clearance remains separate.
 
 ## Native-worker boundary after the assessment
 
-The experimental engine uses `deny(unsafe_code)` with one audited `ffi.rs` exception; the six original crates retain workspace unsafe forbidden. Validate C enum/struct ABI, ownership/allocator lifetimes, callback reentry/unwind, thread affinity and hostile lengths. The worker depends on wire DTOs only among application crates; the target service would launch/authenticate it through platform operations rather than link native semantics into the broker. The owned MK1 service/worker orchestration is separate from this historical FFI path; see the [MK1 quickstart](mk1-quickstart.md) and its limits. Desktop/TUI/client cannot import private engine messages or reach that endpoint. It is not a sandbox until runtime/OS controls are verified. EA1 demonstrates selected public render-state/FFI semantics but fails required legacy control aliases. These are historical experiment limits, not an adoption roadmap; current owned-engine gates are in [delivery](../engine/delivery-and-validation.md).
+The experimental engine uses `deny(unsafe_code)` with one audited `ffi.rs` exception; the six original crates retain workspace unsafe forbidden. Validate C enum/struct ABI, ownership/allocator lifetimes, callback reentry/unwind, thread affinity and hostile lengths. The worker depends on wire DTOs only among application crates; the target service would launch/authenticate it through platform operations rather than link native semantics into the broker. The owned MK1 service/worker orchestration is separate from this historical FFI path; see the [MK1 quickstart](mk1-quickstart.md) and its limits. Public TUI/client code and any later emulator cannot import private engine messages or reach that endpoint. It is not a sandbox until runtime/OS controls are verified. EA1 demonstrates selected public render-state/FFI semantics but fails required legacy control aliases. These are historical experiment limits, not an adoption roadmap; current owned-engine gates are in [delivery](../engine/delivery-and-validation.md).
 
 Current local commands and installed versions are in the root README/Makefile; `make assessment-bootstrap assessment-build assessment-check` is a separate bounded research lane. EA1 added one local Cargo package without new registry dependencies; no shipping Ghostty dependency or project license was adopted; source/tool provenance supplements lockfiles under evidence/engine-assessment.
 
-The current desktop normalizer imports its small LogicalKey type from the reference terminal-adapter. Before that reference package leaves shipping dependencies, move the canonical input/frame types into generated public protocol bindings and verify both frontend contracts. Current boundary checks enforce selected EA1 internal DTO/worker restrictions; extend them before adding the distinct owned-worker namespace/package and prove private exports stay out of both public clients. These are explicit future migration gates, not changes implemented by this assessment.
+The retired desktop’s small synthetic key normalizer survives only in `tests/assessment/input-normalizer.mjs` as a test oracle, including historical EA1 reproduction. It is not a current frontend or canonical input authority. Before reference packages leave the research workspace, preserve relevant input/fixture assertions and generated public contract coverage. Current boundary checks enforce selected EA1 internal DTO/worker restrictions; extend them before adding the distinct owned-worker namespace/package and prove private exports stay out of both public clients. These are explicit future migration gates, not changes implemented by this assessment.

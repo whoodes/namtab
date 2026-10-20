@@ -1,8 +1,9 @@
-// Synthetic existing frontend normalization only; no window, raw terminal or TUI navigation.
+// Historical synthetic frontend oracle retained as test support; no current desktop product.
+// No window, raw terminal or TUI navigation is exercised.
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { mkdir, writeFile } from "node:fs/promises";
-import { normalize } from "../../apps/desktop/dist/input.js";
+import { normalize } from "../assessment/input-normalizer.mjs";
 const consoleIntents = JSON.parse(
   execFileSync(
     "cargo",

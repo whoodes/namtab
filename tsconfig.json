@@ -20,9 +20,6 @@
     },
     {
       "path": "apps/engine-host"
-    },
-    {
-      "path": "apps/desktop"
     }
   ]
 }
