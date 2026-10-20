@@ -174,6 +174,18 @@ const steps = [
     "node",
     ["tests/h0/compare-model.mjs", realRun + "-h0/report.json"],
   ],
+  [
+    "h0-producer-consumer",
+    "python3",
+    [
+      "-B",
+      "tests/h0/flow.py",
+      "--bin-dir",
+      binaryDirectory,
+      "--artifacts",
+      realRun + "-flow",
+    ],
+  ],
   ["bindings-drift", "node", ["scripts/generate-bindings.mjs", "--check"]],
   ["typescript-build", "node", [".tools/pnpm/package/bin/pnpm.cjs", "build"]],
   ["dependency-boundaries", "node", ["scripts/check-boundaries.mjs"]],

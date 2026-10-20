@@ -1,5 +1,7 @@
 //! Offline admission helpers and a separately admitted local H0 experiment.
 //! Neither is a product native API or durable dispatcher.
+/// Bounded managed producer-consumer proof; no production scheduler or transport.
+pub mod flow;
 pub mod h0_write;
 #[path = "mk1/worker.rs"]
 mod terminal_worker;
