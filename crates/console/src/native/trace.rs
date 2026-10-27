@@ -31,22 +31,20 @@ pub fn init(path: &Path) -> io::Result<()> {
         let (mut bytes, mut count) = (0, 0);
         for value in rx {
             let lost = LOST.swap(0, Ordering::SeqCst);
-            if lost > 0 {
-                let _ = writeln!(file, "{}", json!({"event":"trace_gap","lost":lost}));
-            }
-            let Ok(mut line) = serde_json::to_vec(&value) else {
+            let gap = json!({"event":"trace_gap","lost":lost});
+            let ok = (lost == 0 || append(&mut file, &mut bytes, &mut count, &gap, true))
+                && append(&mut file, &mut bytes, &mut count, &value, true);
+            if !ok {
+                // Every ordinary/gap append reserves room for this final marker.
+                append(
+                    &mut file,
+                    &mut bytes,
+                    &mut count,
+                    &json!({"event":"trace_truncated"}),
+                    false,
+                );
                 break;
-            };
-            line.push(b'\n');
-            if line.len() > 4096 || bytes + line.len() > 1_048_576 || count >= 4096 {
-                let _ = writeln!(file, "{}", json!({"event":"trace_truncated"}));
-                break;
             }
-            if file.write_all(&line).is_err() {
-                break;
-            }
-            bytes += line.len();
-            count += 1;
         }
     });
     TRACE
@@ -67,4 +65,59 @@ pub fn emit(data: Value) -> u64 {
         LOST.fetch_add(1, Ordering::SeqCst);
     }
     sequence
+}
+
+// Reserve one small marker as part of the total record/byte bounds, including
+// gaps. Write errors invalidate evidence; interaction paths never block here.
+fn append(
+    file: &mut impl Write,
+    bytes: &mut usize,
+    count: &mut usize,
+    value: &Value,
+    reserve: bool,
+) -> bool {
+    let Ok(mut line) = serde_json::to_vec(value) else {
+        return false;
+    };
+    line.push(b'\n');
+    let (byte_cap, record_cap) = if reserve {
+        (1_048_576 - 128, 4095)
+    } else {
+        (1_048_576, 4096)
+    };
+    if line.len() > 4096 || *bytes + line.len() > byte_cap || *count >= record_cap {
+        return false;
+    }
+    if file.write_all(&line).is_err() {
+        return false;
+    }
+    *bytes += line.len();
+    *count += 1;
+    true
+}
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn normal_and_gap_records_reserve_a_counted_truncation_marker() {
+        for value in [
+            json!({"event":"trace_gap","lost":9}),
+            json!({"event":"normal","metadata":"x".repeat(3000)}),
+        ] {
+            let mut file = Vec::new();
+            let (mut bytes, mut count) = (0, 0);
+            while append(&mut file, &mut bytes, &mut count, &value, true) {}
+            assert!(append(
+                &mut file,
+                &mut bytes,
+                &mut count,
+                &json!({"event":"trace_truncated"}),
+                false
+            ));
+            assert!(file.len() <= 1_048_576);
+            assert!(count <= 4096);
+            assert_eq!(file.len(), bytes);
+            assert_eq!(file.iter().filter(|b| **b == b'\n').count(), count);
+        }
+    }
 }
