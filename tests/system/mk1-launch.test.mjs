@@ -29,3 +29,13 @@ test("launch refuses cross-target execution before invoking a compiler or binary
   assert.equal(r.status, 1);
   assert.match(r.stderr, /Cross-target launch is unsupported/u);
 });
+
+// The retired command must fail before probing a cached runtime or display.
+test("retired desktop launch is no longer an admitted command", () => {
+  const r = spawnSync("python3", ["-B", "scripts/mk1.py", "desktop"], {
+    encoding: "utf8",
+  });
+  assert.equal(r.status, 1);
+  assert.match(r.stderr, /usage:/u);
+  assert.doesNotMatch(r.stderr, /Electron|sandbox|display/u);
+});

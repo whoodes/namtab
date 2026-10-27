@@ -17,7 +17,7 @@ ea1-shared:
 	$(EA1_RECORD) --name shared-inputs --input tests/ea1/shared-inputs.mjs -- node tests/ea1/shared-inputs.mjs
 .PHONY: ea1-provenance
 ea1-provenance: ea1-build
-	$(EA1_RECORD) --name provenance --input tests/ea1/provenance.py -- python3 -B tests/ea1/provenance.py
+	$(EA1_RECORD) --name provenance --input tests/ea1/provenance.py --input tests/ea1/lock_policy.py --input pnpm-lock.yaml -- python3 -B tests/ea1/provenance.py
 .PHONY: ea1-preservation
 ea1-preservation:
 	$(EA1_RECORD) --name preservation --input tests/ea1/preservation.py -- python3 -B tests/ea1/preservation.py

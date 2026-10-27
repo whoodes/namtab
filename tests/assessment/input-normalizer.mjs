@@ -1,18 +1,8 @@
-import type { LogicalKey } from "@project-x/terminal-adapter";
-// Synthetic keydown normalization only; no Electron window/DOM/IME implementation.
-export interface KeyEvent {
-  key: string;
-  location: number;
-  shiftKey: boolean;
-  altKey: boolean;
-  ctrlKey: boolean;
-  metaKey: boolean;
-  isComposing: boolean;
-  repeat: boolean;
-}
-export function normalize(event: KeyEvent): LogicalKey | undefined {
+// Retained synthetic keydown oracle from the retired desktop input adapter.
+// Test support only: no DOM, Electron, IME, runtime input authority or GUI claim.
+export function normalize(event) {
   if (event.isComposing || event.repeat || event.metaKey) return undefined;
-  const names: Record<string, LogicalKey["key"]> = {
+  const names = {
     ArrowUp: "Up",
     ArrowDown: "Down",
     ArrowLeft: "Left",
@@ -24,7 +14,7 @@ export function normalize(event: KeyEvent): LogicalKey | undefined {
     F1: "F1",
     F12: "F12",
   };
-  let key = names[event.key];
+  let key = Object.hasOwn(names, event.key) ? names[event.key] : undefined;
   if (key === "Enter" && event.location === 3) key = "KeypadEnter";
   if (key === undefined) return undefined;
   return {

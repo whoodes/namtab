@@ -23,7 +23,7 @@
 
 ## ADR-A1 — Frontend and language boundary
 
-**Prior dual-frontend/Electron recommendation superseded by [E5](../adr/0005-ai-first-harness-direction.md).** Rust owns the existing core, service/domain, OS and public CLI boundary. The custom emulator's presentation form and renderer/framework remain open; neither a native window nor a new UI toolkit is selected. Retain TS/pnpm/reference and Electron MK1 source/tests for reproducibility; do not infer shipping dependencies from their presence. Host TUI is diagnostic/attach tooling. Human UX and client authority constraints apply to the selected interface; old DOM/React/Forge options are historical rationale, not current defaults.
+**Prior dual-frontend/Electron recommendation superseded by [E5](../adr/0005-ai-first-harness-direction.md).** Rust owns the existing core, service/domain, OS and public CLI boundary. The custom emulator's presentation form and renderer/framework remain open; neither a native window nor a new UI toolkit is selected. Retain TS/pnpm/reference tooling; the retired Electron app and dedicated source/tests/launcher are removed under [issue61](https://github.com/whoodes/namtab/issues/61), with reproduction pinned in the [historical MK1 instructions](../engineering/mk1-quickstart.md). Do not infer shipping dependencies from reference tooling. Host TUI is diagnostic/attach tooling. Human UX and client authority constraints apply to the selected interface; old DOM/React/Forge options are historical rationale, not current defaults.
 
 ## ADR-A2 — One interpretation authority, replaceable presentation
 
@@ -72,7 +72,7 @@ The [runtime contract](../engine/runtime-persistence-security.md#ipc-configurati
 
 ## ADR-A9 — Two frontends, one authority
 
-**Historical title/anchor retained; two-frontends requirement superseded by E5.** The current invariant is one authoritative harness/terminal model across agent adapters, selected emulator and optional diagnostics. Focus/selection do not grant writer ownership. Clients cannot read private persistence, access managed PTYs or dispatch replies. Retain historical DF fixtures and Electron tests; future qualification chooses applicable client profiles after H0 instead of requiring a retired client.
+**Historical title/anchor retained; two-frontends requirement superseded by E5.** The current invariant is one authoritative harness/terminal model across agent adapters, selected emulator and optional diagnostics. Focus/selection do not grant writer ownership. Clients cannot read private persistence, access managed PTYs or dispatch replies. Retain historical DF fixtures and failed evidence; retired Electron-specific tests are source-history only after cleanup. Future qualification chooses applicable client profiles after H0 instead of requiring a retired client.
 
 ## ADR-A10 — Small workspaces and measured engineering gates
 

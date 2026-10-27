@@ -24,15 +24,6 @@ importers:
         specifier: 5.9.3
         version: 5.9.3
 
-  apps/desktop:
-    dependencies:
-      '@project-x/protocol':
-        specifier: workspace:*
-        version: link:../../packages/protocol
-      '@project-x/terminal-adapter':
-        specifier: workspace:*
-        version: link:../../packages/terminal-adapter
-
   apps/engine-host:
     dependencies:
       '@project-x/terminal-adapter':

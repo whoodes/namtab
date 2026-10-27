@@ -1,5 +1,7 @@
 # Try MK1 locally
 
+**Retired app cleanup, 2026-10-20 ([issue61](https://github.com/whoodes/namtab/issues/61)).** Current checkout retains `make mk1-build`, `make mk1-daemon`, `make mk1-tui` and `make mk1-agent`. The Electron app/launcher/workspace/dedicated tests are removed. All Electron commands and UI instructions below are historical: use the intact [pre-cleanup source at eb7bbb2](https://github.com/whoodes/namtab/tree/eb7bbb2ddcecac646bcf4f8a45eac13d8af57bf0), in a separate checkout, with that revision’s reviewed artifact requirements. No existing local runtime, cache or live session is removed or stopped by source cleanup. Historical X4/EA1 findings and required license records are unchanged.
+
 **Scope update — [E5](../adr/0005-ai-first-harness-direction.md), 2026-10-19.** Reproduction instructions below describe the delivered finite MK1, including its historical Electron client. Electron is frozen outside active product scope; the TUI remains diagnostic/attach tooling. Do not stop/restart existing user sessions as part of documentation work.
 
 [Scope and owner admission](mk1-scope-and-admission.md) · [Design guide](../index.md) · [Core limits](https://github.com/whoodes/namtab/blob/main/crates/terminal/README.md) · [Broker limits](https://github.com/whoodes/namtab/blob/main/crates/service/src/mk1/README.md)

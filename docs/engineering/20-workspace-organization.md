@@ -1,5 +1,7 @@
 # Workspace organization and cleanup
 
+**Later cleanup, 2026-10-20:** [issue61](https://github.com/whoodes/namtab/issues/61) removes retired Electron app source and dedicated plumbing. [Repository practices](14-repository-and-engineering-practices.md) owns the current eight-Rust/three-TS layout; the dated inventory below is preserved as history. Synthetic input assertions survive as test-only support, and Electron reproduction uses the [pinned pre-cleanup revision](https://github.com/whoodes/namtab/tree/eb7bbb2ddcecac646bcf4f8a45eac13d8af57bf0). Historical evidence and required notice records are unchanged.
+
 Date: 2026-10-15. Cleanup precedes EA1; it does not change the assessed engine or locks. [Design index](../index.md) · [Assessment](19-engine-build-adopt-redesign-assessment.md)
 
 ## Before and after

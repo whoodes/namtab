@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { normalize } from "../../apps/desktop/dist/input.js";
+import { normalize } from "../assessment/input-normalizer.mjs";
 import { encodeText } from "../../packages/terminal-adapter/dist/index.js";
 
 const profile = JSON.parse(
@@ -17,7 +17,7 @@ const event = (key, bits = 0) => ({
   isComposing: false,
   repeat: false,
 });
-test("desktop shares the synthetic named-key/modifier intent profile", () => {
+test("retained input oracle shares the synthetic named-key/modifier intent profile", () => {
   for (const item of profile.keys)
     for (let bits = 0; bits < 8; bits++) {
       assert.deepEqual(normalize(event(item.desktop, bits)), {
@@ -29,8 +29,16 @@ test("desktop shares the synthetic named-key/modifier intent profile", () => {
       });
     }
 });
-test("desktop refuses unavailable character/layout/composition/repeat facts", () => {
-  for (const key of ["i", "m", "[", "界", "Unidentified"]) {
+test("retained input oracle refuses unavailable character/layout/composition/repeat facts", () => {
+  for (const key of [
+    "i",
+    "m",
+    "[",
+    "界",
+    "Unidentified",
+    "constructor",
+    "__proto__",
+  ]) {
     assert.equal(normalize(event(key, 2)), undefined);
   }
   for (const extra of [

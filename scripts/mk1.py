@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """Small local MK1 launch helper. No installs, shell interpolation or server exposure."""
-import hashlib
 import os
 from pathlib import Path
 import shutil
@@ -14,8 +13,6 @@ TARGET = Path(os.environ.get('CARGO_TARGET_DIR', ROOT / 'target'))
 if not TARGET.is_absolute():
     TARGET = ROOT / TARGET
 BIN = TARGET / 'debug'
-ELECTRON = ROOT / '.tools/electron/44.8.0/runtime/electron'
-ELECTRON_SHA = '447dc011502a0a5ab4da365d3004646c86aee4eb03aa1643cdf672c7491b64cd'
 PACKAGES = ['terminal', 'platform', 'service', 'client', 'console']
 
 
@@ -24,8 +21,8 @@ def run(args):
 
 
 def main():
-    if len(sys.argv) != 2 or sys.argv[1] not in ['build', 'daemon', 'tui', 'desktop', 'agent', 'terminfo']:
-        raise SystemExit('usage: python3 scripts/mk1.py build|daemon|tui|desktop|agent|terminfo')
+    if len(sys.argv) != 2 or sys.argv[1] not in ['build', 'daemon', 'tui', 'agent', 'terminfo']:
+        raise SystemExit('usage: python3 scripts/mk1.py build|daemon|tui|agent|terminfo')
     command = sys.argv[1]
     if os.environ.get("CARGO_BUILD_TARGET"):
         raise SystemExit("MK1 launches native Linux binaries; clear CARGO_BUILD_TARGET. Cross-target launch is unsupported.")
@@ -49,16 +46,6 @@ def main():
         run([BIN / 'namtab-tui', '--socket', SOCKET])
     elif command == 'agent':
         run([BIN / 'namtab-agent', '--socket', SOCKET])
-    elif command == 'desktop':
-        if not ELECTRON.is_file():
-            raise SystemExit('Verified Electron 44.8.0 runtime missing; see docs/engineering/mk1-quickstart.md. No implicit download or sandbox bypass.')
-        digest = hashlib.sha256()
-        with ELECTRON.open('rb') as executable:
-            for chunk in iter(lambda: executable.read(1_048_576), b''):
-                digest.update(chunk)
-        if digest.hexdigest() != ELECTRON_SHA:
-            raise SystemExit('Electron executable hash differs from reviewed artifact; stop and inspect provenance.')
-        run([ELECTRON, ROOT / 'apps/desktop/mk1', '--socket', SOCKET])
 
 
 def terminfo():
