@@ -288,11 +288,13 @@ fn live_resume_is_endpoint_bound_and_old_epoch_tokens_fail() {
     assert_eq!(endpoint.as_deref(), Some(h.human.as_str()));
     let other = Harness::new();
     assert!(!other.broker.hello(2, Role::Human, Some(token)).0.ok);
-    for _ in 0..14 {
+    for _ in 0..13 {
         let (response, endpoint) = h.broker.hello(3, Role::Human, None);
         assert!(response.ok);
         h.broker.disconnect(&endpoint.unwrap());
     }
+    h.broker.lifecycle_hello(1);
+    h.broker.disconnect("lifecycle");
     assert_eq!(h.broker.snapshot(&h.human).unwrap().endpoints.len(), 16);
     assert_eq!(
         h.broker.hello(3, Role::Human, None).0.error.as_deref(),
@@ -1071,7 +1073,7 @@ fn agent_observed_input_keeps_immediate_pending_output_refusal() {
 }
 
 #[test]
-fn repeated_socket_launches_retain_sixteen_endpoints_and_old_resume_receipts() {
+fn repeated_socket_launches_preserve_ordinary_and_reserved_lifecycle_identities() {
     use std::io::{BufReader, Write};
     use std::os::unix::net::UnixStream;
     let mut h = Harness::new();
@@ -1131,7 +1133,7 @@ fn repeated_socket_launches_retain_sixteen_endpoints_and_old_resume_receipts() {
         thread.join().unwrap();
         hello
     };
-    for _ in 0..14 {
+    for _ in 0..13 {
         let hello = exchange_connection(Role::Agent, None, false);
         assert!(hello.ok);
         let endpoint = hello.endpoint.unwrap();
@@ -1146,6 +1148,8 @@ fn repeated_socket_launches_retain_sixteen_endpoints_and_old_resume_receipts() {
                 .connected
         );
     }
+    h.broker.lifecycle_hello(1);
+    h.broker.disconnect("lifecycle");
     let snapshot = h.broker.snapshot(&h.human).unwrap();
     assert_eq!(snapshot.endpoints.len(), 16);
     assert_eq!(snapshot.sessions[0].owner, owned.owner);
@@ -1158,6 +1162,8 @@ fn repeated_socket_launches_retain_sixteen_endpoints_and_old_resume_receipts() {
     let resumed = exchange_connection(Role::Human, Some(old_token), true);
     assert!(resumed.ok);
     assert_eq!(resumed.endpoint.as_deref(), Some(h.human.as_str()));
+    h.broker.lifecycle_hello(1);
+    h.broker.disconnect("lifecycle");
     assert_eq!(h.broker.snapshot(&h.human).unwrap().endpoints.len(), 16);
 }
 
@@ -1488,5 +1494,101 @@ fn unknown_completion_preserves_exact_attempt_reference_without_reexecution() {
     assert_eq!(
         fs::read_to_string(h.directory.join("once")).unwrap(),
         "once"
+    );
+}
+
+#[test]
+fn shutdown_is_human_only_and_fences_future_mutations() {
+    let mut h = Harness::new();
+    let s = h.shell();
+    let r = h.request(&h.agent.clone(), Op::Shutdown {});
+    assert!(!r.ok);
+    assert!(!h.broker.shutdown_requested.load(Ordering::SeqCst));
+    assert!(h.human(Op::Shutdown {}).ok);
+    assert!(h.broker.shutdown_requested.load(Ordering::SeqCst));
+    let s = h
+        .broker
+        .snapshot(&h.human)
+        .unwrap()
+        .sessions
+        .into_iter()
+        .find(|x| x.id == s.id)
+        .unwrap();
+    assert!(s.owner.is_none());
+    assert!(
+        !h.human(Op::CreateSession {
+            name: "too late".into()
+        })
+        .ok
+    );
+}
+
+#[test]
+fn lifecycle_reuses_one_restricted_slot_after_ordinary_capacity() {
+    let mut h = Harness::new();
+    for _ in 0..13 {
+        let (_, id) = h.broker.hello(1, Role::Agent, None);
+        let id = id.unwrap();
+        h.broker.disconnect(&id);
+    }
+    assert!(h.broker.hello(1, Role::Agent, None).1.is_none());
+    for _ in 0..32 {
+        let (r, id) = h.broker.lifecycle_hello(1);
+        assert!(r.ok);
+        let id = id.unwrap();
+        assert!(
+            !h.request(
+                &id,
+                Op::CreateSession {
+                    name: "forbidden".into()
+                }
+            )
+            .ok
+        );
+        h.broker.disconnect(&id);
+    }
+    assert_eq!(h.broker.state.lock().unwrap().endpoints.len(), 16);
+    let (_, id) = h.broker.lifecycle_hello(1);
+    assert!(h.request(&id.unwrap(), Op::Shutdown {}).ok);
+}
+#[test]
+fn protective_shutdown_survives_worker_and_journal_loss_without_false_durability() {
+    let mut h = Harness::new();
+    h.broker.worker.stop();
+    h.broker.state.lock().unwrap().journal.exhaust_for_test();
+    let r = h.human(Op::Shutdown {});
+    assert!(!r.ok);
+    let r = r.receipt.unwrap();
+    assert_eq!(r.state, "unknown");
+    assert_eq!(
+        r.detail,
+        "protective_shutdown_requested_receipt_not_durable"
+    );
+    assert!(h.broker.owns_shutdown(&h.human, r.id));
+    assert!(!h.broker.owns_shutdown(&h.agent, r.id));
+    let queried = h.request(&h.agent.clone(), Op::Receipt { request_id: r.id });
+    assert!(queried.receipt.is_none());
+}
+
+#[test]
+fn previously_reserved_claim_cannot_regrant_after_shutdown_linearizes() {
+    let mut h = Harness::new();
+    let s = h.shell();
+    assert!(h.human(Op::Shutdown {}).ok);
+    let newer = h.broker.snapshot(&h.human).unwrap().sessions[0].generation;
+    let result = h.broker.apply(
+        &h.agent,
+        999,
+        &Op::TakeControl {
+            session: s.id,
+            generation: newer,
+            force: false,
+        },
+    );
+    assert_eq!(result.unwrap_err(), "grant_fenced_by_degraded_or_shutdown");
+    assert!(
+        h.broker.snapshot(&h.human).unwrap().sessions[0]
+            .owner
+            .is_none()
     );
 }

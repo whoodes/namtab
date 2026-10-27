@@ -19,7 +19,7 @@ class Launcher(unittest.TestCase):
         self.root = Path(self.temporary.name)
         self.bin = self.root / 'target/debug'
         self.bin.mkdir(parents=True)
-        for name in ['namtab-window', 'namtabd', 'namtab-terminal-worker', 'namtab-pty-helper', 'namtab-demo']:
+        for name in ['namtab-window', 'namtabd', 'namtab-terminal-worker', 'namtab-pty-helper', 'namtab-demo', 'namtabctl', 'namtab-mcp']:
             (self.bin / name).touch()
         self.patches = [patch.object(launcher, 'ROOT', self.root),
                         patch.dict(os.environ, {'DISPLAY': ':test'}, clear=True),
@@ -27,7 +27,7 @@ class Launcher(unittest.TestCase):
         for p in self.patches:
             p.start();self.addCleanup(p.stop)
         self.spawn = patch.object(launcher.subprocess, 'Popen').start()
-        self.run = patch.object(launcher.subprocess, 'run', return_value=Mock(returncode=0)).start()
+        self.run = patch.object(launcher.subprocess, 'run', return_value=Mock(returncode=0,stdout='{"epoch":"test-epoch"}')).start()
         self.addCleanup(patch.stopall)
         def owned_spawn(argv, **kwargs):
             Path(argv[argv.index('--socket') + 1]).touch()
@@ -41,7 +41,7 @@ class Launcher(unittest.TestCase):
         run=self.root / '.artifacts/mvp-1234567890'
         self.assertTrue((run / 'launch.json').is_file())
         self.assertTrue((run / 'workspace').is_dir())
-        self.spawn.assert_called_once();self.run.assert_called_once()
+        self.spawn.assert_called_once();self.assertEqual(self.run.call_count,2)
         argv=self.run.call_args.args[0]
         self.assertIn('--new-shell',argv)
         self.assertEqual(argv[argv.index('--socket')+1], str(run / 's'))
@@ -66,6 +66,35 @@ class Launcher(unittest.TestCase):
         self.assertNotIn('--new-shell',self.run.call_args.args[0])
     def test_attach_outside_project_artifacts_is_refused(self):
         with self.assertRaisesRegex(SystemExit,'inside this project'):self.invoke('attach','--run',str(self.root))
+        self.spawn.assert_not_called();self.run.assert_not_called()
+
+    def lifecycle_run(self, epoch=True):
+        import json
+        run=self.root/'.artifacts/mvp-record';run.mkdir(parents=True)
+        (run/'s').touch()
+        record={'socket':str(run/'s'),'workspace':str(run/'workspace')}
+        if epoch:record['epoch']='fixture-epoch'
+        (run/'launch.json').write_text(json.dumps(record));return run
+    def test_status_works_headless_without_gui_binaries(self):
+        run=self.lifecycle_run()
+        (self.bin/'namtab-window').unlink()
+        with patch.dict(os.environ,{},clear=True):self.invoke('status','--run',str(run))
+        self.spawn.assert_not_called();self.run.assert_called_once()
+        self.assertEqual(self.run.call_args.args[0][-3:],['info','--epoch','fixture-epoch'])
+    def test_stop_requires_recorded_epoch_and_never_signals_pid(self):
+        run=self.lifecycle_run(epoch=False)
+        with patch.dict(os.environ,{},clear=True),self.assertRaisesRegex(SystemExit,'epoch-bound'):self.invoke('stop','--run',str(run))
+        self.spawn.assert_not_called();self.run.assert_not_called()
+    def test_stop_waits_for_explicit_owned_socket_removal(self):
+        run=self.lifecycle_run();socket=run/'s'
+        def stop(argv,**kwargs):
+            self.assertEqual(argv[-3:],['stop','--epoch','fixture-epoch']);socket.unlink();return Mock(returncode=0)
+        self.run.side_effect=stop
+        with patch.dict(os.environ,{},clear=True):self.invoke('stop','--run',str(run))
+        self.spawn.assert_not_called();self.assertTrue((run/'launch.json').exists())
+    def test_agent_config_does_not_execute_an_agent(self):
+        run=self.lifecycle_run()
+        with patch.dict(os.environ,{},clear=True):self.invoke('agent-config','--run',str(run))
         self.spawn.assert_not_called();self.run.assert_not_called()
 
 if __name__=='__main__':unittest.main()

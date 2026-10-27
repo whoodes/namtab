@@ -64,7 +64,7 @@ impl Painter {
             self.text(&mut c, x, 42, label, FG, width as usize - x - 18);
         }
         let status = format!(
-            "{} | {} | {} | no model configured",
+            "{} | {} | {} | model turns not tracked",
             if m.online {
                 if m.snapshot.as_ref().is_some_and(|s| s.degraded.is_some()) {
                     "DEGRADED"

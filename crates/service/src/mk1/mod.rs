@@ -25,7 +25,7 @@ use std::ffi::OsString;
 use std::fs::File;
 use std::io::{self, Read};
 use std::path::{Path, PathBuf};
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::sync::{Arc, Condvar, Mutex};
 use std::time::Duration;
 
@@ -192,6 +192,7 @@ struct State {
     system_sequence: u64,
     journal: journal::Journal,
     degraded: Option<String>,
+    shutdown_receipt: Option<Receipt>,
 }
 pub struct Broker {
     state: Mutex<State>,
@@ -199,9 +200,37 @@ pub struct Broker {
     config: Config,
     epoch: String,
     stopping: AtomicBool,
+    active_mutations: AtomicUsize,
+    active_children: Arc<AtomicUsize>,
+    shutdown_requested: AtomicBool,
     changed: Condvar,
     #[cfg(test)]
     human_waiters: std::sync::atomic::AtomicUsize,
+}
+// Counts only still-owned direct process handles, not descendant containment.
+struct Active<'a>(&'a AtomicUsize);
+impl<'a> Active<'a> {
+    fn new(counter: &'a AtomicUsize) -> Self {
+        counter.fetch_add(1, Ordering::SeqCst);
+        Self(counter)
+    }
+}
+impl Drop for Active<'_> {
+    fn drop(&mut self) {
+        self.0.fetch_sub(1, Ordering::SeqCst);
+    }
+}
+struct ChildActive(Arc<AtomicUsize>);
+impl ChildActive {
+    fn new(counter: &Arc<AtomicUsize>) -> Self {
+        counter.fetch_add(1, Ordering::SeqCst);
+        Self(Arc::clone(counter))
+    }
+}
+impl Drop for ChildActive {
+    fn drop(&mut self) {
+        self.0.fetch_sub(1, Ordering::SeqCst);
+    }
 }
 impl Broker {
     fn new(config: Config, journal_path: &Path) -> io::Result<Arc<Self>> {
@@ -222,11 +251,15 @@ impl Broker {
                 system_sequence: 0,
                 journal,
                 degraded: None,
+                shutdown_receipt: None,
             }),
             worker,
             config,
             epoch,
             stopping: AtomicBool::new(false),
+            active_mutations: AtomicUsize::new(0),
+            active_children: Arc::new(AtomicUsize::new(0)),
+            shutdown_requested: AtomicBool::new(false),
             changed: Condvar::new(),
             #[cfg(test)]
             human_waiters: std::sync::atomic::AtomicUsize::new(0),
@@ -260,13 +293,29 @@ impl Broker {
             state
                 .endpoints
                 .iter()
-                .find(|(_, value)| value.resume == resume && value.role == role)
+                .find(|(_, value)| {
+                    !value.resume.is_empty() && value.resume == resume && value.role == role
+                })
                 .map(|(id, _)| id.clone())
         } else {
-            if state.endpoints.len() >= 16 {
+            if state
+                .endpoints
+                .keys()
+                .filter(|k| k.as_str() != "lifecycle")
+                .count()
+                >= 15
+            {
                 return (self.fail(id, "endpoint_capacity"), None);
             }
-            let endpoint = format!("e{}", state.endpoints.len() + 1);
+            let endpoint = format!(
+                "e{}",
+                state
+                    .endpoints
+                    .keys()
+                    .filter(|k| k.as_str() != "lifecycle")
+                    .count()
+                    + 1
+            );
             let Ok(resume) = token() else {
                 return (self.fail(id, "entropy_unavailable"), None);
             };
@@ -295,6 +344,94 @@ impl Broker {
         response.endpoint = Some(endpoint.clone());
         response.resume = Some(value.resume.clone());
         (response, Some(endpoint))
+    }
+    // One reserved, restricted lifecycle identity; no work/PTY authority and no
+    // reusable credential. Repeated status cannot exhaust ordinary identities.
+    fn lifecycle_hello(&self, id: u64) -> (Response, Option<String>) {
+        let mut state = self.state.lock().unwrap();
+        let value = state
+            .endpoints
+            .entry("lifecycle".into())
+            .or_insert_with(|| Endpoint {
+                role: Role::Human,
+                resume: String::new(),
+                connected: false,
+                high_water: 0,
+                decisions: BTreeMap::new(),
+                emergency: BTreeMap::new(),
+            });
+        if value.connected {
+            return (self.fail(id, "lifecycle_already_connected"), None);
+        }
+        value.connected = true;
+        let mut r = self.response(id);
+        r.endpoint = Some("lifecycle".into());
+        (r, Some("lifecycle".into()))
+    }
+    fn protective_shutdown(&self, endpoint: &str, id: u64) -> Response {
+        let mut state = self.state.lock().unwrap();
+        let Some(principal) = state.endpoints.get(endpoint) else {
+            return self.fail(id, "endpoint");
+        };
+        if principal.role != Role::Human {
+            return self.fail(id, "shutdown_requires_human_endpoint");
+        }
+        if let Some(r) = &state.shutdown_receipt {
+            if r.endpoint == endpoint && r.id == id {
+                let mut response = self.response(id);
+                response.ok = r.state == "applied";
+                response.receipt = Some(r.clone());
+                return response;
+            }
+            return self.fail(id, "shutdown_already_requested");
+        }
+        if id <= principal.high_water
+            || principal.decisions.contains_key(&id)
+            || principal.emergency.contains_key(&id)
+        {
+            return self.fail(id, "mutation_id_conflict");
+        }
+        // Safety-only authority decrease survives worker/journal/receipt exhaustion.
+        // It creates no writer grant and makes no durable completion promise.
+        for session in state.sessions.values_mut() {
+            session.view.owner = None;
+            session.view.generation = session.view.generation.saturating_add(1);
+        }
+        state.degraded = Some("shutdown_requested_no_new_effects".into());
+        let durable = state
+            .journal
+            .record(endpoint, id, "shutdown", "applied", 0)
+            .is_ok();
+        let receipt = Receipt {
+            endpoint: endpoint.into(),
+            id,
+            operation: "shutdown".into(),
+            state: if durable { "applied" } else { "unknown" }.into(),
+            detail: if durable {
+                "shutdown_requested_not_process_completion_descendants_may_continue"
+            } else {
+                "protective_shutdown_requested_receipt_not_durable"
+            }
+            .into(),
+            delivered_bytes: 0,
+            result: None,
+        };
+        state.endpoints.get_mut(endpoint).unwrap().high_water = id;
+        state.shutdown_receipt = Some(receipt.clone());
+        self.shutdown_requested.store(true, Ordering::SeqCst);
+        self.changed.notify_all();
+        let mut r = self.response(id);
+        r.ok = durable;
+        r.receipt = Some(receipt);
+        r
+    }
+    fn owns_shutdown(&self, endpoint: &str, id: u64) -> bool {
+        self.state
+            .lock()
+            .unwrap()
+            .shutdown_receipt
+            .as_ref()
+            .is_some_and(|r| r.endpoint == endpoint && r.id == id)
     }
     fn disconnect(&self, endpoint: &str) {
         if let Some(value) = self.state.lock().unwrap().endpoints.get_mut(endpoint) {
@@ -455,6 +592,14 @@ impl Broker {
         }
         if let Op::Receipt { request_id } = request.operation {
             let state = self.state.lock().unwrap();
+            if let Some(r) = &state.shutdown_receipt
+                && r.endpoint == endpoint
+                && r.id == request_id
+            {
+                let mut response = self.response(request.id);
+                response.receipt = Some(r.clone());
+                return response;
+            }
             let Some(decision) = state.endpoints[endpoint]
                 .decisions
                 .get(&request_id)
@@ -466,8 +611,18 @@ impl Broker {
             response.receipt = Some(decision.receipt.clone());
             return response;
         }
-        if matches!(request.operation, Op::Hello { .. }) {
+        if matches!(request.operation, Op::Hello { .. } | Op::LifecycleHello {}) {
             return self.fail(request.id, "hello_only_before_endpoint_binding");
+        }
+        let _active = Active::new(&self.active_mutations);
+        if self.stopping.load(Ordering::SeqCst) {
+            return self.fail(request.id, "shutdown_in_progress");
+        }
+        if matches!(request.operation, Op::Shutdown {}) {
+            return self.protective_shutdown(endpoint, request.id);
+        }
+        if endpoint == "lifecycle" {
+            return self.fail(request.id, "lifecycle_has_no_work_or_input_authority");
         }
         match self.reserve(endpoint, &request) {
             Ok(Some(receipt)) => {
@@ -581,6 +736,9 @@ impl Broker {
             } => {
                 let mut state = self.state.lock().unwrap();
                 let human = state.endpoints[endpoint].role == Role::Human;
+                if state.degraded.is_some() || self.shutdown_requested.load(Ordering::SeqCst) {
+                    return Err("grant_fenced_by_degraded_or_shutdown".into());
+                }
                 let value = state.sessions.get_mut(session).ok_or("unknown_session")?;
                 if value.view.generation != *generation {
                     return Err("stale_generation".into());
@@ -798,6 +956,7 @@ impl Broker {
                 })
                 .collect(),
             capabilities: [
+                wire::HUMAN_SHUTDOWN,
                 wire::SHARED_TASKS,
                 wire::ATTEMPT_ORIGIN,
                 wire::RECEIPT_RESULTS,

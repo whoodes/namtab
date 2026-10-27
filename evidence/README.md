@@ -24,3 +24,7 @@ The [local history record](../docs/engineering/22-local-history-and-validation.m
 ## Native feedback window — 2026-10-27
 
 `native-mvp/2026-10-27.json` is a bounded actual X11 journey observation, with binary/harness/screenshot hashes and explicit focus/latency limitations. The original eighth focus assertion remains FAIL in its ignored run; the retained record pins those original files rather than replacing it with a passing minimization result. New instrumented runs distinguish fake core focus notifications from actual XI2 loss between test-owned windows. This is not historical engine selection, full interface feasibility, autonomous model integration or production qualification.
+
+## External-agent/lifecycle increment — 2026-10-27
+
+`agent-mvp/2026-10-27.json` records the bounded MCP/native/runtime proof and separately blocked real Codex approval attempt. Deterministic protocol clients execute real local processes but are not models; initial model discovery was real while the task call was not forwarded. A separately authorized interactive attempt reached a saved-folder-trust prerequisite without root approval. Original focus, X4/EA1 and prior observation records remain unchanged. This does not qualify fleet scale or full H0.

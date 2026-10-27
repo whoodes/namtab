@@ -1,0 +1,179 @@
+{
+  "format": "namtab.agent-mvp-evidence/0",
+  "date": "2026-10-27",
+  "base": "fb428384426be7127e40b7ce3b472c6cfea8e78b",
+  "profile": {
+    "adapter": "namtab.mcp-local/0",
+    "mcp_versions": [
+      "2025-11-25",
+      "2025-06-18"
+    ],
+    "broker": "namtab.mk1/1 plus LifecycleHello/Shutdown negotiated by human_shutdown_v1",
+    "limits": {
+      "pty_lifetime": 2,
+      "managed_attempt_lifetime": 2,
+      "live_connections": 4,
+      "ordinary_lifetime_identities": 15,
+      "reserved_reusable_lifecycle_identity": 1,
+      "mcp_request_ids": 128,
+      "mcp_input_line_bytes": 65536,
+      "mcp_response_bytes": 262144,
+      "attempt_preview_codepoints_per_stream": 4096
+    },
+    "capture": "off; fixture logs are explicit synthetic-test capture",
+    "dependencies": "No added dependencies or lock changes; no MCP SDK copied. Installed Codex CLI0.162.1 is optional for manual validation."
+  },
+  "native_deterministic_fixture": {
+    "command": [
+      "tests/mvp/adapter.py",
+      "--native",
+      "--bin-dir",
+      "target/debug",
+      "--artifacts",
+      ".artifacts/agent-mvp-20261027T165127Z/native-candidate"
+    ],
+    "verdict": "PASS",
+    "report_path": ".artifacts/agent-mvp-20261027T165127Z/native-candidate/checks.json",
+    "report_sha256": "499c35bbbde11a68e08098b89c1c86256f5815a2cb7ad61b29c0343a92f4d03f",
+    "binary_sha256": {
+      "namtabd": "99274f0326439ab19f3b071561de320ebaaaf9c995f691a479e248d5918db75c",
+      "namtab-mcp": "091679a90527c837a29f2c070bc91f4be688bbb71a23cd80ff5706defa39b6b2",
+      "namtabctl": "6ba79c095b555967627b87b44bb36fb0871acb8538154adbb1e0eb69b81c76c5",
+      "namtab-terminal-worker": "5b37d75f3e9c38aa31cc490cc5a68c820998ec410f273ea0f3b0656fb63181f9",
+      "namtab-pty-helper": "71e3e9ce1b0f1e32042ace6a3d43954cf1070cc261686bd51c130db9a0434f69"
+    },
+    "harness_sha256": "083fab78bae0fa5cde3872d2f323a0ad142f8dfdc281b1a3669ebfc3311d7b1f",
+    "checks": [
+      {
+        "name": "actual_mcp_stdio_schema_lifecycle_and_duplicate_ids",
+        "verdict": "PASS"
+      },
+      {
+        "name": "real_process_stream_task_revision_and_endpoint_attribution",
+        "verdict": "PASS"
+      },
+      {
+        "name": "agent_terminal_claim_human_takeover_stale_zero_byte_refusal",
+        "verdict": "PASS"
+      },
+      {
+        "name": "mcp_eof_detaches_without_cancelling_work",
+        "verdict": "PASS"
+      },
+      {
+        "name": "repeated_status_does_not_exhaust_identities",
+        "verdict": "PASS"
+      },
+      {
+        "name": "wrong_epoch_and_agent_stop_refused",
+        "verdict": "PASS"
+      },
+      {
+        "name": "explicit_headless_launcher_stop_reaps_owned_direct_children_retains_files",
+        "verdict": "PASS"
+      }
+    ],
+    "screenshots": [
+      {
+        "path": "01-work-empty.png",
+        "sha256": "a988bd0c6afcefa8e9f68f2405e4dea2e6d98d1ccfdab8489bbc8bce05b8cff0",
+        "source": "actual owned native window pixels"
+      },
+      {
+        "path": "08-mcp-work.png",
+        "sha256": "4579602a10b90dd896177db2d59b99175b74754b050ce3d4a9bab93fd29c8e2c",
+        "source": "actual owned native window pixels"
+      },
+      {
+        "path": "09-mcp-takeover.png",
+        "sha256": "dd7e4e8fae121224b4b7b88c024586f48e877cf06cf3aa1dbd4b00d15461d5b0",
+        "source": "actual owned native window pixels"
+      },
+      {
+        "path": "10-stopped-disconnected.png",
+        "sha256": "d9a3fbe345c7a9a1ebcab3e4654e04c84ceb68147f1d432f168c890f5633f71d",
+        "source": "actual owned native window pixels"
+      }
+    ],
+    "retained_endpoints_after_20_status_queries": 4,
+    "cleanup": {
+      "direct_popen_children_waited": true,
+      "verified_descendant_pidfds": 4,
+      "unexited_verified_descendants": 0,
+      "limit": "The harness cannot reap another process's children or prove discovery of every descendant."
+    },
+    "limits": [
+      "Deterministic MCP protocol fixture, not model execution",
+      "Direct-child stop only; descendants/external side effects and pipe drain not guaranteed",
+      "Native variant uses targeted synthetic X11 events, not physical keyboard/IME/a11y or fleet capacity qualification"
+    ]
+  },
+  "prior_native_focus_regression": {
+    "path": ".artifacts/agent-mvp-20261027T165127Z/native-regression-final/checks.json",
+    "verdict": "PASS",
+    "sha256": "38c0d5b0b2ff4de0e416a67e181ac826563a05c83b4fe27121cc49a54bcf1b2c",
+    "meaning": "Keeps fake-core versus actual-owned-window/XI2 focus distinction; no new physical key/IME/WM qualification. Original eighth FAIL remains unchanged."
+  },
+  "model_validation": {
+    "cli_version": "codex-cli0.162.1",
+    "provider_selection": "OpenAI via explicit invocation setting; existing CLI manages authentication; no credential/config read by this harness",
+    "actual_cli_turn": "Observed model message/tool-call attempt in codex-events; not a scripted model response",
+    "result": "BLOCKED_TOOL_APPROVAL; no Namtab task/run forwarded",
+    "original_run_verdict": "FAIL retained; timeout waiting for nonexistent attempt after client denied call",
+    "diagnosis": {
+      "original_report": "live-codex-first/checks.json",
+      "original_report_sha256": "3ed3fa87f14ecda4d0c4ffa15fe92a78a4a6a9484e33109208fecca216ffd4fc",
+      "original_verdict": "FAIL",
+      "classification": "BLOCKED_TOOL_APPROVAL",
+      "known_not_executed": true,
+      "reason": "Codex namtab_task event reports MCP tool call requires approval, but approval policy is never",
+      "actual_evidence": "Real Codex/OpenAI model session and3filtered tool discovery; no task/run forwarded toNamtab",
+      "protocol_calls": [
+        "initialize",
+        "tools/list"
+      ],
+      "retained_logs_sha256": {
+        "codex-events.json": "420eb6827b077c2aaeeb3b82f77bf397412151d5df30abc6e49c1a05e673e1c3",
+        "live-mcp.jsonl": "f74086d032b80024408b0712600e96ed71bd3704b051adfbb402a94319e8d718",
+        "codex.stderr": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+      },
+      "provenance_gap": "Initial runner did not copy/hash live_codex.py/model_gate.py at start; no retrospective attestation. Subsequent source adds future copies.",
+      "retry": "None; one subsequently authorized interactive session is separate and requires user-owned prompts"
+    },
+    "discovered_tools": 3,
+    "bridge_catalog_tools": 9,
+    "interactive_followup": "One temporary interactive invocation authorized; reached folder-trust screen explicitly saving trust. No root response/auto-approval; persistent trust not authorized. Exact local session/status in ignored handoff. No alternate retry.",
+    "provenance_limit": "Initial live runner/gate source copies were absent; subsequent source adds future capture. Not a full reproducible-build or data-isolation attestation."
+  },
+  "non_guarantees": [
+    "No real-model-directed Namtab command PASS, authenticated external-agent run identity, provider mediation or fleet-capacity calibration",
+    "No descendant containment, all-side-effect stop, output-drain, durability, hostile same-UID security, full native GUI/a11y/IME qualification or production readiness",
+    "No license, pin, historical X4/EA1 FAIL or user-session change"
+  ],
+  "source_ledger": [
+    {
+      "url": "https://modelcontextprotocol.io/specification/2025-11-25/basic/transports",
+      "retrieved": "2026-10-27"
+    },
+    {
+      "url": "https://modelcontextprotocol.io/specification/2025-11-25/basic/lifecycle",
+      "retrieved": "2026-10-27"
+    },
+    {
+      "url": "https://modelcontextprotocol.io/specification/2025-11-25/server/tools",
+      "retrieved": "2026-10-27"
+    },
+    {
+      "url": "https://learn.chatgpt.com/docs/extend/mcp",
+      "retrieved": "2026-10-27"
+    },
+    {
+      "url": "https://learn.chatgpt.com/docs/non-interactive-mode",
+      "retrieved": "2026-10-27"
+    },
+    {
+      "url": "https://learn.chatgpt.com/docs/config-file/config-reference",
+      "retrieved": "2026-10-27"
+    }
+  ]
+}

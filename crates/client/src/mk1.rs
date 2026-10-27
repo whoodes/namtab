@@ -25,18 +25,7 @@ impl Client {
         resume: Option<String>,
         next: u64,
     ) -> io::Result<Self> {
-        let writer = UnixStream::connect(path)?;
-        writer.set_read_timeout(Some(Duration::from_secs(2)))?;
-        writer.set_write_timeout(Some(Duration::from_secs(2)))?;
-        let mut client = Self {
-            reader: BufReader::new(writer.try_clone()?),
-            writer,
-            next,
-            epoch: String::new(),
-            endpoint: String::new(),
-            resume: String::new(),
-            failed: false,
-        };
+        let mut client = Self::open(path, next)?;
         let response = client.call(Op::Hello {
             label: label.into(),
             role,
@@ -56,6 +45,34 @@ impl Client {
             .ok_or_else(|| io::Error::other("missing resume"))?;
         Ok(client)
     }
+    fn open(path: &Path, next: u64) -> io::Result<Self> {
+        let writer = UnixStream::connect(path)?;
+        writer.set_read_timeout(Some(Duration::from_secs(2)))?;
+        writer.set_write_timeout(Some(Duration::from_secs(2)))?;
+        Ok(Self {
+            reader: BufReader::new(writer.try_clone()?),
+            writer,
+            next,
+            epoch: String::new(),
+            endpoint: String::new(),
+            resume: String::new(),
+            failed: false,
+        })
+    }
+    pub fn connect_lifecycle(path: &Path) -> io::Result<Self> {
+        let mut c = Self::open(path, 1)?;
+        let r = c.call(Op::LifecycleHello {})?;
+        if !r.ok {
+            return Err(io::Error::other(
+                r.error.unwrap_or_else(|| "lifecycle unsupported".into()),
+            ));
+        }
+        c.epoch = r.epoch;
+        c.endpoint = r
+            .endpoint
+            .ok_or_else(|| io::Error::other("missing lifecycle identity"))?;
+        Ok(c)
+    }
     /// Close the old public transport before an explicit live-owner resume.
     /// This does not undo or retry any operation whose response was lost.
     pub fn close_transport(&mut self) {
@@ -64,6 +81,22 @@ impl Client {
     }
     pub fn transport_failed(&self) -> bool {
         self.failed
+    }
+    pub fn observe_checked(&mut self) -> io::Result<mk1::Snapshot> {
+        let r = self.call(Op::Observe {})?;
+        if !r.ok {
+            return Err(io::Error::other(
+                r.error.unwrap_or_else(|| "observation refused".into()),
+            ));
+        }
+        let s = r
+            .snapshot
+            .ok_or_else(|| io::Error::other("missing snapshot"))?;
+        if s.version != mk1::VERSION || s.epoch != self.epoch || s.endpoint != self.endpoint {
+            self.close_transport();
+            return Err(io::Error::other("snapshot binding mismatch"));
+        }
+        Ok(s)
     }
     pub fn next_id(&self) -> u64 {
         self.next
