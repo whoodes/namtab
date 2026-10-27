@@ -1,6 +1,6 @@
 # namtab
 
-An AI-first execution and coordination harness around a custom owned terminal engine. The chosen direction prioritizes attributable parallel agent work, optimized control and human steering, with explicit Linux shell/CLI/TUI compatibility.
+Namtab develops two first-class efforts in one repository: an AI-first terminal engine and a native harness that uses its explicit versioned contracts. The engine owns semantics, execution and control; the harness makes attributed work and focused human intervention usable. Linux shell/CLI/TUI compatibility remains explicit and bounded.
 
 **Maturity: MK1 delivered; harness design directions approved, admission and feasibility incomplete.** MK1 at `ff15a18b81c78ebcc539d521ec6ca00ebcd14b69` delivered real local PTY/managed execution, an owned finite Rust terminal worker and two demonstration clients. The retired Electron app and dedicated plumbing have been removed; source remains in Git history; the host TUI remains diagnostic/attach tooling. Scripted agent clients can share immutable task contracts, bind exact revisions and obtain broker-attributed attempts/receipts; writer handoffs remain explicit. This is a first hands-on human-feel prototype, not full NG1 or a production terminal. Existing xterm/libghostty experiments remain historical references; their **X4 and EA1 selection gates remain FAIL**. No compatibility, security or speed superiority claim follows.
 
@@ -11,6 +11,8 @@ An AI-first execution and coordination harness around a custom owned terminal en
 The next bounded [external-agent/lifecycle increment](docs/engineering/external-agent-mvp.md) exposes real public operations through MCP and explicit epoch-bound stop, while preserving the engine/fleet-terminal goal. Protocol/native fixtures exercise real processes; the approved live Codex test reached tool discovery but its task call was blocked by client approval policy. Model-directed Namtab execution is not yet validated; there is no automatic provider launch or permission setup.
 
 The current [direction decision](docs/adr/0005-ai-first-harness-direction.md) prioritizes shared work contracts, coordination, efficient observations and responsive control for dozens of agents. That scale and actual model integration are not implemented or measured. Emulator presentation/renderer and the exact load workload remain open; no standalone-window or 32-client requirement is adopted.
+
+The [E6 workstream boundary](docs/adr/0006-engine-and-native-harness-workstreams.md) separates authoritative engine work from native harness UX. [Engine ENG1](https://github.com/whoodes/namtab/milestone/9) targets exact-attempt control; [Native harness NAT1](https://github.com/whoodes/namtab/milestone/10) targets the corresponding fleet-terminal interaction. Both are dependent drafts, not merged qualification or a capacity increase.
 
 ## Architecture
 

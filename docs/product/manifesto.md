@@ -13,3 +13,6 @@
 Non-goals: universal compatibility, perfect isolation/security, deterministic execution replay, inferred cognition or task success, faster model inference through terminal engineering, and speed superiority inferred from Rust. No framework, standalone-window form, exact 32-client workload or model provider has been selected by this direction.
 
 Current reality: [MK1](../engineering/mk1-quickstart.md) is delivered at `ff15a18b81c78ebcc539d521ec6ca00ebcd14b69`; two scripted agents, real processes and finite terminal control are evidenced. Model integration, dozens-agent scalability and full NG1 remain unqualified. Electron/MK1 history and original X4/EA1 **FAIL** evidence are preserved. Next work is the [reviewed harness plan](../engine/delivery-and-validation.md#current-harness-milestones); runtime implementation and merging are not authorized by this documentation pass.
+
+
+The [engine/native-harness boundary](../adr/0006-engine-and-native-harness-workstreams.md) is first-class: engine semantics/execution/attribution/ownership/recovery/resource contracts remain authoritative; the native harness provides excellent fleet navigation and targeted human control without duplicating that state or policy. Shared versioned contracts and actual integration evidence join the two efforts. Neither more panes nor an MCP wrapper alone earns fleet usefulness or speed.
