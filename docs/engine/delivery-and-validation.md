@@ -6,7 +6,7 @@ The first MK1 owned finite core/worker and real Linux PTY/managed-process primit
 
 ## Engine and native-harness workstreams
 
-[E6](../adr/0006-engine-and-native-harness-workstreams.md) is the current ownership/delivery split. Engine ENG1 and Native harness NAT1 have separate milestones/backlogs and dependent review/test/CI boundaries. ENG1 implements versioned exact-attempt control; NAT1 consumes it for an attributed roster, terminal navigation and targeted takeover/cancel. Source/main and unmerged stack revisions remain explicit. No merged #68 or whole-MVP freeze is assumed.
+[E6](../adr/0006-engine-and-native-harness-workstreams.md) is the current ownership/delivery split. Engine ENG1 and Native harness NAT1 have separate milestones/backlogs and dependent review/test/CI boundaries. Proposed ENG1 would implement versioned exact-attempt control; NAT1 would consume it for an attributed roster, terminal navigation and targeted takeover/cancel. Both features are paused for cleanup72; see E6 for the current stack and [repository cleanup inventory](../engineering/14-repository-and-engineering-practices.md#alignment-cleanup-and-deliberate-debt) for risks, acceptance and remaining debt. Source/main and unmerged stack revisions remain explicit. No merged #68 or whole-MVP freeze is assumed.
 
 | Track | Immediate slice / exit | Later backlog / integration |
 | --- | --- | --- |
@@ -40,7 +40,7 @@ The inherited G6 figures below and in the [budget catalog](../engineering/07-val
 | [H2 admitted integration proof](https://github.com/whoodes/namtab/milestone/8) | [#50 real-agent adapter proof](https://github.com/whoodes/namtab/issues/50) | #46/#4; headless adapter proof need not await #47; credentials/export/spending/security admission remains separate |
 | H2 | [#51 selected emulator integration](https://github.com/whoodes/namtab/issues/51) | #4/#47/#50, including their transitive H1 prerequisites |
 
-Issue45 is complete after PR52. Issues46/47 are authorized for H0 drafting/review only; later implementation remains Backlog. A Ready card means eligible only for its explicitly authorized scope, not authority to execute it. [H0 admission/workload](h0-harness-contracts.md), [27 criterion dispositions](h0-residual-criteria.md) and [interface alternatives](../ux/h0-interface-decision.md) are proposed review inputs; neither issue nor H0 is complete until required owner choices are recorded.
+Issue45 is complete after PR52. Issues46/47 retain unsatisfied admission/feasibility criteria. Separately scoped experiments and PR66 native feedback are merged; PR68 MCP/lifecycle remains reviewed/unmerged. ENG1/NAT1 features are paused for cleanup72. A Ready card means eligible only for its explicitly authorized scope, not authority to execute it. [H0 admission/workload](h0-harness-contracts.md), [27 criterion dispositions](h0-residual-criteria.md) and [interface alternatives](../ux/h0-interface-decision.md) are proposed review inputs; neither issue nor H0 is complete until required owner choices are recorded.
 
 Legacy #2 and #17–#21/#23 remain open/Backlog with #46 as their scope-review prerequisite; MK1/PR44 does not complete them wholesale.
 
@@ -157,7 +157,7 @@ Before NG0 acceptance, the owner must resolve staffing/review responsibility and
 
 ### NG0 review packet (draft)
 
-**Current disposition:** N0 was accepted for the bounded MK1 baseline under the [owner admission](../engineering/mk1-scope-and-admission.md); MK1 was delivered and its implementation/merge delegation ended. Full NG1 qualification is not claimed; current authority is E5 docs/planning only. The following packet preserves the pre-authorization disposition and evidence limits.
+**Current disposition:** N0 was accepted for the bounded MK1 baseline under the [owner admission](../engineering/mk1-scope-and-admission.md); MK1 was delivered and its implementation/merge delegation ended. Full NG1 qualification is not claimed; current workstream/stack disposition is recorded in E6; historical authorization text below does not authorize work. The following packet preserves the pre-authorization disposition and evidence limits.
 
 This N0-10 packet supports [issue 16](https://github.com/whoodes/namtab/issues/16). **Pre-authorization packet disposition — NG0 was BLOCKED / NOT ACCEPTED**: the nine dependent N0 contract outcomes have merged, but explicit owner admission, staffing/timebox and bounded-N1 decisions remain. A complete packet, passing static checks or an agent review cannot record owner acceptance. At that packet revision, N1 remained unauthorized and unimplemented. This section owns the packet; contracts and the remaining-decision register retain their existing owners.
 

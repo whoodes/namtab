@@ -1,6 +1,6 @@
 # E6 — Engine and native harness are separate first-class efforts
 
-**Status:** owner-chosen direction,2026-10-27; accepted for design. Detailed ENG1/NAT1 contracts below are bounded experimental implementation scopes, not production qualification. This refines [E5](0005-ai-first-harness-direction.md), retaining [E4](0004-owned-agent-native-engine.md)'s ownership of semantics and the removal of Electron from active scope. One repository/workspace remains; no broad moves or new public plugin ABI.
+**Status:** owner-chosen direction,2026-10-27; accepted for design. Detailed ENG1/NAT1 contracts below are proposed bounded scopes, paused for cleanup before further implementation; not admitted or qualified APIs. This refines [E5](0005-ai-first-harness-direction.md), retaining [E4](0004-owned-agent-native-engine.md)'s ownership of semantics and the removal of Electron from active scope. One repository/workspace remains; no broad moves or new public plugin ABI.
 
 ## Decision and actual boundary
 
@@ -26,9 +26,9 @@ Thus PR68's `LifecycleHello`/protective `Shutdown`, receipt semantics and resour
 
 Use versioned operation/profile/capability contracts plus immutable epoch/operation/target bindings, not imports of private service structures. Current private development wire is `namtab.mk1/1`; extensions must be advertised before use and fail closed when absent. A capability is support, not permission. A later public1.0 wire/SDK needs separate compatibility/migration admission; these increments do not freeze the whole MVP.
 
-ENG1 adds `namtab.attempt-control/0` / `attempt_cancel_v0`. NAT1 consumes that contract. Engine tests can run without a display or harness implementation. Harness components can test projection with fixtures, but actual integration must use the engine and independently observe effects; mocks cannot qualify the runtime. New DTO fields remain additive/defaulted where possible, with explicit unsupported cases. No speculative microservices/crates or language split is introduced.
+Proposed ENG1 would add `namtab.attempt-control/0` / `attempt_cancel_v0`; proposed NAT1 would consume it. Neither capability is in this cleanup revision. Engine tests can run without a display or harness implementation. Harness components can test projection with fixtures, but actual integration must use the engine and independently observe effects; mocks cannot qualify the runtime. New DTO fields remain additive/defaulted where possible, with explicit unsupported cases. No speculative microservices/crates or language split is introduced.
 
-All new branches depend explicitly on **unmerged PR68 at9bcb627**. The ENG1 branch contains the shared direction/roadmap prerequisite and the separate engine implementation commit. NAT1 is a separate dependent branch/PR based on the reviewed ENG1 commit. Parent drafts must merge in order only after owner approval, then bases/checks/reviews must be refreshed on actual integration. Neither stack development nor a passing synthetic merge tree authorizes merging. PR68's reviewed commit stays intact.
+**Current stack:** PR68 at `9bcb627` remains reviewed, unmerged and unchanged. The direction-only prerequisite `8eaca56` separates these efforts. [Cleanup72](https://github.com/whoodes/namtab/issues/72) targets PR68's branch and includes that prerequisite. Uncommitted ENG1 code is frozen in its own worktree; no NAT1 source increment exists. Neither is included or qualified by cleanup. Resume feature work only under the owner's subsequent scope. Actual parent merges require integration, checks and reviews on the resulting tree; prospective trees are not final-head evidence.
 
 ## Two milestones and backlogs
 

@@ -2,7 +2,7 @@
 
 [Design index](../index.md) · [Ownership decision](../adr/0004-owned-agent-native-engine.md) · [Source ledger](research.md) · [Delivery and traceability](delivery-and-validation.md)
 
-**Direction updated 2026-10-19; research ledger retrieved 2026-10-15.** E5 owns current scope. MK1 is implemented at its recorded finite boundary; proposed harness scale, model integration and broader qualification remain pending. This alignment changes documentation/planning only.
+**Direction refined 2026-10-27; research ledger retrieved 2026-10-15.** [E6](../adr/0006-engine-and-native-harness-workstreams.md) owns the engine/native-harness boundary; E5 owns retained AI-first scope. MK1 is implemented at its recorded finite boundary; proposed harness scale, model integration and broader qualification remain pending. The native feedback window is merged (PR66); MCP/lifecycle is reviewed/unmerged (PR68). ENG1/NAT1 feature work is paused for cleanup72; proposed feature profiles are not active wire capabilities.
 
 ## Executive decision
 
