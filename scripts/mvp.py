@@ -26,7 +26,7 @@ def launch_record(path):
         if not isinstance(value, dict):
             raise ValueError('not object')
         return value
-    except (OSError, ValueError, UnicodeError):
+    except (OSError, ValueError, UnicodeError, RecursionError):
         raise SystemExit('Launch record must be a readable small regular JSON object; no PID fallback') from None
 
 
@@ -93,6 +93,8 @@ def main():
         if manifest.get('socket')!=str(sock) or not isinstance(epoch,str) or not epoch:
             raise SystemExit('Run has no matching epoch-bound launch record; older runs require separate operator review, never a PID/signal fallback')
         if args.command=='agent-config':
+            if manifest.get('workspace') != str(run/'workspace'):
+                raise SystemExit('Agent configuration requires the exact recorded run workspace; no command started')
             command=['codex','-C',manifest.get('workspace',str(run/'workspace')),'-c','mcp_servers.namtab.command='+json.dumps(str(binary/'namtab-mcp')),'-c','mcp_servers.namtab.args='+json.dumps(['--socket',str(sock),'--epoch',epoch]),'-c','mcp_servers.namtab.default_tools_approval_mode="prompt"']
             print('NOT STARTED: manual Codex configuration for an explicitly authorized workspace/provider. Other Codex tools are outside Namtab mediation.')
             print(shlex.join(command));return

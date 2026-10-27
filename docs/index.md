@@ -22,7 +22,7 @@ Each row has one authoritative owner. Other pages summarize and link rather than
 
 | Decision or contract | Authoritative location | Supporting detail |
 | --- | --- | --- |
-| Current direction and supersession | [ADR E5](adr/0005-ai-first-harness-direction.md), retaining E4 owned semantics | [Baseline decision register](architecture/10-recommended-baseline-and-adrs.md) |
+| Current workstream boundary and stack status | [ADR E6](adr/0006-engine-and-native-harness-workstreams.md) | E5 retains AI-first scope; E4 retains owned semantics; [baseline](architecture/10-recommended-baseline-and-adrs.md) retains design rationale |
 | Product scope, owned/reused components, v1 exclusions | [Engine scope](engine/index.md) | [Personas/attention](product/01-product-and-supervision.md), [manifesto](product/manifesto.md) |
 | Native identities, operations, receipts, observations, writer fencing | [Native contract](engine/native-contract.md) | [Artifact/validation/dependency policy](product/02-work-evidence-and-coordination.md) |
 | PTY/pipe semantics, parser/state, Unicode, input encoding, query replies | [Compatibility and core](engine/compatibility-and-core.md) | [Process ownership, optional adapters and remote modes](architecture/03-execution-terminal-and-remote.md) |

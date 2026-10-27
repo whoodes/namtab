@@ -8,7 +8,7 @@ test("native launcher preserves existing namespaces and refuses unsafe setup", (
     timeout: 15000,
   });
   assert.equal(result.status, 0, result.stdout + result.stderr);
-  assert.match(result.stderr, /Ran 13 tests/u);
+  assert.match(result.stderr, /Ran 14 tests/u);
 });
 
 test("synthetic-only model test gate refuses wider programs and authorities", () => {
