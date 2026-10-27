@@ -1,0 +1,57 @@
+{
+  "schema": "namtab.native-window-host-observation/0",
+  "retrieved_date": "2026-10-20",
+  "passive": {
+    "DISPLAY": true,
+    "WAYLAND_DISPLAY": true,
+    "XDG_RUNTIME_DIR": true,
+    "SSH_CONNECTION": false,
+    "DBUS_SESSION_BUS_ADDRESS": true,
+    "xdg_session_type": "wayland",
+    "kernel": "6.8.0-138-generic",
+    "arch": "x86_64",
+    "tools": {
+      "xdpyinfo": true,
+      "wayland-info": false,
+      "xrandr": true,
+      "loginctl": true,
+      "rustc": true,
+      "cargo": true
+    },
+    "display_probe": "No connection attempted; passive metadata cannot establish usable display/input/IME/a11y access.",
+    "local_x11_socket_exists": true,
+    "wayland_socket_exists": true,
+    "rustc": "rustc 1.91.0 (f8297e351 2025-10-28)",
+    "cargo": "cargo 1.91.0 (ea2d97820 2025-10-10)",
+    "os_release": {
+      "PRETTY_NAME": "Ubuntu 22.04.5 LTS",
+      "VERSION_ID": "22.04",
+      "ID": "ubuntu"
+    }
+  },
+  "readonly_x_query": {
+    "utc": "2026-10-20T14:50:17.377438+00:00",
+    "command": "timeout 5s xdpyinfo (capture only selected metadata; discard all other output)",
+    "exit": 0,
+    "selected_metadata": [
+      "version number:    11.0",
+      "vendor string:    The X.Org Foundation",
+      "vendor release number:    12201001",
+      "number of screens:    1",
+      "dimensions:    1078x1760 pixels (285x465 millimeters)"
+    ],
+    "stderr_class": "empty",
+    "effects": "read-only query, no window/client input, no credential-file access or settings change",
+    "limits": "XWayland query success cannot qualify native Wayland, actual paint/input, fonts, IME or assistive technology."
+  },
+  "not_run": [
+    "toolkit installation/build",
+    "native window launch/paint/input",
+    "native Wayland protocol query",
+    "physical keyboard/layout/IME",
+    "screen-reader/AT-SPI journey",
+    "GPU adapter/surface/presentation",
+    "clipboard/selection",
+    "latency or all-process memory"
+  ]
+}
