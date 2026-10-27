@@ -45,6 +45,7 @@ nav:
   - "Delivery and engineering":
       - "Milestones / traceability / risks": "engine/delivery-and-validation.md"
       - "H0 criterion dispositions": "engine/h0-residual-criteria.md"
+      - "Native feedback window / launch": "engineering/native-mvp.md"
       - "Reproduce delivered MK1": "engineering/mk1-quickstart.md"
       - "MK1 scope and owner admission": "engineering/mk1-scope-and-admission.md"
       - "Prototype entrypoint": "engineering/12-prototype-plan.md"

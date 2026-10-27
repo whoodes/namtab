@@ -62,6 +62,9 @@ impl Client {
         let _ = self.writer.shutdown(std::net::Shutdown::Both);
         self.failed = true;
     }
+    pub fn transport_failed(&self) -> bool {
+        self.failed
+    }
     pub fn next_id(&self) -> u64 {
         self.next
     }

@@ -1,0 +1,246 @@
+{
+  "format": "namtab.native-mvp-observation/0",
+  "date": "2026-10-27",
+  "base": "dcd0c69246b8cddccd1daddfc239dd29625beb81",
+  "status": "Bounded native feedback proof; not full NWF/H0/compatibility/accessibility/performance qualification",
+  "command": "python3 -B tests/mvp/native.py --bin-dir target/debug --terminfo .artifacts/terminfo --artifacts .artifacts/mvp-hands-on-20261027T144333Z/native-fourteenth",
+  "run_report_sha256": "462057c605197704efb2cf58ca2c720590a5aeb6c92893e55a7204c2db958d1c",
+  "environment": {
+    "python": "3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0]",
+    "os": "Linux",
+    "kernel": "6.8.0-138-generic",
+    "architecture": "x86_64"
+  },
+  "native": {
+    "pid": 2245556,
+    "window_id": 48234500,
+    "binary_sha256": "73ae28b0fea978abd76d4f3caec4a860e781db9047f8b4baf92e87444230e7f4",
+    "font_sha256": "39c29931201f08dd89fdba4129c76288e6baeecf7c94fe4f6a757f2b50718b1b",
+    "input": "Synthetic XSendEvent to own PID-bound window; actual X focus transfers only between two owned windows; not physical keyboard",
+    "display": "Actual existing X11 display, no Xvfb/headless substitution"
+  },
+  "harness": [
+    {
+      "path": "tests/mvp/native.py",
+      "sha256": "b146aba35e3a32c8cf30845cc77b488f4bf6718e57ddd77807658e1f9fe60802"
+    },
+    {
+      "path": "tests/mvp/x11.py",
+      "sha256": "659f7912d95fb4c2217d1117ac50439434c2463507cacaef77e7accdb21c4523"
+    }
+  ],
+  "checks": [
+    {
+      "name": "actual_native_window_and_pixel_capture",
+      "verdict": "PASS"
+    },
+    {
+      "name": "real_shell_repeated_commands_history_and_interrupt",
+      "verdict": "PASS"
+    },
+    {
+      "name": "two_scripted_clients_exact_contract_and_stream_origins",
+      "verdict": "PASS"
+    },
+    {
+      "name": "human_takeover_stale_agent_refused",
+      "verdict": "PASS"
+    },
+    {
+      "name": "live_owner_reconnect_no_input_replay",
+      "verdict": "PASS"
+    },
+    {
+      "name": "explicit_resize_and_rearm",
+      "verdict": "PASS"
+    },
+    {
+      "name": "focus_loss_refuses_application_input",
+      "verdict": "PASS"
+    },
+    {
+      "name": "native_paints_while_own_broker_stopped",
+      "verdict": "PASS"
+    },
+    {
+      "name": "capacity_refusal_no_hidden_restart_or_effect",
+      "verdict": "PASS"
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "01-work-empty.png",
+      "sha256": "ed4c87f4ee864b4c18348b2a7387590e5619f9f542090fc146ebb37395831ce8",
+      "source": "actual owned native window pixels"
+    },
+    {
+      "path": "02-terminal.png",
+      "sha256": "056ac94b47d52712ad0805a14e7fd094c51279002b5f00f358b51efbb9b29c4a",
+      "source": "actual owned native window pixels"
+    },
+    {
+      "path": "03-scripted-work.png",
+      "sha256": "dc303e018195893b7dde008b647a6098107f0fa1981d902666320932a0775c67",
+      "source": "actual owned native window pixels"
+    },
+    {
+      "path": "04-takeover.png",
+      "sha256": "4d37df7b48c2bbf943b590c60a05102915ccd1b5d520b28027a4fc3351ff0fa1",
+      "source": "actual owned native window pixels"
+    },
+    {
+      "path": "05-resize.png",
+      "sha256": "6d7b8dfb21225de0aed53812b22e44f5ae07510078ea94e8902eb2f3d9ab45da",
+      "source": "actual owned native window pixels"
+    },
+    {
+      "path": "06-disconnected-work.png",
+      "sha256": "59820818290fac4b6135bf3c1816e2432329890f3b8634d4a56781db8e03e3af",
+      "source": "actual owned native window pixels"
+    },
+    {
+      "path": "07-capacity-refusal.png",
+      "sha256": "512b06b57f48ffb6d4bb73761cc16f6765b836ecd241e0ee64d2541627592ab7",
+      "source": "actual owned native window pixels"
+    }
+  ],
+  "original_failure": {
+    "run": ".artifacts/mvp-hands-on-20261027T144333Z/native-eighth",
+    "verdict": "FAIL",
+    "error": {
+      "type": "AssertionError",
+      "message": "unfocused native input reached the app"
+    },
+    "artifacts": [
+      {
+        "path": ".artifacts/mvp-hands-on-20261027T144333Z/native-eighth/01-work-empty.png",
+        "sha256": "91f0c64cb0dcb0950bec3d818afe87d9e77f876afb5d285f8e230d5cae3f66cd"
+      },
+      {
+        "path": ".artifacts/mvp-hands-on-20261027T144333Z/native-eighth/02-terminal.png",
+        "sha256": "056ac94b47d52712ad0805a14e7fd094c51279002b5f00f358b51efbb9b29c4a"
+      },
+      {
+        "path": ".artifacts/mvp-hands-on-20261027T144333Z/native-eighth/03-scripted-work.png",
+        "sha256": "dc303e018195893b7dde008b647a6098107f0fa1981d902666320932a0775c67"
+      },
+      {
+        "path": ".artifacts/mvp-hands-on-20261027T144333Z/native-eighth/04-takeover.png",
+        "sha256": "4d37df7b48c2bbf943b590c60a05102915ccd1b5d520b28027a4fc3351ff0fa1"
+      },
+      {
+        "path": ".artifacts/mvp-hands-on-20261027T144333Z/native-eighth/05-resize.png",
+        "sha256": "6d7b8dfb21225de0aed53812b22e44f5ae07510078ea94e8902eb2f3d9ab45da"
+      },
+      {
+        "path": ".artifacts/mvp-hands-on-20261027T144333Z/native-eighth/checks.json",
+        "sha256": "39c953a3464c7e1ebf42d820b02c6c741a272a8731ee052525f4bcacd2ef95bf"
+      },
+      {
+        "path": ".artifacts/mvp-hands-on-20261027T144333Z/native-eighth/daemon.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": ".artifacts/mvp-hands-on-20261027T144333Z/native-eighth/failure.png",
+        "sha256": "02413be08c44f6885d620e634dc36ecf4faebf658e421dded6cdaccfb9cae3ff"
+      },
+      {
+        "path": ".artifacts/mvp-hands-on-20261027T144333Z/native-eighth/failure.txt",
+        "sha256": "f8210d7a664a089571889d3fd8c18f8ac538ded809cbc52baae77a94f6199bba"
+      },
+      {
+        "path": ".artifacts/mvp-hands-on-20261027T144333Z/native-eighth/harness.py",
+        "sha256": "38e0956fda26ca2d37d54b624eb3d56d30ff5efd1f2ed20066587016f0dd88a6"
+      },
+      {
+        "path": ".artifacts/mvp-hands-on-20261027T144333Z/native-eighth/native.log",
+        "sha256": "e1a4c454b174932605f93d8e26d7743787fe544cc76d08956169eabd3ac5c240"
+      }
+    ],
+    "limits": "Actual OS focus, event ordering and input receipt byte counts were NOT recorded. The failure proves the assertion failed and WRONG_FOCUS reached the shell; it does not establish real focus loss. Files remain unchanged."
+  },
+  "focus_reproduction": {
+    "fake_core_notification": {
+      "actual_before": 48234500,
+      "actual_after": 48234500,
+      "delivered_bytes": 19,
+      "interpretation": "Fake core FocusOut did not establish focus loss; accepted input is consistent with actual focus. Original eighth run lacked these measurements."
+    },
+    "actual_focus": {
+      "native_window": 48234500,
+      "sink_window": 46137345,
+      "actual_focus_during": 46137345,
+      "loss_event": {
+        "data": {
+          "event": "focus_event",
+          "focus_generation": 17,
+          "focused": false,
+          "winit_focused": false
+        },
+        "elapsed_us": 6030152,
+        "sequence": 572
+      },
+      "gain_event": {
+        "data": {
+          "event": "focus_event",
+          "focus_generation": 18,
+          "focused": true,
+          "winit_focused": true
+        },
+        "elapsed_us": 6649825,
+        "sequence": 573
+      },
+      "application_delivered_bytes_inferred": 0,
+      "no_input_receipt_exists": true,
+      "scope": "X server + XI2 library delivery, frontend no-queue check; unit/connector tests independently test local fence, not a physical-human guarantee"
+    },
+    "trace_sha256": "c931af6d8c87ce8e6b5727bcdad38e8aac3a6cccb5978d38d89177aca6cfa281",
+    "trace_complete": true,
+    "ordering": "Sequence numbers order allocation, not guaranteed cross-thread file/timestamp order; use local/request links and fence generations for causality. Test waits for each required trace, not process-exit flush.",
+    "limits": "Real X server focus moved only between two test-owned windows. Winit suppresses core key routing while inactive, so OS journey alone does not prove the frontend guard. Separate model/actual connector tests exercise fail-closed fences. Restoration synthetic key guard is source-reviewed plus unit truth table, not physical held-key/IME validation."
+  },
+  "latency_sample": {
+    "boundary": "Native worker trace input_dispatch to input_result, roundtrip only; no key-to-paint/model/whole-system SLO claim",
+    "sample_count": 109,
+    "p50_us": 2153,
+    "p95_us": 7085,
+    "p99_us": 7869,
+    "max_us": 8999,
+    "workload": "One isolated native GUI journey; synthetic ASCII shell input at roughly20ms/key, two scripted managed attempts, local Ubuntu host; sequential RPC off GUI thread. Not a saturated/fairness capacity benchmark.",
+    "quantile": "sorted nearest lower rank (n-1)*p",
+    "source_run": "native-thirteenth"
+  },
+  "reconnect": {
+    "before_stall": {
+      "data": {
+        "endpoint": "e2",
+        "epoch": "b76aa61cd16394fa887ed4a5d9176804aa62e2ed6327361b4fa2e01b3cb74164",
+        "event": "connection_ready",
+        "next_request_id": 155,
+        "resumed": true
+      },
+      "elapsed_us": 4540500,
+      "sequence": 471
+    },
+    "after_stall": {
+      "data": {
+        "endpoint": "e2",
+        "epoch": "b76aa61cd16394fa887ed4a5d9176804aa62e2ed6327361b4fa2e01b3cb74164",
+        "event": "connection_ready",
+        "next_request_id": 222,
+        "resumed": true
+      },
+      "elapsed_us": 10194470,
+      "sequence": 622
+    },
+    "input_dispatch_after_resume_observed": 0,
+    "limit": "No queued mutation was outstanding in this GUI stall. Connector fault-injection tests separately cover partial/unknown pending input."
+  },
+  "cleanup": {
+    "direct_popen_children_waited": true,
+    "verified_descendant_pidfds": 4,
+    "unexited_verified_descendants": 0,
+    "limit": "The harness cannot reap another process's children or prove discovery of every descendant."
+  },
+  "remaining": "No LLM/provider, authenticated external agent adapter, capture/crash recovery, capacity calibration, sealed producer causality in this GUI demo, full input protocol, accessibility or final toolkit adoption."
+}

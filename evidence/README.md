@@ -20,3 +20,7 @@ All payloads are synthetic or public tool/source metadata. Never add credentials
 Current conclusions belong in [the docs index](../docs/index.md), not a second active design in evidence. Exact historical commands can reference subsequently moved scripts; [cleanup](../docs/engineering/20-workspace-organization.md) records the path mapping, and stable Make targets reproduce the workflow.
 
 The [local history record](../docs/engineering/22-local-history-and-validation.md) and `history/validation.json` describe the initial commit series and its new isolated checks. Earlier EA0/cleanup/EA1 reports retain their original zero-commit snapshots and verdicts. Temporary validation logs stay in ignored `.artifacts/history`; only the bounded durable audit record is added.
+
+## Native feedback window — 2026-10-27
+
+`native-mvp/2026-10-27.json` is a bounded actual X11 journey observation, with binary/harness/screenshot hashes and explicit focus/latency limitations. The original eighth focus assertion remains FAIL in its ignored run; the retained record pins those original files rather than replacing it with a passing minimization result. New instrumented runs distinguish fake core focus notifications from actual XI2 loss between test-owned windows. This is not historical engine selection, full interface feasibility, autonomous model integration or production qualification.

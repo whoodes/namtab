@@ -1,0 +1,188 @@
+{
+  "format": "namtab.native-mvp-followup/0",
+  "date": "2026-10-27",
+  "change": "Count trace gap/truncation markers inside total4096-record/1MiB bounds and retain a final marker slot. No input/authority/renderer semantics change.",
+  "prior_record": "2026-10-27.json",
+  "command": "python3 -B tests/mvp/native.py --bin-dir target/debug --terminfo . --artifacts .artifacts/mvp-hands-on-20261027T144333Z/native-fifteenth",
+  "checks_report_sha256": "c02205d53c47b036788d90947c8f0e64a9ba3aaa9e40f9983e50b0a219ffa6a5",
+  "native": {
+    "pid": 2254869,
+    "window_id": 48234500,
+    "binary_sha256": "be93ab9ff913899720dd2f2419f0db31d6cd19bd3b8e4e0c148712ece59651e3",
+    "font_sha256": "39c29931201f08dd89fdba4129c76288e6baeecf7c94fe4f6a757f2b50718b1b",
+    "input": "Synthetic XSendEvent to own PID-bound window; actual X focus transfers only between two owned windows; not physical keyboard",
+    "display": "Actual existing X11 display, no Xvfb/headless substitution"
+  },
+  "harness": [
+    {
+      "path": "tests/mvp/native.py",
+      "sha256": "b146aba35e3a32c8cf30845cc77b488f4bf6718e57ddd77807658e1f9fe60802"
+    },
+    {
+      "path": "tests/mvp/x11.py",
+      "sha256": "659f7912d95fb4c2217d1117ac50439434c2463507cacaef77e7accdb21c4523"
+    }
+  ],
+  "source_hashes": {
+    "crates/console/src/native/trace.rs": "fdf790424aca21482dc6654c2ea43e311b4977b0e005dd05f210e5f625e77343",
+    "crates/console/src/bin/namtab-window.rs": "cc2ce364e03784d3979ff570fd41c51f6cd59fc6bf135d904a22666750d10d50",
+    "crates/console/src/native/connection.rs": "a35886f96c83cdd34da179d4ebd6e8eda7e4c0495b1877d82df5a70482a3c22c"
+  },
+  "checks": [
+    {
+      "name": "actual_native_window_and_pixel_capture",
+      "verdict": "PASS"
+    },
+    {
+      "name": "real_shell_repeated_commands_history_and_interrupt",
+      "verdict": "PASS"
+    },
+    {
+      "name": "two_scripted_clients_exact_contract_and_stream_origins",
+      "verdict": "PASS"
+    },
+    {
+      "name": "human_takeover_stale_agent_refused",
+      "verdict": "PASS"
+    },
+    {
+      "name": "live_owner_reconnect_no_input_replay",
+      "verdict": "PASS"
+    },
+    {
+      "name": "explicit_resize_and_rearm",
+      "verdict": "PASS"
+    },
+    {
+      "name": "focus_loss_refuses_application_input",
+      "verdict": "PASS"
+    },
+    {
+      "name": "native_paints_while_own_broker_stopped",
+      "verdict": "PASS"
+    },
+    {
+      "name": "capacity_refusal_no_hidden_restart_or_effect",
+      "verdict": "PASS"
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "01-work-empty.png",
+      "sha256": "ed4c87f4ee864b4c18348b2a7387590e5619f9f542090fc146ebb37395831ce8",
+      "source": "actual owned native window pixels"
+    },
+    {
+      "path": "02-terminal.png",
+      "sha256": "056ac94b47d52712ad0805a14e7fd094c51279002b5f00f358b51efbb9b29c4a",
+      "source": "actual owned native window pixels"
+    },
+    {
+      "path": "03-scripted-work.png",
+      "sha256": "dc303e018195893b7dde008b647a6098107f0fa1981d902666320932a0775c67",
+      "source": "actual owned native window pixels"
+    },
+    {
+      "path": "04-takeover.png",
+      "sha256": "4d37df7b48c2bbf943b590c60a05102915ccd1b5d520b28027a4fc3351ff0fa1",
+      "source": "actual owned native window pixels"
+    },
+    {
+      "path": "05-resize.png",
+      "sha256": "6d7b8dfb21225de0aed53812b22e44f5ae07510078ea94e8902eb2f3d9ab45da",
+      "source": "actual owned native window pixels"
+    },
+    {
+      "path": "06-disconnected-work.png",
+      "sha256": "59820818290fac4b6135bf3c1816e2432329890f3b8634d4a56781db8e03e3af",
+      "source": "actual owned native window pixels"
+    },
+    {
+      "path": "07-capacity-refusal.png",
+      "sha256": "512b06b57f48ffb6d4bb73761cc16f6765b836ecd241e0ee64d2541627592ab7",
+      "source": "actual owned native window pixels"
+    }
+  ],
+  "focus": {
+    "native_window": 48234500,
+    "sink_window": 46137345,
+    "actual_focus_during": 46137345,
+    "loss_event": {
+      "data": {
+        "event": "focus_event",
+        "focus_generation": 17,
+        "focused": false,
+        "winit_focused": false
+      },
+      "elapsed_us": 5617103,
+      "sequence": 572
+    },
+    "gain_event": {
+      "data": {
+        "event": "focus_event",
+        "focus_generation": 18,
+        "focused": true,
+        "winit_focused": true
+      },
+      "elapsed_us": 6237455,
+      "sequence": 573
+    },
+    "events_during_loss": [
+      {
+        "data": {
+          "event": "focus_event",
+          "focus_generation": 17,
+          "focused": false,
+          "winit_focused": false
+        },
+        "elapsed_us": 5617103,
+        "sequence": 572
+      }
+    ],
+    "application_delivered_bytes_inferred": 0,
+    "no_input_receipt_exists": true,
+    "scope": "X server + XI2 library delivery, frontend no-queue check; unit/connector tests independently test local fence, not a physical-human guarantee"
+  },
+  "reconnect": {
+    "before_stall": {
+      "data": {
+        "endpoint": "e2",
+        "epoch": "acddd4c1598b15aba33534c55477bf2d108698dea3a9fd7187015578943442de",
+        "event": "connection_ready",
+        "next_request_id": 153,
+        "resumed": true
+      },
+      "elapsed_us": 4151897,
+      "sequence": 471
+    },
+    "after_stall": {
+      "data": {
+        "endpoint": "e2",
+        "epoch": "acddd4c1598b15aba33534c55477bf2d108698dea3a9fd7187015578943442de",
+        "event": "connection_ready",
+        "next_request_id": 218,
+        "resumed": true
+      },
+      "elapsed_us": 9779636,
+      "sequence": 622
+    },
+    "input_dispatch_after_resume_observed": 0,
+    "limit": "No queued mutation was outstanding in this GUI stall. Connector fault-injection tests separately cover partial/unknown pending input."
+  },
+  "trace_sha256": "09745bafe812cbf41e9cd0177915ad760c9525eeea4027960f8e8ade801ece57",
+  "cleanup": {
+    "direct_popen_children_waited": true,
+    "verified_descendant_pidfds": 4,
+    "unexited_verified_descendants": 0,
+    "limit": "The harness cannot reap another process's children or prove discovery of every descendant."
+  },
+  "limits": [
+    "Actual native X11 window with targeted synthetic OS keyboard events; no physical-human/IME/a11y/shaping/Wayland/production qualification",
+    "Scripted clients, no model/provider integration; observed file is not sealed causal dependency",
+    "Finite MK1 limits; no capacity/performance or durable recovery claim",
+    "No actual physical held-key/IME/a11y test; synthesized-press gate unit coverage plus source review.",
+    "Canonical unchanged screen and no dispatched input imply zero application bytes in confirmed focus-loss interval; no rejection receipt exists.",
+    "Latency statistics in prior record remain bound to native-thirteenth, not this follow-up.",
+    "Git metadata plus source/binary hashes identify observations, not a reproducible-build attestation."
+  ]
+}

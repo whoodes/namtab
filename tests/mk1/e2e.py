@@ -266,11 +266,11 @@ class Journey:
     def passed(self, name, **facts):
         self.results.append({"name": name, "status": "pass", **facts})
 
-    def descendants(self):
+    def descendants(self, roots=None):
         """Retain pidfds only for verified descendants of our still-owned daemon."""
         if self.process is None or self.process.poll() is not None:
             return
-        pending = [self.process.pid]
+        pending = list(roots) if roots is not None else [self.process.pid]
         visited = set()
         while pending:
             parent = pending.pop()

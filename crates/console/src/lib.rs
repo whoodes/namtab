@@ -114,3 +114,6 @@ mod tests {
         assert!(matches!(Router::default().key(e), Route::Unsupported));
     }
 }
+
+/// Experimental native feedback client; not a renderer/compatibility qualification.
+pub mod native;
