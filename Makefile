@@ -67,3 +67,10 @@ mk1-agent:
 .PHONY: flow-build
 flow-build:
 	cargo build --locked -p project-x-service --bins
+
+# Native feedback increment: fresh run, never restarts an existing namespace.
+.PHONY: mvp-build mvp
+mvp-build:
+	cargo build --locked -p project-x-console --bin namtab-window -p project-x-client --bin namtab-demo -p project-x-client --bin namtab-agent -p project-x-service --bin namtabd -p project-x-terminal --bin namtab-terminal-worker -p project-x-platform --bin namtab-pty-helper
+mvp: mvp-build
+	python3 -B scripts/mvp.py start

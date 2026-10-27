@@ -4,7 +4,7 @@
 
 [Index](../index.md) · [Dependencies](15-dependencies-and-supply-chain.md) · [Tests/CI](16-test-and-ci-strategy.md) · [Target runtime modules](../engine/runtime-persistence-security.md#module-and-process-design)
 
-**Actual foundation versus proposed product.** Current source has eight Rust/three TS workspace packages. The active-source CI lane covers seven Rust crates, excluding only the historical binary-only `project-x-engine` from active Clippy/tests; the worker remains a workspace member and historical source/gates remain intact. The owned finite core/worker and real Linux PTY/managed primitives have targeted tests; MK1 adds a live local broker, public clients and a minimal diagnostic TUI (the delivered Electron demonstration is now source-history only); it is not full NG1 or production qualification. [E5](../adr/0005-ai-first-harness-direction.md) retains E4 owned semantics and supersedes product frontend scope; [runtime](../engine/runtime-persistence-security.md#module-and-process-design) owns the target graph. This page owns repository layout, actual dependency checks, schema/workflow/release policy.
+**Actual foundation versus proposed product.** Current source has eight Rust/three TS workspace packages. The active-source CI lane covers seven Rust crates, excluding only the historical binary-only `project-x-engine` from active Clippy/tests; the worker remains a workspace member and historical source/gates remain intact. The owned finite core/worker and real Linux PTY/managed primitives have targeted tests; MK1 adds a live local broker, public clients, a minimal diagnostic TUI and the separately admitted [native feedback window](native-mvp.md) (the delivered Electron demonstration is now source-history only); it is not full NG1 or production qualification. [E5](../adr/0005-ai-first-harness-direction.md) retains E4 owned semantics and supersedes product frontend scope; [runtime](../engine/runtime-persistence-security.md#module-and-process-design) owns the target graph. This page owns repository layout, actual dependency checks, schema/workflow/release policy.
 
 The historical worker requires the evaluated local artifact for workspace builds; [EA1 reproduction](21-ea1-native-worker-results.md#results-and-reproduction) records preparation and limits. Its raw selection gate remains FAIL. A different runner/artifact is not automatically qualified. Current commands/prerequisites are in root README and Makefile; historical reports preserve their exact earlier tuples.
 
@@ -22,7 +22,7 @@ project-x/                         TARGET with explicit future entries; actual m
     platform/                      PTY/process/filesystem/runtime OS adapters
     service/                       supervisor/store; project-x-service + project-x-keeper
     client/                        Rust public IPC client, subscriptions/receipt reconciliation
-    console/                       project-x CLI and Ratatui TUI modules, offline diagnostic plus the thin live TUI binary
+    console/                       CLI, Ratatui diagnostic TUI and experimental native projection; no backend authority
     engine/                        preserved EA1 experimental binary-only worker; historical failed gate
     terminal/                      owned finite pure core + private worker; MK1 tests, not full qualification
   apps/
