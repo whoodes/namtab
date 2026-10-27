@@ -1,6 +1,8 @@
 //! Private prototype wire contract, not authorization or a production transport.
 /// N0 public design DTOs only; no decoder, admission or dispatch implementation.
 pub mod experimental_native;
+/// Bounded producer-consumer experiment; not a stable public API.
+pub mod flow;
 /// Separately admitted, bounded headless write-boundary experiment.
 pub mod h0_write;
 pub mod internal_engine;

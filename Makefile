@@ -62,3 +62,8 @@ mk1-tui:
 	python3 -B scripts/mk1.py tui
 mk1-agent:
 	python3 -B scripts/mk1.py agent
+
+# Separate fixed managed producer-consumer experiment; no live attachment.
+.PHONY: flow-build
+flow-build:
+	cargo build --locked -p project-x-service --bins
