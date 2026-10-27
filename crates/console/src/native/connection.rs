@@ -256,19 +256,7 @@ fn c_failed(c: &mut Client) -> bool {
     c.transport_failed()
 }
 fn observe(c: &mut Client) -> std::io::Result<Snapshot> {
-    let r = c.call(Op::Observe {})?;
-    if !r.ok {
-        return Err(std::io::Error::other(r.error.unwrap_or_default()));
-    }
-    let s = r
-        .snapshot
-        .ok_or_else(|| std::io::Error::other("missing snapshot"))?;
-    if s.version != p::VERSION || s.epoch != c.epoch || s.endpoint != c.endpoint {
-        return Err(std::io::Error::other(
-            "snapshot version/epoch/endpoint mismatch",
-        ));
-    }
-    Ok(s)
+    c.observe_checked()
 }
 fn control(
     c: &mut Client,
