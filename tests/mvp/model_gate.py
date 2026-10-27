@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import subprocess
 import sys
+from owned_process import close_child
 TASK='live-codex-fixture'
 GOAL='Synthetic printf only'
 ARGV=['/usr/bin/printf','NAMTAB_REAL_CODEX_20261027\n']
@@ -42,7 +43,5 @@ def main():
                 record.write(json.dumps(row)+'\n');record.flush()
                 sys.stdout.write(json.dumps(response)+'\n');sys.stdout.flush()
         finally:
-            child.stdin.close()
-            try:child.wait(timeout=3)
-            except subprocess.TimeoutExpired:child.terminate();child.wait(timeout=3)
+            close_child(child)
 if __name__=='__main__':main()

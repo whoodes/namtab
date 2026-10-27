@@ -8,8 +8,27 @@ import subprocess
 import time
 import uuid
 import shlex
+import stat
 
 ROOT = Path(__file__).resolve().parent.parent
+
+def launch_record(path):
+    """Read one bounded regular record; never follow a final symlink or block on FIFO."""
+    try:
+        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+        with os.fdopen(fd, 'rb') as source:
+            if not stat.S_ISREG(os.fstat(source.fileno()).st_mode):
+                raise ValueError('not regular')
+            raw = source.read(8193)
+        if len(raw) > 8192:
+            raise ValueError('oversize')
+        value = json.loads(raw)
+        if not isinstance(value, dict):
+            raise ValueError('not object')
+        return value
+    except (OSError, ValueError, UnicodeError):
+        raise SystemExit('Launch record must be a readable small regular JSON object; no PID fallback') from None
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -60,16 +79,16 @@ def main():
         print('Fresh native run:', run, '\nWorkspace:', workspace, '\nOwned broker PID:', daemon.pid, flush=True)
     else:
         if args.run is None:
-            raise SystemExit('attach requires --run with an existing project-local run directory')
-        run = args.run.resolve(strict=True)
+            raise SystemExit(args.command + ' requires --run with an existing project-local run directory')
+        try:
+            run = args.run.resolve(strict=True)
+        except OSError:
+            raise SystemExit('Explicit run directory unavailable; no discovery or restart') from None
         if not run.is_relative_to(ROOT / '.artifacts') or not run.is_dir():
             raise SystemExit('attach run must be inside this project .artifacts; no automatic socket discovery')
         sock = run / 's'
     if args.command in ['status', 'stop', 'agent-config']:
-        manifest_path=run/'launch.json'
-        if manifest_path.is_symlink() or not manifest_path.is_file() or manifest_path.stat().st_size>8192:
-            raise SystemExit('Launch record must be a small regular file; no PID fallback')
-        manifest=json.loads(manifest_path.read_text())
+        manifest=launch_record(run/'launch.json')
         epoch=manifest.get('epoch')
         if manifest.get('socket')!=str(sock) or not isinstance(epoch,str) or not epoch:
             raise SystemExit('Run has no matching epoch-bound launch record; older runs require separate operator review, never a PID/signal fallback')
@@ -77,10 +96,12 @@ def main():
             command=['codex','-C',manifest.get('workspace',str(run/'workspace')),'-c','mcp_servers.namtab.command='+json.dumps(str(binary/'namtab-mcp')),'-c','mcp_servers.namtab.args='+json.dumps(['--socket',str(sock),'--epoch',epoch]),'-c','mcp_servers.namtab.default_tools_approval_mode="prompt"']
             print('NOT STARTED: manual Codex configuration for an explicitly authorized workspace/provider. Other Codex tools are outside Namtab mediation.')
             print(shlex.join(command));return
-        if not sock.exists():
+        try:
+            observed = sock.stat()
+        except FileNotFoundError:
             print('No socket at explicit run; liveness unknown, no shutdown sent. Files retained:',run)
             return
-        identity=(sock.stat().st_dev,sock.stat().st_ino)
+        identity=(observed.st_dev,observed.st_ino)
         command=[str(binary/'namtabctl'),'--socket',str(sock),'info','--epoch',epoch]
         if args.command=='stop':command=[str(binary/'namtabctl'),'--socket',str(sock),'stop','--epoch',epoch]
         result=subprocess.run(command,check=False)

@@ -18,16 +18,23 @@ function verify(args, failure = "", extraEnv = {}) {
   const root = resolve(mkdtempSync(".artifacts/verification-runner-"));
   for (const dir of ["scripts", "tests/system", "bin", ".venv-docs/bin"])
     mkdirSync(root + "/" + dir, { recursive: true });
-  copyFileSync("scripts/verify.mjs", root + "/scripts/verify.mjs");
+  for (const file of ["verify.mjs", "source-identity.mjs"])
+    copyFileSync("scripts/" + file, root + "/scripts/" + file);
   writeFileSync(root + "/.node-version", process.versions.node + "\n");
   for (const name of ["z.test.mjs", "a.test.mjs", "helper.mjs"])
     writeFileSync(root + "/tests/system/" + name, "");
   const stub = `#!${process.execPath}
-const { appendFileSync } = require("node:fs");
+const { appendFileSync, existsSync, writeFileSync } = require("node:fs");
 const { basename } = require("node:path");
 const bin = basename(process.argv[1]);
 const args = process.argv.slice(2);
 appendFileSync("commands.jsonl", JSON.stringify({ bin, args }) + "\\n");
+if (bin === "git") {
+  if (args[0] === "rev-parse") console.log("a".repeat(40));
+  else if (args[0] === "diff" && existsSync("changed-source")) console.log("changed");
+  process.exit(0);
+}
+if (process.env.VERIFY_TEST_FAILURE === "source" && args[0] === "test") writeFileSync("changed-source", "fixture");
 console.log("stub " + bin);
 if ((process.env.VERIFY_TEST_FAILURE === "check" && bin === "cargo" && args[0] === "test") ||
     (process.env.VERIFY_TEST_FAILURE === "coordination" && args.includes("tests/mk1/agents.py")) ||
@@ -222,5 +229,16 @@ test("MCP lifecycle failure fails the active lane without skipping other checks"
   assert.equal(
     report.checks.find((c) => c.name === "strict-mkdocs").verdict,
     "PASS",
+  );
+});
+
+test("source changes during checks fail verification without concealing passing steps", () => {
+  const { result, report } = verify(["--source-foundation"], "source");
+  assert.equal(result.status, 1, result.stderr);
+  assert.ok(report.checks.every((c) => c.verdict === "PASS"));
+  assert.equal(report.source_identity.verdict, "FAIL");
+  assert.notEqual(
+    report.source_identity.before.tracked_diff_sha256,
+    report.source_identity.after.tracked_diff_sha256,
   );
 });

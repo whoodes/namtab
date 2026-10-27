@@ -26,8 +26,9 @@ class Adapter(Native):
             self.process=subprocess.Popen([str(self.bin_dir/'namtabd'),'--socket',str(self.socket_path),'--workspace',str(self.workspace),'--worker',str(self.bin_dir/'namtab-terminal-worker'),'--pty-helper',str(self.bin_dir/'namtab-pty-helper')],stdin=subprocess.DEVNULL,stdout=self.daemon_log,stderr=subprocess.STDOUT,start_new_session=True)
             self.wait(lambda:self.socket_path.exists(),'owned broker startup')
             self.observer=Connection(self.socket_path,'adapter-test-observer','human')
-        for source in [Path(__file__),Path(__file__).with_name('mcp_client.py')]:
+        for source in [Path(__file__),Path(__file__).with_name('mcp_client.py'),Path(__file__).with_name('owned_process.py')]:
             (self.artifacts/source.name).write_bytes(source.read_bytes())
+        self.record['fixture_support_hashes']={name:sha256(Path(__file__).with_name(name)) for name in ['mcp_client.py','owned_process.py']}
         self.record['adapter_harness_sha256']=sha256(Path(__file__))
         self.record['model_execution']='NOT RUN: deterministic protocol fixture'
         self.record['binary_hashes']={n:sha256(self.bin_dir/n) for n in ['namtabd','namtab-mcp','namtabctl','namtab-terminal-worker','namtab-pty-helper']}

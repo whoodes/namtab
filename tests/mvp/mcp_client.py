@@ -4,12 +4,17 @@ import os
 import select
 import subprocess
 import time
+from owned_process import close_child
 class MCP:
     def __init__(self,binary,socket,epoch,log,cwd):
         self.stderr=log.open('xb');self.pending=b'';self.next=1;self.transcript=[]
         self.process=subprocess.Popen([str(binary),'--socket',str(socket),'--epoch',epoch],cwd=cwd,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=self.stderr)
-        self.call('initialize',{'protocolVersion':'2025-11-25','clientInfo':{'name':'deterministic-protocol-fixture','version':'0'},'capabilities':{}})
-        self.send({'jsonrpc':'2.0','method':'notifications/initialized'})
+        try:
+            self.call('initialize',{'protocolVersion':'2025-11-25','clientInfo':{'name':'deterministic-protocol-fixture','version':'0'},'capabilities':{}})
+            self.send({'jsonrpc':'2.0','method':'notifications/initialized'})
+        except BaseException:
+            self.close()
+            raise
     def send(self,value):
         raw=json.dumps(value,separators=(',',':')).encode()+b'\n';assert len(raw)<=65536
         self.process.stdin.write(raw);self.process.stdin.flush()
@@ -36,8 +41,5 @@ class MCP:
         return r
     def value(self,name,args):return self.tool(name,args)['result']['structuredContent']['observation_or_response']
     def close(self):
-        if self.process.poll() is None:
-            self.process.stdin.close()
-            try:self.process.wait(timeout=3)
-            except subprocess.TimeoutExpired:self.process.terminate();self.process.wait(timeout=3)
-        self.process.stdout.close();self.stderr.close()
+        try:close_child(self.process)
+        finally:self.stderr.close()
