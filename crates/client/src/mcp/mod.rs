@@ -92,16 +92,6 @@ impl Bridge {
             );
         }
         r.resume = None; // Never export internal resume credentials, including future responses.
-        if let Some(s) = &r.snapshot
-            && (s.epoch != self.client.epoch
-                || s.endpoint != self.client.endpoint
-                || s.version != p::VERSION)
-        {
-            self.client.close_transport();
-            return Err(
-                json!({"binding":binding,"error":"snapshot_binding_mismatch","effects":"operation effects may be unknown; connection fenced; no retry"}),
-            );
-        }
         let success = r.ok && r.receipt.as_ref().is_none_or(|x| x.state == "applied");
         let value = if name == "namtab_observe" {
             tools::observation(

@@ -92,10 +92,6 @@ impl Client {
         let s = r
             .snapshot
             .ok_or_else(|| io::Error::other("missing snapshot"))?;
-        if s.version != mk1::VERSION || s.epoch != self.epoch || s.endpoint != self.endpoint {
-            self.close_transport();
-            return Err(io::Error::other("snapshot binding mismatch"));
-        }
         Ok(s)
     }
     pub fn next_id(&self) -> u64 {
@@ -135,10 +131,26 @@ impl Client {
                     "response identity/epoch mismatch; effects unknown",
                 ));
             }
+            // All consumers share one bound snapshot check, including snapshots
+            // attached to mutation/refusal responses. A bad reply cannot authorize
+            // another dispatch even when the preceding operation may have acted.
+            if let Some(s) = &response.snapshot
+                && (s.version != mk1::VERSION
+                    || s.epoch != response.epoch
+                    || response
+                        .endpoint
+                        .as_ref()
+                        .is_some_and(|ep| ep != &s.endpoint)
+                    || (!self.endpoint.is_empty() && s.endpoint != self.endpoint))
+            {
+                return Err(io::Error::other(
+                    "snapshot binding mismatch; effects unknown",
+                ));
+            }
             Ok(response)
         })();
         if result.is_err() {
-            self.failed = true;
+            self.close_transport();
         }
         result
     }

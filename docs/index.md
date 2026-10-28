@@ -14,13 +14,15 @@
 
 The [external-agent/lifecycle increment](engineering/external-agent-mvp.md) owns the new bounded bridge/control profile, blocked live-model evidence and proposed next fleet-terminal slice. It does not replace the native contract or earn broader H0 admission.
 
+[E6](adr/0006-engine-and-native-harness-workstreams.md) now owns the two-workstream boundary: AI-first engine and native harness, one repository. [ENG1 control](engine/attempt-control.md) and [NAT1 interaction](ux/fleet-control.md) own proposed, paused feature contracts; the E4/E5 semantics and historical evidence remain.
+
 ## Documentation ownership
 
 Each row has one authoritative owner. Other pages summarize and link rather than redefine its contract. A scope conflict requires updating the owner and its traceability entry together; a later date alone does not make a paragraph authoritative.
 
 | Decision or contract | Authoritative location | Supporting detail |
 | --- | --- | --- |
-| Current direction and supersession | [ADR E5](adr/0005-ai-first-harness-direction.md), retaining E4 owned semantics | [Baseline decision register](architecture/10-recommended-baseline-and-adrs.md) |
+| Current workstream boundary and stack status | [ADR E6](adr/0006-engine-and-native-harness-workstreams.md) | E5 retains AI-first scope; E4 retains owned semantics; [baseline](architecture/10-recommended-baseline-and-adrs.md) retains design rationale |
 | Product scope, owned/reused components, v1 exclusions | [Engine scope](engine/index.md) | [Personas/attention](product/01-product-and-supervision.md), [manifesto](product/manifesto.md) |
 | Native identities, operations, receipts, observations, writer fencing | [Native contract](engine/native-contract.md) | [Artifact/validation/dependency policy](product/02-work-evidence-and-coordination.md) |
 | PTY/pipe semantics, parser/state, Unicode, input encoding, query replies | [Compatibility and core](engine/compatibility-and-core.md) | [Process ownership, optional adapters and remote modes](architecture/03-execution-terminal-and-remote.md) |

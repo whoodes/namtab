@@ -12,12 +12,13 @@ import subprocess
 import time
 from adapter import Adapter
 from e2e import require,sha256
+from owned_process import close_child
 from model_gate import TASK,GOAL,ARGV
 
 class Live(Adapter):
     def journey(self):
         require(shutil.which('codex') is not None,'Existing Codex CLI missing; no installation/auth fallback')
-        for source in [Path(__file__),Path(__file__).with_name('model_gate.py')]:
+        for source in [Path(__file__),Path(__file__).with_name('model_gate.py'),Path(__file__).with_name('owned_process.py')]:
             (self.artifacts/source.name).write_bytes(source.read_bytes())
             self.record.setdefault('live_harness_hashes',[]).append({'path':str(source),'sha256':sha256(source)})
         epoch=self.snapshot()['epoch']
@@ -82,12 +83,18 @@ class Live(Adapter):
             self.record['model_execution']='PASS: actual Codex/OpenAI model directed fixed synthetic Namtab operations; not a scripted model result'
             self.record['limitations']=['One model, one managed attempt through a test-only allowlist gate; no terminal model input or fleet capacity proof','Only Namtab tool calls are mediated; disabled/bypass paths are not production policy enforcement','No repository files intentionally supplied; fresh synthetic workspace and event audit, not universal data-isolation certification']
         finally:
-            if self.codex.poll() is None:self.codex.terminate();self.codex.wait(timeout=5)
-            self.codex.stdout.close();stderr.close()
-            # Stop only this fixture broker; never signal/discover a user daemon.
-            result=subprocess.run([str(self.bin_dir/'namtabctl'),'--socket',str(self.socket_path),'stop','--epoch',epoch],capture_output=True,timeout=5)
-            (self.artifacts/'stop-live.log').write_bytes(result.stdout+result.stderr)
-            if result.returncode==0:self.process.wait(timeout=5)
+            self.finish_fixture(epoch, stderr)
+    def finish_fixture(self, epoch, stderr):
+        # Always attempt public stop, even if owned provider-child cleanup fails.
+        try:
+            close_child(self.codex, timeout=5)
+        finally:
+            stderr.close()
+            self.stop_fixture(epoch)
+    def stop_fixture(self, epoch):
+        result=subprocess.run([str(self.bin_dir/'namtabctl'),'--socket',str(self.socket_path),'stop','--epoch',epoch],capture_output=True,timeout=5)
+        (self.artifacts/'stop-live.log').write_bytes(result.stdout+result.stderr)
+        if result.returncode==0:self.process.wait(timeout=5)
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('--allow-live-codex-synthetic',action='store_true',required=True);p.add_argument('--bin-dir',type=Path,required=True);p.add_argument('--terminfo',type=Path,default=Path('.'));p.add_argument('--artifacts',type=Path,required=True)
     args=p.parse_args();args.native=False;Live(args).run()

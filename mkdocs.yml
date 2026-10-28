@@ -25,16 +25,19 @@ nav:
   - "Scope and product":
       - "Manifesto": "product/manifesto.md"
       - "Executive engine scope": "engine/index.md"
+      - "Engine / native harness E6": "adr/0006-engine-and-native-harness-workstreams.md"
       - "Current direction E5": "adr/0005-ai-first-harness-direction.md"
       - "Owned semantics E4 (scope updated)": "adr/0004-owned-agent-native-engine.md"
       - "Baseline decision register": "architecture/10-recommended-baseline-and-adrs.md"
       - "Personas and supervision": "product/01-product-and-supervision.md"
       - "Evidence and coordination": "product/02-work-evidence-and-coordination.md"
   - "Human experience":
+      - "NAT1 fleet-terminal control": "ux/fleet-control.md"
       - "Human steering and intervention": "ux/11-human-experience-spec.md"
       - "Canonical frontend integration": "engine/frontend-contracts.md"
       - "H0 interface / native feasibility study": "ux/h0-interface-decision.md"
   - "Architecture contracts":
+      - "ENG1 exact-attempt control": "engine/attempt-control.md"
       - "Native work and control": "engine/native-contract.md"
       - "H0 harness admission / workload": "engine/h0-harness-contracts.md"
       - "Compatibility and owned core": "engine/compatibility-and-core.md"

@@ -97,4 +97,35 @@ class Launcher(unittest.TestCase):
         with patch.dict(os.environ,{},clear=True):self.invoke('agent-config','--run',str(run))
         self.spawn.assert_not_called();self.run.assert_not_called()
 
+    def test_invalid_launch_records_never_dispatch(self):
+        run=self.lifecycle_run();record=run/'launch.json'
+        cases=[b'{',b'[]',b'null',b'\xff',b'x'*8193,b'{"a":'+b'['*1050+b'0'+b']'*1050+b'}']
+        for data in cases:
+            record.write_bytes(data)
+            with self.subTest(data_type=len(data)),self.assertRaisesRegex(SystemExit,'small regular JSON'):
+                self.invoke('stop','--run',str(run))
+        record.unlink()
+        for kind in ['missing','symlink','fifo']:
+            if kind=='symlink':record.symlink_to(run/'s')
+            if kind=='fifo':os.mkfifo(record)
+            with self.subTest(kind=kind),self.assertRaisesRegex(SystemExit,'small regular JSON'):
+                self.invoke('status','--run',str(run))
+            if record.is_symlink() or record.exists():record.unlink()
+        self.spawn.assert_not_called();self.run.assert_not_called()
+    def test_agent_config_requires_exact_workspace_and_never_dispatches(self):
+        import json
+        run=self.lifecycle_run();record=run/'launch.json';value=json.loads(record.read_text())
+        for workspace in [None,42,[],{},'',str(self.root/'other'),'relative']:
+            value['workspace']=workspace;record.write_text(json.dumps(value))
+            with self.subTest(workspace=workspace),self.assertRaisesRegex(SystemExit,'exact recorded run workspace'):
+                self.invoke('agent-config','--run',str(run))
+        self.run.assert_not_called();self.spawn.assert_not_called()
+    def test_missing_run_has_actionable_error(self):
+        with self.assertRaisesRegex(SystemExit,'Explicit run directory unavailable'):
+            self.invoke('status','--run',str(self.root/'absent'))
+        self.run.assert_not_called()
+    def test_socket_disappearing_before_status_is_unknown(self):
+        run=self.lifecycle_run();(run/'s').unlink()
+        self.invoke('status','--run',str(run));self.run.assert_not_called()
+
 if __name__=='__main__':unittest.main()

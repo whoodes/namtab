@@ -164,7 +164,15 @@ fn wrong_or_missing_broker_receipts_fence_the_real_client() {
         sync::atomic::{AtomicUsize, Ordering},
     };
     static ID: AtomicUsize = AtomicUsize::new(0);
-    for case in ["endpoint", "id", "operation", "missing"] {
+    for case in [
+        "endpoint",
+        "id",
+        "operation",
+        "missing",
+        "snapshot_epoch",
+        "snapshot_endpoint",
+        "snapshot_version",
+    ] {
         let dir = Path::new(env!("CARGO_MANIFEST_DIR"))
             .join("../../.artifacts")
             .join(format!(
@@ -237,6 +245,16 @@ fn wrong_or_missing_broker_receipts_fence_the_real_client() {
                         result: None,
                     });
                 }
+                if step == 2 && case.starts_with("snapshot_") {
+                    let mut snap: p::Snapshot = serde_json::from_value(json!({"version":p::VERSION,"epoch":"fixture-epoch","endpoint":"fixture-agent","capabilities":[],"endpoints":[],"tasks":[],"sessions":[],"attempts":[],"artifacts":[],"receipts":[],"degraded":null})).unwrap();
+                    match case {
+                        "snapshot_epoch" => snap.epoch = "other-epoch".into(),
+                        "snapshot_endpoint" => snap.endpoint = "other-agent".into(),
+                        "snapshot_version" => snap.version = "unknown".into(),
+                        _ => unreachable!(),
+                    }
+                    r.snapshot = Some(snap);
+                }
                 let mut raw = serde_json::to_vec(&r).unwrap();
                 raw.push(b'\n');
                 stream.write_all(&raw).unwrap();
@@ -246,7 +264,14 @@ fn wrong_or_missing_broker_receipts_fence_the_real_client() {
         let e = bridge
             .call("namtab_create_terminal", json!({"name":"synthetic"}))
             .unwrap_err();
-        assert_eq!(e["error"], "receipt_binding_mismatch");
+        assert_eq!(
+            e["error"],
+            if case.starts_with("snapshot_") {
+                "broker_transport_unknown"
+            } else {
+                "receipt_binding_mismatch"
+            }
+        );
         assert!(bridge.client.transport_failed());
         assert_eq!(
             bridge.call("namtab_observe", json!({})).unwrap_err()["error"],

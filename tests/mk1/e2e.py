@@ -183,7 +183,9 @@ class Tui:
 
 class Journey:
     def __init__(self, args):
-        self.root = Path(subprocess.check_output(["git", "rev-parse", "--path-format=absolute", "--git-common-dir"], text=True).strip()).parent
+        # Keep fixture resources with the source worktree: the common Git dir
+        # points at another checkout and breaks its launch-record boundary.
+        self.root = Path(__file__).resolve().parents[2]
         self.bin_dir = args.bin_dir.resolve(strict=True)
         self.terminfo = args.terminfo.resolve(strict=True)
         self.artifacts = args.artifacts.resolve()

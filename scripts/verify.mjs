@@ -1,3 +1,4 @@
+import { sourceIdentity } from "./source-identity.mjs";
 import { spawnSync } from "node:child_process";
 import { readFile, writeFile, mkdir, readdir } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
@@ -48,6 +49,7 @@ const command = (bin, args) => {
     stderr: r.stderr ?? "",
   };
 };
+const sourceBefore = sourceIdentity(root);
 const versions = [
   ["cargo", ["--version"]],
   ["rustc", ["--version"]],
@@ -227,7 +229,15 @@ const folder = new URL(
   import.meta.url,
 );
 await mkdir(folder, { recursive: true });
+const sourceAfter = sourceIdentity(root);
+const sourceStable =
+  JSON.stringify(sourceBefore) === JSON.stringify(sourceAfter);
 const report = {
+  source_identity: {
+    before: sourceBefore,
+    after: sourceAfter,
+    verdict: sourceStable ? "PASS" : "FAIL",
+  },
   date: new Date().toISOString(),
   scope: sourceOnly
     ? "source-foundation: excludes historical native worker only"
@@ -263,6 +273,7 @@ console.log(
   "Foundation verification report: " + new URL("checks.json", folder).pathname,
 );
 if (
+  !sourceStable ||
   checks.some((c) => c.verdict === "FAIL") ||
   versions.some((c) => c.exit !== 0)
 )
