@@ -6,7 +6,7 @@ The first MK1 owned finite core/worker and real Linux PTY/managed-process primit
 
 ## Engine and native-harness workstreams
 
-[E6](../adr/0006-engine-and-native-harness-workstreams.md) is the current ownership/delivery split. Engine ENG1 and Native harness NAT1 have separate milestones/backlogs and dependent review/test/CI boundaries. Proposed ENG1 would implement versioned exact-attempt control; NAT1 would consume it for an attributed roster, terminal navigation and targeted takeover/cancel. The owner resumed bounded ENG1/NAT1 drafts after cleanup72; see E6 for the current stack and [repository cleanup inventory](../engineering/14-repository-and-engineering-practices.md#alignment-cleanup-and-deliberate-debt) for risks, acceptance and remaining debt. PR68 is merged; E6 records the integration lineage. No whole-MVP freeze or broader feature authorization follows.
+[E6](../adr/0006-engine-and-native-harness-workstreams.md) is the current ownership/delivery split. Engine ENG1 and Native harness NAT1 have separate milestones/backlogs and dependent review/test/CI boundaries. ENG1 draft74 implements versioned exact-attempt control; the separate NAT1 draft consumes frozen74/a900b0c for an attributed roster, terminal navigation and targeted takeover/cancel. The owner resumed bounded ENG1/NAT1 drafts after cleanup72; see E6 for the current stack and [repository cleanup inventory](../engineering/14-repository-and-engineering-practices.md#alignment-cleanup-and-deliberate-debt) for risks, acceptance and remaining debt. PR68 is merged; E6 records the integration lineage. No whole-MVP freeze or broader feature authorization follows.
 
 | Track | Immediate slice / exit | Later backlog / integration |
 | --- | --- | --- |

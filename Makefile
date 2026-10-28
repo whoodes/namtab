@@ -79,3 +79,9 @@ mvp-stop:
 	python3 -B scripts/mvp.py stop --run "$(RUN)"
 mvp-status:
 	python3 -B scripts/mvp.py status --run "$(RUN)"
+
+# Manual actual-X11 NAT1 journey. Existing mk1-build creates local terminfo;
+# no display emulation, installation or user-session discovery is performed.
+.PHONY: nat1-test
+nat1-test: mk1-build
+	python3 -B tests/mvp/fleet.py --bin-dir "$(if $(CARGO_TARGET_DIR),$(CARGO_TARGET_DIR),target)/debug" --terminfo .artifacts/terminfo --artifacts .artifacts/nat1-$(shell python3 -c 'import uuid; print(uuid.uuid4().hex[:12])')

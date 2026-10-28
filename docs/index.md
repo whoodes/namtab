@@ -14,7 +14,7 @@
 
 The [external-agent/lifecycle increment](engineering/external-agent-mvp.md) owns the new bounded bridge/control profile, blocked live-model evidence and proposed next fleet-terminal slice. It does not replace the native contract or earn broader H0 admission.
 
-[E6](adr/0006-engine-and-native-harness-workstreams.md) now owns the two-workstream boundary: AI-first engine and native harness, one repository. [ENG1 control](engine/attempt-control.md) and [NAT1 interaction](ux/fleet-control.md) own proposed, paused feature contracts; the E4/E5 semantics and historical evidence remain.
+[E6](adr/0006-engine-and-native-harness-workstreams.md) now owns the two-workstream boundary: AI-first engine and native harness, one repository. [ENG1 control](engine/attempt-control.md) and [NAT1 interaction](ux/fleet-control.md) own bounded owner-resumed experimental draft contracts; the E4/E5 semantics and historical evidence remain.
 
 ## Documentation ownership
 

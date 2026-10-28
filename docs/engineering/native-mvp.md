@@ -1,5 +1,7 @@
 # Native hands-on MVP increment
 
+**NAT1 additive draft:** [fleet-control](../ux/fleet-control.md) owns the new roster/navigation, frozen takeover and cancellation-confirmation controls plus supported `make nat1-test` path. It explicitly depends on frozen ENG1 PR74/a900b0c. The earlier native evidence and limits below remain provenance; NAT1 does not choose the final renderer or validate a model.
+
 The subsequent [external-agent/lifecycle increment](external-agent-mvp.md) adds MCP tools, explicit headless status/stop and one reserved lifecycle identity within the same16total. Its15ordinary+1restricted namespace supersedes ordinary identity admission in new brokers only. The original PR66 results below remain dated evidence, not live-model proof.
 
 ## Experimental admission

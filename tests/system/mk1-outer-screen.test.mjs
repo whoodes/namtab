@@ -1,6 +1,16 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { outerScreen } from "../mk1/outer-screen.mjs";
+import { spawnSync } from "node:child_process";
+
+test("controlled Ctrl-C prompt oracle rejects old rows and accepts ECHOCTL", () => {
+  const result = spawnSync("python3", ["-B", "tests/mk1/test_prompt.py"], {
+    encoding: "utf8",
+    timeout: 10000,
+  });
+  assert.equal(result.status, 0, result.stdout + result.stderr);
+  assert.match(result.stderr, /Ran 5 tests/u);
+});
 
 test("outer host paint observation reconstructs cursor deltas instead of grepping byte history", async () => {
   const paint = Buffer.from("sepXrate-streams\r\x1b[3Ca");
