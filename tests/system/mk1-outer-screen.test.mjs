@@ -9,7 +9,7 @@ test("controlled Ctrl-C prompt oracle rejects old rows and accepts ECHOCTL", () 
     timeout: 10000,
   });
   assert.equal(result.status, 0, result.stdout + result.stderr);
-  assert.match(result.stderr, /Ran 3 tests/u);
+  assert.match(result.stderr, /Ran 5 tests/u);
 });
 
 test("outer host paint observation reconstructs cursor deltas instead of grepping byte history", async () => {

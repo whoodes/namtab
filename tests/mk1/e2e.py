@@ -38,6 +38,29 @@ def require(condition, message):
         raise AssertionError(message)
 
 
+def complete_journal_records(data):
+    # A writer may be appending the last record. Only newline-terminated
+    # metadata is evidence; malformed complete records still fail loudly.
+    return [json.loads(line) for line in data[:data.rfind(b"\n") + 1].splitlines()]
+
+
+def pending_input(records, endpoint):
+    states = {r["id"]: r["state"] for r in records
+              if r["endpoint"] == endpoint and r["operation"] == "input"}
+    return any(state == "reserved" for state in states.values())
+
+
+def interrupt_completion(data, endpoint):
+    records = complete_journal_records(data)
+    inputs = [r for r in records if r["endpoint"] == endpoint
+              and r["operation"] == "input" and r["state"] != "reserved"]
+    if not inputs:
+        return None
+    require(len(inputs) == 1 and inputs[0]["state"] == "applied" and inputs[0]["delivered_bytes"] == 1,
+            "Ctrl-C must have one applied one-byte input completion, never a retry")
+    return inputs[0]
+
+
 def sha256(path):
     digest = hashlib.sha256()
     with open(path, "rb") as stream:
@@ -415,20 +438,25 @@ class Journey:
         self.type_command(self.second, "echo MK1_SLEEPING;sleep 30;echo natural>interrupt-completed", "MK1_SLEEPING", wait_prompt=False)
         paint_mark = self.tui.mark()
         journal = Path(str(self.socket_path) + ".journal")
-        journal_offset = journal.stat().st_size
+        # A prior Enter may have generated output before its completion was
+        # journaled. Establish a complete metadata barrier before offsetting,
+        # while this fixture sends no new input. This never retries a mutation.
+        def input_barrier():
+            data = journal.read_bytes()
+            return data if data.endswith(b"\n") and not pending_input(complete_journal_records(data), self.tui_endpoint) else None
+        journal_offset = len(self.wait(input_barrier, "prior TUI input completes before Ctrl-C evidence boundary"))
         interrupt_started = time.monotonic()
         self.tui.send(b"\x03")
         current = self.wait_session(self.second, self.interrupted_prompt, "shell returns before finite sleep could complete after Ctrl-C")
-        elapsed = time.monotonic() - interrupt_started
         require(not (self.workspace / "interrupt-completed").exists(), "foreground command naturally completed; interruption not established")
-        completions = [json.loads(line) for line in journal.read_bytes()[journal_offset:].splitlines()]
-        inputs = [r for r in completions if r["endpoint"] == self.tui_endpoint and r["operation"] == "input" and r["state"] != "reserved"]
-        require(len(inputs) == 1 and inputs[0]["state"] == "applied" and inputs[0]["delivered_bytes"] == 1, "Ctrl-C must have one applied one-byte input completion, never a retry")
+        completion = self.wait(lambda: interrupt_completion(journal.read_bytes()[journal_offset:], self.tui_endpoint),
+                               "Ctrl-C completion metadata after output", timeout=TIMEOUT - (time.monotonic() - interrupt_started))
+        elapsed = time.monotonic() - interrupt_started
         self.record["ctrl_c_observation"] = {
             "session": self.second, "owner": current["owner"], "generation": current["generation"],
             "host_input_hex": "03", "elapsed_seconds": elapsed,
             "cursor_prefix": current["screen"]["lines"][current["screen"]["cursor_row"]][:current["screen"]["cursor_col"]],
-            "input_completion": inputs[0], "natural_completion_sentinel_absent": True,
+            "input_completion": completion, "natural_completion_sentinel_absent": True,
             "limit": "Synthetic PS1 and one-byte completion plus subsequent command proof; not general shell semantics or a universal Ctrl-C stop guarantee",
         }
         self.wait(lambda: b"mk1$" in self.tui.text_after(paint_mark), "frontend paints post-interrupt prompt")
