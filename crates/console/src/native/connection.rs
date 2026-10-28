@@ -582,6 +582,7 @@ mod boundary_tests {
                         error: None,
                         receipt,
                         snapshot: Some(snapshot),
+                        observation: None,
                         endpoint: Some("human".into()),
                         resume: Some("synthetic-ram-resume".into()),
                         epoch: "epoch".into(),
@@ -738,6 +739,7 @@ mod work_control_tests {
                         error: None,
                         receipt: None,
                         snapshot: None,
+                        observation: None,
                         endpoint: None,
                         resume: None,
                     };

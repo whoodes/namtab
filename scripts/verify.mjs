@@ -184,6 +184,18 @@ const steps = [
     ],
   ],
   [
+    "mvp-scoped-observations",
+    "python3",
+    [
+      "-B",
+      "tests/mvp/scoped_observation.py",
+      "--bin-dir",
+      binaryDirectory,
+      "--artifacts",
+      realRun + "-scoped",
+    ],
+  ],
+  [
     "h0-real-single-write-handoff",
     binaryDirectory + "/namtab-h0-probe",
     [

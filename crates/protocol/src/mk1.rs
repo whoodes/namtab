@@ -11,6 +11,8 @@ pub const ATTEMPT_CANCEL: &str = "attempt_cancel_v0";
 pub const ATTEMPT_CONTROL_PROFILE: &str = "namtab.attempt-control/0";
 pub const HUMAN_SHUTDOWN: &str = "human_shutdown_v1";
 pub const RECEIPT_RESULTS: &str = "receipt_results_v1";
+pub const SCOPED_OBSERVE: &str = "scoped_observe_v0";
+pub const OBSERVATION_PROFILE: &str = "namtab.scoped-observation/0";
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum Role {
@@ -49,6 +51,10 @@ pub enum Op {
     },
     LifecycleHello {},
     Observe {},
+    ObserveScoped {
+        epoch: String,
+        scope: ObservationScope,
+    },
     Shutdown {},
     CancelAttempt {
         epoch: String,
@@ -248,6 +254,123 @@ pub struct Snapshot {
     pub receipts: Vec<Receipt>,
     pub degraded: Option<String>,
 }
+/// Pull selection, not a subscription, permission or semantic application query.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
+pub enum ObservationScope {
+    Work {},
+    Session { session: String },
+    Attempt { attempt: String },
+}
+impl ObservationScope {
+    pub fn valid(&self) -> bool {
+        match self {
+            Self::Work {} => true,
+            Self::Session { session: id } | Self::Attempt { attempt: id } => {
+                !id.is_empty() && id.len() <= 80 && !id.chars().any(char::is_control)
+            }
+        }
+    }
+}
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
+pub struct SessionSummary {
+    pub id: String,
+    pub name: String,
+    pub owner: Option<String>,
+    pub generation: u64,
+    pub process: String,
+    pub exit_code: Option<i32>,
+    pub revision: u64,
+    pub mode_revision: u64,
+    pub input_known: bool,
+}
+impl From<&Session> for SessionSummary {
+    fn from(s: &Session) -> Self {
+        Self {
+            id: s.id.clone(),
+            name: s.name.clone(),
+            owner: s.owner.clone(),
+            generation: s.generation,
+            process: s.process.clone(),
+            exit_code: s.exit_code,
+            revision: s.screen.revision,
+            mode_revision: s.screen.mode_revision,
+            input_known: s.screen.input_known,
+        }
+    }
+}
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
+pub struct AttemptSummary {
+    pub id: String,
+    pub task: String,
+    pub task_revision: Option<String>,
+    pub origin: Option<AttemptOrigin>,
+    pub state: String,
+    pub exit_code: Option<i32>,
+    pub exit_signal: Option<i32>,
+    pub cancellation: Option<AttemptCancellation>,
+    pub source_truncated: bool,
+}
+impl From<&Attempt> for AttemptSummary {
+    fn from(a: &Attempt) -> Self {
+        Self {
+            id: a.id.clone(),
+            task: a.task.clone(),
+            task_revision: a.task_revision.clone(),
+            origin: a.origin.clone(),
+            state: a.state.clone(),
+            exit_code: a.exit_code,
+            exit_signal: a.exit_signal,
+            cancellation: a.cancellation.clone(),
+            source_truncated: a.truncated,
+        }
+    }
+}
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
+pub enum ObservationView {
+    Work {
+        endpoints: Vec<EndpointView>,
+        capabilities: Vec<String>,
+        tasks: Vec<TaskContract>,
+        sessions: Vec<SessionSummary>,
+        attempts: Vec<AttemptSummary>,
+    },
+    Session {
+        session: Session,
+    },
+    Attempt {
+        attempt: Attempt,
+    },
+}
+impl ObservationView {
+    pub fn matches(&self, scope: &ObservationScope) -> bool {
+        match (self, scope) {
+            (Self::Work { .. }, ObservationScope::Work {}) => true,
+            (Self::Session { session }, ObservationScope::Session { session: id }) => {
+                session.id == *id
+            }
+            (Self::Attempt { attempt }, ObservationScope::Attempt { attempt: id }) => {
+                attempt.id == *id
+            }
+            _ => false,
+        }
+    }
+}
+/// One lock-time projection of broker state. No global event cut, artifact
+/// refresh, complete capture or atomic application/OS state is attested.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
+pub struct ScopedObservation {
+    pub version: String,
+    pub profile: String,
+    pub epoch: String,
+    pub endpoint: String,
+    pub degraded: Option<String>,
+    pub view: ObservationView,
+}
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Response {
     pub id: u64,
@@ -255,6 +378,8 @@ pub struct Response {
     pub error: Option<String>,
     pub receipt: Option<Receipt>,
     pub snapshot: Option<Snapshot>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub observation: Option<ScopedObservation>,
     pub endpoint: Option<String>,
     pub resume: Option<String>,
     pub epoch: String,
@@ -265,6 +390,7 @@ impl Op {
             Self::Hello { .. }
             | Self::LifecycleHello {}
             | Self::Observe {}
+            | Self::ObserveScoped { .. }
             | Self::Receipt { .. } => return None,
             Self::Shutdown {} => "shutdown",
             Self::CancelAttempt { .. } => "cancel_attempt",
@@ -565,5 +691,51 @@ mod cancel_contract_tests {
         assert!(check(bad).is_err());
         assert!(serde_json::from_str::<CancellationState>("\"unknown\"").is_ok());
         assert!(serde_json::from_str::<CancellationState>("\"complete\"").is_err());
+    }
+}
+
+#[cfg(test)]
+mod scoped_tests {
+    use super::*;
+    #[test]
+    fn scopes_are_typed_nonmutating_and_legacy_response_omits_extension() {
+        for scope in [
+            ObservationScope::Work {},
+            ObservationScope::Session {
+                session: "session1".into(),
+            },
+            ObservationScope::Attempt {
+                attempt: "attempt2".into(),
+            },
+        ] {
+            let q = Request {
+                version: VERSION.into(),
+                id: 2,
+                operation: Op::ObserveScoped {
+                    epoch: "epoch".into(),
+                    scope,
+                },
+            };
+            assert!(q.operation.mutation_name().is_none());
+            assert_eq!(decode(&serde_json::to_vec(&q).unwrap()).unwrap(), q);
+        }
+        let bad = br#"{"version":"namtab.mk1/1","id":2,"operation":{"op":"observe_scoped","epoch":"epoch","scope":{"kind":"work","session":"extra"}}}"#;
+        assert!(decode(bad).is_err());
+        assert!(!ObservationScope::Session { session: "".into() }.valid());
+        assert!(
+            !ObservationScope::Attempt {
+                attempt: "x".repeat(81)
+            }
+            .valid()
+        );
+        let r: Response = serde_json::from_value(serde_json::json!({"id":1,"ok":true,"error":null,"receipt":null,"snapshot":null,"endpoint":null,"resume":null,"epoch":"epoch"})).unwrap();
+        assert!(r.observation.is_none());
+        assert!(
+            !serde_json::to_value(r)
+                .unwrap()
+                .as_object()
+                .unwrap()
+                .contains_key("observation")
+        );
     }
 }

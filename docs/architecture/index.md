@@ -64,3 +64,5 @@ MCP is an external-agent adapter over this path, not an engine-owned model loop.
 Merged ENG1/NAT1 have bounded real-process/headless/native evidence, independent reviews and exact-revision checks. The Ctrl-C fixture false-negative, initial native focus/setup failures and X4/EA1 failures remain recorded; fixing an oracle is not a runtime claim. The [evidence and validation catalogs](../engineering/16-test-and-ci-strategy.md) specify what each check actually proves.
 
 Not implemented/qualified: dozens-agent scheduling/capacity, authenticated model principals, sealed general artifact causality, production isolation, portable complete-state recovery, full compatibility, final renderer/a11y/IME and real-model Namtab mediation. [H0 residual gates](../engine/h0-residual-criteria.md) and [roadmap](../engine/delivery-and-validation.md) own those decisions. Proposed keepers, SQLite and richer schemas must not be described as this prototype's runtime.
+
+**Unmerged engine follow-up:** [ENG2 scoped pulls](../engine/scoped-observations.md) documents the new branch experiment. Main/MCP/native legacy polling is not silently replaced, and no larger capacity is admitted.

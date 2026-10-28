@@ -54,3 +54,5 @@ For narrower changes use the [test/CI lane owner](../engineering/16-test-and-ci-
 Report exact command, environment, revision/tree, clean/dirty state, pass/fail/blocked/not-run and evidence path. Preserve initial failures and distinguish fixture repair from runtime repair. An applied input receipt proves local delivery, not application completion; unknown effects have no automatic retry. Native UI actions, application input and agent operations remain separate routes. Same-UID declarations are not secure external-agent identities.
 
 Capture-off does not make logs/screenshots/model export private. Use synthetic, isolated tests and obey the current data/provider approval. Never inspect credential/private auth stores to make a test work. No automatic model launch, trust acceptance, saved permission, license change or user-session restart follows from this guide.
+
+**Unmerged engine branch reference:** [scoped pull observations](../engine/scoped-observations.md) owns the experimental API/client/CLI and supported isolated `make scoped-test` path. It is not a merged-main, stable SDK or MCP consumer migration claim.

@@ -45,6 +45,7 @@ pub struct Client {
     pub endpoint: String,
     pub resume: String,
     failed: bool,
+    scoped_support: Option<bool>,
 }
 impl Client {
     pub fn connect(path: &Path, label: &str, role: Role) -> io::Result<Self> {
@@ -89,6 +90,7 @@ impl Client {
             endpoint: String::new(),
             resume: String::new(),
             failed: false,
+            scoped_support: None,
         })
     }
     pub fn connect_lifecycle(path: &Path) -> io::Result<Self> {
@@ -125,6 +127,52 @@ impl Client {
             .snapshot
             .ok_or_else(|| io::Error::other("missing snapshot"))?;
         Ok(s)
+    }
+    /// Discover support at most once per transport via legacy Observe. That
+    /// bootstrap can refresh artifacts; subsequent scoped pulls cannot. Never
+    /// substitute a partial legacy snapshot or silently fall back on refusal.
+    pub fn observe_scoped(
+        &mut self,
+        scope: mk1::ObservationScope,
+    ) -> io::Result<mk1::ScopedObservation> {
+        if !scope.valid() {
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "invalid observation target; nothing dispatched",
+            ));
+        }
+        if self.scoped_support.is_none() {
+            let discovery = self.call(Op::Observe {})?;
+            if !discovery.ok
+                || discovery.snapshot.is_none()
+                || discovery.receipt.is_some()
+                || discovery.resume.is_some()
+            {
+                self.close_transport();
+                return Err(io::Error::other(
+                    "invalid scoped capability discovery; connection fenced",
+                ));
+            }
+        }
+        if self.scoped_support != Some(true) {
+            return Err(io::Error::new(
+                io::ErrorKind::Unsupported,
+                "scoped_observe_v0 unsupported; no scoped request dispatched",
+            ));
+        }
+        let response = self.call(Op::ObserveScoped {
+            epoch: self.epoch.clone(),
+            scope,
+        })?;
+        if !response.ok {
+            return Err(io::Error::other(
+                response
+                    .error
+                    .unwrap_or_else(|| "scoped observation refused".into()),
+            ));
+        }
+        // call() checked presence, profile and exact requested scope binding.
+        Ok(response.observation.expect("validated scoped response"))
     }
     /// Negotiate and re-observe the exact target once. Never retry a lost result.
     pub fn cancel_attempt(&mut self, target: &AttemptTarget) -> io::Result<Response> {
@@ -189,6 +237,18 @@ impl Client {
                 "connection lost: effects unknown; reconnect explicitly, never retry input",
             ));
         }
+        if let Op::ObserveScoped { epoch, .. } = &operation
+            && epoch != &self.epoch
+        {
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "scoped request epoch mismatch; nothing dispatched",
+            ));
+        }
+        let scope = match &operation {
+            Op::ObserveScoped { scope, .. } => Some(scope.clone()),
+            _ => None,
+        };
         let id = self.next;
         if id > mk1::MAX_ID {
             return Err(io::Error::other("request IDs exhausted"));
@@ -232,6 +292,40 @@ impl Client {
                 return Err(io::Error::other(
                     "snapshot binding mismatch; effects unknown",
                 ));
+            }
+            match (&scope, &response.observation) {
+                (Some(wanted), observation) => {
+                    if response.snapshot.is_some()
+                        || response.receipt.is_some()
+                        || response.resume.is_some()
+                        || response
+                            .endpoint
+                            .as_ref()
+                            .is_some_and(|e| e != &self.endpoint)
+                        || response.ok != observation.is_some()
+                        || (response.ok && response.error.is_some())
+                        || observation.as_ref().is_some_and(|o| {
+                            o.version != mk1::VERSION
+                                || o.profile != mk1::OBSERVATION_PROFILE
+                                || o.epoch != self.epoch
+                                || o.endpoint != self.endpoint
+                                || !o.view.matches(wanted)
+                        })
+                    {
+                        return Err(io::Error::other(
+                            "scoped observation binding mismatch; connection fenced",
+                        ));
+                    }
+                }
+                (None, Some(_)) => {
+                    return Err(io::Error::other(
+                        "unrequested scoped observation; connection fenced",
+                    ));
+                }
+                (None, None) => {}
+            }
+            if let Some(s) = &response.snapshot {
+                self.scoped_support = Some(s.capabilities.iter().any(|c| c == mk1::SCOPED_OBSERVE));
             }
             Ok(response)
         })();

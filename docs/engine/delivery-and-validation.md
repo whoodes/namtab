@@ -10,8 +10,8 @@ The first MK1 owned finite core/worker and real Linux PTY/managed-process primit
 
 | Track | Immediate slice / exit | Later backlog / integration |
 | --- | --- | --- |
-| Engine | [70/ENG1](https://github.com/whoodes/namtab/issues/70): cancel one exact owned attempt while its peer continues; typed receipt versus observed exit; headless negatives/real OS evidence | 4coordination,48scheduling/resource fairness,49targeted observations,3compatibility,5recovery; no broad qualification from ENG1 |
-| Native harness | [71/NAT1](https://github.com/whoodes/namtab/issues/71): actual native roster/selection/terminal/takeover/cancel UX through public contracts | 47presentation/IME/a11y; larger navigation/polish after current useful loop; no duplicated parser/policy |
+| Engine | Completed70/ENG1; current bounded draft [78/ENG2](https://github.com/whoodes/namtab/issues/78) adds [direct scoped pull observations](scoped-observations.md), public client/CLI and isolated read/ownership/noise evidence | 4coordination,48scheduling/resource fairness,49targeted observations,3compatibility,5recovery; no broad qualification from ENG1 |
+| Native harness | Completed [71/NAT1](https://github.com/whoodes/namtab/issues/71): actual native roster/selection/terminal/takeover/cancel UX through public contracts | 47presentation/IME/a11y; larger navigation/polish after current useful loop; no duplicated parser/policy |
 | Integration | [69alignment](https://github.com/whoodes/namtab/issues/69),46contract/admission residuals,50actual agent mediation,51joint acceptance | Existing H0–H2 below remain cross-track qualification criteria, not a single undifferentiated harness backlog |
 
 Each slice uses issue-linked logical commits, two independent final-head reviews, relevant actual journeys and exact-head hosted/tree/governance checks. Parent drafts merge only with separate owner approval, then children integrate/revalidate against actual main. Workload-bound latency/throughput observations never qualify dozens of agents. Existing limits, historical failures and owner sessions remain preserved.

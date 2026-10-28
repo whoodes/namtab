@@ -33,6 +33,7 @@ nav:
       - E4 owned semantics: adr/0004-owned-agent-native-engine.md
       - Native task / control design: engine/native-contract.md
       - Implemented exact-attempt API: engine/attempt-control.md
+      - Draft scoped pull API: engine/scoped-observations.md
       - Compatibility / owned core design: engine/compatibility-and-core.md
       - Runtime / recovery design: engine/runtime-persistence-security.md
       - Client projection contract: engine/frontend-contracts.md

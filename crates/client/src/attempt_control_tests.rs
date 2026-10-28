@@ -51,6 +51,7 @@ fn cancellation_negotiates_and_fences_wrong_results_without_replay() {
                     error: None,
                     receipt: None,
                     snapshot: None,
+                    observation: None,
                     endpoint: None,
                     resume: None,
                     epoch: "a".repeat(64),

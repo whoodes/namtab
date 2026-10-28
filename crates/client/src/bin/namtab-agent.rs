@@ -1,16 +1,33 @@
 //! A real protocol client, not a model integration or shell-output interpreter.
 use project_x_client::{
     mk1::Client,
-    mk1_protocol::{Op, Role},
+    mk1_protocol::{ObservationScope, Op, Role},
 };
 use std::io::{self, BufRead, Read};
 use std::path::Path;
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<String> = std::env::args().collect();
     if args.len() < 3 || args[1] != "--socket" {
-        return Err("usage: namtab-agent --socket PATH [observe | run TASK PROGRAM ARG...] (otherwise read operation JSON lines)".into());
+        return Err("usage: namtab-agent --socket PATH [observe | work | session ID | attempt ID | run TASK PROGRAM ARG...] (otherwise read operation JSON lines)".into());
     }
     let mut c = Client::connect(Path::new(&args[2]), "agent-cli", Role::Agent)?;
+    let selection = match args.get(3).map(String::as_str) {
+        Some("work") if args.len() == 4 => Some(ObservationScope::Work {}),
+        Some("session") if args.len() == 5 => Some(ObservationScope::Session {
+            session: args[4].clone(),
+        }),
+        Some("attempt") if args.len() == 5 => Some(ObservationScope::Attempt {
+            attempt: args[4].clone(),
+        }),
+        Some("work" | "session" | "attempt") => {
+            return Err("work takes no arguments; session/attempt take exactly one ID".into());
+        }
+        _ => None,
+    };
+    if let Some(scope) = selection {
+        println!("{}", serde_json::to_string(&c.observe_scoped(scope)?)?);
+        return Ok(());
+    }
     if args.get(3).map(String::as_str) == Some("observe") {
         println!("{}", serde_json::to_string(&c.call(Op::Observe {})?)?);
         return Ok(());

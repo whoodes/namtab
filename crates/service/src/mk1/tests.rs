@@ -1861,3 +1861,190 @@ fn pending_cancel_coalesces_and_never_rearms_consumed_flag() {
         id
     );
 }
+
+#[test]
+fn scoped_reads_are_explicit_bounded_and_do_not_refresh_artifacts_or_mutate_authority() {
+    use wire::{ObservationScope as S, ObservationView as V};
+    let mut h = Harness::new();
+    let human = h.human.clone();
+    let create = h.request(
+        &human,
+        Op::CreateSession {
+            name: "scoped-shell".into(),
+        },
+    );
+    assert!(create.ok);
+    let snap = h.broker.snapshot(&human).unwrap();
+    let sid = snap.sessions[0].id.clone();
+    fs::write(h.directory.join("artifact"), b"before").unwrap();
+    assert!(
+        h.request(
+            &human,
+            Op::Artifact {
+                task: "scope-test".into(),
+                path: "artifact".into()
+            }
+        )
+        .ok
+    );
+    let old = h.broker.snapshot(&human).unwrap().artifacts[0]
+        .revision
+        .clone();
+    fs::write(h.directory.join("artifact"), b"after").unwrap();
+    let before_bytes = fs::metadata(h.directory.join("journal")).unwrap().len();
+    let before_decisions = h.broker.state.lock().unwrap().endpoints[&human]
+        .decisions
+        .len();
+    let epoch = h.broker.epoch.clone();
+    for scope in [
+        S::Work {},
+        S::Session {
+            session: sid.clone(),
+        },
+    ] {
+        let r = h.request(
+            &human,
+            Op::ObserveScoped {
+                epoch: epoch.clone(),
+                scope: scope.clone(),
+            },
+        );
+        assert!(r.ok && r.snapshot.is_none() && r.receipt.is_none() && r.resume.is_none());
+        let o = r.observation.unwrap();
+        assert_eq!(
+            (
+                o.version.as_str(),
+                o.profile.as_str(),
+                o.epoch.as_str(),
+                o.endpoint.as_str()
+            ),
+            (
+                wire::VERSION,
+                wire::OBSERVATION_PROFILE,
+                epoch.as_str(),
+                human.as_str()
+            )
+        );
+        assert!(o.view.matches(&scope));
+        if let V::Work {
+            sessions,
+            attempts,
+            capabilities,
+            ..
+        } = &o.view
+        {
+            assert_eq!(sessions.len(), 1);
+            assert!(attempts.is_empty());
+            assert!(capabilities.iter().any(|x| x == wire::SCOPED_OBSERVE));
+            let text = serde_json::to_string(&o.view).unwrap();
+            for forbidden in [
+                "\"screen\"",
+                "\"lines\"",
+                "\"stdout\"",
+                "\"stderr\"",
+                "\"artifacts\"",
+                "\"receipts\"",
+                "\"resume\"",
+            ] {
+                assert!(!text.contains(forbidden), "unexpected content: {forbidden}");
+            }
+        }
+    }
+    assert_eq!(
+        fs::metadata(h.directory.join("journal")).unwrap().len(),
+        before_bytes
+    );
+    let state = h.broker.state.lock().unwrap();
+    assert_eq!(state.endpoints[&human].decisions.len(), before_decisions);
+    assert_eq!(state.artifacts.values().next().unwrap().revision, old);
+    assert_eq!(
+        state.sessions[&sid].view.generation,
+        snap.sessions[0].generation
+    );
+    assert_eq!(state.sessions[&sid].view.owner, snap.sessions[0].owner);
+    drop(state);
+    // Legacy Observe still performs its documented refresh. Scoped reads did not.
+    assert_ne!(
+        h.broker.snapshot(&human).unwrap().artifacts[0].revision,
+        old
+    );
+    for (epoch, scope, error) in [
+        ("stale".into(), S::Work {}, "observation_epoch_stale"),
+        (
+            epoch.clone(),
+            S::Attempt {
+                attempt: "unknown".into(),
+            },
+            "unknown_attempt",
+        ),
+        (
+            epoch.clone(),
+            S::Session {
+                session: "unknown".into(),
+            },
+            "unknown_session",
+        ),
+        (
+            epoch,
+            S::Session {
+                session: "\u{1b}".into(),
+            },
+            "observation_target_invalid",
+        ),
+    ] {
+        let r = h.request(&human, Op::ObserveScoped { epoch, scope });
+        assert!(!r.ok && r.observation.is_none() && r.receipt.is_none());
+        assert_eq!(r.error.as_deref(), Some(error));
+    }
+}
+
+#[test]
+fn scoped_attempt_selects_one_origin_and_preserves_safe_stream_semantics() {
+    use wire::{ObservationScope as S, ObservationView as V};
+    let mut h = Harness::new();
+    let agent = h.agent.clone();
+    for label in ["A", "B"] {
+        assert!(
+            h.request(
+                &agent,
+                Op::Run {
+                    task: label.into(),
+                    task_revision: None,
+                    argv: vec![
+                        "/bin/sh".into(),
+                        "-c".into(),
+                        format!("printf '{label}\\033[31m';printf '{label}_ERR' >&2")
+                    ]
+                }
+            )
+            .ok
+        );
+    }
+    let end = Instant::now() + Duration::from_secs(3);
+    let s = loop {
+        let s = h.broker.snapshot(&agent).unwrap();
+        if s.attempts.iter().all(|a| a.state == "exited") {
+            break s;
+        }
+        assert!(Instant::now() < end);
+        std::thread::sleep(Duration::from_millis(5));
+    };
+    for expected in &s.attempts {
+        let r = h.request(
+            &agent,
+            Op::ObserveScoped {
+                epoch: h.broker.epoch.clone(),
+                scope: S::Attempt {
+                    attempt: expected.id.clone(),
+                },
+            },
+        );
+        let V::Attempt { attempt } = r.observation.unwrap().view else {
+            panic!("wrong scope")
+        };
+        assert_eq!(&attempt, expected);
+        assert_eq!(attempt.stdout, format!("{}\\u{{1b}}[31m", attempt.task));
+        assert_eq!(attempt.stderr, format!("{}_ERR", attempt.task));
+        assert_eq!(attempt.origin.as_ref().unwrap().endpoint, agent);
+    }
+}

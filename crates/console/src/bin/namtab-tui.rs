@@ -1084,6 +1084,7 @@ mod tests {
                 delivered_bytes: delivered,
             }),
             snapshot: None,
+            observation: None,
             endpoint: None,
             resume: None,
             epoch: "synthetic-test".into(),
