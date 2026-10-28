@@ -386,6 +386,15 @@ class Journey:
         screen = session["screen"]
         return screen["lines"][screen["cursor_row"]][:screen["cursor_col"]] == "mk1$ "
 
+    @staticmethod
+    def interrupted_prompt(session):
+        # ECHOCTL may paint ^C on the same row before Bash restores PS1.
+        # Accept only these two exact cursor prefixes for this controlled shell;
+        # an arbitrary suffix/old row is not evidence of a current prompt.
+        screen = session["screen"]
+        prefix = screen["lines"][screen["cursor_row"]][:screen["cursor_col"]]
+        return prefix in ("mk1$ ", "^Cmk1$ ")
+
     def shells_and_takeover(self):
         self.type_command(self.first, "printf x>>tui-count;echo MK1_TUI_ONE", "MK1_TUI_ONE")
         require((self.workspace / "tui-count").read_bytes() == b"x", "first real command side effect")
@@ -405,11 +414,27 @@ class Journey:
         require(not any(line.strip() == "MK1_TUI_TWO" for line in self.session(self.first)["screen"]["lines"]), "session input leaked to wrong canonical session")
         self.type_command(self.second, "echo MK1_SLEEPING;sleep 30;echo natural>interrupt-completed", "MK1_SLEEPING", wait_prompt=False)
         paint_mark = self.tui.mark()
+        journal = Path(str(self.socket_path) + ".journal")
+        journal_offset = journal.stat().st_size
+        interrupt_started = time.monotonic()
         self.tui.send(b"\x03")
-        self.wait_session(self.second, self.at_prompt, "shell returns before finite sleep could complete after Ctrl-C")
+        current = self.wait_session(self.second, self.interrupted_prompt, "shell returns before finite sleep could complete after Ctrl-C")
+        elapsed = time.monotonic() - interrupt_started
         require(not (self.workspace / "interrupt-completed").exists(), "foreground command naturally completed; interruption not established")
+        completions = [json.loads(line) for line in journal.read_bytes()[journal_offset:].splitlines()]
+        inputs = [r for r in completions if r["endpoint"] == self.tui_endpoint and r["operation"] == "input" and r["state"] != "reserved"]
+        require(len(inputs) == 1 and inputs[0]["state"] == "applied" and inputs[0]["delivered_bytes"] == 1, "Ctrl-C must have one applied one-byte input completion, never a retry")
+        self.record["ctrl_c_observation"] = {
+            "session": self.second, "owner": current["owner"], "generation": current["generation"],
+            "host_input_hex": "03", "elapsed_seconds": elapsed,
+            "cursor_prefix": current["screen"]["lines"][current["screen"]["cursor_row"]][:current["screen"]["cursor_col"]],
+            "input_completion": inputs[0], "natural_completion_sentinel_absent": True,
+            "limit": "Synthetic PS1 and one-byte completion plus subsequent command proof; not general shell semantics or a universal Ctrl-C stop guarantee",
+        }
         self.wait(lambda: b"mk1$" in self.tui.text_after(paint_mark), "frontend paints post-interrupt prompt")
-        self.type_command(self.second, "echo MK1_AFTER_INTERRUPT", "MK1_AFTER_INTERRUPT")
+        self.type_command(self.second, "printf x>after-interrupt;echo MK1_AFTER_INTERRUPT", "MK1_AFTER_INTERRUPT")
+        require((self.workspace / "after-interrupt").read_bytes() == b"x", "restored shell did not execute exactly the next controlled command")
+        self.record["ctrl_c_observation"]["subsequent_command_effect"] = "after-interrupt contains exactly x"
         self.tui.prefix(b"\t")
         time.sleep(0.1)
         self.tui.prefix(b"l")
