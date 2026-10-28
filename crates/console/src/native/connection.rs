@@ -321,26 +321,22 @@ fn control(
             notify(Update::Snapshot(Box::new(observe(c)?)));
             return Ok(());
         }
-        Control::Release(session) => {
-            let s = observe(c)?
-                .sessions
-                .into_iter()
-                .find(|s| s.id == session)
-                .ok_or_else(|| std::io::Error::other("selected session unavailable"))?;
+        Control::Release(target) => {
+            if c.epoch != target.epoch {
+                return Err(std::io::Error::other("Release epoch changed; nothing sent"));
+            }
             Op::ReleaseControl {
-                session: s.id,
-                generation: s.generation,
+                session: target.session,
+                generation: target.generation,
             }
         }
-        Control::Resize(session, cols, rows) => {
-            let s = observe(c)?
-                .sessions
-                .into_iter()
-                .find(|s| s.id == session)
-                .ok_or_else(|| std::io::Error::other("selected session unavailable"))?;
+        Control::Resize(target, cols, rows) => {
+            if c.epoch != target.epoch {
+                return Err(std::io::Error::other("Resize epoch changed; nothing sent"));
+            }
             Op::Resize {
-                session: s.id,
-                generation: s.generation,
+                session: target.session,
+                generation: target.generation,
                 cols,
                 rows,
             }
@@ -695,7 +691,8 @@ mod work_control_tests {
     static ID: AtomicUsize = AtomicUsize::new(0);
     #[test]
     fn local_withdrawal_during_negotiation_sends_no_cancel_and_take_keeps_frozen_generation() {
-        for withdraw in [true, false] {
+        for kind in 0..4 {
+            let withdraw = kind == 0;
             let root = Path::new(env!("CARGO_MANIFEST_DIR"))
                 .join("../../.artifacts")
                 .join(format!(
@@ -735,9 +732,24 @@ mod work_control_tests {
                         proceed.recv_timeout(Duration::from_secs(3)).unwrap();
                         r.snapshot=Some(serde_json::from_value(serde_json::json!({"version":p::VERSION,"epoch":r.epoch,"endpoint":"human","capabilities":[p::ATTEMPT_CANCEL],"endpoints":[],"tasks":[],"artifacts":[],"sessions":[],"receipts":[],"degraded":null,"attempts":[{"id":"a","task":"t","task_revision":null,"origin":{"endpoint":"agent","request_id":2},"state":"running","exit_code":null,"stdout":"","stderr":"","truncated":false}]})).unwrap());
                     } else {
-                        assert!(
-                            matches!(q.operation,Op::TakeControl{ref session,generation:7,force:true} if session=="s1")
-                        );
+                        assert!(match q.operation {
+                            Op::TakeControl {
+                                ref session,
+                                generation: 7,
+                                force: true,
+                            } if kind == 1 => session == "s1",
+                            Op::ReleaseControl {
+                                ref session,
+                                generation: 7,
+                            } if kind == 2 => session == "s1",
+                            Op::Resize {
+                                ref session,
+                                generation: 7,
+                                cols: 88,
+                                rows: 26,
+                            } if kind == 3 => session == "s1",
+                            _ => false,
+                        });
                         r.ok = false;
                         r.error = Some("stale_generation_rejected".into());
                     }
@@ -765,11 +777,16 @@ mod work_control_tests {
                         origin_request_id: 2,
                     })
                 } else {
-                    Control::Take(super::super::work::TerminalTarget {
+                    let target = super::super::work::TerminalTarget {
                         epoch: c.epoch.clone(),
                         session: "s1".into(),
                         generation: 7,
-                    })
+                    };
+                    match kind {
+                        1 => Control::Take(target),
+                        2 => Control::Release(target),
+                        _ => Control::Resize(target, 88, 26),
+                    }
                 };
                 assert!(control(&mut c, action, 0, &f, &|_| {}).is_err());
             });

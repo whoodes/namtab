@@ -80,6 +80,18 @@ class Fleet(Native):
             self.x.key(self.window_id,'Up');self.x.key(self.window_id,'Return');self.wait(lambda:(self.workspace/'nat-count').read_bytes()==b'xxx','repeated input/history exact side effect')
             self.type('sleep 20');self.x.key(self.window_id,'Return');time.sleep(.2);self.descendants();self.x.key(self.window_id,'c',4);self.wait_session(self.first,self.at_prompt,'this shell Ctrl-C interruption')
             self.capture('04-targeted-takeover.png')
+            # Work highlights B while the previously opened terminal is A. L/R
+            # must not release or resize hidden A; B is still owned by its agent.
+            before_a=self.session(self.first);before_b=self.session(sid2)
+            self.hotkey('1');self.x.key(self.window_id,'Home')
+            self.hotkey('l');self.hotkey('r')  # Attempt row implies no terminal.
+            self.x.key(self.window_id,'Down');self.x.key(self.window_id,'Down');self.x.key(self.window_id,'Down')
+            self.hotkey('l');self.hotkey('r');time.sleep(.2)
+            after_a=self.session(self.first);after_b=self.session(sid2)
+            require(after_a['generation']==before_a['generation'] and after_a['owner']==self.native_endpoint and after_a['screen']['cols']==before_a['screen']['cols'] and after_a['screen']['rows']==before_a['screen']['rows'],'Work release/resize changed hidden A')
+            require(after_b['owner']==before_b['owner'] and after_b['generation']==before_b['generation'],'unowned B acquired hidden authority')
+            self.hotkey('2')
+
             self.hotkey('Tab');mark=self.mark();self.type('UNARMED_NAT');self.x.key(self.window_id,'Return');time.sleep(.2)
             require(not any(r['data']['event']=='input_dispatch' and r['sequence']>mark for r in self.events()),'session navigation reused armed input')
             self.hotkey('1');self.x.key(self.window_id,'Home');mark=self.mark();self.hotkey('x');self.event('cancel_confirmation_open',mark,lambda d:d['attempt']==aid)
@@ -115,7 +127,7 @@ class Fleet(Native):
             except RuntimeError as error:require('Owned X11 fixture request failed' in str(error),'focus guard is not the X error-handler regression')
             else:raise AssertionError('Invalid owned X target did not report a checked failure')
             (self.workspace/'stoppty').write_bytes(b'stop')
-            self.record['checks']=[{'name':n,'verdict':'PASS'} for n in ['two_scripted_clients_exact_task_attempt_attribution','actual_keyboard_roster_selection_and_detail','dismiss_selection_focus_loss_no_cancel','targeted_takeover_stale_writer_zero_bytes','repeated_input_history_and_this_shell_interrupt','one_shot_human_cancel_independent_OS_exit_peer_continuity','stale_natural_exit_confirmation_no_dispatch','disconnected_native_navigation_explicit_live_resume','checked_invalid_owned_x_target_does_not_skip_cleanup']]
+            self.record['checks']=[{'name':n,'verdict':'PASS'} for n in ['two_scripted_clients_exact_task_attempt_attribution','actual_keyboard_roster_selection_and_detail','dismiss_selection_focus_loss_no_cancel','targeted_takeover_stale_writer_zero_bytes','work_release_resize_never_target_hidden_terminal','repeated_input_history_and_this_shell_interrupt','one_shot_human_cancel_independent_OS_exit_peer_continuity','stale_natural_exit_confirmation_no_dispatch','disconnected_native_navigation_explicit_live_resume','checked_invalid_owned_x_target_does_not_skip_cleanup']]
             self.record['outcomes']={'attempts':self.snapshot()['attempts'],'native_endpoint':self.native_endpoint,'cancel_dispatch_count':1,'human_input_side_effect':(self.workspace/'nat-count').read_text(),'stale_writer_receipt':refused['receipt'],'peer_ticks_after_A_exit':ticks,'independent_A_pidfd_exit':True,'model_execution':'NOT RUN: SCRIPTED PROTOCOL CLIENTS'}
             self.record['limitations']=['Existing2PTY/2attempt/fourconnection/retainedidentity profile, not fleet capacity','Synthetic X11 events and existing finite core/font tuple; no physical held-key/IME/a11y or final toolkit qualification','Pidfd proves own child exit, not cause/status; no descendant/all-effects guarantee','Disconnected last observation is not current process truth; explicit reconnect, no input or cancel replay']
         finally:a.close();b.close()

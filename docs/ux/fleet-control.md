@@ -6,7 +6,7 @@
 
 ## Admitted presentation and resource tuple
 
-Existing Ubuntu22.04x86_64/Rust1.91.0/Cargo pins, winit0.30.13/X11 + softbuffer0.4.8 CPU surface and fontdue0.9.3 over the existing DejaVuSansMono font. No new dependencies/toolkit selection. Window bounds900×780–1600×1200 and finite Latin-1 rendering/IME-disabled limitations remain; this is not final shaping/accessibility/clipboard/scrollback qualification. Existing2PTY/2attempt/four-live-connection and15ordinary+one restricted lifecycle identities remain. UI control/input queues stay2/8; one optional confirmation target and a roster bounded by current2attempt/2terminal/4task counts add no unbounded pending work. Existing trace caps and no capture/automatic uploads remain.
+Existing Ubuntu22.04x86_64/Rust1.91.0/Cargo pins, winit0.30.13/X11 + softbuffer0.4.8 CPU surface and fontdue0.9.3 over the existing DejaVuSansMono font. No new dependencies/toolkit selection. Native runs retain the existing `TERM=dumb` fallback; the build prepares `namtab-mk1` terminfo for shared tooling, but this native fixture does not pass it to the broker or qualify that terminfo profile. Window bounds900×780–1600×1200 and finite Latin-1 rendering/IME-disabled limitations remain; this is not final shaping/accessibility/clipboard/scrollback qualification. Existing2PTY/2attempt/four-live-connection and15ordinary+one restricted lifecycle identities remain. UI control/input queues stay2/8; one optional confirmation target and a roster bounded by current2attempt/2terminal/4task counts add no unbounded pending work. Existing trace caps and no capture/automatic uploads remain.
 
 The harness owns only work/terminal selection, focus, forms and confirmation/presentation caches. Engine snapshots remain authoritative; selecting a managed attempt does **not** infer an associated PTY. A disconnected projection is last observed, not fresh process truth or a reason to repeat an operation.
 
@@ -40,7 +40,7 @@ This builds and opens a **fresh** owned native run. Take input explicitly; closi
 | Work Up/Down, Home/End | Select attempt, terminal or immutable task by identity; no application key bytes |
 | Work Enter | Open selected terminal paused; an attempt does not imply a terminal |
 | Ctrl+Shift+Tab | Cycle terminals; input remains paused; Work selection follows an explicit terminal cycle |
-| Ctrl+Shift+T | Take only the selected terminal with frozen observed epoch/generation; backend remains final authority |
+| Ctrl+Shift+T | Take only the selected terminal with frozen observed epoch/generation; release/resize use that same selected tuple, never a hidden last-opened terminal; backend remains final authority |
 | Ctrl+Shift+X, then plain Enter once | Confirm one frozen attempt/origin cancellation; receipt is request, exit observed separately |
 | Escape, selection/view/resize/focus change | Dismiss cancellation; no hidden retarget or queued replay |
 | Ctrl+Shift+E | Show selected task/attempt revision; one stream detail, not every agent's output |

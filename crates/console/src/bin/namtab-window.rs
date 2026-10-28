@@ -119,7 +119,10 @@ impl App {
                 KeyCode::KeyL => {
                     self.model
                         .pause("Released input; existing effects continue.");
-                    self.command(Control::Release(self.model.selected.clone()));
+                    match self.model.terminal_target() {
+                        Ok(target) => self.command(Control::Release(target)),
+                        Err(e) => self.model.notice = e.into(),
+                    };
                 }
                 KeyCode::KeyN => self.command(Control::NewShell),
                 KeyCode::KeyD => self.demo(),
@@ -140,11 +143,14 @@ impl App {
                         .pause("Resize requested. Take input explicitly afterwards.");
                     if let Some(w) = &self.window {
                         let size = w.inner_size();
-                        self.command(Control::Resize(
-                            self.model.selected.clone(),
-                            ((size.width.saturating_sub(36)) / 10).clamp(2, 160) as u16,
-                            ((size.height.saturating_sub(240)) / 22).clamp(2, 48) as u16,
-                        ));
+                        match self.model.terminal_target() {
+                            Ok(target) => self.command(Control::Resize(
+                                target,
+                                ((size.width.saturating_sub(36)) / 10).clamp(2, 160) as u16,
+                                ((size.height.saturating_sub(240)) / 22).clamp(2, 48) as u16,
+                            )),
+                            Err(e) => self.model.notice = e.into(),
+                        };
                     }
                 }
                 _ => {
