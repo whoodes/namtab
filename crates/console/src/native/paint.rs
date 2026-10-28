@@ -119,91 +119,15 @@ impl Painter {
                     );
                 }
             } else {
-                let mut lines = vec!["WORK / attributed process activity".to_owned()];
-                let connected = s
-                    .endpoints
-                    .iter()
-                    .filter(|e| {
-                        e.role == project_x_client::mk1_protocol::Role::Agent && e.connected
-                    })
-                    .count();
-                lines.push(format!("Connected declared agent endpoints: {connected} | attempts {}/2 | sessions {}/2",s.attempts.len(),s.sessions.len()));
-                if s.attempts.is_empty() {
-                    lines.extend([
-                        "No work has run yet.".into(),
-                        "Ctrl+Shift+D starts two scripted clients and an agent-owned shell.".into(),
-                        "Ctrl+Shift+A opens literal argv entry; this is not an AI prompt.".into(),
-                    ]);
-                }
-                for a in &s.attempts {
-                    lines.push(String::new());
-                    lines.push(format!(
-                        "{} / {}: {} | exit {}{}",
-                        safe(&a.id),
-                        safe(&a.task),
-                        safe(&a.state),
-                        a.exit_code
-                            .map_or("pending/unknown".to_owned(), |code| code.to_string()),
-                        if a.truncated { " | TRUNCATED" } else { "" }
-                    ));
-                    lines.push(a.origin.as_ref().map_or("Origin unavailable".into(), |o| {
-                        format!(
-                            "Origin endpoint {} / request {}",
-                            safe(&o.endpoint),
-                            o.request_id
-                        )
-                    }));
-                    if m.details {
-                        lines.push(format!(
-                            "Exact task revision: {}",
-                            safe(a.task_revision.as_deref().unwrap_or("ad hoc / no contract"))
-                        ));
-                    } else {
-                        lines.push(if a.task_revision.is_some() {
-                            "Shared contract bound | Ctrl+Shift+E shows evidence".into()
-                        } else {
-                            "Ad-hoc command, no shared contract".into()
-                        });
-                    }
-                    for (name, text) in [("stdout", &a.stdout), ("stderr", &a.stderr)] {
-                        lines.push(format!(
-                            "{name} preview: {}",
-                            safe(
-                                &text
-                                    .chars()
-                                    .take(180)
-                                    .collect::<String>()
-                                    .replace('\n', " | ")
-                            )
-                        ));
-                    }
-                }
-                for a in &s.artifacts {
-                    lines.push(format!(
-                        "Observed artifact {} / {} / {} {}",
-                        safe(&a.task),
-                        safe(&a.path),
-                        if m.details {
-                            safe(&a.revision)
-                        } else {
-                            "file observation; Ctrl+Shift+E for evidence".into()
-                        },
-                        if a.stale {
-                            "STALE review"
-                        } else {
-                            "not a correctness/causal proof"
-                        }
-                    ));
-                }
-                if let Some(form) = &m.form {
-                    lines.push(String::new());
-                    lines.push(
-                        "RUN LOCAL COMMAND / literal argv JSON / Enter once / Escape cancel".into(),
+                for (row, (line, selected)) in m.work_lines().iter().take(maxrows).enumerate() {
+                    self.text(
+                        &mut c,
+                        18,
+                        112 + row * 22,
+                        line,
+                        if *selected { ACCENT } else { FG },
+                        width as usize - 36,
                     );
-                    lines.push(form.clone());
-                }
-                for (row, line) in lines.iter().take(maxrows).enumerate() {
-                    self.text(&mut c, 18, 112 + row * 22, line, FG, width as usize - 36);
                 }
             }
         } else {
@@ -227,7 +151,7 @@ impl Painter {
             MUTED,
             width as usize - 36,
         );
-        self.text(&mut c,18,y+52,"Terminal: Tab with Ctrl+Shift cycles session. Closing detaches; processes can continue.",MUTED,width as usize-36);
+        self.text(&mut c,18,y+52,"Work: arrows select; Enter opens terminal; Ctrl+Shift+X cancels attempt. Closing detaches.",MUTED,width as usize-36);
         Ok(c.pixels)
     }
     fn text(&self, c: &mut Canvas, x: usize, y: usize, text: &str, color: u32, width: usize) {

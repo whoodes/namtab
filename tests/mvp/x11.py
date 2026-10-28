@@ -1,17 +1,36 @@
 """Narrow X11 event/screenshot test helper. Callers must pass their owned window ID."""
 import ctypes as C
 import ctypes.util
+import time
 
 class XKeyEvent(C.Structure):
     _fields_=[('type',C.c_int),('serial',C.c_ulong),('send_event',C.c_int),('display',C.c_void_p),('window',C.c_ulong),('root',C.c_ulong),('subwindow',C.c_ulong),('time',C.c_ulong),('x',C.c_int),('y',C.c_int),('x_root',C.c_int),('y_root',C.c_int),('state',C.c_uint),('keycode',C.c_uint),('same_screen',C.c_int)]
 class XEvent(C.Union):
     _fields_=[('key',XKeyEvent),('pad',C.c_long*24)]
+class XWindowAttributes(C.Structure):
+    # ABI verified against installed /usr/include/X11/Xlib.h, not window contents.
+    _fields_=[('x',C.c_int),('y',C.c_int),('width',C.c_int),('height',C.c_int),('border_width',C.c_int),('depth',C.c_int),('visual',C.c_void_p),('root',C.c_ulong),('c_class',C.c_int),('bit_gravity',C.c_int),('win_gravity',C.c_int),('backing_store',C.c_int),('backing_planes',C.c_ulong),('backing_pixel',C.c_ulong),('save_under',C.c_int),('colormap',C.c_ulong),('map_installed',C.c_int),('map_state',C.c_int),('all_event_masks',C.c_long),('your_event_mask',C.c_long),('do_not_propagate_mask',C.c_long),('override_redirect',C.c_int),('screen',C.c_void_p)]
+class XErrorEvent(C.Structure):
+    _fields_=[('type',C.c_int),('display',C.c_void_p),('resourceid',C.c_ulong),('serial',C.c_ulong),('error_code',C.c_ubyte),('request_code',C.c_ubyte),('minor_code',C.c_ubyte)]
 class X11:
     def __init__(self):
         self.lib=C.CDLL(ctypes.util.find_library('X11'))
         self.lib.XOpenDisplay.restype=C.c_void_p;self.lib.XOpenDisplay.argtypes=[C.c_char_p]
         self.display=self.lib.XOpenDisplay(None)
         if not self.display:raise RuntimeError('No accessible X11 display; native journey NOT RUN')
+        # Process-local test error handling: propagate errors through Python's
+        # finally cleanup instead of Xlib's default fatal process exit. No server
+        # configuration or another process's error policy is changed.
+        self.errors=[]
+        callback=C.CFUNCTYPE(C.c_int,C.c_void_p,C.POINTER(XErrorEvent))
+        def error(display,event):
+            if len(self.errors)<8:self.errors.append((event.contents.error_code,event.contents.request_code))
+            return 0
+        self.error_handler=callback(error)
+        self.lib.XSetErrorHandler.argtypes=[C.c_void_p];self.lib.XSetErrorHandler.restype=C.c_void_p
+        self.prior_handler=self.lib.XSetErrorHandler(C.cast(self.error_handler,C.c_void_p))
+        self.lib.XSync.argtypes=[C.c_void_p,C.c_int]
+
         self.lib.XStringToKeysym.restype=C.c_ulong;self.lib.XStringToKeysym.argtypes=[C.c_char_p]
         self.lib.XKeysymToKeycode.restype=C.c_uint;self.lib.XKeysymToKeycode.argtypes=[C.c_void_p,C.c_ulong]
         self.lib.XSendEvent.argtypes=[C.c_void_p,C.c_ulong,C.c_int,C.c_long,C.POINTER(XEvent)]
@@ -42,14 +61,33 @@ class X11:
         return sink
     def focus_owned(self,target,owned):
         if target not in owned or self.focus() not in owned:raise RuntimeError('Focus transfer refused: source/target must both be test-owned')
+        self.lib.XGetWindowAttributes.argtypes=[C.c_void_p,C.c_ulong,C.POINTER(XWindowAttributes)]
+        deadline=time.monotonic()+2
+        while True:
+            attributes=XWindowAttributes()
+            found=self.lib.XGetWindowAttributes(self.display,target,C.byref(attributes))
+            self.sync()
+            if found and attributes.map_state==2:break  # IsViewable, not merely XMap queued.
+            if time.monotonic()>deadline:raise RuntimeError('Owned focus target never became viewable; no focus request sent')
+            time.sleep(.01)
         self.lib.XSetInputFocus.argtypes=[C.c_void_p,C.c_ulong,C.c_int,C.c_ulong]
         self.lib.XSetInputFocus(self.display,target,2,0)
-        self.lib.XSync(self.display,False)
+        self.sync()
         if self.focus()!=target:raise RuntimeError('Owned focus transition not established')
     def destroy(self,window):
         self.lib.XDestroyWindow.argtypes=[C.c_void_p,C.c_ulong]
-        self.lib.XDestroyWindow(self.display,window);self.lib.XFlush(self.display)
-    def close(self):self.lib.XCloseDisplay(self.display)
+        self.lib.XDestroyWindow(self.display,window);self.sync()
+    def sync(self):
+        self.lib.XSync(self.display,False)
+        if self.errors:
+            errors=self.errors[:];self.errors.clear()
+            raise RuntimeError('Owned X11 fixture request failed (error,request): '+str(errors))
+    def close(self):
+        try:self.sync()
+        finally:
+            self.lib.XCloseDisplay(self.display)
+            self.lib.XSetErrorHandler(self.prior_handler)
+
     def find(self,pid):
         lib=self.lib
         lib.XDefaultRootWindow.argtypes=[C.c_void_p];lib.XDefaultRootWindow.restype=C.c_ulong

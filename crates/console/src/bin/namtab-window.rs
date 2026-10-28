@@ -51,10 +51,16 @@ impl App {
         self.dirty = true;
     }
     fn take(&mut self) {
-        self.model.switch(View::Terminal);
-        self.model
-            .pause("Taking input; queued input discarded. Existing effects continue.");
-        self.command(Control::Take(self.model.selected.clone()));
+        match self.model.terminal_target() {
+            Ok(target) => {
+                self.model.selected = target.session.clone();
+                self.model.switch(View::Terminal);
+                self.model
+                    .pause("Taking selected terminal input; existing effects continue.");
+                self.command(Control::Take(target));
+            }
+            Err(e) => self.model.notice = e.into(),
+        }
     }
     fn demo(&mut self) {
         if !self.model.demo_started {
@@ -68,7 +74,7 @@ impl App {
     }
     fn key(&mut self, event: winit::event::KeyEvent, synthetic: bool) {
         native::trace::emit(
-            serde_json::json!({"event":"key_received","pressed":event.state==ElementState::Pressed,"synthetic":synthetic,"model_focused":self.model.focused,"winit_focused":self.window.as_ref().is_some_and(|w|w.has_focus()),"paused":self.model.paused,"focus_generation":self.model.fence.get()}),
+            serde_json::json!({"event":"key_received","online":self.model.online,"repeat":event.repeat,"pressed":event.state==ElementState::Pressed,"synthetic":synthetic,"model_focused":self.model.focused,"winit_focused":self.window.as_ref().is_some_and(|w|w.has_focus()),"paused":self.model.paused,"focus_generation":self.model.fence.get()}),
         );
         if !native::admissible_key(
             event.state == ElementState::Pressed,
@@ -77,15 +83,39 @@ impl App {
         ) {
             return;
         }
-        if self.mods.control_key()
-            && self.mods.shift_key()
-            && !event.repeat
-            && let PhysicalKey::Code(code) = event.physical_key
-        {
+        if self.model.cancel_confirmation.is_some() {
+            if event.logical_key == Key::Named(NamedKey::Enter) && self.mods.is_empty() {
+                if !event.repeat {
+                    match self.model.confirm_cancel() {
+                        Ok(target) => self.command(Control::Cancel(target)),
+                        Err(e) => self.model.pause(e),
+                    }
+                }
+                return;
+            }
+            self.model
+                .pause("Cancellation confirmation dismissed; no request sent.");
+            if event.logical_key == Key::Named(NamedKey::Escape) {
+                return;
+            }
+        }
+        if self.mods.control_key() && self.mods.shift_key() {
+            // Reserved UI chords, including auto-repeat, never become app bytes.
+            if event.repeat {
+                return;
+            }
+            let PhysicalKey::Code(code) = event.physical_key else {
+                return;
+            };
             match code {
                 KeyCode::Digit1 => self.model.switch(View::Work),
                 KeyCode::Digit2 => self.model.switch(View::Terminal),
                 KeyCode::KeyT => self.take(),
+                KeyCode::KeyX => {
+                    if let Err(e) = self.model.open_cancel() {
+                        self.model.notice = e.into();
+                    }
+                }
                 KeyCode::KeyL => {
                     self.model
                         .pause("Released input; existing effects continue.");
@@ -156,6 +186,21 @@ impl App {
                         }
                     }
                 }
+            }
+            return;
+        }
+        if self.model.view == View::Work && self.mods.is_empty() {
+            match event.logical_key {
+                Key::Named(NamedKey::ArrowUp) => self.model.select_work(-1, None),
+                Key::Named(NamedKey::ArrowDown) => self.model.select_work(1, None),
+                Key::Named(NamedKey::Home) => self.model.select_work(0, Some(false)),
+                Key::Named(NamedKey::End) => self.model.select_work(0, Some(true)),
+                Key::Named(NamedKey::Enter) if !event.repeat => {
+                    if let Err(e) = self.model.open_work_terminal() {
+                        self.model.notice = e.into();
+                    }
+                }
+                _ => {}
             }
             return;
         }

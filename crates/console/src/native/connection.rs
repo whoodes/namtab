@@ -270,18 +270,56 @@ fn control(
         Control::NewShell => Op::CreateSession {
             name: "native-shell".into(),
         },
-        Control::Take(session) => {
-            let s = observe(c)?
-                .sessions
-                .into_iter()
-                .find(|s| s.id == session)
-                .ok_or_else(|| std::io::Error::other("selected session unavailable"))?;
-            grant = Some(session);
+        Control::Take(target) => {
+            if c.epoch != target.epoch {
+                return Err(std::io::Error::other(
+                    "Takeover epoch changed; nothing sent",
+                ));
+            }
+            grant = Some(target.session.clone());
             Op::TakeControl {
-                session: s.id,
-                generation: s.generation,
+                session: target.session,
+                generation: target.generation,
                 force: true,
             }
+        }
+        Control::Cancel(target) => {
+            let local = super::trace::emit(
+                serde_json::json!({"event":"cancel_negotiation","attempt":target.attempt,"origin_endpoint":target.origin_endpoint,"origin_request_id":target.origin_request_id,"focus_generation":focus}),
+            );
+            let r=c.cancel_attempt_guarded(&target,|| {
+                let current=fence.valid(focus);
+                if current {super::trace::emit(serde_json::json!({"event":"cancel_dispatch","local":local,"attempt":target.attempt,"focus_generation":focus}));}
+                current
+            })?;
+            super::trace::emit(
+                serde_json::json!({"event":"cancel_result","local":local,"request_id":r.id,"ok":r.ok,"state":r.receipt.as_ref().map(|x|&x.state),"result":r.receipt.as_ref().map(|x|&x.result)}),
+            );
+            if !r.ok {
+                return Err(std::io::Error::other(r.error.unwrap_or_else(|| {
+                    "Cancellation refused/unknown; inspect, no retry".into()
+                })));
+            }
+            let summary = match r.receipt.as_ref().and_then(|x| x.result.as_ref()) {
+                Some(p::MutationResult::CancellationRequested { attempt, status }) => format!(
+                    "{} for {}. Observe exit separately; other effects may continue.",
+                    match status {
+                        p::CancelRequestStatus::Requested => "Cancellation requested",
+                        p::CancelRequestStatus::AlreadyRequested =>
+                            "Cancellation already requested",
+                        p::CancelRequestStatus::AlreadyExited => "Direct child already exited",
+                    },
+                    attempt
+                ),
+                _ => {
+                    return Err(std::io::Error::other(
+                        "Unknown cancellation result; inspect, no retry",
+                    ));
+                }
+            };
+            notify(Update::Notice(summary));
+            notify(Update::Snapshot(Box::new(observe(c)?)));
+            return Ok(());
         }
         Control::Release(session) => {
             let s = observe(c)?
@@ -639,5 +677,111 @@ mod boundary_tests {
         thread::sleep(Duration::from_millis(150));
         assert_eq!(f.input_count.load(Ordering::SeqCst), 1);
         assert!(!f.fence.valid(old));
+    }
+}
+
+#[cfg(test)]
+mod work_control_tests {
+    use super::*;
+    use project_x_client::mk1::AttemptTarget;
+    use std::{
+        io::{BufRead, BufReader, Write},
+        os::unix::net::UnixListener,
+        sync::{
+            atomic::{AtomicUsize, Ordering},
+            mpsc,
+        },
+    };
+    static ID: AtomicUsize = AtomicUsize::new(0);
+    #[test]
+    fn local_withdrawal_during_negotiation_sends_no_cancel_and_take_keeps_frozen_generation() {
+        for withdraw in [true, false] {
+            let root = Path::new(env!("CARGO_MANIFEST_DIR"))
+                .join("../../.artifacts")
+                .join(format!(
+                    "n71-{}-{}",
+                    std::process::id(),
+                    ID.fetch_add(1, Ordering::Relaxed)
+                ));
+            std::fs::create_dir_all(&root).unwrap();
+            let path = root.join("s");
+            let listener = UnixListener::bind(&path).unwrap();
+            let (entered, wait) = mpsc::channel();
+            let (release, proceed) = mpsc::channel();
+            let server = thread::spawn(move || {
+                let (mut s, _) = listener.accept().unwrap();
+                s.set_read_timeout(Some(Duration::from_secs(3))).unwrap();
+                let mut reader = BufReader::new(s.try_clone().unwrap());
+                for step in 0..2 {
+                    let mut line = String::new();
+                    reader.read_line(&mut line).unwrap();
+                    let q: p::Request = serde_json::from_str(&line).unwrap();
+                    let mut r = p::Response {
+                        id: q.id,
+                        epoch: "a".repeat(64),
+                        ok: true,
+                        error: None,
+                        receipt: None,
+                        snapshot: None,
+                        endpoint: None,
+                        resume: None,
+                    };
+                    if step == 0 {
+                        r.endpoint = Some("human".into());
+                        r.resume = Some("synthetic".into());
+                    } else if withdraw {
+                        assert!(matches!(q.operation, Op::Observe {}));
+                        entered.send(()).unwrap();
+                        proceed.recv_timeout(Duration::from_secs(3)).unwrap();
+                        r.snapshot=Some(serde_json::from_value(serde_json::json!({"version":p::VERSION,"epoch":r.epoch,"endpoint":"human","capabilities":[p::ATTEMPT_CANCEL],"endpoints":[],"tasks":[],"artifacts":[],"sessions":[],"receipts":[],"degraded":null,"attempts":[{"id":"a","task":"t","task_revision":null,"origin":{"endpoint":"agent","request_id":2},"state":"running","exit_code":null,"stdout":"","stderr":"","truncated":false}]})).unwrap());
+                    } else {
+                        assert!(
+                            matches!(q.operation,Op::TakeControl{ref session,generation:7,force:true} if session=="s1")
+                        );
+                        r.ok = false;
+                        r.error = Some("stale_generation_rejected".into());
+                    }
+                    let mut bytes = serde_json::to_vec(&r).unwrap();
+                    bytes.push(b'\n');
+                    s.write_all(&bytes).unwrap();
+                }
+                let mut rest = String::new();
+                assert_eq!(
+                    reader.read_line(&mut rest).unwrap(),
+                    0,
+                    "unexpected effect/retry"
+                );
+            });
+            let fence = Arc::new(Fence::default());
+            let f = Arc::clone(&fence);
+            let socket = path.clone();
+            let worker = thread::spawn(move || {
+                let mut c = Client::connect(&socket, "fixture", Role::Human).unwrap();
+                let action = if withdraw {
+                    Control::Cancel(AttemptTarget {
+                        epoch: c.epoch.clone(),
+                        attempt: "a".into(),
+                        origin_endpoint: "agent".into(),
+                        origin_request_id: 2,
+                    })
+                } else {
+                    Control::Take(super::super::work::TerminalTarget {
+                        epoch: c.epoch.clone(),
+                        session: "s1".into(),
+                        generation: 7,
+                    })
+                };
+                assert!(control(&mut c, action, 0, &f, &|_| {}).is_err());
+            });
+            if withdraw {
+                wait.recv_timeout(Duration::from_secs(3)).unwrap();
+                fence.advance();
+                release.send(()).unwrap();
+            }
+            worker.join().unwrap();
+            server.join().unwrap();
+            std::fs::remove_file(path).unwrap();
+            std::fs::remove_dir(root).unwrap();
+        }
     }
 }

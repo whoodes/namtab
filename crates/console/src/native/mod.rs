@@ -2,6 +2,7 @@
 pub mod connection;
 pub mod paint;
 pub mod trace;
+pub mod work;
 use project_x_client::mk1_protocol::{Intent, Snapshot};
 use std::sync::{
     Arc,
@@ -16,7 +17,8 @@ pub enum View {
 #[derive(Clone, Debug)]
 pub enum Control {
     NewShell,
-    Take(String),
+    Take(work::TerminalTarget),
+    Cancel(project_x_client::mk1::AttemptTarget),
     Release(String),
     Resize(String, u16, u16),
     Run(Vec<String>),
@@ -59,6 +61,8 @@ pub struct Model {
     pub fence: Arc<Fence>,
     pub demo_started: bool,
     pub details: bool,
+    pub work_selection: Option<work::WorkItem>,
+    pub cancel_confirmation: Option<project_x_client::mk1::AttemptTarget>,
 }
 impl Default for Model {
     fn default() -> Self {
@@ -75,6 +79,8 @@ impl Default for Model {
             fence: Arc::new(Fence::default()),
             demo_started: false,
             details: false,
+            work_selection: None,
+            cancel_confirmation: None,
         }
     }
 }
@@ -85,6 +91,11 @@ pub fn admissible_key(pressed: bool, synthetic: bool, focused: bool) -> bool {
 }
 impl Model {
     pub fn pause(&mut self, reason: &str) {
+        if let Some(target) = self.cancel_confirmation.take() {
+            trace::emit(
+                serde_json::json!({"event":"cancel_confirmation_dismissed","attempt":target.attempt,"focus_generation":self.fence.get()}),
+            );
+        }
         self.fence.advance();
         self.paused = true;
         self.notice = reason.into();
@@ -105,9 +116,13 @@ impl Model {
                 .position(|s| s.id == self.selected)
                 .map_or(0, |i| (i + 1) % s.sessions.len());
             self.selected = s.sessions[i].id.clone();
+            if self.view == View::Work {
+                self.work_selection = Some(work::WorkItem::Terminal(self.selected.clone()));
+            }
         }
     }
     pub fn update(&mut self, s: Snapshot) {
+        self.update_work(&s);
         if let Some(old) = &self.snapshot
             && old.epoch != s.epoch
         {
