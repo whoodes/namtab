@@ -45,6 +45,9 @@ def quantiles(samples):
 class ScopedPull(Adapter):
     def journey(self):
         self.record['profile']=PROFILE
+        cli=self.bin_dir/'namtab-agent'
+        self.record['executed_cli']={'path':str(cli),'sha256_before':sha256(cli)}
+        self.record['binary_hashes']['namtab-agent']=self.record['executed_cli']['sha256_before']
         sources=self.artifacts/'sources';sources.mkdir()
         for p in [Path(__file__),Path(__file__).with_name('adapter.py'),Path(__file__).with_name('native.py'),Path(__file__).parents[1]/'mk1/e2e.py']:
             with (sources/p.name).open('xb') as f:f.write(p.read_bytes())
@@ -136,6 +139,10 @@ class ScopedPull(Adapter):
             except Exception as e:status='FAIL';self.record['cleanup_error']={'type':type(e).__name__,'message':str(e)}
             self.record['source_after']=git_metadata(self.root)
             if self.record['source_after']!=self.record['source']:status='FAIL';self.record['source_changed']=True
+            if 'executed_cli' in self.record:
+                cli=self.record['executed_cli'];cli['sha256_after']=sha256(Path(cli['path']))
+                cli['unchanged']=cli['sha256_after']==cli['sha256_before']
+                if not cli['unchanged']:status='FAIL';self.record['cli_binary_changed']=True
             self.record['verdict']=status
             (self.artifacts/'checks.json').write_text(json.dumps(self.record,indent=2)+'\n')
         print(json.dumps({'verdict':status,'evidence':str(self.artifacts/'checks.json')}));return 0 if status=='PASS' else 1
