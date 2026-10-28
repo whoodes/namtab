@@ -21,6 +21,9 @@ fn cancellation_negotiates_and_fences_wrong_results_without_replay() {
         "unknown_good",
         "unknown_other",
         "error_other",
+        "nonzero_bytes",
+        "unknown_bytes",
+        "ui_stale",
     ] {
         let dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
             .join("../../.artifacts")
@@ -62,8 +65,14 @@ fn cancellation_negotiates_and_fences_wrong_results_without_replay() {
                 }
                 if step == 2 {
                     assert!(matches!(q.operation, p::Op::CancelAttempt { .. }));
-                    r.ok = !["refused", "unknown_good", "unknown_other", "error_other"]
-                        .contains(&case);
+                    r.ok = ![
+                        "refused",
+                        "unknown_good",
+                        "unknown_other",
+                        "error_other",
+                        "unknown_bytes",
+                    ]
+                    .contains(&case);
                     r.error = if r.ok {
                         None
                     } else {
@@ -93,9 +102,19 @@ fn cancellation_negotiates_and_fences_wrong_results_without_replay() {
                             }
                             .into(),
                             detail: "fixture".into(),
-                            delivered_bytes: 0,
+                            delivered_bytes: if ["nonzero_bytes", "unknown_bytes"].contains(&case) {
+                                1
+                            } else {
+                                0
+                            },
                             result: if r.ok
-                                || ["unknown_good", "unknown_other", "error_other"].contains(&case)
+                                || [
+                                    "unknown_good",
+                                    "unknown_other",
+                                    "error_other",
+                                    "unknown_bytes",
+                                ]
+                                .contains(&case)
                             {
                                 Some(p::MutationResult::CancellationRequested {
                                     attempt: if ["result_attempt", "unknown_other", "error_other"]
@@ -117,7 +136,9 @@ fn cancellation_negotiates_and_fences_wrong_results_without_replay() {
                 let mut bytes = serde_json::to_vec(&r).unwrap();
                 bytes.push(b'\n');
                 stream.write_all(&bytes).unwrap();
-                if step == 1 && ["unsupported", "stale_origin", "stale_epoch"].contains(&case) {
+                if step == 1
+                    && ["unsupported", "stale_origin", "stale_epoch", "ui_stale"].contains(&case)
+                {
                     break;
                 }
             }
@@ -136,14 +157,18 @@ fn cancellation_negotiates_and_fences_wrong_results_without_replay() {
             origin_endpoint: "agent".into(),
             origin_request_id: 2,
         };
-        let result = client.cancel_attempt(&target);
+        let result = if case == "ui_stale" {
+            client.cancel_attempt_guarded(&target, || false)
+        } else {
+            client.cancel_attempt(&target)
+        };
         match case {
             "success" => assert!(result.unwrap().ok),
             "refused" | "unknown_good" => {
                 assert!(!result.unwrap().ok);
                 assert!(!client.transport_failed());
             }
-            "unsupported" | "stale_origin" | "stale_epoch" => assert!(result.is_err()),
+            "unsupported" | "stale_origin" | "stale_epoch" | "ui_stale" => assert!(result.is_err()),
             _ => {
                 assert!(result.is_err());
                 assert!(client.transport_failed());

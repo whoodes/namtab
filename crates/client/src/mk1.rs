@@ -128,10 +128,24 @@ impl Client {
     }
     /// Negotiate and re-observe the exact target once. Never retry a lost result.
     pub fn cancel_attempt(&mut self, target: &AttemptTarget) -> io::Result<Response> {
+        self.cancel_attempt_guarded(target, || true)
+    }
+    /// A frontend may withdraw its local intent while negotiation is in flight.
+    /// This check precedes dispatch; it is not an atomic OS-focus/permission grant.
+    pub fn cancel_attempt_guarded(
+        &mut self,
+        target: &AttemptTarget,
+        current: impl FnOnce() -> bool,
+    ) -> io::Result<Response> {
         let s = self.observe_checked()?;
         if AttemptTarget::observed(&s, &target.attempt)? != *target {
             return Err(io::Error::other(
                 "cancel target changed; nothing dispatched",
+            ));
+        }
+        if !current() {
+            return Err(io::Error::other(
+                "local cancellation intent changed; nothing dispatched",
             ));
         }
         let id = self.next_id();
@@ -142,7 +156,10 @@ impl Client {
             origin_request_id: target.origin_request_id,
         })?;
         let receipt_bound = r.receipt.as_ref().is_none_or(|x| {
-            x.id == id && x.endpoint == self.endpoint && x.operation == "cancel_attempt"
+            x.id == id
+                && x.endpoint == self.endpoint
+                && x.operation == "cancel_attempt"
+                && x.delivered_bytes == 0
         });
         // Error/unknown responses carry the same immutable target binding as
         // success. They are not permission to accept an unrelated typed result.

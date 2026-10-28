@@ -16,7 +16,7 @@
 | Process | Existing unique direct-child handle/monitor; async request sets a flag, monitor polls at20ms then uses its owned kill/wait boundary. Poll interval is not a response/termination deadline; kernel wait can outlive caller timeout |
 | Unknown/recovery | Degraded or unknown attempt refuses new cancellation; no automatic logical-request replay, cancellation-flag rearm, reconnect, caller-PID or namespace fallback. Live receipt queries preserve original binding. Restart loses live operation continuity; no automatic replay or durable cancel recovery |
 
-The public client re-observes support and the immutable target before dispatch, validates receipt/result binding, and fences malformed replies with unknown effects. Capability is support, not authority. Raw protocol clients must negotiate too; unsupported old brokers refuse the unknown operation. A lost response cannot be repaired by silently issuing another cancellation.
+The public client re-observes support and the immutable target before dispatch, optionally rechecks a frontend local-intent fence after that observation, validates receipt/result binding even on error/unknown responses and requires zero delivered terminal bytes, and fences malformed replies with unknown effects. Capability is support, not authority. Raw protocol clients must negotiate too; unsupported old brokers refuse the unknown operation. A lost response cannot be repaired by silently issuing another cancellation. A local fence check is not atomic with OS focus or socket transmission: an action already dispatched may still act on its frozen exact target. No view change/takeover can undo already-started side effects.
 
 ## Typed target and authority
 

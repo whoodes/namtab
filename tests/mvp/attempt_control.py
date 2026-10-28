@@ -42,7 +42,7 @@ class AttemptControl(Adapter):
             require(peer['state']=='running' and peer['cancellation'] is None,'peer was cancelled')
             after_exit=(self.workspace/'peer-ticks').stat().st_size
             self.wait(lambda:(self.workspace/'peer-ticks').stat().st_size>after_exit+2,'peer continued AFTER observed A exit')
-            require('B_READY' not in ended['stdout'] and 'A_READY' not in peer['stdout'],'streams crossed')
+            require('B_READY' not in ended['stdout'] and 'A_READY' not in peer['stdout'] and 'A_ERR' in ended['stderr'] and 'B_TICK' not in ended['stderr'] and 'B_TICK' in peer['stderr'] and 'A_ERR' not in peer['stderr'],'stdout/stderr origins crossed')
             peer=self.wait_snapshot(lambda s:next(x for x in s['attempts'] if x['id']==bid)['truncated'],'bounded flood truncation')['attempts']
             require(all(len(x['stdout'].encode())<=65536 and len(x['stderr'].encode())<=65536 for x in peer),'projection exceeded bound')
             again=self.observer.call(target);require(again['receipt']['result']['status']=='already_exited','human exact exited target not recognized')
