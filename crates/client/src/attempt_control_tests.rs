@@ -18,6 +18,9 @@ fn cancellation_negotiates_and_fences_wrong_results_without_replay() {
         "result_attempt",
         "missing_receipt",
         "refused",
+        "unknown_good",
+        "unknown_other",
+        "error_other",
     ] {
         let dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
             .join("../../.artifacts")
@@ -59,7 +62,8 @@ fn cancellation_negotiates_and_fences_wrong_results_without_replay() {
                 }
                 if step == 2 {
                     assert!(matches!(q.operation, p::Op::CancelAttempt { .. }));
-                    r.ok = case != "refused";
+                    r.ok = !["refused", "unknown_good", "unknown_other", "error_other"]
+                        .contains(&case);
                     r.error = if r.ok {
                         None
                     } else {
@@ -80,12 +84,23 @@ fn cancellation_negotiates_and_fences_wrong_results_without_replay() {
                                 "cancel_attempt"
                             }
                             .into(),
-                            state: if r.ok { "applied" } else { "rejected" }.into(),
+                            state: if case.starts_with("unknown_") {
+                                "unknown"
+                            } else if r.ok {
+                                "applied"
+                            } else {
+                                "rejected"
+                            }
+                            .into(),
                             detail: "fixture".into(),
                             delivered_bytes: 0,
-                            result: if r.ok {
+                            result: if r.ok
+                                || ["unknown_good", "unknown_other", "error_other"].contains(&case)
+                            {
                                 Some(p::MutationResult::CancellationRequested {
-                                    attempt: if case == "result_attempt" {
+                                    attempt: if ["result_attempt", "unknown_other", "error_other"]
+                                        .contains(&case)
+                                    {
                                         "other"
                                     } else {
                                         "attempt1"
@@ -124,7 +139,7 @@ fn cancellation_negotiates_and_fences_wrong_results_without_replay() {
         let result = client.cancel_attempt(&target);
         match case {
             "success" => assert!(result.unwrap().ok),
-            "refused" => {
+            "refused" | "unknown_good" => {
                 assert!(!result.unwrap().ok);
                 assert!(!client.transport_failed());
             }

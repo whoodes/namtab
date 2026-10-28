@@ -144,7 +144,14 @@ impl Client {
         let receipt_bound = r.receipt.as_ref().is_none_or(|x| {
             x.id == id && x.endpoint == self.endpoint && x.operation == "cancel_attempt"
         });
-        let result_bound = !r.ok || r.receipt.as_ref().is_some_and(|x| x.state == "applied" && matches!(&x.result, Some(mk1::MutationResult::CancellationRequested {attempt, ..}) if attempt == &target.attempt));
+        // Error/unknown responses carry the same immutable target binding as
+        // success. They are not permission to accept an unrelated typed result.
+        let present_result_bound = r.receipt.as_ref().is_none_or(|x| x.result.as_ref().is_none_or(|result| matches!(result, mk1::MutationResult::CancellationRequested {attempt, ..} if attempt == &target.attempt)));
+        let result_bound = present_result_bound
+            && (!r.ok
+                || r.receipt
+                    .as_ref()
+                    .is_some_and(|x| x.state == "applied" && x.result.is_some()));
         if !receipt_bound
             || !result_bound
             || r.endpoint.as_ref().is_some_and(|e| e != &self.endpoint)

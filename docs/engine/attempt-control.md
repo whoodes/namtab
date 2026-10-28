@@ -14,7 +14,7 @@
 | Namespace | Existing2lifetime managed attempts,2PTYs,four live connections,15ordinary+one restricted lifecycle identity; no freed/reused capacity after cancellation |
 | Transport/storage | Existing1MiB frame,65,536-byte serialized mutation ceiling,2s client timeout,4,096retained decisions per endpoint and32MiB metadata journal. One bounded cancellation record/atomic flag per attempt, no new pending queue or durable output capture |
 | Process | Existing unique direct-child handle/monitor; async request sets a flag, monitor polls at20ms then uses its owned kill/wait boundary. Poll interval is not a response/termination deadline; kernel wait can outlive caller timeout |
-| Unknown/recovery | Degraded or unknown attempt refuses new cancellation; no automatic retry/reconnect/PID/namespace fallback. Live receipt queries preserve original binding. Restart loses live operation continuity; no automatic replay or durable cancel recovery |
+| Unknown/recovery | Degraded or unknown attempt refuses new cancellation; no automatic logical-request replay, cancellation-flag rearm, reconnect, caller-PID or namespace fallback. Live receipt queries preserve original binding. Restart loses live operation continuity; no automatic replay or durable cancel recovery |
 
 The public client re-observes support and the immutable target before dispatch, validates receipt/result binding, and fences malformed replies with unknown effects. Capability is support, not authority. Raw protocol clients must negotiate too; unsupported old brokers refuse the unknown operation. A lost response cannot be repaired by silently issuing another cancellation.
 
@@ -36,7 +36,7 @@ Wrong epoch/origin/role refuses before cancellation publication. Unknown process
 
 Tests must use fresh isolated resources: two attributed attempts, cancel A while B continues, exact side effects/streams and observed exits; wrong/stale epoch and launch origin, other-agent refusal, duplicate/conflicting IDs, already-exited/requested cases and no peer/PTY/grant change. Tests/models do not prove arbitrary OS scheduling or descendant containment. Include this real headless journey in active CI with runner failure propagation.
 
-Measure only named boundaries under recorded workload/build/hardware. One control receipt sample is not a latency distribution, fleet throughput or a production SLO. No provider/model/trust change is needed or permitted for this slice. Existing source/data/pins/history and owner sessions remain intact.
+Measure only named boundaries under recorded workload/build/hardware. One control receipt sample is not a latency distribution, fleet throughput or a production SLO. The monitor does not rearm a consumed cancellation flag. Existing `ProcessHandle::Drop` may still attempt kill/wait on the same retained direct child after an OS error or shutdown as protective cleanup; no exactly-one-signal guarantee is made. This is not permission to repeat an unknown logical request, target another process or label cleanup successful. No provider/model/trust change is needed or permitted for this slice. Existing source/data/pins/history and owner sessions remain intact.
 
 ## Reproduce and interpret
 
