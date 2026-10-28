@@ -1,6 +1,7 @@
 //! MK1 is a same-UID supervised developer host, not a sandbox or durable terminal.
 mod attempts;
 mod journal;
+mod observations;
 mod server;
 mod sessions;
 mod tasks;
@@ -277,6 +278,7 @@ impl Broker {
             error: None,
             receipt: None,
             snapshot: None,
+            observation: None,
             endpoint: None,
             resume: None,
             epoch: self.epoch.clone(),
@@ -581,6 +583,16 @@ impl Broker {
         response
     }
     pub fn request(self: &Arc<Self>, endpoint: &str, request: Request) -> Response {
+        if let Op::ObserveScoped { epoch, scope } = &request.operation {
+            return match self.scoped_observation(endpoint, epoch, scope) {
+                Ok(observation) => {
+                    let mut response = self.response(request.id);
+                    response.observation = Some(observation);
+                    response
+                }
+                Err(error) => self.fail(request.id, error),
+            };
+        }
         if let Op::Observe {} = request.operation {
             return match self.snapshot(endpoint) {
                 Ok(snapshot) => {
@@ -969,16 +981,7 @@ impl Broker {
                     connected: value.connected,
                 })
                 .collect(),
-            capabilities: [
-                wire::HUMAN_SHUTDOWN,
-                wire::ATTEMPT_CANCEL,
-                wire::SHARED_TASKS,
-                wire::ATTEMPT_ORIGIN,
-                wire::RECEIPT_RESULTS,
-            ]
-            .into_iter()
-            .map(str::to_owned)
-            .collect(),
+            capabilities: observations::capabilities(),
             tasks: state.tasks.values().cloned().collect(),
             sessions: state
                 .sessions

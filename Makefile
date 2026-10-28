@@ -85,3 +85,8 @@ mvp-status:
 .PHONY: nat1-test
 nat1-test: mk1-build
 	python3 -B tests/mvp/fleet.py --bin-dir "$(if $(CARGO_TARGET_DIR),$(CARGO_TARGET_DIR),target)/debug" --terminfo .artifacts/terminfo --artifacts .artifacts/nat1-$(shell python3 -c 'import uuid; print(uuid.uuid4().hex[:12])')
+
+# Isolated headless engine proof; scripted peers, no GUI/model/user session.
+.PHONY: scoped-test
+scoped-test: mk1-build
+	python3 -B tests/mvp/scoped_observation.py --bin-dir "$(if $(CARGO_TARGET_DIR),$(CARGO_TARGET_DIR),target)/debug" --artifacts .artifacts/scoped-$(shell python3 -c 'import uuid; print(uuid.uuid4().hex[:12])')
