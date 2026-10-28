@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import subprocess
 import select
+import re
 import time
 from adapter import Adapter
 from e2e import Connection, require, sha256
@@ -24,13 +25,16 @@ class AttemptControl(Adapter):
             ra=a.call({'op':'run','task':'shared-control','task_revision':revision,'argv':argv_a});rb=b.call({'op':'run','task':'shared-control','task_revision':revision,'argv':argv_b})
             require(ra['ok'] and rb['ok'],'attempt launch refused')
             aid=ra['receipt']['result']['attempt'];bid=rb['receipt']['result']['attempt']
-            s=self.wait_snapshot(lambda s:len(s['attempts'])==2 and all(x['stdout'] for x in s['attempts']) and (self.workspace/'peer-ticks').exists(),'two actual process streams')
+            s=self.wait_snapshot(lambda s:len(s['attempts'])==2 and any(x['id']==aid and re.search(r'A_PID=[0-9]+\n',x['stdout']) for x in s['attempts']) and any(x['id']==bid and re.search(r'B_PID=[0-9]+\n',x['stdout']) for x in s['attempts']) and (self.workspace/'peer-ticks').exists(),'two complete process marker lines')
             one=next(x for x in s['attempts'] if x['id']==aid);two=next(x for x in s['attempts'] if x['id']==bid)
             require(one['origin']['endpoint']==a.endpoint and two['origin']['endpoint']==b.endpoint and one['task_revision']==two['task_revision']==revision,'cross-attribution or task revision')
             # Output is not authority: first retain kernel-derived pidfds only
             # for descendants of our owned broker, then correlate the canaries.
             self.descendants()
-            direct={int(pid) for pid in (Path('/proc')/str(self.process.pid)/'task'/str(self.process.pid)/'children').read_text().split()}
+            direct=set()
+            for thread in (Path('/proc')/str(self.process.pid)/'task').iterdir():
+                try:direct.update(int(pid) for pid in (thread/'children').read_text().split())
+                except FileNotFoundError:pass  # A fixture connection thread can finish during observation.
             apid=int(next(line.removeprefix('A_PID=') for line in one['stdout'].splitlines() if line.startswith('A_PID=')))
             bpid=int(next(line.removeprefix('B_PID=') for line in two['stdout'].splitlines() if line.startswith('B_PID=')))
             require(apid!=bpid and {apid,bpid}<=direct and all(pid in self.owned_pidfds for pid in [apid,bpid]),'markers not matched to verified owned direct children')
