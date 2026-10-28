@@ -353,7 +353,25 @@ fn control(
             "UI context changed before dispatch; nothing retried",
         ));
     }
+    let operation_name = operation
+        .mutation_name()
+        .ok_or_else(|| std::io::Error::other("Control is not an admitted mutation"))?;
+    let request = c.next_id();
     let r = c.call(operation)?;
+    // A later snapshot is an observation, not a replacement for the response
+    // binding. Never emit a grant or apparent success from a malformed receipt.
+    let bound = r.receipt.as_ref().map_or(!r.ok, |x| {
+        x.endpoint == c.endpoint
+            && x.id == request
+            && x.operation == operation_name
+            && x.delivered_bytes == 0
+    });
+    if !bound {
+        c.close_transport();
+        return Err(std::io::Error::other(
+            "Control receipt binding unknown; connection fenced, no retry",
+        ));
+    }
     trace_receipt(&r);
     if !r.ok || r.receipt.as_ref().is_some_and(|r| r.state != "applied") {
         return Err(std::io::Error::other(r.error.unwrap_or_else(|| {
@@ -691,7 +709,7 @@ mod work_control_tests {
     static ID: AtomicUsize = AtomicUsize::new(0);
     #[test]
     fn local_withdrawal_during_negotiation_sends_no_cancel_and_take_keeps_frozen_generation() {
-        for kind in 0..4 {
+        for kind in 0..5 {
             let withdraw = kind == 0;
             let root = Path::new(env!("CARGO_MANIFEST_DIR"))
                 .join("../../.artifacts")
@@ -741,7 +759,7 @@ mod work_control_tests {
                             Op::ReleaseControl {
                                 ref session,
                                 generation: 7,
-                            } if kind == 2 => session == "s1",
+                            } if kind == 2 || kind == 4 => session == "s1",
                             Op::Resize {
                                 ref session,
                                 generation: 7,
@@ -750,8 +768,12 @@ mod work_control_tests {
                             } if kind == 3 => session == "s1",
                             _ => false,
                         });
-                        r.ok = false;
-                        r.error = Some("stale_generation_rejected".into());
+                        r.ok = kind == 4;
+                        r.error = if r.ok {
+                            None
+                        } else {
+                            Some("stale_generation_rejected".into())
+                        };
                     }
                     let mut bytes = serde_json::to_vec(&r).unwrap();
                     bytes.push(b'\n');
@@ -784,11 +806,17 @@ mod work_control_tests {
                     };
                     match kind {
                         1 => Control::Take(target),
-                        2 => Control::Release(target),
+                        2 | 4 => Control::Release(target),
                         _ => Control::Resize(target, 88, 26),
                     }
                 };
                 assert!(control(&mut c, action, 0, &f, &|_| {}).is_err());
+                if kind == 4 {
+                    assert!(
+                        c.transport_failed(),
+                        "missing mutation receipt must fence apparent success"
+                    );
+                }
             });
             if withdraw {
                 wait.recv_timeout(Duration::from_secs(3)).unwrap();

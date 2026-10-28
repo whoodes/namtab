@@ -118,7 +118,7 @@ impl App {
                 }
                 KeyCode::KeyL => {
                     self.model
-                        .pause("Released input; existing effects continue.");
+                        .pause("Release requested; local input paused. Observe the broker result.");
                     match self.model.terminal_target() {
                         Ok(target) => self.command(Control::Release(target)),
                         Err(e) => self.model.notice = e.into(),
