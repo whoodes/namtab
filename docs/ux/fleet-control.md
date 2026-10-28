@@ -2,7 +2,7 @@
 
 [E6 ownership](../adr/0006-engine-and-native-harness-workstreams.md) · [issue71](https://github.com/whoodes/namtab/issues/71) · [engine contract](../engine/attempt-control.md)
 
-**Bounded NAT1 experimental draft:** owner resumed issue71 on2026-10-28. This separate branch depends explicitly on [ENG1 PR74](https://github.com/whoodes/namtab/pull/74) at **`a900b0c42137c2b887ed32b42131c2a97f4b5f77`** and consumes `namtab.attempt-control/0` / `attempt_cancel_v0` through the shared public client. The engine head remains unchanged. No parser, process authority, provider/model loop, renderer adoption or capacity expansion is added to the harness. No merge authority or stable public API follows.
+**Implemented bounded experiment on main:** owner-approved ENG1 PR74 merged as `ef982bf4e85f98a870dc3d4945b81c319e56bab4`; NAT1 PR75 merged as `8303851028bb2e45ee40aef4b7fae050f37b56ac`. The harness consumes `namtab.attempt-control/0` / `attempt_cancel_v0` through the public client. Original reviewed engine a900b0c/native5c99 and integration db306 evidence remain distinct; no parser/process authority, model loop, final renderer, capacity increase or stable public API follows. [User guide](../users/index.md) owns basic use; this page owns detailed interaction/evidence constraints.
 
 ## Admitted presentation and resource tuple
 

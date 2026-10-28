@@ -2,7 +2,7 @@
 
 [Design index](../index.md) · [Ownership decision](../adr/0004-owned-agent-native-engine.md) · [Source ledger](research.md) · [Delivery and traceability](delivery-and-validation.md)
 
-**Direction refined 2026-10-27; research ledger retrieved 2026-10-15.** [E6](../adr/0006-engine-and-native-harness-workstreams.md) owns the engine/native-harness boundary; E5 owns retained AI-first scope. MK1 is implemented at its recorded finite boundary; proposed harness scale, model integration and broader qualification remain pending. The native feedback window is merged (PR66); MCP/lifecycle is merged (PR68 at `0856034620643a2cf55a4b9a55b48ee32311f0f1`). The owner resumed bounded ENG1/NAT1 drafts after cleanup72: ENG1 implements experimental exact-attempt cancellation; NAT1 consumes it separately. These are not stable/production or capacity qualifications.
+**Direction refined 2026-10-27; research ledger retrieved 2026-10-15.** [E6](../adr/0006-engine-and-native-harness-workstreams.md) owns the engine/native-harness boundary; E5 owns retained AI-first scope. MK1 is implemented at its recorded finite boundary; proposed harness scale, model integration and broader qualification remain pending. The native feedback window is merged (PR66); MCP/lifecycle is merged (PR68 at `0856034620643a2cf55a4b9a55b48ee32311f0f1`). Bounded ENG1 PR74 and NAT1 PR75 are merged: exact-attempt cancellation and a native attributed roster/targeted control loop are implemented. [Architecture](../architecture/index.md) and [user guide](../users/index.md) describe current operation. These are not stable/production or capacity qualifications.
 
 ## Executive decision
 

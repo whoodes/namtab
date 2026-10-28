@@ -1,6 +1,8 @@
 # E6 — Engine and native harness are separate first-class efforts
 
-**Status:** owner-chosen direction,2026-10-27; accepted for design. Owner resumed bounded ENG1/NAT1 on2026-10-28 after cleanup73. Their separately scoped experimental drafts are not stable or production-qualified APIs. This refines [E5](0005-ai-first-harness-direction.md), retaining [E4](0004-owned-agent-native-engine.md)'s ownership of semantics and the removal of Electron from active scope. One repository/workspace remains; no broad moves or new public plugin ABI.
+**Status:** owner-chosen direction,2026-10-27; accepted for design. Owner resumed bounded ENG1/NAT1 on2026-10-28 after cleanup73. Their bounded experiments merged through PR74/75; neither is a stable or production-qualified API. This refines [E5](0005-ai-first-harness-direction.md), retaining [E4](0004-owned-agent-native-engine.md)'s ownership of semantics and the removal of Electron from active scope. One repository/workspace remains; no broad moves or new public plugin ABI.
+
+Current bounded status: PR74/75 merged on2026-10-28; [architecture](../architecture/index.md) owns the actual flow and [user guide](../users/index.md) the launch path. Earlier paused/draft lineage below is dated history, not current readiness.
 
 ## Decision and actual boundary
 
@@ -11,7 +13,7 @@ Namtab has two efforts, not a backend service with an incidental UI:
 
 The broker's state is authoritative. The harness can retain selection, focus, forms, confirmation targets, presentation caches and the last observed frame; it must label stale/disconnected/unknown. It cannot turn model prose or a visible shell into an engine fact. Model turns, Namtab-mediated operations, external tools and process exit remain distinct. Native steering of an external agent requires an actually supported adapter; a literal argv box is not a model prompt.
 
-| Actual code owner at PR68's reviewed9bcb627 | Responsibility / exclusion |
+| Actual code owner (retained through merged PR74/75) | Responsibility / exclusion |
 | --- | --- |
 | `crates/terminal` | Owned finite parser/state/input/replies and worker; no grants/PTY ownership or semantic understanding of arbitrary apps |
 | `crates/service/src/mk1`, `crates/platform/src/local_process.rs` | Current supervised process handles, work/receipt/ownership authority and bounded execution; not a qualified scheduler/sandbox/recovery implementation |
@@ -26,9 +28,9 @@ Thus PR68's `LifecycleHello`/protective `Shutdown`, receipt semantics and resour
 
 Use versioned operation/profile/capability contracts plus immutable epoch/operation/target bindings, not imports of private service structures. Current private development wire is `namtab.mk1/1`; extensions must be advertised before use and fail closed when absent. A capability is support, not permission. A later public1.0 wire/SDK needs separate compatibility/migration admission; these increments do not freeze the whole MVP.
 
-ENG1 adds `namtab.attempt-control/0` / `attempt_cancel_v0` within existing limits; NAT1 consumes that public contract in a separate dependent draft. Main/status and draft qualification remain explicit. Engine tests can run without a display or harness implementation. Harness components can test projection with fixtures, but actual integration must use the engine and independently observe effects; mocks cannot qualify the runtime. New DTO fields remain additive/defaulted where possible, with explicit unsupported cases. No speculative microservices/crates or language split is introduced.
+ENG1 adds `namtab.attempt-control/0` / `attempt_cancel_v0` within existing limits; NAT1 consumes that public contract through a separate dependent increment, now merged. Current main functionality is distinct from broader qualification. Engine tests can run without a display or harness implementation. Harness components can test projection with fixtures, but actual integration must use the engine and independently observe effects; mocks cannot qualify the runtime. New DTO fields remain additive/defaulted where possible, with explicit unsupported cases. No speculative microservices/crates or language split is introduced.
 
-**Integration lineage,2026-10-28:** PR68's reviewed `9bcb627` merged into main as `0856034620643a2cf55a4b9a55b48ee32311f0f1`, preserving its tree. The direction-only prerequisite `8eaca56` and [cleanup72/PR73](https://github.com/whoodes/namtab/pull/73) were reviewed at `78e94a7`, originally targeting PR68's branch. PR73 integration retargets actual main and preserves those commits through a normal merge; its current revision/checks are in the PR. At cleanup review, the original ENG1 prototype was frozen and no NAT1 increment existed; neither was included or qualified by cleanup. The original prototype remains preserved. The owner subsequently resumed only bounded issues70/71 on2026-10-28. ENG1 implementation is on a new cleaned-baseline branch; the old prototype remains untouched. NAT1 is a separate native-harness draft pinned to ENG1 PR74/a900b0c; its local projection/navigation/confirmation code consumes only public contracts. Neither draft has merge authority. Integration uses actual final-head checks/review, not a prospective tree as evidence. This dated lineage does not freeze live GitHub PR status into a product contract.
+**Integration lineage:** PR68 merged as0856034620643a2cf55a4b9a55b48ee32311f0f1; cleanup73 established main448b0916383acde1ad3e037aaf81412ed927c417. Owner-approved PR74 then PR75 merged on2026-10-28 as ef982bf4e85f98a870dc3d4945b81c319e56bab4 and8303851028bb2e45ee40aef4b7fae050f37b56ac. Engine a900b0c and native5c99 reviewed histories remain intact; integrated db306b11 had the identical native tree. Original paused8eaca56 patch/index and user sessions were preserved. The experiments do not accept broader H0/NG1 or authorize future work.
 
 ## Two milestones and backlogs
 

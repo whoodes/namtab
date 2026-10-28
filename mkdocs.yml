@@ -1,8 +1,10 @@
 site_name: namtab
-site_description: AI-first harness direction, owned terminal design and retained engineering evidence
+site_description:
+  AI-first terminal engine, native harness, user guide and engineering
+  contracts
 site_dir: .artifacts/site
 strict: true
-copyright: "Original namtab material is Apache-2.0; upstream assets retain their terms."
+copyright: Original namtab material is Apache-2.0; upstream assets retain their terms.
 theme:
   name: mkdocs
   navigation_depth: 3
@@ -20,59 +22,55 @@ validation:
     anchors: warn
     unrecognized_links: warn
 nav:
-  - "Design guide / document owners": "index.md"
-  - "License and third-party notices": "licensing.md"
-  - "Scope and product":
-      - "Manifesto": "product/manifesto.md"
-      - "Executive engine scope": "engine/index.md"
-      - "Engine / native harness E6": "adr/0006-engine-and-native-harness-workstreams.md"
-      - "Current direction E5": "adr/0005-ai-first-harness-direction.md"
-      - "Owned semantics E4 (scope updated)": "adr/0004-owned-agent-native-engine.md"
-      - "Baseline decision register": "architecture/10-recommended-baseline-and-adrs.md"
-      - "Personas and supervision": "product/01-product-and-supervision.md"
-      - "Evidence and coordination": "product/02-work-evidence-and-coordination.md"
-  - "Human experience":
-      - "NAT1 fleet-terminal control": "ux/fleet-control.md"
-      - "Human steering and intervention": "ux/11-human-experience-spec.md"
-      - "Canonical frontend integration": "engine/frontend-contracts.md"
-      - "H0 interface / native feasibility study": "ux/h0-interface-decision.md"
-  - "Architecture contracts":
-      - "ENG1 exact-attempt control": "engine/attempt-control.md"
-      - "Native work and control": "engine/native-contract.md"
-      - "H0 harness admission / workload": "engine/h0-harness-contracts.md"
-      - "Compatibility and owned core": "engine/compatibility-and-core.md"
-      - "Runtime and terminal recovery": "engine/runtime-persistence-security.md"
-      - "Process ownership and remote modes": "architecture/03-execution-terminal-and-remote.md"
-      - "Security and approvals": "architecture/04-isolation-security-and-approvals.md"
-      - "Domain storage and extensions": "architecture/05-architecture-storage-and-extensions.md"
-  - "Delivery and engineering":
-      - "Milestones / traceability / risks": "engine/delivery-and-validation.md"
-      - "H0 criterion dispositions": "engine/h0-residual-criteria.md"
-      - "External agents / lifecycle / next fleet slice": "engineering/external-agent-mvp.md"
-      - "Native feedback window / launch": "engineering/native-mvp.md"
-      - "Reproduce delivered MK1": "engineering/mk1-quickstart.md"
-      - "MK1 scope and owner admission": "engineering/mk1-scope-and-admission.md"
-      - "Prototype entrypoint": "engineering/12-prototype-plan.md"
-      - "Acceptance catalog / G6 budgets": "engineering/07-validation-roadmap-and-risks.md"
-      - "Repository and practices": "engineering/14-repository-and-engineering-practices.md"
-      - "Dependencies and provenance policy": "engineering/15-dependencies-and-supply-chain.md"
-      - "H0 headless write experiment": "engineering/h0-headless-write-experiment.md"
-      - "Producer-consumer experiment": "engineering/producer-consumer-experiment.md"
-      - "Tests and CI lanes": "engineering/16-test-and-ci-strategy.md"
-      - "Contributor workflow": "engineering/contributing.md"
-      - "Current source ledger": "engine/research.md"
-  - "History (superseded plans, preserved results)":
-      - "Prior dual frontend / host diagnostic profile": "ux/13-dual-frontend-and-host-tui.md"
-      - "Technology comparisons": "research/06-technology-distribution-and-compatibility.md"
-      - "Prior source / decision ledger": "research/08-research-and-decisions.md"
-      - "Prior self-reviews": "reviews/09-self-review-and-coverage.md"
-      - "E1 adopted-core decision (superseded)": "adr/0001-engine-ownership-and-presentation.md"
-      - "E2 continuity rationale (mechanism superseded)": "adr/0002-terminal-continuity-and-checkpoints.md"
-      - "E3 public-policy veto (superseded path)": "adr/0003-legacy-input-public-policy.md"
-      - "Xterm risk / original failed X4": "engineering/17-xterm-adapter-risk-and-gates.md"
-      - "Foundation results": "engineering/18-foundation-gate-results.md"
-      - "BUILD / ADOPT / REDESIGN assessment": "engineering/19-engine-build-adopt-redesign-assessment.md"
-      - "Pre-EA1 organization": "engineering/20-workspace-organization.md"
-      - "EA1 worker / failed selection": "engineering/21-ea1-native-worker-results.md"
-      - "Initial local history": "engineering/22-local-history-and-validation.md"
-      - "Legacy-input investigation": "engineering/23-legacy-input-investigation.md"
+  - Start / document owners: index.md
+  - Use namtab: users/index.md
+  - Agent / developer guide: agents/index.md
+  - Architecture:
+      - Implemented engine and harness: architecture/index.md
+      - Baseline decision register: architecture/10-recommended-baseline-and-adrs.md
+      - E6 engine / native harness: adr/0006-engine-and-native-harness-workstreams.md
+      - E5 AI-first direction: adr/0005-ai-first-harness-direction.md
+      - E4 owned semantics: adr/0004-owned-agent-native-engine.md
+      - Native task / control design: engine/native-contract.md
+      - Implemented exact-attempt API: engine/attempt-control.md
+      - Compatibility / owned core design: engine/compatibility-and-core.md
+      - Runtime / recovery design: engine/runtime-persistence-security.md
+      - Client projection contract: engine/frontend-contracts.md
+      - Execution / remote profiles: architecture/03-execution-terminal-and-remote.md
+      - Security / approvals design: architecture/04-isolation-security-and-approvals.md
+      - Storage / extension design: architecture/05-architecture-storage-and-extensions.md
+  - Product and interaction reference:
+      - Manifesto: product/manifesto.md
+      - Product / supervision design: product/01-product-and-supervision.md
+      - Evidence / coordination design: product/02-work-evidence-and-coordination.md
+      - Implemented fleet controls: ux/fleet-control.md
+      - Human UX design: ux/11-human-experience-spec.md
+      - Host diagnostic constraints: ux/host-terminal-profile.md
+      - Interface feasibility / open choices: ux/h0-interface-decision.md
+  - Engineering and gates:
+      - Contributor rules: engineering/contributing.md
+      - Roadmap / traceability / risks: engine/delivery-and-validation.md
+      - H0 residual criteria: engine/h0-residual-criteria.md
+      - H0 contract / admission design: engine/h0-harness-contracts.md
+      - Repository practices: engineering/14-repository-and-engineering-practices.md
+      - Dependencies / provenance: engineering/15-dependencies-and-supply-chain.md
+      - Tests / CI: engineering/16-test-and-ci-strategy.md
+      - Validation catalog / G6 proposals: engineering/07-validation-roadmap-and-risks.md
+      - Native VM evidence: engineering/native-mvp.md
+      - External-agent adapter / lifecycle: engineering/external-agent-mvp.md
+      - Diagnostic MK1 / historical reproduction: engineering/mk1-quickstart.md
+      - MK1 scope / owner admission: engineering/mk1-scope-and-admission.md
+      - Headless write experiment: engineering/h0-headless-write-experiment.md
+      - Producer-consumer experiment: engineering/producer-consumer-experiment.md
+      - Primary source ledger: engine/research.md
+      - Executive owned-engine design: engine/index.md
+  - Retained findings (historical):
+      - E1 superseded adoption: adr/0001-engine-ownership-and-presentation.md
+      - E2 continuity rationale: adr/0002-terminal-continuity-and-checkpoints.md
+      - E3 legacy input veto: adr/0003-legacy-input-public-policy.md
+      - Xterm risk / original failed X4: engineering/17-xterm-adapter-risk-and-gates.md
+      - Foundation results: engineering/18-foundation-gate-results.md
+      - BUILD / ADOPT / REDESIGN: engineering/19-engine-build-adopt-redesign-assessment.md
+      - EA1 worker / failed selection: engineering/21-ea1-native-worker-results.md
+      - Legacy-input investigation: engineering/23-legacy-input-investigation.md
+  - License / third-party full notices: licensing.md
