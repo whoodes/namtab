@@ -15,6 +15,16 @@ from e2e import Connection, require, sha256, git_metadata
 PROFILE = 'namtab.scoped-observation/0'
 CAP = 'scoped_observe_v0'
 
+def finish_cli_provenance(record):
+    """A missing/changed owned executable must preserve a failing report."""
+    cli=record.get('executed_cli')
+    if cli is None:return True
+    try:cli['sha256_after']=sha256(Path(cli['path']))
+    except OSError as error:
+        cli['sha256_after']=None;cli['after_error']=type(error).__name__
+    cli['unchanged']=cli['sha256_after']==cli['sha256_before']
+    return cli['unchanged']
+
 class CountedReader:
     def __init__(self, reader): self.reader=reader; self.last_bytes=0
     def readline(self, limit):
@@ -62,6 +72,8 @@ class ScopedPull(Adapter):
             for client,sid in [(a,sid_a),(b,sid_b)]:
                 s=next(s for s in self.snapshot()['sessions'] if s['id']==sid)
                 require(client.call({'op':'take_control','session':sid,'generation':s['generation'],'force':False})['ok'],'initial writer claim')
+            for sid in [sid_a,sid_b]:
+                self.wait_session(sid,self.at_prompt,'owned quiet Bash startup prompt before sampling')
             task=a.call({'op':'define_task','task':'scope-shared','goal':'Synthetic attributed work only','expected_artifacts':['artifact']})
             require(task['ok'],'task definition');revision=task['receipt']['result']['revision'];ids=[]
             for client,label in [(a,'A'),(b,'B')]:
@@ -139,10 +151,8 @@ class ScopedPull(Adapter):
             except Exception as e:status='FAIL';self.record['cleanup_error']={'type':type(e).__name__,'message':str(e)}
             self.record['source_after']=git_metadata(self.root)
             if self.record['source_after']!=self.record['source']:status='FAIL';self.record['source_changed']=True
-            if 'executed_cli' in self.record:
-                cli=self.record['executed_cli'];cli['sha256_after']=sha256(Path(cli['path']))
-                cli['unchanged']=cli['sha256_after']==cli['sha256_before']
-                if not cli['unchanged']:status='FAIL';self.record['cli_binary_changed']=True
+            if not finish_cli_provenance(self.record):
+                status='FAIL';self.record['cli_binary_changed_or_unavailable']=True
             self.record['verdict']=status
             (self.artifacts/'checks.json').write_text(json.dumps(self.record,indent=2)+'\n')
         print(json.dumps({'verdict':status,'evidence':str(self.artifacts/'checks.json')}));return 0 if status=='PASS' else 1
