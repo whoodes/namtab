@@ -965,6 +965,8 @@ mod tests {
             sessions: vec![],
             attempts: vec![
                 p::Attempt {
+                    cancellation: None,
+                    exit_signal: None,
                     origin: None,
                     task_revision: None,
                     id: "attempt1".into(),
@@ -976,6 +978,8 @@ mod tests {
                     truncated: false,
                 },
                 p::Attempt {
+                    cancellation: None,
+                    exit_signal: None,
                     origin: None,
                     task_revision: None,
                     id: "attempt2".into(),

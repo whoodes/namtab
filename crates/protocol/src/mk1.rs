@@ -7,6 +7,8 @@ pub const MAX_ID: u64 = 9_007_199_254_740_991;
 /// Additive MK1/1 extensions; clients must observe support before using them.
 pub const SHARED_TASKS: &str = "shared_tasks_v1";
 pub const ATTEMPT_ORIGIN: &str = "attempt_origin_v1";
+pub const ATTEMPT_CANCEL: &str = "attempt_cancel_v0";
+pub const ATTEMPT_CONTROL_PROFILE: &str = "namtab.attempt-control/0";
 pub const HUMAN_SHUTDOWN: &str = "human_shutdown_v1";
 pub const RECEIPT_RESULTS: &str = "receipt_results_v1";
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
@@ -48,6 +50,12 @@ pub enum Op {
     LifecycleHello {},
     Observe {},
     Shutdown {},
+    CancelAttempt {
+        epoch: String,
+        attempt: String,
+        origin_endpoint: String,
+        origin_request_id: u64,
+    },
     CreateSession {
         name: String,
     },
@@ -130,6 +138,27 @@ pub struct Session {
     pub screen: Screen,
 }
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum CancellationState {
+    Requested,
+    ExitObserved,
+    Unknown,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum CancelRequestStatus {
+    Requested,
+    AlreadyRequested,
+    AlreadyExited,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+pub struct AttemptCancellation {
+    pub requested_by: String,
+    pub request_id: u64,
+    /// Requested or observed exit/unknown; never a promise that all effects stopped.
+    pub status: CancellationState,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Attempt {
     pub id: String,
     pub task: String,
@@ -144,6 +173,10 @@ pub struct Attempt {
     pub stdout: String,
     pub stderr: String,
     pub truncated: bool,
+    #[serde(default)]
+    pub cancellation: Option<AttemptCancellation>,
+    #[serde(default)]
+    pub exit_signal: Option<i32>,
 }
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct AttemptOrigin {
@@ -180,8 +213,17 @@ pub struct Receipt {
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum MutationResult {
-    TaskDefined { task: String, revision: String },
-    AttemptStarted { attempt: String },
+    TaskDefined {
+        task: String,
+        revision: String,
+    },
+    AttemptStarted {
+        attempt: String,
+    },
+    CancellationRequested {
+        attempt: String,
+        status: CancelRequestStatus,
+    },
 }
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct EndpointView {
@@ -225,6 +267,7 @@ impl Op {
             | Self::Observe {}
             | Self::Receipt { .. } => return None,
             Self::Shutdown {} => "shutdown",
+            Self::CancelAttempt { .. } => "cancel_attempt",
             Self::CreateSession { .. } => "create_session",
             Self::TakeControl { .. } => "take_control",
             Self::ReleaseControl { .. } => "release_control",
@@ -287,6 +330,20 @@ pub fn decode(bytes: &[u8]) -> Result<Request, &'static str> {
         return Err("request_id");
     }
     match &request.operation {
+        Op::CancelAttempt {
+            epoch,
+            attempt,
+            origin_endpoint,
+            origin_request_id,
+        } if epoch.len() != 64
+            || !epoch.bytes().all(|b| b.is_ascii_hexdigit())
+            || !label(attempt)
+            || !label(origin_endpoint)
+            || *origin_request_id == 0
+            || *origin_request_id > MAX_ID =>
+        {
+            return Err("cancel_target");
+        }
         Op::Hello {
             label: l, resume, ..
         } if !label(l) || resume.as_ref().is_some_and(|s| s.len() > 128) => return Err("hello"),
@@ -475,5 +532,38 @@ mod tests {
         assert!(snapshot.attempts[0].origin.is_none());
         assert!(snapshot.attempts[0].task_revision.is_none());
         assert!(snapshot.receipts[0].result.is_none());
+    }
+}
+
+#[cfg(test)]
+mod cancel_contract_tests {
+    use super::*;
+    #[test]
+    fn cancel_wire_is_exact_bounded_and_rejects_extra_authority() {
+        let operation = serde_json::json!({"op":"cancel_attempt","epoch":"a".repeat(64),"attempt":"attempt1","origin_endpoint":"e1","origin_request_id":2});
+        let check = |op: serde_json::Value| {
+            decode(
+                &serde_json::to_vec(&serde_json::json!({"version":VERSION,"id":4,"operation":op}))
+                    .unwrap(),
+            )
+        };
+        assert!(check(operation.clone()).is_ok());
+        for (field, value) in [
+            ("epoch", serde_json::json!("bad")),
+            ("attempt", serde_json::json!("x".repeat(81))),
+            ("origin_endpoint", serde_json::json!("")),
+            ("origin_request_id", serde_json::json!(0)),
+            ("origin_request_id", serde_json::json!(MAX_ID + 1)),
+            ("pid", serde_json::json!(42)),
+        ] {
+            let mut bad = operation.clone();
+            bad[field] = value;
+            assert!(check(bad).is_err(), "{field}");
+        }
+        let mut bad = operation.clone();
+        bad.as_object_mut().unwrap().remove("origin_endpoint");
+        assert!(check(bad).is_err());
+        assert!(serde_json::from_str::<CancellationState>("\"unknown\"").is_ok());
+        assert!(serde_json::from_str::<CancellationState>("\"complete\"").is_err());
     }
 }

@@ -179,6 +179,7 @@ struct LiveAttempt {
     stdout_eof: bool,
     stderr_eof: bool,
     exited: bool,
+    cancel: Arc<AtomicBool>,
 }
 struct State {
     endpoints: BTreeMap<String, Endpoint>,
@@ -718,6 +719,19 @@ impl Broker {
         operation: &Op,
     ) -> Result<(String, usize, String), String> {
         match operation {
+            Op::CancelAttempt {
+                epoch,
+                attempt,
+                origin_endpoint,
+                origin_request_id,
+            } => self.cancel_attempt(
+                endpoint,
+                request_id,
+                epoch,
+                attempt,
+                origin_endpoint,
+                *origin_request_id,
+            ),
             Op::CreateSession { name } => self.create_session(name),
             Op::DefineTask {
                 task,
@@ -957,6 +971,7 @@ impl Broker {
                 .collect(),
             capabilities: [
                 wire::HUMAN_SHUTDOWN,
+                wire::ATTEMPT_CANCEL,
                 wire::SHARED_TASKS,
                 wire::ATTEMPT_ORIGIN,
                 wire::RECEIPT_RESULTS,

@@ -5,6 +5,38 @@ use std::os::unix::net::UnixStream;
 use std::path::Path;
 use std::time::Duration;
 
+/// Immutable cancellation confirmation target. Not a process handle or a grant.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct AttemptTarget {
+    pub epoch: String,
+    pub attempt: String,
+    pub origin_endpoint: String,
+    pub origin_request_id: u64,
+}
+impl AttemptTarget {
+    pub fn observed(s: &mk1::Snapshot, id: &str) -> io::Result<Self> {
+        if !s.capabilities.iter().any(|c| c == mk1::ATTEMPT_CANCEL) {
+            return Err(io::Error::other(
+                "attempt_cancel_v0 unsupported; nothing dispatched",
+            ));
+        }
+        let a = s
+            .attempts
+            .iter()
+            .find(|a| a.id == id)
+            .ok_or_else(|| io::Error::other("selected attempt unavailable"))?;
+        let origin = a
+            .origin
+            .as_ref()
+            .ok_or_else(|| io::Error::other("attempt launch origin unknown"))?;
+        Ok(Self {
+            epoch: s.epoch.clone(),
+            attempt: a.id.clone(),
+            origin_endpoint: origin.endpoint.clone(),
+            origin_request_id: origin.request_id,
+        })
+    }
+}
 pub struct Client {
     reader: BufReader<UnixStream>,
     writer: UnixStream,
@@ -93,6 +125,36 @@ impl Client {
             .snapshot
             .ok_or_else(|| io::Error::other("missing snapshot"))?;
         Ok(s)
+    }
+    /// Negotiate and re-observe the exact target once. Never retry a lost result.
+    pub fn cancel_attempt(&mut self, target: &AttemptTarget) -> io::Result<Response> {
+        let s = self.observe_checked()?;
+        if AttemptTarget::observed(&s, &target.attempt)? != *target {
+            return Err(io::Error::other(
+                "cancel target changed; nothing dispatched",
+            ));
+        }
+        let id = self.next_id();
+        let r = self.call(Op::CancelAttempt {
+            epoch: target.epoch.clone(),
+            attempt: target.attempt.clone(),
+            origin_endpoint: target.origin_endpoint.clone(),
+            origin_request_id: target.origin_request_id,
+        })?;
+        let receipt_bound = r.receipt.as_ref().is_none_or(|x| {
+            x.id == id && x.endpoint == self.endpoint && x.operation == "cancel_attempt"
+        });
+        let result_bound = !r.ok || r.receipt.as_ref().is_some_and(|x| x.state == "applied" && matches!(&x.result, Some(mk1::MutationResult::CancellationRequested {attempt, ..}) if attempt == &target.attempt));
+        if !receipt_bound
+            || !result_bound
+            || r.endpoint.as_ref().is_some_and(|e| e != &self.endpoint)
+        {
+            self.close_transport();
+            return Err(io::Error::other(
+                "cancel response binding mismatch; effects unknown; no retry",
+            ));
+        }
+        Ok(r)
     }
     pub fn next_id(&self) -> u64 {
         self.next
