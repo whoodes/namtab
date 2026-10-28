@@ -140,7 +140,7 @@ The retired desktop’s small synthetic key normalizer survives only in `tests/a
 
 ## Alignment cleanup and deliberate debt
 
-[Issue72](https://github.com/whoodes/namtab/issues/72) pauses deeper ENG1/NAT1 feature work. This cleanup was reviewed on PR68 and integrated after its merge; main includes both the PR66 native window and the bounded MCP/lifecycle increment. Cleanup completion does not resume ENG1/NAT1. E6 is the single owner of current source/module responsibilities and stack status. This page owns engineering practices and the cleanup inventory; the roadmap owns outcome gates, the native/MCP guides own reproducible usage and empirical limits. Historical ADRs/results are retained rationale, not active implementation instructions. `project-x-*`, `mk1` paths and wire names remain intentional compatibility names, not a rename backlog.
+[Issue72](https://github.com/whoodes/namtab/issues/72) completed cleanup before deeper feature work. This cleanup was reviewed on PR68 and integrated after its merge; main includes both the PR66 native window and the bounded MCP/lifecycle increment. The owner later resumed only bounded issues70/71; that separate scope does not expand product qualification. E6 is the single owner of current source/module responsibilities and stack status. This page owns engineering practices and the cleanup inventory; the roadmap owns outcome gates, the native/MCP guides own reproducible usage and empirical limits. Historical ADRs/results are retained rationale, not active implementation instructions. `project-x-*`, `mk1` paths and wire names remain intentional compatibility names, not a rename backlog.
 
 | Concrete risk / cleanup | Measurable acceptance | Deliberate residual |
 | --- | --- | --- |

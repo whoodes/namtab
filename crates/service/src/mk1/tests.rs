@@ -1592,3 +1592,272 @@ fn previously_reserved_claim_cannot_regrant_after_shutdown_linearizes() {
             .is_none()
     );
 }
+
+#[test]
+fn cancel_is_exact_authorized_deduplicated_and_not_completion() {
+    let mut h = Harness::new();
+    let agent = h.agent.clone();
+    let human = h.human.clone();
+    assert!(
+        h.request(
+            &agent,
+            Op::Run {
+                task: "owner".into(),
+                task_revision: None,
+                argv: vec!["/bin/sleep".into(), "20".into()]
+            }
+        )
+        .ok
+    );
+    assert!(
+        h.human(Op::Run {
+            task: "peer".into(),
+            task_revision: None,
+            argv: vec!["/bin/sleep".into(), "20".into()]
+        })
+        .ok
+    );
+    let snap = h.broker.snapshot(&human).unwrap();
+    let a = snap.attempts.iter().find(|a| a.task == "owner").unwrap();
+    let b = snap.attempts.iter().find(|a| a.task == "peer").unwrap();
+    let operation = |a: &Attempt| {
+        let o = a.origin.as_ref().unwrap();
+        Op::CancelAttempt {
+            epoch: snap.epoch.clone(),
+            attempt: a.id.clone(),
+            origin_endpoint: o.endpoint.clone(),
+            origin_request_id: o.request_id,
+        }
+    };
+    assert!(!h.request(&agent, operation(b)).ok);
+    let mut bad = operation(a);
+    if let Op::CancelAttempt { epoch, .. } = &mut bad {
+        *epoch = "b".repeat(64);
+    }
+    assert!(!h.human(bad).ok);
+    let mut bad = operation(a);
+    if let Op::CancelAttempt {
+        origin_request_id, ..
+    } = &mut bad
+    {
+        *origin_request_id += 99;
+    }
+    assert!(!h.human(bad).ok);
+    assert!(
+        h.broker
+            .snapshot(&human)
+            .unwrap()
+            .attempts
+            .iter()
+            .all(|a| a.cancellation.is_none())
+    );
+    let id = h.next;
+    let first = h.request(&agent, operation(a));
+    assert!(first.ok);
+    let receipt = first.receipt.unwrap();
+    assert!(matches!(
+        receipt.result,
+        Some(MutationResult::CancellationRequested {
+            status: wire::CancelRequestStatus::Requested,
+            ..
+        })
+    ));
+    let duplicate = h.broker.request(
+        &agent,
+        Request {
+            version: wire::VERSION.into(),
+            id,
+            operation: operation(a),
+        },
+    );
+    assert_eq!(duplicate.receipt.as_ref(), Some(&receipt));
+    let conflict = h.broker.request(
+        &agent,
+        Request {
+            version: wire::VERSION.into(),
+            id,
+            operation: operation(b),
+        },
+    );
+    assert!(!conflict.ok);
+    let exited = h.wait(|s| {
+        s.attempts
+            .iter()
+            .any(|x| x.id == a.id && x.state == "exited")
+    });
+    let seen = exited.attempts.iter().find(|x| x.id == a.id).unwrap();
+    assert_eq!(seen.exit_signal, Some(9));
+    let c = seen.cancellation.as_ref().unwrap();
+    assert_eq!(c.status, wire::CancellationState::ExitObserved);
+    assert_eq!(c.request_id, id);
+    assert_eq!(c.requested_by, agent);
+    assert_eq!(
+        exited.attempts.iter().find(|x| x.id == b.id).unwrap().state,
+        "running"
+    );
+    let again = h.human(operation(a));
+    assert!(matches!(
+        again.receipt.unwrap().result,
+        Some(MutationResult::CancellationRequested {
+            status: wire::CancelRequestStatus::AlreadyExited,
+            ..
+        })
+    ));
+    assert_eq!(
+        h.broker
+            .snapshot(&human)
+            .unwrap()
+            .attempts
+            .iter()
+            .find(|x| x.id == a.id)
+            .unwrap()
+            .cancellation
+            .as_ref(),
+        Some(c)
+    );
+}
+
+#[test]
+fn cancellation_unknown_or_degraded_never_publishes_another_signal() {
+    let mut h = Harness::new();
+    let human = h.human.clone();
+    assert!(
+        h.human(Op::Run {
+            task: "unknown".into(),
+            task_revision: None,
+            argv: vec!["/bin/sleep".into(), "20".into()]
+        })
+        .ok
+    );
+    let snap = h.broker.snapshot(&human).unwrap();
+    let a = &snap.attempts[0];
+    let o = a.origin.as_ref().unwrap();
+    let op = Op::CancelAttempt {
+        epoch: snap.epoch,
+        attempt: a.id.clone(),
+        origin_endpoint: o.endpoint.clone(),
+        origin_request_id: o.request_id,
+    };
+    h.broker
+        .state
+        .lock()
+        .unwrap()
+        .attempts
+        .get_mut(&a.id)
+        .unwrap()
+        .view
+        .state = "unknown".into();
+    assert!(!h.human(op.clone()).ok);
+    assert!(
+        !h.broker.state.lock().unwrap().attempts[&a.id]
+            .cancel
+            .load(Ordering::SeqCst)
+    );
+    h.broker.state.lock().unwrap().degraded = Some("injected".into());
+    assert!(!h.human(op).ok);
+    assert!(
+        !h.broker.state.lock().unwrap().attempts[&a.id]
+            .cancel
+            .load(Ordering::SeqCst)
+    );
+}
+
+#[test]
+fn cancel_completion_persistence_failure_keeps_uncertainty_and_first_origin() {
+    let mut h = Harness::new();
+    let human = h.human.clone();
+    assert!(
+        h.human(Op::Run {
+            task: "journal-gap".into(),
+            task_revision: None,
+            argv: vec!["/bin/sleep".into(), "20".into()]
+        })
+        .ok
+    );
+    let snap = h.broker.snapshot(&human).unwrap();
+    let a = &snap.attempts[0];
+    let origin = a.origin.as_ref().unwrap();
+    let id = h.next;
+    let q = Request {
+        version: wire::VERSION.into(),
+        id,
+        operation: Op::CancelAttempt {
+            epoch: snap.epoch,
+            attempt: a.id.clone(),
+            origin_endpoint: origin.endpoint.clone(),
+            origin_request_id: origin.request_id,
+        },
+    };
+    assert!(h.broker.reserve(&human, &q).unwrap().is_none());
+    let outcome = h.broker.apply(&human, id, &q.operation);
+    assert!(outcome.is_ok());
+    h.broker.state.lock().unwrap().journal.exhaust_for_test();
+    let r = h.broker.finish(&human, id, outcome);
+    assert!(!r.ok);
+    assert_eq!(r.receipt.unwrap().state, "unknown");
+    let after = h.wait(|s| s.attempts[0].state == "exited");
+    let c = after.attempts[0].cancellation.as_ref().unwrap();
+    assert_eq!(c.requested_by, human);
+    assert_eq!(c.request_id, id);
+    assert_eq!(c.status, wire::CancellationState::ExitObserved);
+    // Observation may prove direct-child exit even though the durable request
+    // outcome remains unknown. It does not repair or relabel that receipt.
+    let queried = h.broker.request(
+        &human,
+        Request {
+            version: wire::VERSION.into(),
+            id: id + 1,
+            operation: Op::Receipt { request_id: id },
+        },
+    );
+    assert_eq!(queried.receipt.unwrap().state, "unknown");
+}
+
+#[test]
+fn pending_cancel_coalesces_and_never_rearms_consumed_flag() {
+    let mut h = Harness::new();
+    let human = h.human.clone();
+    // An inert metadata fixture represents the monitor not yet acknowledging
+    // a request. It is not evidence of a running OS process.
+    let view:Attempt=serde_json::from_value(serde_json::json!({"id":"fixture-pending","task":"fixture","origin":{"endpoint":human,"request_id":7},"task_revision":null,"state":"running","exit_code":null,"stdout":"","stderr":"","truncated":false})).unwrap();
+    let flag = Arc::new(AtomicBool::new(false));
+    h.broker.state.lock().unwrap().attempts.insert(
+        view.id.clone(),
+        LiveAttempt {
+            view,
+            stdout: vec![],
+            stderr: vec![],
+            stdout_eof: false,
+            stderr_eof: false,
+            exited: false,
+            cancel: Arc::clone(&flag),
+        },
+    );
+    let op = Op::CancelAttempt {
+        epoch: h.broker.epoch.clone(),
+        attempt: "fixture-pending".into(),
+        origin_endpoint: human,
+        origin_request_id: 7,
+    };
+    let first = h.human(op.clone());
+    assert!(first.ok);
+    let id = first.id;
+    assert!(flag.swap(false, Ordering::AcqRel));
+    let repeated = h.human(op);
+    assert!(matches!(
+        repeated.receipt.unwrap().result,
+        Some(MutationResult::CancellationRequested {
+            status: wire::CancelRequestStatus::AlreadyRequested,
+            ..
+        })
+    ));
+    assert!(!flag.load(Ordering::Acquire));
+    assert_eq!(
+        h.broker.snapshot(&h.human).unwrap().attempts[0]
+            .cancellation
+            .as_ref()
+            .unwrap()
+            .request_id,
+        id
+    );
+}

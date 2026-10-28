@@ -2,7 +2,7 @@
 
 [E6 ownership](../adr/0006-engine-and-native-harness-workstreams.md) · [issue71](https://github.com/whoodes/namtab/issues/71) · [engine contract](../engine/attempt-control.md)
 
-**Proposed scope, paused for cleanup; not implemented:** consume the reviewed ENG1 contract in a separate native harness branch/PR, explicitly stacked on ENG1 and PR68. No new parser, execution/policy authority, model/provider loop, renderer adoption or capacity expansion. Existing native X11/font/IME/a11y limits remain.
+**Owner-resumed NAT1 scope, not implemented in this ENG1 branch:** consume the reviewed ENG1 contract in a separate native harness branch/PR, explicitly stacked on ENG1 and PR68. No new parser, execution/policy authority, model/provider loop, renderer adoption or capacity expansion. Existing native X11/font/IME/a11y limits remain.
 
 ## Useful two-client loop
 

@@ -172,6 +172,18 @@ const steps = [
     ],
   ],
   [
+    "mvp-attempt-control",
+    "python3",
+    [
+      "-B",
+      "tests/mvp/attempt_control.py",
+      "--bin-dir",
+      binaryDirectory,
+      "--artifacts",
+      realRun + "-cancel",
+    ],
+  ],
+  [
     "h0-real-single-write-handoff",
     binaryDirectory + "/namtab-h0-probe",
     [

@@ -38,3 +38,5 @@ mod tests {
         assert!(c.observe(6));
     }
 }
+#[cfg(test)]
+mod attempt_control_tests;

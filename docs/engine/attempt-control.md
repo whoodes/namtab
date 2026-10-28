@@ -2,7 +2,21 @@
 
 [E6 ownership](../adr/0006-engine-and-native-harness-workstreams.md) · [issue70](https://github.com/whoodes/namtab/issues/70) · [native harness consumer](../ux/fleet-control.md)
 
-**Proposed experimental contract, paused/unimplemented in this branch:** `namtab.attempt-control/0`, capability `attempt_cancel_v0`, on the existing experimental MK1/1 wire. This is a design for issue70, not resource/schema admission, a stable public API, full H0 or a capacity claim. A partial untested ENG1 prototype is preserved separately; cleanup72 does not include it. Its PR68/9bcb627 prerequisite merged at `0856034620643a2cf55a4b9a55b48ee32311f0f1`; this feature remains paused and unimplemented here. Cleanup integration does not authorize its resumption.
+**ENG1 bounded experimental implementation:** owner resumed issue70 on2026-10-28 after merged cleanup73/main `448b091`. `namtab.attempt-control/0` / capability `attempt_cancel_v0` extends the experimental MK1/1 wire; it is not a stable API, full H0 or fleet-capacity admission. The original partial patch/index is retained unchanged in its old worktree; this implementation uses the cleaned baseline in a separate branch. NAT1 is a separate consumer draft. No merge or next-scope authority follows.
+
+## Admitted tuple and resources
+
+| Boundary | ENG1 limit / explicit refusal |
+| --- | --- |
+| Host / dependencies | Existing Ubuntu22.04x86_64/Rust1.91.0, unchanged Cargo/pnpm/tool pins; no new library, provider or isolation profile |
+| Wire | `namtab.mk1/1`, advertised `attempt_cancel_v0`, profile `namtab.attempt-control/0`; shared Rust public operation/receipt DTOs, not generated N0 wire or worker RPC |
+| Target | Exact64hex epoch, attempt/origin identifiers bounded to80bytes, positive safe-integer launch request ID; unknown/extra authority fields refused by strict decoder |
+| Namespace | Existing2lifetime managed attempts,2PTYs,four live connections,15ordinary+one restricted lifecycle identity; no freed/reused capacity after cancellation |
+| Transport/storage | Existing1MiB frame,65,536-byte serialized mutation ceiling,2s client timeout,4,096retained decisions per endpoint and32MiB metadata journal. One bounded cancellation record/atomic flag per attempt, no new pending queue or durable output capture |
+| Process | Existing unique direct-child handle/monitor; async request sets a flag, monitor polls at20ms then uses its owned kill/wait boundary. Poll interval is not a response/termination deadline; kernel wait can outlive caller timeout |
+| Unknown/recovery | Degraded or unknown attempt refuses new cancellation; no automatic logical-request replay, cancellation-flag rearm, reconnect, caller-PID or namespace fallback. Live receipt queries preserve original binding. Restart loses live operation continuity; no automatic replay or durable cancel recovery |
+
+The public client re-observes support and the immutable target before dispatch, optionally rechecks a frontend local-intent fence after that observation, validates receipt/result binding even on error/unknown responses and requires zero delivered terminal bytes, and fences malformed replies with unknown effects. Capability is support, not authority. Raw protocol clients must negotiate too; unsupported old brokers refuse the unknown operation. A lost response cannot be repaired by silently issuing another cancellation. A local fence check is not atomic with OS focus or socket transmission: an action already dispatched may still act on its frozen exact target. No view change/takeover can undo already-started side effects.
 
 ## Typed target and authority
 
@@ -22,4 +36,16 @@ Wrong epoch/origin/role refuses before cancellation publication. Unknown process
 
 Tests must use fresh isolated resources: two attributed attempts, cancel A while B continues, exact side effects/streams and observed exits; wrong/stale epoch and launch origin, other-agent refusal, duplicate/conflicting IDs, already-exited/requested cases and no peer/PTY/grant change. Tests/models do not prove arbitrary OS scheduling or descendant containment. Include this real headless journey in active CI with runner failure propagation.
 
-Measure only named boundaries under recorded workload/build/hardware. One control receipt sample is not a latency distribution, fleet throughput or a production SLO. No provider/model/trust change is needed or permitted for this slice. Existing source/data/pins/history and owner sessions remain intact.
+Measure only named boundaries under recorded workload/build/hardware. One control receipt sample is not a latency distribution, fleet throughput or a production SLO. The monitor does not rearm a consumed cancellation flag. Existing `ProcessHandle::Drop` may still attempt kill/wait on the same retained direct child after an OS error or shutdown as protective cleanup; no exactly-one-signal guarantee is made. This is not permission to repeat an unknown logical request, target another process or label cleanup successful. No provider/model/trust change is needed or permitted for this slice. Existing source/data/pins/history and owner sessions remain intact.
+
+## Reproduce and interpret
+
+```sh
+make mvp-build
+python3 -B tests/mvp/attempt_control.py --bin-dir target/debug --artifacts .artifacts/eng1-feedback-001
+make foundation-verify
+```
+
+Use a fresh artifact path each time. The isolated fixture starts its own broker and two **scripted** public agents with a shared exact task revision. It checks malformed/stale/other-owner targets, duplicate/conflicting request IDs, A's kernel pidfd exit independently of broker status, B's continued writes **after** that observation and independently retained live pidfd, bounded noisy stdout and B's natural exit. PID canaries are only correlated against kernel-derived children of the fixture-owned broker and retained pidfds; they never authorize numeric-PID signalling. Pidfd readiness proves exit, not its code/signal/cause; those status fields remain broker facts. It does not attach/discover user sessions or invoke a model. The aggregate discovers the real journey and tests failure propagation. Unit/fake-peer cases cover unsupported capability, stale observations, receipt misbinding, unknown/degraded refusal and completion-journal failure; injected metadata faults are not real disk/OS crash qualification.
+
+The receipt is a bounded command-registration fact; the snapshot's cancellation origin remains the first requester even after later human observations/repeated requests. A completion-persistence failure can leave the receipt unknown while later live observation proves direct-child exit. Neither fact implies task acceptance, all output drained, all descendants stopped, durable recovery or fleet scalability. Existing X4/EA1 FAIL and native focus/IME/a11y limits remain unchanged. Any timing value in the fixture is a named local sample, not an achieved p50/p95/p99 budget.
