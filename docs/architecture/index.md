@@ -17,7 +17,8 @@ native harness / diagnostic TUI       external agent / CLI
                           input/replies
 
 program output -> platform -> broker -> worker -> broker -> observations
-client intent -> broker -> worker encoding -> broker -> platform -> program
+terminal input intent -> broker -> worker encoding -> broker -> platform -> program
+task/run/cancel -> broker admission/receipts -> task/attempt/process owner
 worker reply  -> broker's restricted reply route -> platform -> program
               (clients/worker never own managed PTY handles)
 ```
