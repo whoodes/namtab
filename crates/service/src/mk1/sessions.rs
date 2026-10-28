@@ -264,9 +264,11 @@ impl Broker {
                 },
             );
             drop(state);
+            let life = ChildActive::new(&self.active_children);
             let broker = Arc::clone(self);
             let reader_id = id.clone();
             std::thread::spawn(move || {
+                let _life = life;
                 broker.pty_reader(reader_id, process.reader, process.process)
             });
             Ok((

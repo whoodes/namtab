@@ -8,6 +8,8 @@ An AI-first execution and coordination harness around a custom owned terminal en
 
 [Public documentation](https://whoodes.github.io/namtab/) · [Diagnostic TUI and historical MK1 instructions](docs/engineering/mk1-quickstart.md): `make mk1-build`, then `make mk1-daemon` and `make mk1-tui` in separate terminals. The removed Electron client requires the pinned historical revision, not this checkout. No model or external service is needed.
 
+The next bounded [external-agent/lifecycle increment](docs/engineering/external-agent-mvp.md) exposes real public operations through MCP and explicit epoch-bound stop, while preserving the engine/fleet-terminal goal. Protocol/native fixtures exercise real processes; the approved live Codex test reached tool discovery but its task call was blocked by client approval policy. Model-directed Namtab execution is not yet validated; there is no automatic provider launch or permission setup.
+
 The current [direction decision](docs/adr/0005-ai-first-harness-direction.md) prioritizes shared work contracts, coordination, efficient observations and responsive control for dozens of agents. That scale and actual model integration are not implemented or measured. Emulator presentation/renderer and the exact load workload remain open; no standalone-window or 32-client requirement is adopted.
 
 ## Architecture

@@ -34,6 +34,7 @@ if ((process.env.VERIFY_TEST_FAILURE === "check" && bin === "cargo" && args[0] =
     (process.env.VERIFY_TEST_FAILURE === "journey" && args.includes("tests/mk1/e2e.py")) ||
     (process.env.VERIFY_TEST_FAILURE === "h0" && bin === "namtab-h0-probe") ||
     (process.env.VERIFY_TEST_FAILURE === "comparison" && args.includes("tests/h0/compare-model.mjs")) ||
+    (process.env.VERIFY_TEST_FAILURE === "mcp" && args.includes("tests/mvp/adapter.py")) ||
     (process.env.VERIFY_TEST_FAILURE === "flow" && args.includes("tests/h0/flow.py")) ||
     (process.env.VERIFY_TEST_FAILURE === "version" && bin === "rustc")) process.exitCode = 1;
 `;
@@ -209,4 +210,17 @@ test("headless runtime and independent comparison failures fail the active lane"
       "PASS",
     );
   }
+});
+
+test("MCP lifecycle failure fails the active lane without skipping other checks", () => {
+  const { result, report } = verify(["--source-foundation"], "mcp");
+  assert.equal(result.status, 1, result.stderr);
+  assert.equal(
+    report.checks.find((c) => c.name === "mvp-mcp-lifecycle").verdict,
+    "FAIL",
+  );
+  assert.equal(
+    report.checks.find((c) => c.name === "strict-mkdocs").verdict,
+    "PASS",
+  );
 });

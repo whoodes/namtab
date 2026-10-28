@@ -56,8 +56,16 @@ pub fn serve(config: Config) -> Result<(), Box<dyn std::error::Error>> {
     let broker = Broker::new(config, Path::new(&journal))?;
     let _stop = StopGuard(Arc::clone(&broker));
     let connections = Arc::new(AtomicUsize::new(0));
-    for stream in listener.incoming() {
-        let stream = stream?;
+    listener.set_nonblocking(true)?;
+    while !broker.stopping.load(Ordering::SeqCst) {
+        let stream = match listener.accept() {
+            Ok((stream, _)) => stream,
+            Err(e) if e.kind() == io::ErrorKind::WouldBlock => {
+                std::thread::sleep(Duration::from_millis(10));
+                continue;
+            }
+            Err(e) => return Err(e.into()),
+        };
         if platform::peer_uid(&stream)? != platform::effective_uid()
             || connections
                 .fetch_update(Ordering::AcqRel, Ordering::Acquire, |n| {
@@ -75,6 +83,15 @@ pub fn serve(config: Config) -> Result<(), Box<dyn std::error::Error>> {
             connections.fetch_sub(1, Ordering::AcqRel);
         });
     }
+    // Stop admission first. Drain admitted effects before stopping their worker.
+    // Kernel wait may block; a caller timeout is uncertainty, never PID-kill permission.
+    while broker.active_mutations.load(Ordering::SeqCst) != 0 {
+        std::thread::sleep(Duration::from_millis(10));
+    }
+    broker.shutdown();
+    while broker.active_children.load(Ordering::SeqCst) != 0 {
+        std::thread::sleep(Duration::from_millis(10));
+    }
     Ok(())
 }
 pub(super) fn connection(mut stream: UnixStream, broker: Arc<Broker>) {
@@ -86,11 +103,20 @@ pub(super) fn connection(mut stream: UnixStream, broker: Arc<Broker>) {
     let mut reader = BufReader::new(read);
     let mut endpoint: Option<String> = None;
     while let Ok(Some(frame)) = worker::line(&mut reader, wire::MAX_FRAME) {
+        let mut accepted_shutdown = false;
         let response = match wire::decode(&frame) {
             Err(error) => broker.fail(0, error),
             Ok(request) => {
                 if let Some(endpoint) = &endpoint {
-                    broker.request(endpoint, request)
+                    let stopping = matches!(request.operation, Op::Shutdown {});
+                    let id = request.id;
+                    let r = broker.request(endpoint, request);
+                    accepted_shutdown = stopping && broker.owns_shutdown(endpoint, id);
+                    r
+                } else if matches!(request.operation, Op::LifecycleHello {}) {
+                    let (response, bound) = broker.lifecycle_hello(request.id);
+                    endpoint = bound;
+                    response
                 } else if let Op::Hello { role, resume, .. } = request.operation {
                     let (response, bound) = broker.hello(request.id, role, resume);
                     endpoint = bound;
@@ -107,7 +133,14 @@ pub(super) fn connection(mut stream: UnixStream, broker: Arc<Broker>) {
             break;
         }
         bytes.push(b'\n');
-        if stream.write_all(&bytes).is_err() {
+        let written = stream.write_all(&bytes);
+        // Only the shutdown result writer transitions the listener into cleanup;
+        // an ACK lost here does not cancel the already requested stop.
+        if accepted_shutdown {
+            broker.stopping.store(true, Ordering::SeqCst);
+            break;
+        }
+        if written.is_err() {
             break;
         }
     }

@@ -28,6 +28,7 @@ impl Broker {
             argv[0].clone().into(),
             argv[1..].iter().map(OsString::from).collect(),
         );
+        let life = ChildActive::new(&self.active_children);
         let process = platform::launch_managed(&spec).map_err(|_| "managed_exec_failed");
         let mut state = self.state.lock().unwrap();
         state.reserved_attempts -= 1;
@@ -120,6 +121,7 @@ impl Broker {
         }
         let broker = Arc::clone(self);
         std::thread::spawn(move || {
+            let _life = life;
             let mut process = process.process;
             loop {
                 if broker.stopping.load(Ordering::Acquire) {

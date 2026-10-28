@@ -1,3 +1,5 @@
+**Current increment note:** the separately admitted [MCP/lifecycle profile](external-agent-mvp.md) adds explicit status/stop for new runs and reserves one of16identities (15ordinary + one restricted lifecycle). Original MK1/PR66 admission/results below retain their dated scope. No live-model or fleet qualification follows.
+
 # Try MK1 locally
 
 **Retired app cleanup, 2026-10-20 ([issue61](https://github.com/whoodes/namtab/issues/61)).** Current checkout retains `make mk1-build`, `make mk1-daemon`, `make mk1-tui` and `make mk1-agent`. The Electron app/launcher/workspace/dedicated tests are removed. All Electron commands and UI instructions below are historical: use the intact [pre-cleanup source at eb7bbb2](https://github.com/whoodes/namtab/tree/eb7bbb2ddcecac646bcf4f8a45eac13d8af57bf0), in a separate checkout, with that revision’s reviewed artifact requirements. No existing local runtime, cache or live session is removed or stopped by source cleanup. Historical X4/EA1 findings and required license records are unchanged.

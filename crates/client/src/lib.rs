@@ -1,5 +1,6 @@
-//! Browser-equivalent contract decoding; IPC/subscriptions are unimplemented.
+//! Experimental public clients and contract decoding; no model loop or generic subscriptions.
 pub use project_x_protocol::{Context, Intent, Key};
+pub mod mcp;
 pub mod mk1;
 pub use project_x_protocol::mk1 as mk1_protocol;
 pub fn validate_request(bytes: &[u8]) -> bool {

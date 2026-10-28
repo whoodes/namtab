@@ -7,6 +7,7 @@ pub const MAX_ID: u64 = 9_007_199_254_740_991;
 /// Additive MK1/1 extensions; clients must observe support before using them.
 pub const SHARED_TASKS: &str = "shared_tasks_v1";
 pub const ATTEMPT_ORIGIN: &str = "attempt_origin_v1";
+pub const HUMAN_SHUTDOWN: &str = "human_shutdown_v1";
 pub const RECEIPT_RESULTS: &str = "receipt_results_v1";
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
@@ -44,7 +45,9 @@ pub enum Op {
         role: Role,
         resume: Option<String>,
     },
+    LifecycleHello {},
     Observe {},
+    Shutdown {},
     CreateSession {
         name: String,
     },
@@ -217,7 +220,11 @@ pub struct Response {
 impl Op {
     pub fn mutation_name(&self) -> Option<&'static str> {
         Some(match self {
-            Self::Hello { .. } | Self::Observe {} | Self::Receipt { .. } => return None,
+            Self::Hello { .. }
+            | Self::LifecycleHello {}
+            | Self::Observe {}
+            | Self::Receipt { .. } => return None,
+            Self::Shutdown {} => "shutdown",
             Self::CreateSession { .. } => "create_session",
             Self::TakeControl { .. } => "take_control",
             Self::ReleaseControl { .. } => "release_control",

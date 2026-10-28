@@ -12,6 +12,8 @@
 4. [H0 admission/workload](engine/h0-harness-contracts.md), [criterion dispositions](engine/h0-residual-criteria.md) and [interface decision analysis](ux/h0-interface-decision.md): concrete recommendations and owner decisions, not implementation. [Delivery](engine/delivery-and-validation.md) owns the H0–H2 roadmap, traceability and risks.
 5. For engineering preparation, read [repository practices](engineering/14-repository-and-engineering-practices.md), [dependency inventory](engineering/15-dependencies-and-supply-chain.md), [CI strategy](engineering/16-test-and-ci-strategy.md) and [contributor workflow](engineering/contributing.md).
 
+The [external-agent/lifecycle increment](engineering/external-agent-mvp.md) owns the new bounded bridge/control profile, blocked live-model evidence and proposed next fleet-terminal slice. It does not replace the native contract or earn broader H0 admission.
+
 ## Documentation ownership
 
 Each row has one authoritative owner. Other pages summarize and link rather than redefine its contract. A scope conflict requires updating the owner and its traceability entry together; a later date alone does not make a paragraph authoritative.

@@ -1,3 +1,5 @@
+**Current increment note:** the separately admitted [MCP/lifecycle profile](external-agent-mvp.md) adds explicit status/stop for new runs and reserves one of16identities (15ordinary + one restricted lifecycle). Original MK1/PR66 admission/results below retain their dated scope. No live-model or fleet qualification follows.
+
 # MK1: first hands-on prototype
 
 **Scope update — [E5](../adr/0005-ai-first-harness-direction.md), 2026-10-19.** This is the preserved MK1 admission/delivery record. MK1 merged in PR44 at ff15a18b81c78ebcc539d521ec6ca00ebcd14b69 and stopped for feedback. Its delegated merge authority ended; it is not authority for current implementation or merging.
