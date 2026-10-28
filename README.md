@@ -12,7 +12,7 @@ The merged [external-agent/lifecycle increment](docs/engineering/external-agent-
 
 The current [direction decision](docs/adr/0005-ai-first-harness-direction.md) prioritizes shared work contracts, coordination, efficient observations and responsive control for dozens of agents. That scale and actual model integration are not implemented or measured. Emulator presentation/renderer and the exact load workload remain open; no standalone-window or 32-client requirement is adopted.
 
-The [E6 workstream boundary](docs/adr/0006-engine-and-native-harness-workstreams.md) separates authoritative engine work from native harness UX. [Engine ENG1](https://github.com/whoodes/namtab/milestone/9) targets exact-attempt control; [Native harness NAT1](https://github.com/whoodes/namtab/milestone/10) targets the corresponding fleet-terminal interaction. These are proposed feature scopes, paused pending owner direction after [alignment/maintainability cleanup72](https://github.com/whoodes/namtab/issues/72); no feature PR, qualified implementation or capacity increase is implied.
+The [E6 workstream boundary](docs/adr/0006-engine-and-native-harness-workstreams.md) separates authoritative engine work from native harness UX. [Engine ENG1](https://github.com/whoodes/namtab/milestone/9) targets exact-attempt control; [Native harness NAT1](https://github.com/whoodes/namtab/milestone/10) targets the corresponding fleet-terminal interaction. The owner resumed bounded ENG1/NAT1 drafts after [cleanup72](https://github.com/whoodes/namtab/issues/72). This engine draft adds the [experimental exact-attempt contract](docs/engine/attempt-control.md); NAT1 remains a separate dependent UI increment. No stable API, merged qualification or capacity increase is implied.
 
 ## Architecture
 

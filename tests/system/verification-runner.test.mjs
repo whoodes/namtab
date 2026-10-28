@@ -42,6 +42,7 @@ if ((process.env.VERIFY_TEST_FAILURE === "check" && bin === "cargo" && args[0] =
     (process.env.VERIFY_TEST_FAILURE === "h0" && bin === "namtab-h0-probe") ||
     (process.env.VERIFY_TEST_FAILURE === "comparison" && args.includes("tests/h0/compare-model.mjs")) ||
     (process.env.VERIFY_TEST_FAILURE === "mcp" && args.includes("tests/mvp/adapter.py")) ||
+    (process.env.VERIFY_TEST_FAILURE === "cancel" && args.includes("tests/mvp/attempt_control.py")) ||
     (process.env.VERIFY_TEST_FAILURE === "flow" && args.includes("tests/h0/flow.py")) ||
     (process.env.VERIFY_TEST_FAILURE === "version" && bin === "rustc")) process.exitCode = 1;
 `;
@@ -240,5 +241,18 @@ test("source changes during checks fail verification without concealing passing 
   assert.notEqual(
     report.source_identity.before.tracked_diff_sha256,
     report.source_identity.after.tracked_diff_sha256,
+  );
+});
+
+test("failed exact-attempt control journey fails the aggregate without hiding other checks", () => {
+  const { result, report } = verify(["--source-foundation"], "cancel");
+  assert.equal(result.status, 1, result.stderr);
+  assert.equal(
+    report.checks.find((c) => c.name === "mvp-attempt-control").verdict,
+    "FAIL",
+  );
+  assert.equal(
+    report.checks.find((c) => c.name === "strict-mkdocs").verdict,
+    "PASS",
   );
 });
