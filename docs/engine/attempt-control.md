@@ -2,7 +2,7 @@
 
 [E6 ownership](../adr/0006-engine-and-native-harness-workstreams.md) · [issue70](https://github.com/whoodes/namtab/issues/70) · [native harness consumer](../ux/fleet-control.md)
 
-**Proposed experimental contract, paused/unimplemented in this branch:** `namtab.attempt-control/0`, capability `attempt_cancel_v0`, on the existing experimental MK1/1 wire. This is a design for issue70, not resource/schema admission, a stable public API, full H0 or a capacity claim. A partial untested ENG1 prototype is preserved separately; cleanup72 does not include it. Depends on unmerged PR68/9bcb627; no merge is authorized.
+**Proposed experimental contract, paused/unimplemented in this branch:** `namtab.attempt-control/0`, capability `attempt_cancel_v0`, on the existing experimental MK1/1 wire. This is a design for issue70, not resource/schema admission, a stable public API, full H0 or a capacity claim. A partial untested ENG1 prototype is preserved separately; cleanup72 does not include it. Its PR68/9bcb627 prerequisite merged at `0856034620643a2cf55a4b9a55b48ee32311f0f1`; this feature remains paused and unimplemented here. Cleanup integration does not authorize its resumption.
 
 ## Typed target and authority
 
