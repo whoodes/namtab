@@ -11,14 +11,15 @@ native harness / diagnostic TUI       external agent / CLI
                               |
                      service / broker
             admission, receipts, attribution, ownership
-                   /                       \
-       platform process/PTY handles       metadata journal
-                   |
-          owned terminal worker
-       parser + canonical state/input/replies
-                   |
-      projections returned through the broker
-          (clients never open managed PTYs)
+                /             |              \
+       platform handles   terminal worker   metadata journal
+       PTYs/pipes/Child    parser/state/
+                          input/replies
+
+program output -> platform -> broker -> worker -> broker -> observations
+client intent -> broker -> worker encoding -> broker -> platform -> program
+worker reply  -> broker's restricted reply route -> platform -> program
+              (clients/worker never own managed PTY handles)
 ```
 
 ## Engine

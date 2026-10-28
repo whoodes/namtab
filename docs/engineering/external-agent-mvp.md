@@ -33,23 +33,13 @@ Only calls actually sent through this bridge are mediated and attributed. An age
 
 The native Work view renders broker facts, not model reasoning/turn status. Its chrome now says **model turns not tracked**, covering both scripted and external clients without pretending to detect a model. Literal argv entry remains a command form, not agent steering. A conversational fleet portal is still work to do.
 
-For a **fresh, explicitly chosen, nonsecret** run:
-
-```sh
-make mvp
-python3 -B scripts/mvp.py agent-config --run .artifacts/mvp-PRINTED_ID
-```
-
-`agent-config` prints a supported one-process Codex MCP configuration and **starts nothing**. It does not install a server, read auth stores, change persistent configuration or authorize a provider. The human must approve the chosen provider/workspace/tool exposure first. Basic terminal use requires no model account. Optional Codex uses existing CLI-managed authentication; Namtab never reads/copies it. Other MCP clients need their own actual interop validation.
+The [user agent-configuration guide](../users/index.md#agent-configuration) owns the current command and provider/workspace/tool-consent steps. Configuration printing starts nothing, reads no auth store and creates no persistent permission. Basic terminal use needs no model account; other MCP clients require actual interop evidence.
 
 ## Detach, status and explicit stop
 
 New launches record the broker epoch in their own small `launch.json`; no resume credential is persisted. Window close still detaches. These commands need no display and never discover sockets or accept a PID:
 
-```sh
-make mvp-status RUN=.artifacts/mvp-PRINTED_ID
-make mvp-stop RUN=.artifacts/mvp-PRINTED_ID
-```
+The [user lifecycle guide](../users/index.md#close-attach-status-and-stop) owns exact status/stop commands for the printed run path.
 
 Status uses the restricted lifecycle identity repeatedly rather than consuming ordinary endpoints. Stop verifies the recorded epoch, checks `human_shutdown_v1`, and requests a protective authority decrease. This is a same-UID **declared human lifecycle purpose**, not proof of a physical human. That endpoint cannot run commands, create/claim terminals or input bytes; it cannot resume work identities. An agent endpoint cannot request shutdown. One lifecycle connection at a time and the unchanged four-live-connection cap still apply; a full connection budget can refuse it. Close an explicitly owned client connection rather than guessing/killing a process.
 

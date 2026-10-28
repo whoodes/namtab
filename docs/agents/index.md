@@ -16,7 +16,8 @@ Namtab has two first-class efforts: an AI-first terminal **engine** and a native
 | Location | Responsibility |
 | --- | --- |
 | `crates/terminal` | Owned finite parser/state/logical input/terminal replies and private worker; [implemented limits](https://github.com/whoodes/namtab/blob/main/crates/terminal/README.md) |
-| `crates/protocol`, `schemas/`, generated bindings | Experimental public operations, observations and receipts; update source schema and generated outputs together |
+| `crates/protocol/src/mk1.rs` | Actual experimental MK1/1 Rust/serde operations, snapshots, capabilities and receipts |
+| `schemas/`, generated bindings | Larger proposed N0/native DTO shape contracts, distinct from actual MK1 runtime wire; update their source schemas and generated outputs together |
 | `crates/domain` | Pure identity/receipt/domain models; not an OS dispatcher |
 | `crates/platform` | Owned PTY/process handle and write boundary; not renderer policy |
 | `crates/service` | Broker admission, execution/attribution, writer generations, attempts, lifecycle and metadata journal |

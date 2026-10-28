@@ -42,6 +42,8 @@ Select **TERMINAL**, choose **Take input** (Ctrl+Shift+T), type `echo hello`, th
 
 Ctrl+Shift UI chords stay separate from application input. Focus/view/selection changes pause terminal input and discard unsent intent; they cannot undo already-dispatched effects. The [fleet control reference](../ux/fleet-control.md) owns detailed fences and actual evidence. [Native evidence](../engineering/native-mvp.md) records synthetic-key/focus/stall qualification limits.
 
+**Concrete current UI limits:** rendering is the bounded Latin-1 feasibility path, not full Unicode shaping. Native IME and system clipboard/paste integration, terminal scrollback/search and application mouse navigation are not implemented. Shell history keys are application input and are distinct from terminal scrollback. Use synthetic/simple text for feedback; do not assume arbitrary editors or languages are supported.
+
 ## Agent configuration
 
 Namtab does not automatically choose a provider, read auth stores, accept folder trust or start a model. For an explicitly chosen nonsecret run:

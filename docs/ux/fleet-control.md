@@ -26,25 +26,7 @@ Retain2PTY/2attempt/four-connection bounds and disclose lifetime slot exhaustion
 
 ## Launch and actual validation
 
-From a normally prepared source checkout (`make bootstrap docs-install install`, existing Rust toolchain), use:
-
-```sh
-make mvp
-```
-
-This builds and opens a **fresh** owned native run. Take input explicitly; closing detaches. The launcher prints its run directory and exact attach path. Status/stop use `python3 -B scripts/mvp.py status --run /absolute/printed/run` and `stop --run /absolute/printed/run`; older user daemons are never retroactively controlled. Literal argv is not an AI prompt; SCRIPTED DEMO is not a model.
-
-| Interaction | Meaning |
-| --- | --- |
-| Ctrl+Shift+1 / 2 | Work / canonical Terminal view; change pauses input and dismisses confirmation |
-| Work Up/Down, Home/End | Select attempt, terminal or immutable task by identity; no application key bytes |
-| Work Enter | Open selected terminal paused; an attempt does not imply a terminal |
-| Ctrl+Shift+Tab | Cycle terminals; input remains paused; Work selection follows an explicit terminal cycle |
-| Ctrl+Shift+T | Take only the selected terminal with frozen observed epoch/generation; release/resize use that same selected tuple, never a hidden last-opened terminal; backend remains final authority |
-| Ctrl+Shift+X, then plain Enter once | Confirm one frozen attempt/origin cancellation; receipt is request, exit observed separately |
-| Escape, selection/view/resize/focus change | Dismiss cancellation; no hidden retarget or queued replay |
-| Ctrl+Shift+E | Show selected task/attempt revision; one stream detail, not every agent's output |
-| Ctrl+Shift+C | Explicit same-epoch live-owner reconnect; input/cancel intent not replayed |
+The [user guide](../users/index.md) owns prerequisites, launch, current keymap and exact attach/status/stop commands. This page owns target/fence semantics and actual test evidence; it does not duplicate the basic workflow table. SCRIPTED DEMO is not a model, and RUN ARGV is a literal command form.
 
 Reserved Ctrl+Shift UI chords, including repeat, never become application input. Ordinary terminal key repeat remains application input only while focused/armed/owned. A confirmation is consumed before enqueue. The connector rechecks the local fence **after** blocking target/capability observation; the engine validates the immutable target/role. A UI fence is not atomic with OS focus/socket dispatch: an already-dispatched action can still take effect on its exact target. Takeover does not stop unrelated commands or all side effects.
 

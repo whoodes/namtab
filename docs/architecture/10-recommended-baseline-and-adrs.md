@@ -30,7 +30,22 @@ Rootless Podman/offline restricted profiles remain design recommendations. Curre
 
 ## ADR-A6 — Capture and retention defaults
 
-Current ordinary output is bounded live memory with capture off; receipt metadata is journaled. Test evidence is separately retained synthetic capture. Output capture consent, recovery retention, metadata minimization and model/export permission are distinct; protected prompts cannot be made secret-safe by a no-capture label. Planned policy-scoped objects and complete snapshots remain unimplemented. [Persistence/privacy owner](../engine/runtime-persistence-security.md#complete-snapshots-and-journal-cuts), [security](04-isolation-security-and-approvals.md).
+The current MK1 capture-off bounded metadata journal is not the proposed managed storage/retention service below. These defaults remain **proposals**, retained here because storage/evidence contracts cite them; no new capture, expiry, storage quota or credential integration is implemented by this document.
+
+**Recommended; policy enforcement pending N3/N4.** Privacy expectations for an ordinary terminal outweigh the convenience of automatic disk transcripts. This supersedes the earlier filtered-by-default ordinary capture policy.
+
+| Data class | Recommended initial default | Limit / implication |
+| --- | --- | --- |
+| Ordinary terminal output/screens | Live bounded memory only; no persistent transcript or raw snapshot | Live quotas are owned by [G6](../engineering/07-validation-roadmap-and-risks.md#performance-and-resource-budgets); memory is not secret-proof |
+| Opt-in filtered session/managed output | Seven days after explicit session/workspace capture consent | 256 MiB rolling per session, 8 GiB shared transcript cap; transformations/gaps labeled |
+| Raw validation evidence/screens | Explicit per-run permission; 24-hour default | A review pin can extend to 30 days with reserved space; never silently renew |
+| Artifact review copies | 30 days by default, 8 GiB artifact-store budget | Owned worktrees/user files are not automatically removed by this policy |
+| Decision/action metadata | 180 days by default, subject to deletion policy; initial 512 MiB logical store budget plus 64 MiB emergency storage reserve | No routine input values, command secrets, or hidden output; evidence can expire earlier; WAL/backup/compaction overhead measured separately |
+| Search/export/crash data | Same or shorter authority/retention than input; uploads off | No unfiltered snapshot, index, core dump, or RPC trace bypass |
+
+Control metadata capacity also constrains new admissions: an unavailable required retention reservation blocks new work or requires an explicit retention change, rather than silently purging promised audit records. The reserve is not a guarantee that failing hardware can persist an emergency action. Managed reservations and pins count against the same transcript budget; if retention cannot be honored, reject admission or ask for a concrete retention change. Ordinary output can roll only under its selected policy. Evidence expiry means unavailable/unauditable, not failed or retroactively successful validation. Shortening retention explains affected review packets. Existing recordings are never made raw by a later default change.
+
+Use private store permissions and recommend OS disk encryption; do not add home-grown application encryption/key recovery to the first release. This does not protect a live compromised account. Credential storage uses an OS credential service when available, otherwise explicit memory-only entry; never a portable plaintext token fallback. Exact credential-service integration remains a port-specific gate. Consent to output capture is separate from model/context export.
 
 ## ADR-A7 — APIs, adapters, and portable configuration
 
