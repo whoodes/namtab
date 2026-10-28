@@ -122,4 +122,4 @@ The [current RE risk register and open decisions](../engine/delivery-and-validat
 
 ## Exit from documentation to engineering
 
-The [prototype entrypoint](12-prototype-plan.md) routes to the same N/NG plan. Only separately authorized bounded engineering may earn those gates. Original X4/EA1 source and FAIL results remain historical counterexamples; passing foundation, documentation or preservation checks cannot certify the owned engine.
+The [current roadmap](../engine/delivery-and-validation.md) owns ordered gates; the old prototype router is removed. Only separately authorized bounded engineering may earn those gates. Original X4/EA1 source and FAIL results remain historical counterexamples; passing foundation, documentation or preservation checks cannot certify the owned engine.

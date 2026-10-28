@@ -1,12 +1,12 @@
 # Native hands-on MVP increment
 
-**NAT1 additive draft:** [fleet-control](../ux/fleet-control.md) owns the new roster/navigation, frozen takeover and cancellation-confirmation controls plus supported `make nat1-test` path. It explicitly depends on frozen ENG1 PR74/a900b0c. The earlier native evidence and limits below remain provenance; NAT1 does not choose the final renderer or validate a model.
+**Current source:** bounded ENG1/NAT1 PR74/75 are merged. [User guide](../users/index.md) owns launch/common workflows; [fleet-control](../ux/fleet-control.md) owns roster/frozen-target/confirmation details. This page retains native feasibility evidence and limitations; it does not select a final renderer or validate a model.
 
 The subsequent [external-agent/lifecycle increment](external-agent-mvp.md) adds MCP tools, explicit headless status/stop and one reserved lifecycle identity within the same16total. Its15ordinary+1restricted namespace supersedes ordinary identity admission in new brokers only. The original PR66 results below remain dated evidence, not live-model proof.
 
 ## Experimental admission
 
-The 2026-10-27 owner authorization admits one runnable feedback increment, its isolated tests and reviewed draft PR, **not merge**, a final renderer or full H0/H1/H2 acceptance. Based on main `dcd0c69246b8cddccd1daddfc239dd29625beb81` and the [native-window study](../ux/h0-interface-decision.md#bounded-native-stack-study-2026-10-20), this deliberately reduces graphical scope to a useful native Work/Terminal window. The diagnostic host TUI remains available; Electron stays removed.
+**Original PR66 admission (historical):** the 2026-10-27 owner authorization admitted one runnable feedback increment, its isolated tests and reviewed draft PR. Merge was separately approved later; it did **not** admit a final renderer or full H0/H1/H2 acceptance. Based on main `dcd0c69246b8cddccd1daddfc239dd29625beb81` and the [native-window study](../ux/h0-interface-decision.md#bounded-native-stack-study-2026-10-20), this deliberately reduces graphical scope to a useful native Work/Terminal window. The diagnostic host TUI remains available; Electron stays removed.
 
 - **Native tuple:** Rust1.91.0/Linux x86_64, winit=0.30.13 (`default-features=false`, `x11,rwh_06`), softbuffer=0.4.8 (`default-features=false`, `x11,x11-dlopen`), fontdue=0.9.3 (`default-features=false`). Public window/input/software-surface/rasterization APIs only, no private patch. CPU drawing avoids GPU/toolchain closure in this small increment; it is not a selection against the studied wgpu/COSMIC Text/AccessKit composition for a later product. No system packages, graphics/security settings or credentials are changed.
 - **Text/profile:** system `/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf` read at runtime, not copied/distributed. Fixed Latin-1 monochrome canonical lines, cursor and trusted chrome; unsupported glyphs shown explicitly. No shaping/reflow, terminal SGR colors, clipboard/selection, IME, screen-reader/accessibility tree, Wayland/macOS/Windows or full TUI fidelity claim. IME disabled rather than duplicate ambiguous committed input. Existing owned engine encodes application input and generates replies; the window is never a parser/reply authority.
@@ -22,31 +22,13 @@ Official sources checked 2026-10-27: [winit0.30.13 manifest/API](https://github.
 
 The bounded native window now has real VM journey evidence, described below. Broader H0 decisions remain open independently of this admitted narrow slice.
 
-```sh
-make mvp
-```
+The [user guide](../users/index.md#launch-and-run-a-command) owns current prerequisites, build/launch and exact run-path attach/status/stop commands. This evidence was exercised on actual X11, not a headless substitute. The launcher creates a fresh namespace, never discovers/restarts older user runs, and window close detaches.
 
-Run from the repository root with the [development prerequisites](https://github.com/whoodes/namtab#development) and an accessible X11 `DISPLAY`, the existing X11/libxkbcommon runtime libraries, and the named system font. `make mvp-build` builds the same-lock native binaries without installing system packages. Missing display/font/library or surface initialization is a real unsupported-environment error, not a headless substitute. This VM exercised an actual native window on its existing display. Headless hosted CI compiles/tests this code but does not validate a GUI.
-
-The launcher prints a fresh project-local `.artifacts/mvp-<id>/` workspace, broker PID, diagnostics and exact attach command. It never attaches to a discovered socket, replaces an existing directory, restarts an old broker or kills user work. A collision fails without changing the prior namespace. Closing the window **detaches**: broker, shell and managed work may continue. To open the same live namespace again, use its printed path:
-
-```sh
-python3 -B scripts/mvp.py attach --run .artifacts/mvp-PRINTED_ID
-```
-
-This creates a new human endpoint; existing ownership must be explicitly taken again. **Ctrl+Shift+C** inside a still-running window instead resumes that window's live endpoint/token/request counter, which exist only in memory. An expired/broken binding never falls back to a new identity or replays input. The sole retry is a HELLO that received the exact known-zero `endpoint_already_connected` refusal while the previous connection closes, within a 250ms retry window (each socket operation retains its separate timeout). This does not promise process/crash/durable recovery. Captureoff still retains bounded live observations and receipt metadata, not a secret-safe environment.
+Attach creates a new human endpoint; existing ownership must be explicitly taken again. **Ctrl+Shift+C** inside a still-running window instead resumes that window's live endpoint/token/request counter, which exist only in memory. An expired/broken binding never falls back to a new identity or replays input. The sole retry is a HELLO that received the exact known-zero `endpoint_already_connected` refusal while the previous connection closes, within a 250ms retry window (each socket operation retains its separate timeout). This does not promise process/crash/durable recovery. Captureoff still retains bounded live observations and receipt metadata, not a secret-safe environment.
 
 ### Try the interaction
 
-| Action | Interaction / honest result |
-| --- | --- |
-| Inspect work / terminal | Click **WORK** / **TERMINAL**, or Ctrl+Shift+1 /2. Work shows actual attempt exits, origins, stream previews and observed files; it does not invent agent reasoning. |
-| Use a real shell | Select Terminal, **Take input** (Ctrl+Shift+T), type `echo hello`, Enter. Arrows/history, Tab, common navigation/function keys and Ctrl+C use the broker's mode-aware encoder. Ctrl+C need not terminate a program. |
-| Pause / hand off | Focus/view/session/resize changes pause input. Ctrl+Shift+L releases ownership; Ctrl+Shift+Tab cycles sessions. Take input confirms current ownership before arming. Already submitted work/side effects continue. |
-| Scripted agent proof | In a **fresh** launch, click **SCRIPTED DEMO** or Ctrl+Shift+D once. Two actual protocol clients bind one immutable task contract and start separate attributed managed attempts. A scripted endpoint owns the second shell; select it and Take input. The helper verifies its stale write is refused. No model runs. |
-| Inspect exact evidence | Ctrl+Shift+E expands task/file revision detail. File observation is not correctness or sealed producer causality. The second managed attempt is independent, not a dependency consumer; the separate [producer→consumer experiment](producer-consumer-experiment.md) proves that narrower contract. |
-| Run one literal command | Ctrl+Shift+A or **RUN ARGV**, enter `["/usr/bin/printf","hello"]`, Enter once; Escape cancels. This directly executes argv, not an agent prompt and not implicit shell syntax. Enter auto-repeat does not resubmit. Two lifetime attempt slots are shared with the demo, so consuming either first can prevent the demo. Refusal is explicit, not an automatic fresh namespace. |
-| Resize / reconnect | Window resizing pauses input but does not mutate canonical PTY dimensions automatically. Ctrl+Shift+R explicitly requests bounded geometry, then Take input. Ctrl+Shift+C explicitly attempts live endpoint resume; no queued suffix replay. |
+The [user workflow/control table](../users/index.md#common-workflows-and-controls) is canonical for current interaction. RUN ARGV is literal JSON argv; SCRIPTED DEMO is not a model, nor a producer→consumer dependency proof. That narrower contract remains in the separate [experiment](producer-consumer-experiment.md).
 
 Application keys are only routed in the focused, owned, known Terminal view. Ctrl+Shift shortcuts are reserved UI commands. Unknown initial focus, unsupported keys, stale context, mailbox exhaustion, refused/partial/unknown delivery and disconnect fail closed. Winit's synthesized held-key presses on focus restoration are rejected **before UI shortcuts, the argv form and application input**. This is not physical-key attestation: X11 input is spoofable by same-UID peers. The finite profile has no clipboard/paste, IME or alternate-screen application qualification; use only nonsecret ASCII/Latin-1 developer commands for feedback.
 

@@ -33,23 +33,13 @@ Only calls actually sent through this bridge are mediated and attributed. An age
 
 The native Work view renders broker facts, not model reasoning/turn status. Its chrome now says **model turns not tracked**, covering both scripted and external clients without pretending to detect a model. Literal argv entry remains a command form, not agent steering. A conversational fleet portal is still work to do.
 
-For a **fresh, explicitly chosen, nonsecret** run:
-
-```sh
-make mvp
-python3 -B scripts/mvp.py agent-config --run .artifacts/mvp-PRINTED_ID
-```
-
-`agent-config` prints a supported one-process Codex MCP configuration and **starts nothing**. It does not install a server, read auth stores, change persistent configuration or authorize a provider. The human must approve the chosen provider/workspace/tool exposure first. Basic terminal use requires no model account. Optional Codex uses existing CLI-managed authentication; Namtab never reads/copies it. Other MCP clients need their own actual interop validation.
+The [user agent-configuration guide](../users/index.md#agent-configuration) owns the current command and provider/workspace/tool-consent steps. Configuration printing starts nothing, reads no auth store and creates no persistent permission. Basic terminal use needs no model account; other MCP clients require actual interop evidence.
 
 ## Detach, status and explicit stop
 
 New launches record the broker epoch in their own small `launch.json`; no resume credential is persisted. Window close still detaches. These commands need no display and never discover sockets or accept a PID:
 
-```sh
-make mvp-status RUN=.artifacts/mvp-PRINTED_ID
-make mvp-stop RUN=.artifacts/mvp-PRINTED_ID
-```
+The [user lifecycle guide](../users/index.md#close-attach-status-and-stop) owns exact status/stop commands for the printed run path.
 
 Status uses the restricted lifecycle identity repeatedly rather than consuming ordinary endpoints. Stop verifies the recorded epoch, checks `human_shutdown_v1`, and requests a protective authority decrease. This is a same-UID **declared human lifecycle purpose**, not proof of a physical human. That endpoint cannot run commands, create/claim terminals or input bytes; it cannot resume work identities. An agent endpoint cannot request shutdown. One lifecycle connection at a time and the unchanged four-live-connection cap still apply; a full connection budget can refuse it. Close an explicitly owned client connection rather than guessing/killing a process.
 
@@ -75,13 +65,8 @@ The installed CLI supports interactive `-a on-request`; official docs support MC
 
 The source ledger for this increment is the official [MCP transports](https://modelcontextprotocol.io/specification/2025-11-25/basic/transports), [lifecycle/version negotiation](https://modelcontextprotocol.io/specification/2025-11-25/basic/lifecycle), [tools/errors](https://modelcontextprotocol.io/specification/2025-11-25/server/tools), [Codex MCP configuration](https://learn.chatgpt.com/docs/extend/mcp), [noninteractive mode](https://learn.chatgpt.com/docs/non-interactive-mode), and [configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference), retrieved2026-10-27; local `codex --version`, `codex --help`, `codex exec --help` establish the installed CLI tuple. Source guidance is not account entitlement or interop proof. No SDK or copied specification code is added.
 
-## Recommended next bounded fleet-terminal slice — not started
+## Fleet-terminal successor and remaining work
 
-Keep the current2PTY/2attempt/4connection envelope while proving a useful control loop; increase capacity only under a separately measured/admitted profile. Connected endpoints, assigned agent runs, active commands, PTYs and external model requests remain different populations; current MK1 lacks enforced native run/assignment identity and model population accounting.
+ENG1 PR74 and NAT1 PR75 subsequently merged the bounded exact-attempt operation and native roster/selection/targeted takeover/cancellation loop. See the [implemented architecture](../architecture/index.md), [engine control contract](../engine/attempt-control.md) and [fleet interaction owner](../ux/fleet-control.md). The original proposed-next-slice checklist is superseded rather than maintained as another roadmap.
 
-1. **Attributable roster and work contracts:** one list keyed by endpoint/task/attempt/revision, showing enforced process facts separately from cooperative agent reports. Unknown reasoning/model status stays unknown. Selecting work reveals its canonical terminal/output and exact provenance without a pane per agent.
-2. **Fast targeted terminal control:** keyboard selection, explicit selected session/focus/writer-generation status, app keys versus UI commands and stale-target fencing. Coalesce offscreen observations; preserve loss/truncation markers. Measure input→receipt/state→paint p50/p95/p99 under declared quiet/noisy two-client workloads, with sample count/hardware and all processes included. Adopt no new arbitrary SLO or fleet-scale claim.
-3. **Targeted takeover and cancellation:** hand off one exact session while another continues output; distinguish writer lease change, attempt cancellation request, observed child exit and unknown descendants. Add a narrowly authorized per-attempt cancel operation/receipt rather than using namespace shutdown as task cancellation. A closed view still detaches.
-4. **State/error journeys:** queued/running/draining/exited/refused/failed/disconnected/unknown states derived from actual evidence; model turn state only when an adapter actually reports it. Test repeated navigation/input, noisy output, stale events, disconnect/reconnect, selected-target cancel and wrong-owner operations.
-
-**Exit criteria:** an owner can identify two clients' work, switch the intended terminal without cross-attribution/input, take over only that target, cancel one admitted direct attempt while the other continues, and inspect exact outcomes/uncertainty. Two independent adversarial reviews, actual native journeys and exact-head CI are required. This is a proposed next increment requiring its own authorization, not implementation in this PR, full fleet capacity or final engine qualification. Broader H0 wire/resource/adapter/GUI/accessibility/recovery gates remain open.
+Keep the2PTY/2attempt/four-live-connection envelope; connected endpoints, runs, commands, PTYs and model requests remain different populations. Broader scheduling/fairness, targeted subscription scale, full wire/resource admission, actual model mediation, rendering/accessibility and recovery gates remain open in the [current roadmap](../engine/delivery-and-validation.md) and [H0 residuals](../engine/h0-residual-criteria.md). Prior latency samples are workload-bound, not new SLOs or dozens-agent qualification.

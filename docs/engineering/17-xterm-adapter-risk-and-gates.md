@@ -8,7 +8,7 @@
 > Historical xterm candidate finding: serializer X4 remains FAIL and the original independent gate is preserved. [19](19-engine-build-adopt-redesign-assessment.md) independently audits canonical parsing, tests a cell-rendering redesign and official libghostty-vt, and recommends the native public core for the next prototype. ADR E1 explicitly accepts owned rendering; this revises the old no-custom-renderer cost preference without changing the old gate verdict or product fidelity requirements. The remainder records the earlier candidate boundary/budget.
 
 
-[Index](../index.md) · [Baseline ADR-A2](../architecture/10-recommended-baseline-and-adrs.md#adr-a2-one-interpretation-authority-replaceable-presentation) · [Dual frontend](../ux/13-dual-frontend-and-host-tui.md) · [Conformance/CI](16-test-and-ci-strategy.md)
+[Index](../index.md) · [Baseline ADR-A2](../architecture/10-recommended-baseline-and-adrs.md#adr-a2-one-interpretation-authority-replaceable-presentation) · [Dual frontend](../ux/host-terminal-profile.md) · [Conformance/CI](16-test-and-ci-strategy.md)
 
 **Historical recommendation, not the current selected prototype direction.** xterm was the first candidate for the Electron + host-TUI requirements, with an explicit possibility of rejection. Public/proposed cell APIs, a private key seam and replica recovery are substantive risks; naming an adapter does not remove them. The authorized engineering continuation ran bounded probes without dependency source edits; its failed gate supersedes the earlier unmeasured recommendation.
 

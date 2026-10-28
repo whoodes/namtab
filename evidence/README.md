@@ -17,9 +17,9 @@ All payloads are synthetic or public tool/source metadata. Never add credentials
 - `dependencies.json`, bootstrap/source records: phase-specific provenance, not a complete SBOM/security or license clearance.
 - `file-inventory.txt`, `repository-status.txt`: dated phase-closing path/Git snapshots; use Git for current state. Caches, tools and build artifacts are ignored.
 
-Current conclusions belong in [the docs index](../docs/index.md), not a second active design in evidence. Exact historical commands can reference subsequently moved scripts; [cleanup](../docs/engineering/20-workspace-organization.md) records the path mapping, and stable Make targets reproduce the workflow.
+Current conclusions belong in [the docs index](../docs/index.md), not a second active design in evidence. Exact historical commands can reference subsequently moved scripts; [cleanup](https://github.com/whoodes/namtab/blob/5c99e34bc6534a09f0511557e1f6f1154d46572c/docs/engineering/20-workspace-organization.md) records the path mapping, and stable Make targets reproduce the workflow.
 
-The [local history record](../docs/engineering/22-local-history-and-validation.md) and `history/validation.json` describe the initial commit series and its new isolated checks. Earlier EA0/cleanup/EA1 reports retain their original zero-commit snapshots and verdicts. Temporary validation logs stay in ignored `.artifacts/history`; only the bounded durable audit record is added.
+The [local history record](https://github.com/whoodes/namtab/blob/5c99e34bc6534a09f0511557e1f6f1154d46572c/docs/engineering/22-local-history-and-validation.md) and `history/validation.json` describe the initial commit series and its new isolated checks. Earlier EA0/cleanup/EA1 reports retain their original zero-commit snapshots and verdicts. Temporary validation logs stay in ignored `.artifacts/history`; only the bounded durable audit record is added.
 
 ## Native feedback window — 2026-10-27
 

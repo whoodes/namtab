@@ -1,74 +1,42 @@
 # namtab
 
-Namtab develops two first-class efforts in one repository: an AI-first terminal engine and a native harness that uses its explicit versioned contracts. The engine owns semantics, execution and control; the harness makes attributed work and focused human intervention usable. Linux shell/CLI/TUI compatibility remains explicit and bounded.
+An AI-first terminal engine and native harness for attributed work, explicit coordination and targeted human control. This is a runnable, bounded Ubuntu prototype—not a production terminal or a fleet-scale benchmark. Basic shell use needs no model account.
 
-**Maturity: MK1 delivered; harness design directions approved, admission and feasibility incomplete.** MK1 at `ff15a18b81c78ebcc539d521ec6ca00ebcd14b69` delivered real local PTY/managed execution, an owned finite Rust terminal worker and two demonstration clients. The retired Electron app and dedicated plumbing have been removed; source remains in Git history; the host TUI remains diagnostic/attach tooling. Scripted agent clients can share immutable task contracts, bind exact revisions and obtain broker-attributed attempts/receipts; writer handoffs remain explicit. This is a first hands-on human-feel prototype, not full NG1 or a production terminal. Existing xterm/libghostty experiments remain historical references; their **X4 and EA1 selection gates remain FAIL**. No compatibility, security or speed superiority claim follows.
+**[Use namtab](docs/users/index.md)** · **[Agent/developer guide](docs/agents/index.md)** · **[Architecture](docs/architecture/index.md)** · [Published docs](https://whoodes.github.io/namtab/)
 
-**Try the native feedback window:** `make mvp` from a configured checkout on the exercised Ubuntu/X11 host. It opens a fresh workspace, real shell and factual Work/Terminal views; **Take input** before typing. **SCRIPTED DEMO** runs two real attributed protocol clients, not an LLM. Closing detaches; the launcher prints the exact live attach path. See [launch, keys, evidence and limits](docs/engineering/native-mvp.md). This new partial native increment does not qualify the final interface, accessibility, broad terminal compatibility or capacity.
+## Try it
 
-[Public documentation](https://whoodes.github.io/namtab/) · [Diagnostic TUI and historical MK1 instructions](docs/engineering/mk1-quickstart.md): `make mk1-build`, then `make mk1-daemon` and `make mk1-tui` in separate terminals. The removed Electron client requires the pinned historical revision, not this checkout. No model or external service is needed.
+From a prepared Ubuntu/X11 source checkout:
 
-The merged [external-agent/lifecycle increment](docs/engineering/external-agent-mvp.md) exposes real public operations through MCP and explicit epoch-bound stop, while preserving the engine/fleet-terminal goal. Protocol/native fixtures exercise real processes; the approved live Codex test reached tool discovery but its task call was blocked by client approval policy. Model-directed Namtab execution is not yet validated; there is no automatic provider launch or permission setup.
+```sh
+make mvp
+```
 
-The current [direction decision](docs/adr/0005-ai-first-harness-direction.md) prioritizes shared work contracts, coordination, efficient observations and responsive control for dozens of agents. That scale and actual model integration are not implemented or measured. Emulator presentation/renderer and the exact load workload remain open; no standalone-window or 32-client requirement is adopted.
+Choose Terminal and Take input, then run a command. Work shows actual task/attempt origins and selected output; keyboard selection, exact terminal takeover and confirmed single-attempt cancellation are implemented. Closing detaches; use the printed exact run path for status/attach/stop. [Prerequisites, controls, agent configuration and troubleshooting](docs/users/index.md) are maintained in one user guide.
 
-The [E6 workstream boundary](docs/adr/0006-engine-and-native-harness-workstreams.md) separates authoritative engine work from native harness UX. [Engine ENG1](https://github.com/whoodes/namtab/milestone/9) targets exact-attempt control; [Native harness NAT1](https://github.com/whoodes/namtab/milestone/10) targets the corresponding fleet-terminal interaction. The owner resumed bounded ENG1/NAT1 drafts after [cleanup72](https://github.com/whoodes/namtab/issues/72). The engine draft adds the [experimental exact-attempt contract](docs/engine/attempt-control.md); this separate NAT1 draft consumes frozen ENG1 PR74/a900b0c for a selectable work roster, exact terminal takeover and one-shot cancellation confirmation. No stable API, merged qualification or capacity increase is implied.
+SCRIPTED DEMO uses real protocol clients, not models. Only agent actions routed through Namtab are mediated. The retained live Codex attempt was blocked before task/run execution; real-model mediation remains unvalidated. Two lifetime PTYs/two attempts/four live connections are limits, not dozens-agent qualification.
 
 ## Architecture
 
-- **Rust:** protocol/schema ownership, pure domain/receipt models, platform boundary, local supervisor/receipt journal, public client and Ratatui/Crossterm TUI; the original offline diagnostic remains available. The separate historical EA1 worker has no PTY or grant authority.
-- **Owned engine, implemented finite subset:** `crates/terminal` owns bounded parser/state/input/reply semantics and a private worker. No history/reflow/checkpoint import or full profile qualification; see its [limits](crates/terminal/README.md). A legacy emulator is not native authority.
-- **Headless H0 experiment:** two supervisor-issued scripted clients, exact run/assignment/context receipts and one final single-write PTY boundary; [reproduce it](tests/h0/README.md). This is not a public native API, durable dispatcher or model integration.
-- **Diagnostic human client:** the retained host TUI observes the canonical service model without owning permissions, private storage or application PTYs. The retired Electron app, launcher and dedicated tests/workspace entry are removed; its [historical source](https://github.com/whoodes/namtab/tree/eb7bbb2ddcecac646bcf4f8a45eac13d8af57bf0/apps/desktop) and dated evidence remain available. The [native feedback window](docs/engineering/native-mvp.md) projects that same public model; final product toolkit/renderer remains undecided.
-
-See the [architecture and authoritative document map](docs/index.md), [engine scope](docs/engine/index.md), and [ownership ADR](docs/adr/0004-owned-agent-native-engine.md). Internal `project-x-*` package names and `px-*` experimental profiles remain to avoid an unrelated wire/package rename.
-
-**NAT1 feedback controls:** Work arrows/Home/End select attributed attempts/tasks/terminals; Enter opens a selected terminal paused. Ctrl+Shift+T takes only that target; Ctrl+Shift+X then plain Enter confirms one selected attempt cancellation. Escape/focus/selection changes dismiss it. [Contract, launch/test steps and limits](docs/ux/fleet-control.md); `make nat1-test` prepares local terminfo through the supported build and runs an actual isolated X11 journey. No real-model or fleet-capacity claim.
-
-**Producer→consumer experiment:** [narrow managed workflow](docs/engineering/producer-consumer-experiment.md) with two scripted run endpoints, one exact artifact dependency, scoped observations and human takeover fencing. In-process handles, no external model/transport or capacity qualification. `make flow-build`, then the [isolated reproduction](docs/engineering/producer-consumer-experiment.md#reproduce).
+The Rust engine owns canonical terminal semantics, execution, attribution, ownership and receipts. The native harness consumes versioned public contracts for work navigation, interaction and targeted control; it does not duplicate parser/policy/private persistence. The host TUI remains diagnostic; Electron is removed. [Implemented flow and remaining design](docs/architecture/index.md); [direction and roadmap](docs/engine/delivery-and-validation.md#current-harness-milestones).
 
 ## Development
 
-The exercised local tuple is Ubuntu 22.04 x86_64, Python 3.10/venv, Rust/Cargo **1.91.0** with rustfmt/Clippy, Node **24.21.0**, pnpm **10.32.1**, and MkDocs **1.6.1**. Future shipping Ubuntu targets are design goals, not supported-platform claims. Tool and dependency pins live in the toolchain file, manifests, and lockfiles.
-
-For a new development checkout, these project-local setup targets acquire pinned tools/dependencies; they are not a product installer:
+Exercised tuple: Ubuntu22.04 x86_64, Rust/Cargo1.91.0, Python3.10/venv, Node24.21.0, pnpm10.32.1, MkDocs1.6.1. With existing Rust/build prerequisites:
 
 ```sh
 make bootstrap docs-install install
 make foundation-verify
 ```
 
-Rust must already be available through rustup/the selected toolchain. This active-source path needs no historical native artifact. For optional full-workspace reproduction, the native worker requires the [original reviewed EA1 artifact pin](docs/engineering/21-ea1-native-worker-results.md#results-and-reproduction):
-
-```sh
-make assessment-bootstrap assessment-build
-make check test stress docs
-make verify
-```
-
-Rebuilding the historical source can produce different library bytes and stop full-workspace checks before worker tests; do not refresh provenance hashes automatically. Cached original-artifact checks were exercised locally; a fresh native build/host is not thereby qualified.
-
-These run the real launch build, isolated TUI/CLI and two-agent journeys, format/Clippy, Rust properties/unit tests, JS contracts/types, generated bindings/schema drift, boundaries, fixtures, seeded partition stress, and strict MkDocs/local links. `make verify` aggregates the full-workspace foundation checks, including the historical native worker in Cargo Clippy/tests; it does not run a separate historical qualification step. Reports go to fresh ignored `.artifacts/verification/` paths and bind before/after Git head/tree, index and tracked diff hashes. Source changes fail the runner; dirty reports are not clean-commit attestations, and ignored/untracked contents are not covered. `make foundation-verify` is the owner-approved **Active-source foundation** CI lane: it excludes only the historical native worker from Cargo Clippy/tests, checking all seven active Rust crates and the other foundation checks. Together with **PR issue and commit policy**, it is required for merge eligibility. Routine CI retains the X4 continuation regressions and evidence-preservation guards; historical X4/EA1 qualification jobs are retired from routine CI. This does not establish full-workspace, NG1 or production-runtime qualification. See [CI artifact policy](docs/engineering/16-test-and-ci-strategy.md#ci-artifact-diagnosis-and-lane-separation).
-
-```sh
-make engine-gate
-make ea1-ownership ea1-provenance ea1-preservation ea1-test
-```
-
-These manual reproduction paths preserve the recorded failures: X4 cannot reconstruct complete continuation state; EA1 on the original artifact fails three required legacy aliases. Removing routine jobs does not change either recorded **FAIL**. Recorded ownership/provenance passes concern that original artifact; a fresh build can fail its byte-hash pin before those checks or alias behavior run. Preservation checks need no native build. Raw X4 reports go to ignored `.artifacts/x4-runs/`; EA1 run reports go to ignored `evidence/ea1-runs/<id>`. Original source, fixtures, archives and results stay unchanged. Do not invoke historical report-writing scripts directly or mistake an expected-failure regression check for certification. See [test/CI policy](docs/engineering/16-test-and-ci-strategy.md) and the [evidence map](evidence/README.md).
+These prepare pinned project-local dependencies and run active-source checks, not a product installer or GUI/model certification. [Agent guide](docs/agents/index.md) owns the source map/workflow links; [contributing](docs/engineering/contributing.md) owns issue/commit/review requirements. Optional historical full-workspace artifacts and intentional X4/EA1 FAILs remain [separate](docs/engineering/16-test-and-ci-strategy.md#ci-artifact-diagnosis-and-lane-separation).
 
 ## Roadmap and documentation
 
-Start with [ADR E5](docs/adr/0005-ai-first-harness-direction.md), the [manifesto](docs/product/manifesto.md) and [design guide](docs/index.md). The [current harness gates](docs/engine/delivery-and-validation.md#current-harness-milestones) separate H0 contracts/choices, H1 coordinated concurrency and H2 admitted integration/emulator proof. These are planning targets, not implementation authorization or results. The [H0 contract/workload proposal](docs/engine/h0-harness-contracts.md) and [interface analysis](docs/ux/h0-interface-decision.md) are the current review inputs; external-agent-first integration and native-window feasibility before toolkit selection were owner-approved with PR53. The [remaining H0 admission packet](docs/engine/h0-harness-contracts.md#remaining-h0-admission-packet) remains incomplete. The separately admitted [headless write experiment](docs/engineering/h0-headless-write-experiment.md) is bounded to two scripted clients and one isolated PTY; its isolated runtime proof and test limits are documented separately. The separately admitted [native feedback increment](docs/engineering/native-mvp.md) selects an experimental X11/software-surface tuple only; no final renderer/provider, broader capacity or full H0 acceptance is admitted. The old N0 design/MK1 outcome is preserved; full NG1 was not earned. Scoped classic compatibility, later exact recovery and broader future backlog remain separate. [MK1 instructions](docs/engineering/mk1-quickstart.md) distinguish retained diagnostic commands from the pinned historical revision required for Electron reproduction.
-
-The [native contract](docs/engine/native-contract.md) distinguishes exact execution facts from opaque-shell/TUI inference. [Runtime/recovery](docs/engine/runtime-persistence-security.md) separates reconnect, engine loss and process loss. No universal compatibility, deterministic execution replay, perfect isolation or faster model inference is promised.
-
-## Contributing
-
-Follow the [contributor workflow](docs/engineering/contributing.md): logical, self-contained commits; relevant tests and documentation; explicit limits and preserved negative evidence. [Repository practices](docs/engineering/14-repository-and-engineering-practices.md) describe current versus proposed modules. Repository text and issue readiness do not authorize implementation or publication; follow the owner's current scope.
+Read the [three audience guides and document owners](docs/index.md), [manifesto](docs/product/manifesto.md) and [remaining H0 criteria](docs/engine/h0-residual-criteria.md). Wider compatibility, scheduling/capacity, final rendering/accessibility and durable recovery remain gated. Internal project-x package/profile names are retained; documentation is not authorization to implement or publish.
 
 ## Security and licensing
 
-This is an unqualified prototype, not a sandbox for hostile programs or a safe place for credentials/private sessions. Local same-UID transport checks are not human attestation or protection from hostile same-UID programs. Restricted runtime isolation and durable secure capture remain unimplemented. No dedicated security reporting policy or support commitment is published in this repository.
+This prototype is not a sandbox or a safe place for credentials/private sessions. Same-UID roles are declarations; capture-off is not secret-safe storage. No perfect compatibility, deterministic execution replay or all-side-effect termination is promised. No dedicated security-reporting/support policy is published.
 
-Original namtab material is licensed under [Apache-2.0](LICENSE). Third-party code, data, fonts and retained artifacts keep their own terms; see [license scope and notices](docs/licensing.md). This is not binary redistribution clearance.
+Original namtab material is [Apache-2.0](LICENSE). Upstream material retains its terms; see [license scope and full notices](docs/licensing.md). This is not blanket binary redistribution clearance.

@@ -8,7 +8,7 @@
 
 ## Frontend and host-terminal boundaries
 
-Both clients use the public service API. Their rendering/focus is distinct from PTY ownership; the host TUI's outer terminal I/O is not managed application I/O. [Frontend integration](../engine/frontend-contracts.md) and [host capabilities](../ux/13-dual-frontend-and-host-tui.md) define those seams. Optional prompt integration is cooperative data, not a frontend or authority.
+Both clients use the public service API. Their rendering/focus is distinct from PTY ownership; the host TUI's outer terminal I/O is not managed application I/O. [Frontend integration](../engine/frontend-contracts.md) and [host capabilities](../ux/host-terminal-profile.md) define those seams. Optional prompt integration is cooperative data, not a frontend or authority.
 
 ## Execution modes
 
@@ -48,7 +48,7 @@ Structured intent is primary; raw is a separately granted bounded fallback, with
 
 ### Input modes, layouts, and encoding
 
-[Core input policy](../engine/compatibility-and-core.md#input-policy) owns cursor/keypad/NumLock/keyboard negotiation, layouts, consumed modifiers, composition, phases and Escape ambiguity. Host decoding limits belong to [the TUI profile](../ux/13-dual-frontend-and-host-tui.md#input-modes-and-nesting).
+[Core input policy](../engine/compatibility-and-core.md#input-policy) owns cursor/keypad/NumLock/keyboard negotiation, layouts, consumed modifiers, composition, phases and Escape ambiguity. Host decoding limits belong to [the TUI profile](../ux/host-terminal-profile.md#input-modes-and-nesting).
 
 ### Observe-act-observe and transition evidence
 

@@ -2,7 +2,7 @@
 
 [E6 ownership](../adr/0006-engine-and-native-harness-workstreams.md) · [issue70](https://github.com/whoodes/namtab/issues/70) · [native harness consumer](../ux/fleet-control.md)
 
-**ENG1 bounded experimental implementation:** owner resumed issue70 on2026-10-28 after merged cleanup73/main `448b091`. `namtab.attempt-control/0` / capability `attempt_cancel_v0` extends the experimental MK1/1 wire; it is not a stable API, full H0 or fleet-capacity admission. The original partial patch/index is retained unchanged in its old worktree; this implementation uses the cleaned baseline in a separate branch. NAT1 is a separate consumer draft. No merge or next-scope authority follows.
+**Implemented bounded experiment on main:** ENG1 PR74 merged on2026-10-28 as `ef982bf4e85f98a870dc3d4945b81c319e56bab4`; NAT1 PR75 is its merged native consumer. `namtab.attempt-control/0` / `attempt_cancel_v0` extends experimental MK1/1, not a stable API, full H0 or fleet-capacity admission. Original reviewed a900b0c, paused patch/index and all failed evidence remain preserved. [Architecture](../architecture/index.md) distinguishes implemented flow from proposed qualification; no next-scope authority follows.
 
 ## Admitted tuple and resources
 

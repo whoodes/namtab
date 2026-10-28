@@ -2,9 +2,9 @@
 
 > **Retained UX design; not full qualification.** [E5](../adr/0005-ai-first-harness-direction.md) owns current product scope. MK1 delivered a bounded interaction subset; this page owns proposed human behavior, not terminal semantics or runtime authority.
 
-[Index](../index.md) · [Recommended baseline](../architecture/10-recommended-baseline-and-adrs.md) · [Navigation protocol](../engine/native-contract.md#observeactobserve-races-and-human-override) · [Prototype gates](../engineering/12-prototype-plan.md)
+[Index](../index.md) · [Recommended baseline](../architecture/10-recommended-baseline-and-adrs.md) · [Navigation protocol](../engine/native-contract.md#observeactobserve-races-and-human-override) · [Prototype gates](../engine/delivery-and-validation.md)
 
-**Retained human interaction requirements and layout proposals; emulator form remains open under E5, with usability/accessibility/performance unqualified.** This specification describes human behavior alongside the agent contract. [E5](../adr/0005-ai-first-harness-direction.md) now specifies a custom emulator serving an AI-first harness; presentation form/renderer remain open. Electron is frozen as MK1 history; the host TUI is diagnostic/attach tooling. The retained layout/journey proposals below must be selected and tested for the eventual interface, not treated as a new framework decision. Shared task/review/authority behavior applies to admitted client profiles; window/font/DOM/clipboard examples below retain prior desktop rationale without selecting the new emulator stack. [13](13-dual-frontend-and-host-tui.md) owns the TUI mapping and honest capability differences. All examples are design scenarios, not observed experiments.
+**Retained human interaction requirements and layout proposals; emulator form remains open under E5, with usability/accessibility/performance unqualified.** This specification describes human behavior alongside the agent contract. [E5](../adr/0005-ai-first-harness-direction.md) now specifies a custom emulator serving an AI-first harness; presentation form/renderer remain open. Electron is frozen as MK1 history; the host TUI is diagnostic/attach tooling. The retained layout/journey proposals below must be selected and tested for the eventual interface, not treated as a new framework decision. Shared task/review/authority behavior applies to admitted client profiles; window/font/DOM/clipboard examples below retain prior desktop rationale without selecting the new emulator stack. [Host diagnostic profile](host-terminal-profile.md) owns the TUI mapping and honest capability differences. All examples are design scenarios, not observed experiments.
 
 ## Information architecture and default layout
 
@@ -52,7 +52,7 @@ Progressive disclosure is outcome → artifact/diff and evidence → process/out
 2. **Application input** includes logical keys, committed text, paste, mouse reports and explicit raw fallback, all passing through the same ownership/admission boundary as agent requests.
 3. **Automation API** addresses typed session/task/view identities and capabilities. It does not type shortcuts into the desktop or bypass admission.
 
-The following **desktop** keymap is a proposal to validate on Linux, not a universal convention. The host TUI instead has a configurable Ctrl+G prefix/quote scheme and a Send key palette because outer terminals may alias modifiers; [nested-input rules](13-dual-frontend-and-host-tui.md#input-modes-and-nesting) preserve the same action separation:
+The following **desktop** keymap is a proposal to validate on Linux, not a universal convention. The retained host diagnostic currently has a fixed Ctrl+G prefix/quote scheme. Remapping and a Send-key palette remain proposals because outer terminals may alias modifiers; [nested-input rules](host-terminal-profile.md#input-modes-and-nesting) preserve the same action separation:
 
 | Chord / context | Proposed behavior |
 | --- | --- |
