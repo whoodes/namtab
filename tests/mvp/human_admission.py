@@ -149,8 +149,12 @@ class Admission(Adapter):
         canary = {'op':'input','session':sid,'generation':old['generation'],'revision':old['screen']['revision'],'mode_revision':old['screen']['mode_revision'],'policy':'observed','intent':{'kind':'text','text':'QUEUED_ADMISSION_CANARY'}}
         frames.append(json.dumps({'version':'namtab.mk1/1','id':canary_id,'operation':canary}).encode()+b'\n')
         batch=b''.join(frames);require(len(batch)<=16384,'bounded queued request batch');a.socket.sendall(batch)
-        pending=array.array('i',[0]);fcntl.ioctl(a.socket.fileno(),0x541B,pending,True)
-        require(pending[0]>0,'no actual unread response bytes')
+        pending=array.array('i',[0])
+        def unread_bytes():
+            fcntl.ioctl(a.socket.fileno(),0x541B,pending,True);return pending[0]
+        # sendall is not evidence that the peer has run. Wait only for an
+        # observation; never resend the batch or its queued mutation.
+        self.wait(unread_bytes,'actual unread response bytes',timeout=.5)
         require(not any(r['endpoint']==a.endpoint and r['id']==canary_id for r in self.journal()), 'fixture did not hold canary before admission')
         t=time.monotonic_ns();human=self.connect('human');elapsed=time.monotonic_ns()-t;self.observer=human
         self.record['fresh_control']={'elapsed_ns':elapsed,'retired_endpoint':a.endpoint,'unread_bytes':pending[0],'queued_read_requests':queued,'canary_request':canary_id,'meaning':'unread consumer, not inferred exact kernel blocking state'}
