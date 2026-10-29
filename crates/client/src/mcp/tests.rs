@@ -215,6 +215,8 @@ fn wrong_or_missing_broker_receipts_fence_the_real_client() {
                             p::SHARED_TASKS.into(),
                             p::ATTEMPT_ORIGIN.into(),
                             p::RECEIPT_RESULTS.into(),
+                            p::SCOPED_OBSERVE.into(),
+                            p::SCOPED_WORK_EXPORT.into(),
                         ],
                         endpoints: vec![],
                         tasks: vec![],
@@ -303,16 +305,43 @@ fn protocol_versions_negotiate_and_tools_wait_for_initialized() {
 #[test]
 fn observations_scope_work_and_mark_preview_truncation() {
     let s:p::Snapshot=serde_json::from_value(json!({"version":p::VERSION,"epoch":"fixture","endpoint":"agent","endpoints":[],"capabilities":[],"tasks":[],"sessions":[],"artifacts":[],"receipts":[],"degraded":null,"attempts":[{"id":"a","task":"t","task_revision":null,"origin":{"endpoint":"agent","request_id":3},"state":"running","exit_code":null,"stdout":"PRIVATE_STREAM".repeat(400),"stderr":"ERR","truncated":false}]})).unwrap();
-    let summary = tools::observation(s.clone(), &json!({})).unwrap();
+    let wrap = |view| p::ScopedObservation {
+        version: p::VERSION.into(),
+        profile: p::OBSERVATION_PROFILE.into(),
+        epoch: s.epoch.clone(),
+        endpoint: s.endpoint.clone(),
+        degraded: None,
+        view,
+    };
+    let summary = tools::observation(wrap(p::ObservationView::WorkExport {
+        capabilities: vec![],
+        tasks: vec![],
+        sessions: vec![],
+        attempts: s.attempts.iter().map(p::AttemptSummary::from).collect(),
+        artifacts: vec![],
+    }))
+    .unwrap();
     assert!(!summary.to_string().contains("PRIVATE_STREAM"));
     assert!(summary.get("endpoints").is_none());
     assert!(summary.get("receipts").is_none());
-    let detail = tools::observation(s.clone(), &json!({"attempt":"a"})).unwrap();
+    let detail = tools::observation(wrap(p::ObservationView::Attempt {
+        attempt: s.attempts[0].clone(),
+    }))
+    .unwrap();
     assert_eq!(
         detail["stdout_preview"].as_str().unwrap().chars().count(),
         4096
     );
     assert_eq!(detail["preview_truncated"], true);
     assert_eq!(detail["source_truncated"], false);
-    assert!(tools::observation(s, &json!({"attempt":"missing"})).is_err());
+    assert!(
+        tools::observation(wrap(p::ObservationView::Work {
+            endpoints: vec![],
+            capabilities: vec![],
+            tasks: vec![],
+            sessions: vec![],
+            attempts: vec![]
+        }))
+        .is_err()
+    );
 }

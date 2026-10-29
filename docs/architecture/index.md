@@ -2,7 +2,7 @@
 
 [Use namtab](../users/index.md) · [Work on namtab](../agents/index.md) · [Detailed document owners](../index.md#documentation-ownership)
 
-This page describes the **implemented main baseline after PR74/75**. The full native-contract/core/recovery specifications describe a larger design; they are not claims that every operation or guarantee exists. [E4](../adr/0004-owned-agent-native-engine.md), [E5](../adr/0005-ai-first-harness-direction.md) and [E6](../adr/0006-engine-and-native-harness-workstreams.md) own the direction and responsibility split. Two first-class workstreams do not require separate repositories or duplicated state.
+This page describes the **implemented main baseline after PR74/75 and ENG2 PR79**. The full native-contract/core/recovery specifications describe a larger design; they are not claims that every operation or guarantee exists. [E4](../adr/0004-owned-agent-native-engine.md), [E5](../adr/0005-ai-first-harness-direction.md) and [E6](../adr/0006-engine-and-native-harness-workstreams.md) own the direction and responsibility split. Two first-class workstreams do not require separate repositories or duplicated state.
 
 ```text
 native harness / diagnostic TUI       external agent / CLI
@@ -65,4 +65,4 @@ Merged ENG1/NAT1 have bounded real-process/headless/native evidence, independent
 
 Not implemented/qualified: dozens-agent scheduling/capacity, authenticated model principals, sealed general artifact causality, production isolation, portable complete-state recovery, full compatibility, final renderer/a11y/IME and real-model Namtab mediation. [H0 residual gates](../engine/h0-residual-criteria.md) and [roadmap](../engine/delivery-and-validation.md) own those decisions. Proposed keepers, SQLite and richer schemas must not be described as this prototype's runtime.
 
-**Unmerged engine follow-up:** [ENG2 scoped pulls](../engine/scoped-observations.md) documents the new branch experiment. Main/MCP/native legacy polling is not silently replaced, and no larger capacity is admitted.
+[Scoped observations](../engine/scoped-observations.md) owns merged ENG2's public read projections and the separately admitted ENG3 draft MCP consumer. The latter uses one full discovery then exact session/attempt or freshness-preserving work export, never a partial full snapshot. Native/diagnostic polling and capacity stay unchanged. MCP consumes public contracts and applies export filtering; the broker owns artifact freshness, attribution and canonical state.

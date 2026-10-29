@@ -923,7 +923,9 @@ impl Broker {
             revision,
         ))
     }
-    fn snapshot(&self, endpoint: &str) -> Result<Snapshot, String> {
+    // Shared by legacy Observe and the explicit work-export read. File reads
+    // occur outside the state mutex; this is not a sealed filesystem snapshot.
+    fn refresh_artifacts(&self) {
         let artifacts = self
             .state
             .lock()
@@ -946,6 +948,9 @@ impl Broker {
                     .as_ref()
                     .is_some_and(|validated| validated != &revision);
         }
+    }
+    fn snapshot(&self, endpoint: &str) -> Result<Snapshot, String> {
+        self.refresh_artifacts();
         let state = self.state.lock().unwrap();
         let attempts = state
             .attempts
@@ -997,16 +1002,44 @@ impl Broker {
 }
 fn safe_output(bytes: &[u8]) -> (String, bool) {
     let mut result = String::new();
-    for character in String::from_utf8_lossy(bytes).chars() {
+    for character in output_characters(bytes) {
+        if result.len() + output_character_width(character) > 65_536 {
+            return (result, true);
+        }
         let text = if character.is_control() && !matches!(character, '\n' | '\t') {
             format!("\\u{{{:x}}}", character as u32)
         } else {
             character.to_string()
         };
-        if result.len() + text.len() > 65_536 {
-            return (result, true);
-        }
         result.push_str(&text);
     }
     (result, false)
+}
+
+// utf8_chunks has the same replacement grouping as from_utf8_lossy, without
+// allocating a normalized stream. Both paths share widths and the exact cap.
+fn output_characters(bytes: &[u8]) -> impl Iterator<Item = char> + '_ {
+    bytes.utf8_chunks().flat_map(|chunk| {
+        chunk
+            .valid()
+            .chars()
+            .chain((!chunk.invalid().is_empty()).then_some(char::REPLACEMENT_CHARACTER))
+    })
+}
+fn output_character_width(c: char) -> usize {
+    if c.is_control() && !matches!(c, '\n' | '\t') {
+        4 + (u32::from(c).max(1).ilog(16) + 1) as usize
+    } else {
+        c.len_utf8()
+    }
+}
+fn output_truncated(bytes: &[u8]) -> bool {
+    let mut length = 0;
+    for c in output_characters(bytes) {
+        length += output_character_width(c);
+        if length > 65_536 {
+            return true;
+        }
+    }
+    false
 }

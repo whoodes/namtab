@@ -19,6 +19,7 @@ fn scoped_discovery_is_once_and_wrong_or_mixed_projections_fence_without_fallbac
         "unsupported",
         "refused",
         "missing_discovery",
+        "discovery_error",
         "bad_discovery",
         "discovery_receipt",
         "profile",
@@ -59,6 +60,7 @@ fn scoped_discovery_is_once_and_wrong_or_mixed_projections_fence_without_fallbac
             } else if [
                 "unsupported",
                 "missing_discovery",
+                "discovery_error",
                 "bad_discovery",
                 "discovery_receipt",
             ]
@@ -115,6 +117,9 @@ fn scoped_discovery_is_once_and_wrong_or_mixed_projections_fence_without_fallbac
                         "error_with_view"=>{r.ok=false;r.error=Some("bad".into());}, _=>{}
                     }
                     }
+                }
+                if step == 1 && case == "discovery_error" {
+                    r.error = Some("observation_epoch_stale".into());
                 }
                 if (step == 1 && case == "discovery_receipt") || (step == 2 && case == "receipt") {
                     r.receipt = Some(p::Receipt {

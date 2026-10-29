@@ -9,6 +9,7 @@ pub(super) fn capabilities() -> Vec<String> {
         wire::ATTEMPT_ORIGIN,
         wire::RECEIPT_RESULTS,
         wire::SCOPED_OBSERVE,
+        wire::SCOPED_WORK_EXPORT,
     ]
     .into_iter()
     .map(str::to_owned)
@@ -28,31 +29,59 @@ impl Broker {
         if !scope.valid() {
             return Err("observation_target_invalid".into());
         }
+        if matches!(scope, wire::ObservationScope::WorkExport {}) {
+            self.refresh_artifacts();
+        }
         let state = self.state.lock().unwrap();
         let view = match scope {
-            wire::ObservationScope::Work {} => wire::ObservationView::Work {
-                endpoints: state
-                    .endpoints
-                    .iter()
-                    .map(|(id, e)| wire::EndpointView {
-                        id: id.clone(),
-                        role: e.role.clone(),
-                        connected: e.connected,
-                    })
-                    .collect(),
-                capabilities: capabilities(),
-                tasks: state.tasks.values().cloned().collect(),
-                sessions: state
+            wire::ObservationScope::Work {} | wire::ObservationScope::WorkExport {} => {
+                let capabilities = capabilities();
+                let tasks = state.tasks.values().cloned().collect();
+                let sessions = state
                     .sessions
                     .values()
                     .map(|s| wire::SessionSummary::from(&s.view))
-                    .collect(),
-                attempts: state
+                    .collect();
+                let attempts = state
                     .attempts
                     .values()
-                    .map(|a| wire::AttemptSummary::from(&a.view))
-                    .collect(),
-            },
+                    .map(|a| {
+                        let mut summary = wire::AttemptSummary::from(&a.view);
+                        if matches!(scope, wire::ObservationScope::WorkExport {}) {
+                            // Preserve legacy MCP's sanitized-source loss flag without
+                            // building/exporting bodies. Plain Work retains raw flags.
+                            summary.source_truncated |=
+                                output_truncated(&a.stdout) || output_truncated(&a.stderr);
+                        }
+                        summary
+                    })
+                    .collect();
+                if matches!(scope, wire::ObservationScope::WorkExport {}) {
+                    wire::ObservationView::WorkExport {
+                        capabilities,
+                        tasks,
+                        sessions,
+                        attempts,
+                        artifacts: state.artifacts.values().cloned().collect(),
+                    }
+                } else {
+                    wire::ObservationView::Work {
+                        endpoints: state
+                            .endpoints
+                            .iter()
+                            .map(|(id, e)| wire::EndpointView {
+                                id: id.clone(),
+                                role: e.role.clone(),
+                                connected: e.connected,
+                            })
+                            .collect(),
+                        capabilities,
+                        tasks,
+                        sessions,
+                        attempts,
+                    }
+                }
+            }
             wire::ObservationScope::Session { session } => wire::ObservationView::Session {
                 session: state
                     .sessions

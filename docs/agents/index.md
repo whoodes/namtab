@@ -55,4 +55,4 @@ Report exact command, environment, revision/tree, clean/dirty state, pass/fail/b
 
 Capture-off does not make logs/screenshots/model export private. Use synthetic, isolated tests and obey the current data/provider approval. Never inspect credential/private auth stores to make a test work. No automatic model launch, trust acceptance, saved permission, license change or user-session restart follows from this guide.
 
-**Unmerged engine branch reference:** [scoped pull observations](../engine/scoped-observations.md) owns the experimental API/client/CLI and supported isolated `make scoped-test` path. It is not a merged-main, stable SDK or MCP consumer migration claim.
+[Scoped pull observations](../engine/scoped-observations.md) owns merged ENG2 API/client/CLI and the ENG3 draft MCP migration. Use `make scoped-test` or `make mcp-scoped-test` for isolated scripted protocol proofs; native polling remains legacy. Neither check invokes a model or admits larger capacity.

@@ -46,6 +46,7 @@ pub struct Client {
     pub resume: String,
     failed: bool,
     scoped_support: Option<bool>,
+    scoped_work_export_support: bool,
 }
 impl Client {
     pub fn connect(path: &Path, label: &str, role: Role) -> io::Result<Self> {
@@ -91,6 +92,7 @@ impl Client {
             resume: String::new(),
             failed: false,
             scoped_support: None,
+            scoped_work_export_support: false,
         })
     }
     pub fn connect_lifecycle(path: &Path) -> io::Result<Self> {
@@ -128,8 +130,26 @@ impl Client {
             .ok_or_else(|| io::Error::other("missing snapshot"))?;
         Ok(s)
     }
+    /// Shared strict capability-discovery seam for scoped consumers. A success
+    /// carrying an error is contradictory evidence, never permission to act.
+    pub(crate) fn discover_scoped(&mut self) -> io::Result<mk1::Snapshot> {
+        let discovery = self.call(Op::Observe {})?;
+        if !discovery.ok
+            || discovery.error.is_some()
+            || discovery.snapshot.is_none()
+            || discovery.receipt.is_some()
+            || discovery.resume.is_some()
+        {
+            self.close_transport();
+            return Err(io::Error::other(
+                "invalid scoped capability discovery; connection fenced",
+            ));
+        }
+        Ok(discovery.snapshot.expect("checked discovery"))
+    }
     /// Discover support at most once per transport via legacy Observe. That
-    /// bootstrap can refresh artifacts; subsequent scoped pulls cannot. Never
+    /// bootstrap can refresh artifacts; only the explicitly negotiated WorkExport
+    /// scope does so on later pulls. Plain Work/Session/Attempt do not. Never
     /// substitute a partial legacy snapshot or silently fall back on refusal.
     pub fn observe_scoped(
         &mut self,
@@ -142,22 +162,19 @@ impl Client {
             ));
         }
         if self.scoped_support.is_none() {
-            let discovery = self.call(Op::Observe {})?;
-            if !discovery.ok
-                || discovery.snapshot.is_none()
-                || discovery.receipt.is_some()
-                || discovery.resume.is_some()
-            {
-                self.close_transport();
-                return Err(io::Error::other(
-                    "invalid scoped capability discovery; connection fenced",
-                ));
-            }
+            self.discover_scoped()?;
         }
         if self.scoped_support != Some(true) {
             return Err(io::Error::new(
                 io::ErrorKind::Unsupported,
                 "scoped_observe_v0 unsupported; no scoped request dispatched",
+            ));
+        }
+        if matches!(scope, mk1::ObservationScope::WorkExport {}) && !self.scoped_work_export_support
+        {
+            return Err(io::Error::new(
+                io::ErrorKind::Unsupported,
+                "scoped_work_export_v0 unsupported; no work export dispatched",
             ));
         }
         let response = self.call(Op::ObserveScoped {
@@ -326,6 +343,8 @@ impl Client {
             }
             if let Some(s) = &response.snapshot {
                 self.scoped_support = Some(s.capabilities.iter().any(|c| c == mk1::SCOPED_OBSERVE));
+                self.scoped_work_export_support =
+                    s.capabilities.iter().any(|c| c == mk1::SCOPED_WORK_EXPORT);
             }
             Ok(response)
         })();

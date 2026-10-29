@@ -2048,3 +2048,146 @@ fn scoped_attempt_selects_one_origin_and_preserves_safe_stream_semantics() {
         assert_eq!(attempt.origin.as_ref().unwrap().endpoint, agent);
     }
 }
+
+#[test]
+fn export_work_refreshes_artifacts_and_preserves_legacy_sanitized_loss_without_bodies() {
+    use wire::{ObservationScope as S, ObservationView as V};
+    let mut h = Harness::new();
+    let human = h.human.clone();
+    let agent = h.agent.clone();
+    fs::write(h.directory.join("artifact"), b"before").unwrap();
+    assert!(
+        h.human(Op::Artifact {
+            task: "export".into(),
+            path: "artifact".into()
+        })
+        .ok
+    );
+    let old = h.broker.snapshot(&human).unwrap().artifacts[0].clone();
+    assert!(
+        h.human(Op::ValidateArtifact {
+            artifact: old.id.clone(),
+            revision: old.revision.clone()
+        })
+        .ok
+    );
+    assert!(
+        h.request(
+            &agent,
+            Op::Run {
+                task: "export".into(),
+                task_revision: None,
+                argv: vec!["/bin/true".into()]
+            }
+        )
+        .ok
+    );
+    h.wait(|s| s.attempts[0].state == "exited");
+    // A raw buffer below its cap can still exceed the escaped projection cap.
+    {
+        let mut state = h.broker.state.lock().unwrap();
+        let a = state.attempts.values_mut().next().unwrap();
+        a.stdout = vec![0; 20_000];
+        a.view.truncated = false;
+    }
+    let before = fs::metadata(h.directory.join("journal")).unwrap().len();
+    for bytes in [Some(b"changed".as_slice()), None] {
+        if let Some(bytes) = bytes {
+            fs::write(h.directory.join("artifact"), bytes).unwrap()
+        } else {
+            fs::remove_file(h.directory.join("artifact")).unwrap()
+        }
+        let plain = h
+            .broker
+            .scoped_observation(&agent, &h.broker.epoch, &S::Work {})
+            .unwrap();
+        let V::Work { attempts, .. } = plain.view else {
+            panic!()
+        };
+        assert!(!attempts[0].source_truncated);
+        let exported = h
+            .broker
+            .scoped_observation(&agent, &h.broker.epoch, &S::WorkExport {})
+            .unwrap();
+        let text = serde_json::to_string(&exported).unwrap();
+        for key in [
+            "\"stdout\"",
+            "\"stderr\"",
+            "\"screen\"",
+            "\"receipts\"",
+            "\"resume\"",
+            "\"endpoints\"",
+        ] {
+            assert!(!text.contains(key), "{key}")
+        }
+        let V::WorkExport {
+            attempts,
+            artifacts,
+            ..
+        } = exported.view
+        else {
+            panic!()
+        };
+        assert!(attempts[0].source_truncated);
+        assert!(artifacts[0].stale);
+        assert_eq!(
+            artifacts[0].validated_revision.as_deref(),
+            Some(old.revision.as_str())
+        );
+        assert_ne!(artifacts[0].revision, old.revision);
+        if bytes.is_none() {
+            assert_eq!(artifacts[0].revision, "unavailable")
+        }
+        let legacy = h.broker.snapshot(&agent).unwrap();
+        assert_eq!(artifacts, legacy.artifacts);
+        assert_eq!(attempts[0].source_truncated, legacy.attempts[0].truncated);
+    }
+    assert_eq!(
+        before,
+        fs::metadata(h.directory.join("journal")).unwrap().len()
+    );
+}
+
+#[test]
+fn output_loss_scanner_matches_independent_legacy_render_budget() {
+    let oracle = |bytes: &[u8]| {
+        let mut rendered = String::new();
+        let mut cut = false;
+        for c in String::from_utf8_lossy(bytes).chars() {
+            let text = if c.is_control() && !matches!(c, '\n' | '\t') {
+                format!("\\u{{{:x}}}", c as u32)
+            } else {
+                c.to_string()
+            };
+            if rendered.len() + text.len() > 65_536 {
+                cut = true;
+                break;
+            }
+            rendered.push_str(&text)
+        }
+        (rendered, cut)
+    };
+    let cases = [
+        vec![0; 20_000],
+        vec![b'a'; 65_536],
+        vec![b'a'; 65_537],
+        vec![0xff; 30_000],
+        vec![0xf0, 0x9f, 0x80, b'x', 0xe2, 0x82],
+        "界é\r\n\t\u{85}".repeat(9000).into_bytes(),
+    ];
+    for bytes in cases {
+        let expected = oracle(&bytes);
+        assert_eq!(safe_output(&bytes), expected);
+        assert_eq!(output_truncated(&bytes), expected.1)
+    }
+    // Exhaust every two-byte partition, including incomplete and malformed UTF8.
+    for a in 0..=255 {
+        for b in 0..=255 {
+            let bytes = [a, b];
+            assert_eq!(
+                output_characters(&bytes).collect::<String>(),
+                String::from_utf8_lossy(&bytes)
+            )
+        }
+    }
+}
