@@ -172,6 +172,18 @@ const steps = [
     ],
   ],
   [
+    "mvp-mcp-scoped-reads",
+    "python3",
+    [
+      "-B",
+      "tests/mvp/mcp_scoped.py",
+      "--bin-dir",
+      binaryDirectory,
+      "--artifacts",
+      realRun + "-mcp-scoped",
+    ],
+  ],
+  [
     "mvp-attempt-control",
     "python3",
     [

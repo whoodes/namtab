@@ -12,6 +12,8 @@ pub const ATTEMPT_CONTROL_PROFILE: &str = "namtab.attempt-control/0";
 pub const HUMAN_SHUTDOWN: &str = "human_shutdown_v1";
 pub const RECEIPT_RESULTS: &str = "receipt_results_v1";
 pub const SCOPED_OBSERVE: &str = "scoped_observe_v0";
+/// Separately negotiated freshness-preserving MCP-compatible work export.
+pub const SCOPED_WORK_EXPORT: &str = "scoped_work_export_v0";
 pub const OBSERVATION_PROFILE: &str = "namtab.scoped-observation/0";
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
@@ -259,13 +261,14 @@ pub struct Snapshot {
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 pub enum ObservationScope {
     Work {},
+    WorkExport {},
     Session { session: String },
     Attempt { attempt: String },
 }
 impl ObservationScope {
     pub fn valid(&self) -> bool {
         match self {
-            Self::Work {} => true,
+            Self::Work {} | Self::WorkExport {} => true,
             Self::Session { session: id } | Self::Attempt { attempt: id } => {
                 !id.is_empty() && id.len() <= 80 && !id.chars().any(char::is_control)
             }
@@ -331,6 +334,13 @@ impl From<&Attempt> for AttemptSummary {
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 pub enum ObservationView {
+    WorkExport {
+        capabilities: Vec<String>,
+        tasks: Vec<TaskContract>,
+        sessions: Vec<SessionSummary>,
+        attempts: Vec<AttemptSummary>,
+        artifacts: Vec<Artifact>,
+    },
     Work {
         endpoints: Vec<EndpointView>,
         capabilities: Vec<String>,
@@ -349,6 +359,7 @@ impl ObservationView {
     pub fn matches(&self, scope: &ObservationScope) -> bool {
         match (self, scope) {
             (Self::Work { .. }, ObservationScope::Work {}) => true,
+            (Self::WorkExport { .. }, ObservationScope::WorkExport {}) => true,
             (Self::Session { session }, ObservationScope::Session { session: id }) => {
                 session.id == *id
             }
@@ -360,7 +371,8 @@ impl ObservationView {
     }
 }
 /// One lock-time projection of broker state. No global event cut, artifact
-/// refresh, complete capture or atomic application/OS state is attested.
+/// complete capture or atomic application/OS state is attested. Only the
+/// separately negotiated WorkExport projection refreshes registered files.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(deny_unknown_fields)]
 pub struct ScopedObservation {
@@ -701,6 +713,7 @@ mod scoped_tests {
     fn scopes_are_typed_nonmutating_and_legacy_response_omits_extension() {
         for scope in [
             ObservationScope::Work {},
+            ObservationScope::WorkExport {},
             ObservationScope::Session {
                 session: "session1".into(),
             },

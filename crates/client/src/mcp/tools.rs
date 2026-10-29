@@ -13,7 +13,7 @@ pub(super) fn catalog() -> Vec<Value> {
     let rows = [
         (
             "namtab_observe",
-            "Read scoped canonical work facts, one attempt or one terminal. No inference of agent reasoning. Truncated previews are not full capture.",
+            "Read scoped work facts with fresh registered artifact metadata, one attempt or one terminal. No inference of agent reasoning. Truncated previews are not full capture.",
             {
                 let mut schema = object(json!({"attempt":text(80),"session":text(80)}), json!([]));
                 schema["maxProperties"] = json!(1);
@@ -123,6 +123,8 @@ pub(super) fn operation(name: &str, args: Value) -> Result<Op, &'static str> {
             {
                 return Err("one_observation_target");
             }
+            // Validation marker only: Bridge resolves the exact negotiated scope
+            // after checking its transport. This is never a legacy read fallback.
             return Ok(Op::Observe {});
         }
         "namtab_task" => "define_task",
@@ -170,28 +172,26 @@ pub(super) fn operation(name: &str, args: Value) -> Result<Op, &'static str> {
     }
     Ok(q.operation)
 }
-pub(super) fn observation(s: p::Snapshot, args: &Value) -> Result<Value, &'static str> {
-    if let Some(id) = args.get("attempt").and_then(Value::as_str) {
-        let a = s
-            .attempts
-            .into_iter()
-            .find(|a| a.id == id)
-            .ok_or("unknown_attempt")?;
-        let stdout: String = a.stdout.chars().take(4096).collect();
-        let stderr: String = a.stderr.chars().take(4096).collect();
-        return Ok(
-            json!({"attempt":a.id,"task":a.task,"task_revision":a.task_revision,"origin":a.origin,"state":a.state,"exit_code":a.exit_code,"stdout_preview":stdout,"stderr_preview":stderr,"preview_truncated":stdout.len()<a.stdout.len()||stderr.len()<a.stderr.len(),"source_truncated":a.truncated}),
-        );
+pub(super) fn observation(s: p::ScopedObservation) -> Result<Value, &'static str> {
+    match s.view {
+        p::ObservationView::Attempt { attempt: a } => {
+            let stdout: String = a.stdout.chars().take(4096).collect();
+            let stderr: String = a.stderr.chars().take(4096).collect();
+            Ok(
+                json!({"attempt":a.id,"task":a.task,"task_revision":a.task_revision,"origin":a.origin,"state":a.state,"exit_code":a.exit_code,"stdout_preview":stdout,"stderr_preview":stderr,"preview_truncated":stdout.len()<a.stdout.len()||stderr.len()<a.stderr.len(),"source_truncated":a.truncated}),
+            )
+        }
+        p::ObservationView::Session { session } => Ok(serde_json::to_value(session).unwrap()),
+        p::ObservationView::WorkExport {
+            capabilities,
+            tasks,
+            sessions,
+            attempts,
+            artifacts,
+            ..
+        } => Ok(
+            json!({"epoch":s.epoch,"degraded":s.degraded,"capabilities":capabilities,"tasks":tasks,"sessions":sessions.into_iter().map(|x|json!({"id":x.id,"name":x.name,"owner":x.owner,"generation":x.generation,"process":x.process,"exit_code":x.exit_code})).collect::<Vec<_>>(),"attempts":attempts.into_iter().map(|a|json!({"id":a.id,"task":a.task,"task_revision":a.task_revision,"origin":a.origin,"state":a.state,"exit_code":a.exit_code,"source_truncated":a.source_truncated})).collect::<Vec<_>>(),"artifacts":artifacts}),
+        ),
+        p::ObservationView::Work { .. } => Err("fresh_work_export_required"),
     }
-    if let Some(id) = args.get("session").and_then(Value::as_str) {
-        return s
-            .sessions
-            .into_iter()
-            .find(|x| x.id == id)
-            .map(|s| serde_json::to_value(s).unwrap())
-            .ok_or("unknown_session");
-    }
-    Ok(
-        json!({"epoch":s.epoch,"degraded":s.degraded,"capabilities":s.capabilities,"tasks":s.tasks,"sessions":s.sessions.into_iter().map(|x|json!({"id":x.id,"name":x.name,"owner":x.owner,"generation":x.generation,"process":x.process,"exit_code":x.exit_code})).collect::<Vec<_>>(),"attempts":s.attempts.into_iter().map(|a|json!({"id":a.id,"task":a.task,"task_revision":a.task_revision,"origin":a.origin,"state":a.state,"exit_code":a.exit_code,"source_truncated":a.truncated})).collect::<Vec<_>>(),"artifacts":s.artifacts}),
-    )
 }

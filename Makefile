@@ -90,3 +90,8 @@ nat1-test: mk1-build
 .PHONY: scoped-test
 scoped-test: mk1-build
 	python3 -B tests/mvp/scoped_observation.py --bin-dir "$(if $(CARGO_TARGET_DIR),$(CARGO_TARGET_DIR),target)/debug" --artifacts .artifacts/scoped-$(shell python3 -c 'import uuid; print(uuid.uuid4().hex[:12])')
+
+# Isolated real MCP protocol reads; synthetic fixtures, never a model invocation.
+.PHONY: mcp-scoped-test
+mcp-scoped-test: mk1-build
+	python3 -B tests/mvp/mcp_scoped.py --bin-dir "$(if $(CARGO_TARGET_DIR),$(CARGO_TARGET_DIR),target)/debug" --artifacts .artifacts/mcp-scoped-$(shell python3 -c 'import uuid; print(uuid.uuid4().hex[:12])')

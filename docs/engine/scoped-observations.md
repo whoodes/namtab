@@ -1,12 +1,12 @@
-# ENG2 scoped pull observations
+# Scoped pull observations and MCP export
 
 [Architecture](../architecture/index.md) · [Agent guide](../agents/index.md) · [Issue78](https://github.com/whoodes/namtab/issues/78) · [Broader observations backlog49](https://github.com/whoodes/namtab/issues/49)
 
-**Unmerged engine experiment**, based on merged PR77/main0772251. `namtab.scoped-observation/0`, advertised as `scoped_observe_v0`, adds bounded pull projections over private experimental `namtab.mk1/1`. This is a precursor to49, not subscriptions/deltas/waits, full H0 admission, a stable SDK or fleet capacity. No native-harness feature, provider/model, renderer, dependency or security-policy change.
+**ENG2 merged in PR79/main ee5fdfc.** The ENG3 MCP consumer extension below is a separately reviewed branch increment until its PR merges. `namtab.scoped-observation/0`, advertised as `scoped_observe_v0`, adds bounded pull projections over private experimental `namtab.mk1/1`. This is a precursor to49, not subscriptions/deltas/waits, full H0 admission, a stable SDK or fleet capacity. No native-harness feature, provider/model, renderer, dependency or security-policy change.
 
 ## Why this slice
 
-Legacy `Observe` builds every canonical screen and bounded attempt stream, then refreshes registered artifact revisions. Filtering afterward (including current MCP) does not avoid that work. The new broker path projects the selected scope directly under one state lock, without calling full `snapshot` or `file_revision`. Formatting one selected stream remains bounded; Work does not clone cells/stream bodies or read files. Legacy Observe semantics remain unchanged, including artifact refresh.
+Legacy `Observe` builds every canonical screen and bounded attempt stream, then refreshes registered artifact revisions. Filtering afterward (including legacy MCP) does not avoid that work. The new broker path projects the selected scope directly under one state lock, without calling full `snapshot` or `file_revision` for the original Work/Session/Attempt scopes. Formatting one selected stream remains bounded; plain Work does not clone cells/stream bodies, scan stream loss or read files. Legacy Observe semantics remain unchanged, including artifact refresh.
 
 ## Admitted wire and resources
 
@@ -30,7 +30,7 @@ Read scope is **not** an ACL/security boundary: existing same-UID roles can alre
 
 The client validates response/profile/version/epoch/endpoint and exact requested view/ID. Missing, mixed, unrequested or misbound projections fence the connection. A normal missing-target refusal is distinguishable from transport corruption. Generic raw scoped calls with another epoch are rejected locally before ID allocation/write; the broker independently validates raw wire callers. Malformed discovery is fenced rather than trusted as capability evidence. Capability support is not permission.
 
-On this branch, with an explicitly chosen run/socket:
+On merged ENG2 and this branch, with an explicitly chosen run/socket:
 
 ```sh
 target/debug/namtab-agent --socket /absolute/chosen/socket work
@@ -40,7 +40,37 @@ target/debug/namtab-agent --socket /absolute/chosen/socket attempt attempt3
 
 Each **one-shot CLI** performs full bootstrap and consumes a retained endpoint identity. Repeatedly spawning it is not the optimization or a scale proof. Use a long-lived Rust client or explicit JSON-line protocol client for repeated scoped pulls. The raw JSON-line route requires callers to discover support and supply the exact epoch. Human launch/run paths are owned by the [user guide](../users/index.md); never discover/attach to user sessions for a test.
 
-Current MCP and native/diagnostic polling remain on legacy Observe; this increment does not migrate them or claim end-user UI latency improvement. MCP's targeted preview already limits its exported payload, but still pays full broker observation cost. Consumer migration is a later independently reviewed slice.
+## ENG3 MCP consumer admission
+
+[Issue80](https://github.com/whoodes/namtab/issues/80) migrates repeated MCP reads only. This draft uses `namtab.mcp-local/1` over unchanged `namtab.mk1/1` and `namtab.scoped-observation/0`. A separately advertised **`scoped_work_export_v0`** capability gates the additive `work_export` scope/view. Older clients never request its new tag; older brokers missing either scoped capability are explicitly refused by the new bridge before tools become available. No automatic legacy fallback, reconnect/resume or replay. The former `/0` MCP profile remains historical; this is a private experimental profile revision, not a stable SDK.
+
+`Bridge::connect` performs exactly one checked full Observe for capability discovery on its single live transport. It can copy/rehash full state once. Subsequent `namtab_observe` calls dispatch one scoped read:
+
+| MCP arguments | Broker scope | Export semantics |
+| --- | --- | --- |
+| `{}` | `work_export` | Existing MCP work fields and fresh registered artifact metadata; no terminal grids, stream bodies, endpoints, receipts or resume credentials |
+| `{"session":"EXACT_ID"}` | `session` | Exactly the selected canonical session/context, same export as before |
+| `{"attempt":"EXACT_ID"}` | `attempt` | Exact immutable origin/task revision and existing4,096-code-point stdout/stderr previews with source/preview truncation flags |
+
+`work_export` shares **the exact legacy artifact-refresh helper**: at most16registered files, existing1MiB/file/path checks, SHA revision, validated revision, stale or `unavailable`. It registers nothing and reserves no mutation receipt/journal record. Refresh is outside the state mutex, followed by one locked metadata projection: no sealed filesystem/global causal cut or correctness/acceptance proof. A concurrent file edit can immediately obsolete the observed digest, as before. Session/Attempt reads do not claim artifact freshness and do not perform unrelated file checks.
+
+The work export additionally scans at most the existing bounded2attempt streams to preserve legacy MCP `source_truncated`, including sanitized-output expansion loss. Its shared UTF8 replacement/character-width budget matches legacy65,536-byte formatting without building formatted bodies. This differs deliberately from **plain Work's raw-source-only flag**; mapping that flag directly would underreport loss for control-heavy streams. Plain Work stays unchanged. Work export still pays bounded rehash/scan costs, not zero work or guaranteed low latency.
+
+The outer broker request ID remains the exact scoped request ID in MCP's epoch/endpoint binding. Transport/profile/view/selector/epoch mismatches fence the public client; missing targets stay read refusals. No cached or partially refreshed work export is substituted on error. A fresh manually started bridge uses a new endpoint and rediscovers once; it does not resume an old request namespace or repeat work.
+
+The tool set, preview filtering and manual workspace/provider/tool approval/export-consent boundary remain unchanged. No provider call, credential access or new export destination is introduced. [Agent configuration and retained real-model blocker](../engineering/external-agent-mvp.md) remain authoritative. Read scope is not an ACL. **Native and diagnostic polling stay on legacy Observe.** One-shot agent CLI discovery cost is unchanged.
+
+### Supported proof and limits
+
+```sh
+make mcp-scoped-test
+```
+
+This builds same-worktree binaries/local terminfo and runs an owned headless broker plus real MCP stdio bridge, a scripted peer and human endpoint. It never attaches to an existing run or invokes a model/GUI. An owned serial socket proxy records actual broker request/response frame bytes, redacts resume capabilities, and proves one discovery followed by exact scopes. Controlled artifact edits/deletion, sanitized loss, separate origins, takeover/stale zero bytes, peer progress and explicit fresh-bridge rediscovery are checked.
+
+The admitted workload uses2quiet PTYs/2attempts/3live public connections (four retained identities after fresh bridge), one synthetic1MiB artifact, B's bounded control-heavy stream plus20ms heartbeat. Two warmup iterations precede24retained iterations/scope; order alternates. Raw samples disclose host/kernel/debug binaries and exact hashes. MCP elapsed includes stdio/Python/proxy overhead; direct legacy RPC has a different path. Actual broker wire bytes and reserialized MCP size are labeled separately. No latency superiority, human key-to-paint, server-only CPU, fairness, SLO, model or larger-fleet claim follows from24samples. Structural correctness/omission is gated; timing superiority is not.
+
+The first fixture's oracle wrongly required the optional outer response endpoint. The scoped header is the authoritative exact endpoint; an outer endpoint, if present, must agree. Preserve that failed record and test both absent-valid and present-wrong cases rather than treating a rerun as proof. Runtime tests validate both header and target; malformed responses still fence.
 
 ## Validation and measurement
 
@@ -50,4 +80,4 @@ The workload retains100paired legacy/Work RPC samples after10warmup pairs, inter
 
 `make foundation-verify` includes this journey plus failure-propagation regression. Protocol/broker/client tests exercise typed omission, nonmutation, artifact-refresh separation, sanitization, selector/epoch refusal, malformed peers, same-connection caching and reconnect negotiation. Historical X4/EA1 FAIL and original focus/Ctrl-C/setup records remain unchanged. Report exact source/tree/dirty status and preserved failures; initial working-tree runs do not certify the final commit.
 
-Remaining49/H0 work: event/cut identity, credit/backpressure, deltas/gaps/resync, canceled waits, calibrated larger populations, scheduler fairness and consumer integration. Scoped reads remove unrelated observation work; they do not solve those gates.
+Remaining dependencies, **not implemented here**: H0#46 admits bounded mixed workload/profile/resources; #48 qualifies responsive human control/fairness before broader load claims. Then #49 needs event/cut identity, credit/backpressure, deltas/gaps/resync, canceled waits, calibrated larger populations, scheduler fairness and later native/other consumer integration. Scoped reads remove unrelated observation work; they do not solve those gates.

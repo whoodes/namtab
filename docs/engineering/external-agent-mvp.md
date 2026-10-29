@@ -9,7 +9,7 @@ This separately admitted increment builds on merged PR66/main `fb428384426be7127
 | Boundary | Narrow implemented profile / limit |
 | --- | --- |
 | Host/dependencies | Existing Ubuntu22.04 x86_64/Rust1.91.0/Cargo lock, native X11 tuple and Python3.10. No dependency additions, SDK source copying, renderer replacement or lock repinning |
-| Adapter | `namtab.mcp-local/0`, stdio only; MCP2025-11-25 or2025-06-18. JSON-RPC initialize→initialized→tools; no HTTP, model sampling, roots, prompts, subscriptions or task protocol. No claim of universal MCP-client conformance |
+| Adapter | `namtab.mcp-local/1` on the ENG3 branch (historical `/0` before it), stdio only; MCP2025-11-25 or2025-06-18. JSON-RPC initialize→initialized→tools; no HTTP, model sampling, roots, prompts, subscriptions or task protocol. No claim of universal MCP-client conformance |
 | Resources | One serial broker connection, one bounded line at a time:65,536input bytes,262,144response bytes,128accepted request IDs per bridge lifetime. No unbounded worker pool or retry queue. Broker operations retain their2s transport timeout; blocked stdin/stdout applies OS backpressure rather than spawning work |
 | Identity | Exact broker epoch and endpoint, separate MCP IDs and broker request IDs, typed task revision/attempt origin/receipt. Declared Agent role under same-UID peer checks is not authenticated model identity or H0 principal/run admission |
 | Execution | Existing two lifetime PTYs, two lifetime managed attempts, four simultaneous public connections, captureoff. No provider-request population admission or dozens-agent capacity result |
@@ -19,6 +19,8 @@ This separately admitted increment builds on merged PR66/main `fb428384426be7127
 Oversized or unfinished line framing closes the bridge without processing its suffix. A malformed complete JSON line produces a parse error without dispatch; a later distinct complete request can still be processed. Batches are refused. Valid request IDs are bounded strings or safe nonnegative integers; reuse is refused even if the payload matches. There is no implicit retry, reconnect or operation replay. A fresh bridge is a new endpoint, not permission to repeat uncertain work. The parser is the existing serde_json parser within the line cap, not an adversarially qualified codec.
 
 MCP initialization itself makes no model request. `tools/list` advertises only the supported operations. Invalid request shapes/unknown tools produce protocol errors; known-tool argument validation produces `isError:true` without dispatch. Execution refusals/partial/unknown results also remain errors. The bridge validates receipt endpoint, request ID and operation plus snapshot epoch/endpoint/version; an inconsistent response fences the connection. Response-cap exhaustion preserves the operation binding and reports uncertainty, never truncates JSON into apparent success. Stdout is exclusively protocol data.
+
+The [ENG3 scoped-read contract](../engine/scoped-observations.md#eng3-mcp-consumer-admission) owns this draft’s repeated-read migration, required `scoped_work_export_v0` negotiation and unchanged consent/preview boundary. One full discovery per bridge remains; no automatic fallback/reconnect. Use the same explicitly chosen socket/epoch and manual configuration below with a matching new broker. No model retest is implied.
 
 ## Agent integration and observation
 

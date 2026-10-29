@@ -46,6 +46,7 @@ pub struct Client {
     pub resume: String,
     failed: bool,
     scoped_support: Option<bool>,
+    scoped_work_export_support: bool,
 }
 impl Client {
     pub fn connect(path: &Path, label: &str, role: Role) -> io::Result<Self> {
@@ -91,6 +92,7 @@ impl Client {
             resume: String::new(),
             failed: false,
             scoped_support: None,
+            scoped_work_export_support: false,
         })
     }
     pub fn connect_lifecycle(path: &Path) -> io::Result<Self> {
@@ -129,7 +131,8 @@ impl Client {
         Ok(s)
     }
     /// Discover support at most once per transport via legacy Observe. That
-    /// bootstrap can refresh artifacts; subsequent scoped pulls cannot. Never
+    /// bootstrap can refresh artifacts; only the explicitly negotiated WorkExport
+    /// scope does so on later pulls. Plain Work/Session/Attempt do not. Never
     /// substitute a partial legacy snapshot or silently fall back on refusal.
     pub fn observe_scoped(
         &mut self,
@@ -158,6 +161,13 @@ impl Client {
             return Err(io::Error::new(
                 io::ErrorKind::Unsupported,
                 "scoped_observe_v0 unsupported; no scoped request dispatched",
+            ));
+        }
+        if matches!(scope, mk1::ObservationScope::WorkExport {}) && !self.scoped_work_export_support
+        {
+            return Err(io::Error::new(
+                io::ErrorKind::Unsupported,
+                "scoped_work_export_v0 unsupported; no work export dispatched",
             ));
         }
         let response = self.call(Op::ObserveScoped {
@@ -326,6 +336,8 @@ impl Client {
             }
             if let Some(s) = &response.snapshot {
                 self.scoped_support = Some(s.capabilities.iter().any(|c| c == mk1::SCOPED_OBSERVE));
+                self.scoped_work_export_support =
+                    s.capabilities.iter().any(|c| c == mk1::SCOPED_WORK_EXPORT);
             }
             Ok(response)
         })();
