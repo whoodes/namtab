@@ -46,7 +46,7 @@ Ctrl+Shift UI chords stay separate from application input. Focus/view/selection 
 
 ## Agent configuration
 
-The ENG3 draft migrates repeated MCP reads to scoped requests; use same-build broker/bridge binaries. Older brokers are explicitly unsupported by `mcp-local/1`, with no automatic legacy fallback. This changes no provider/workspace/tool approval and does not authorize a model run. [Contract and isolated proof](../engine/scoped-observations.md#eng3-mcp-consumer-admission).
+Merged ENG3/PR81 migrates repeated MCP reads to scoped requests; use same-build broker/bridge binaries. Older brokers are explicitly unsupported by `mcp-local/1`, with no automatic legacy fallback. This changes no provider/workspace/tool approval and does not authorize a model run. [Contract and isolated proof](../engine/scoped-observations.md#eng3-mcp-consumer-admission).
 
 Namtab does not automatically choose a provider, read auth stores, accept folder trust or start a model. For an explicitly chosen nonsecret run:
 

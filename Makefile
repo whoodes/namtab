@@ -95,3 +95,8 @@ scoped-test: mk1-build
 .PHONY: mcp-scoped-test
 mcp-scoped-test: mk1-build
 	python3 -B tests/mvp/mcp_scoped.py --bin-dir "$(if $(CARGO_TARGET_DIR),$(CARGO_TARGET_DIR),target)/debug" --artifacts .artifacts/mcp-scoped-$(shell python3 -c 'import uuid; print(uuid.uuid4().hex[:12])')
+
+# Explicit finite qualification on the recorded local tuple, not model/GUI work.
+.PHONY: engine-load-test
+engine-load-test: mk1-build
+	python3 -B tests/mvp/engine_load.py --qualify --bin-dir "$(if $(CARGO_TARGET_DIR),$(CARGO_TARGET_DIR),target)/debug" --artifacts .artifacts/engine-load-$(shell python3 -c 'import uuid; print(uuid.uuid4().hex[:12])')

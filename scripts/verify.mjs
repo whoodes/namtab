@@ -184,6 +184,18 @@ const steps = [
     ],
   ],
   [
+    "engine-bounded-load-functional",
+    "python3",
+    [
+      "-B",
+      "tests/mvp/engine_load.py",
+      "--bin-dir",
+      binaryDirectory,
+      "--artifacts",
+      realRun + "-load",
+    ],
+  ],
+  [
     "mvp-attempt-control",
     "python3",
     [

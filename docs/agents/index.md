@@ -55,4 +55,6 @@ Report exact command, environment, revision/tree, clean/dirty state, pass/fail/b
 
 Capture-off does not make logs/screenshots/model export private. Use synthetic, isolated tests and obey the current data/provider approval. Never inspect credential/private auth stores to make a test work. No automatic model launch, trust acceptance, saved permission, license change or user-session restart follows from this guide.
 
-[Scoped pull observations](../engine/scoped-observations.md) owns merged ENG2 API/client/CLI and the ENG3 draft MCP migration. Use `make scoped-test` or `make mcp-scoped-test` for isolated scripted protocol proofs; native polling remains legacy. Neither check invokes a model or admits larger capacity.
+[Scoped pull observations](../engine/scoped-observations.md) owns merged ENG2 API/client/CLI and merged ENG3 MCP migration. Use `make scoped-test` or `make mcp-scoped-test` for isolated scripted protocol proofs; native polling remains legacy. Neither check invokes a model or admits larger capacity.
+
+[Bounded engine-load/0 qualification](../engine/bounded-load.md) owns the ENG4 draft profile and `make engine-load-test`. It uses only synthetic owned resources; CI's functional pass is distinct from explicit local `--qualify`, and neither is full H0 or capacity admission.

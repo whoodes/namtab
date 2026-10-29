@@ -2,7 +2,7 @@
 
 [Architecture](../architecture/index.md) · [Agent guide](../agents/index.md) · [Issue78](https://github.com/whoodes/namtab/issues/78) · [Broader observations backlog49](https://github.com/whoodes/namtab/issues/49)
 
-**ENG2 merged in PR79/main ee5fdfc.** The ENG3 MCP consumer extension below is a separately reviewed branch increment until its PR merges. `namtab.scoped-observation/0`, advertised as `scoped_observe_v0`, adds bounded pull projections over private experimental `namtab.mk1/1`. This is a precursor to49, not subscriptions/deltas/waits, full H0 admission, a stable SDK or fleet capacity. No native-harness feature, provider/model, renderer, dependency or security-policy change.
+**ENG2 merged in PR79/main ee5fdfc.** The ENG3 MCP consumer extension below merged in PR81/main97741bb. `namtab.scoped-observation/0`, advertised as `scoped_observe_v0`, adds bounded pull projections over private experimental `namtab.mk1/1`. This is a precursor to49, not subscriptions/deltas/waits, full H0 admission, a stable SDK or fleet capacity. No native-harness feature, provider/model, renderer, dependency or security-policy change.
 
 ## Why this slice
 
@@ -42,7 +42,7 @@ Each **one-shot CLI** performs full bootstrap and consumes a retained endpoint i
 
 ## ENG3 MCP consumer admission
 
-[Issue80](https://github.com/whoodes/namtab/issues/80) migrates repeated MCP reads only. This draft uses `namtab.mcp-local/1` over unchanged `namtab.mk1/1` and `namtab.scoped-observation/0`. A separately advertised **`scoped_work_export_v0`** capability gates the additive `work_export` scope/view. Older clients never request its new tag; older brokers missing either scoped capability are explicitly refused by the new bridge before tools become available. No automatic legacy fallback, reconnect/resume or replay. The former `/0` MCP profile remains historical; this is a private experimental profile revision, not a stable SDK.
+[Issue80](https://github.com/whoodes/namtab/issues/80) migrates repeated MCP reads only (merged PR81). It uses `namtab.mcp-local/1` over unchanged `namtab.mk1/1` and `namtab.scoped-observation/0`. A separately advertised **`scoped_work_export_v0`** capability gates the additive `work_export` scope/view. Older clients never request its new tag; older brokers missing either scoped capability are explicitly refused by the new bridge before tools become available. No automatic legacy fallback, reconnect/resume or replay. The former `/0` MCP profile remains historical; this is a private experimental profile revision, not a stable SDK.
 
 `Bridge::connect` performs exactly one checked full Observe (success with no error/receipt/resume, bound snapshot) for capability discovery on its single live transport. It can copy/rehash full state once. Subsequent `namtab_observe` calls dispatch one scoped read:
 
@@ -81,3 +81,6 @@ The workload retains100paired legacy/Work RPC samples after10warmup pairs, inter
 `make foundation-verify` includes this journey plus failure-propagation regression. Protocol/broker/client tests exercise typed omission, nonmutation, artifact-refresh separation, sanitization, selector/epoch refusal, malformed peers, same-connection caching and reconnect negotiation. Historical X4/EA1 FAIL and original focus/Ctrl-C/setup records remain unchanged. Report exact source/tree/dirty status and preserved failures; initial working-tree runs do not certify the final commit.
 
 Remaining dependencies, **not implemented here**: H0#46 admits bounded mixed workload/profile/resources; #48 qualifies responsive human control/fairness before broader load claims. Then #49 needs event/cut identity, credit/backpressure, deltas/gaps/resync, canceled waits, calibrated larger populations, scheduler fairness and later native/other consumer integration. Scoped reads remove unrelated observation work; they do not solve those gates.
+
+
+The separately admitted [bounded-load qualification](bounded-load.md) tests engine-side control under finite noisy/stalled clients. It does not replace these scoped-read semantics, raise limits or qualify native painting.
