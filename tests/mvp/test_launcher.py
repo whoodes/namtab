@@ -14,7 +14,7 @@ spec.loader.exec_module(launcher)
 class Launcher(unittest.TestCase):
     def setUp(self):
         (ROOT / '.artifacts').mkdir(exist_ok=True)
-        self.temporary = tempfile.TemporaryDirectory(prefix='launcher-test-', dir=ROOT / '.artifacts')
+        self.temporary = tempfile.TemporaryDirectory(prefix='lt-', dir=ROOT / '.artifacts')
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name)
         self.bin = self.root / 'target/debug'

@@ -156,14 +156,20 @@ class EngineLoad(Adapter):
         replies=[json.loads(l) for l in (self.workspace/'replies.jsonl').read_text().splitlines()];require(replies and [r['seq'] for r in replies]==list(range(1,len(replies)+1)) and all(r['reply_hex']=='1b5b333b3752' for r in replies),'terminal query ordering')
         records=complete_journal_records(Path(str(self.socket_path)+'.journal').read_bytes());reply_records=[r for r in records if r['operation']=='query_reply'];require(sum(r['state']=='applied' for r in reply_records)==len(replies) and sum(r['state']=='reserved' for r in reply_records)==len(replies),'single reply authority/journal extent')
         filler=Connection(self.socket_path,'load-cap-filler','agent')
+        newcomer=None
         try:
             fifth=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM);fifth.settimeout(2);fifth.connect(str(self.socket_path))
             try:
-                try:fifth.sendall(b'{"version":"namtab.mk1/1","id":1,"operation":{"op":"hello","label":"new-human","role":"human","resume":null}}\n');data=fifth.recv(1)
-                except (ConnectionResetError,BrokenPipeError):data=b''
-                require(data==b'','fifth public connection unexpectedly admitted');self.record['full_slots_probe']={'outcome':'new-human-refused-before-hello','existing_human_observe_ok':bool(self.observe('work')),'limit':'Existing human path tested; no reserved new-human connection slot. Not universal protective admission.'}
+                fifth.sendall(b'{"version":"namtab.mk1/1","id":1,"operation":{"op":"hello","label":"new-agent","role":"agent","resume":null}}\n')
+                response=json.loads(fifth.makefile('rb').readline(1_048_577))
+                require(not response['ok'] and response['error']=='control_admission_requires_human_or_lifecycle_hello','fifth Agent admitted')
             finally:fifth.close()
-        finally:filler.close()
+            newcomer=Connection(self.socket_path,'load-fresh-human','human')
+            require(bool(scoped(newcomer,'work')) and bool(self.observe('work')),'fresh or existing Human path failed')
+            self.record['full_slots_probe']={'outcome':'four-dispatch-plus-one-bounded-handoff','fresh_human_observe_ok':True,'existing_human_observe_ok':True,'limit':'Same-UID role declaration. Only eligible unbound/Agent idle-read transport replaced; no fifth dispatch slot or universal admission guarantee.'}
+        finally:
+            if newcomer:newcomer.close()
+            filler.close()
         self.record.update(read_samples=self.reads,resources=self.resources,query_count=len(replies),human_call_samples=self.observer.samples,agent_a_call_samples=self.a.samples,agent_b_call_samples=self.b.samples)
         self.record['binary_hashes_after']={n:sha256(self.bin_dir/n) for n in self.record['binary_hashes_before']};require(self.record['binary_hashes_after']==self.record['binary_hashes_before'],'product binary changed during qualification')
         result=assess(self.record['interventions'],self.resources,self.reads,self.expected,self.windows);self.record['read_takeover_overlap_count']=sum(any(r['start_ns']<x['start_ns']+x['takeover_ns'] and r['start_ns']+r['elapsed_ns']>x['start_ns'] for r in self.reads) for x in self.record['interventions']);self.record['assessment']=result;self.record['qualification']='NOT_REQUESTED_CI_FUNCTIONAL_ONLY'

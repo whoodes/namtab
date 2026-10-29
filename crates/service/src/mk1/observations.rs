@@ -4,6 +4,7 @@ use super::*;
 pub(super) fn capabilities() -> Vec<String> {
     [
         wire::HUMAN_SHUTDOWN,
+        wire::HUMAN_ADMISSION,
         wire::ATTEMPT_CANCEL,
         wire::SHARED_TASKS,
         wire::ATTEMPT_ORIGIN,

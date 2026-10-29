@@ -100,3 +100,8 @@ mcp-scoped-test: mk1-build
 .PHONY: engine-load-test
 engine-load-test: mk1-build
 	python3 -B tests/mvp/engine_load.py --qualify --bin-dir "$(if $(CARGO_TARGET_DIR),$(CARGO_TARGET_DIR),target)/debug" --artifacts .artifacts/engine-load-$(shell python3 -c 'import uuid; print(uuid.uuid4().hex[:12])')
+
+# Four dispatch slots, one bounded handoff; isolated scripted clients only.
+.PHONY: human-admission-test
+human-admission-test: mk1-build
+	python3 -B tests/mvp/human_admission.py --bin-dir "$(if $(CARGO_TARGET_DIR),$(CARGO_TARGET_DIR),target)/debug" --artifacts .artifacts/admission-$(shell python3 -c 'import uuid; print(uuid.uuid4().hex[:12])')
