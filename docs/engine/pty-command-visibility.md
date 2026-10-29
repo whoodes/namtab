@@ -30,7 +30,7 @@ Future acceptance needs adversarial marker forgery and sequence-gap tests; hook 
 
 Retrieved **2026-10-29**, no copied integration code or installation:
 
-- [Microsoft shell integration source](https://github.com/microsoft/vscode-docs/blob/main/docs/terminal/shell-integration.md) (`main`, header DateApproved2026-10-21, not an immutable revision): integration availability/quality varies with shell/setup, subshells and SSH. It supports workflow navigation; it does not authenticate command metadata for Namtab.
+- [Microsoft shell integration source](https://github.com/microsoft/vscode-docs/blob/4ad8b6554dd1f408fc0568f16b2f9b38763ef084/docs/terminal/shell-integration.md) (header DateApproved 10/28/2026, pinned source revision): integration availability/quality varies with shell/setup, subshells and SSH. It supports workflow navigation; it does not authenticate command metadata for Namtab.
 - [iTerm2 shell integration](https://iterm2.com/documentation-shell-integration.html) and [OSC133 conventions](https://iterm2.com/documentation-escape-codes.html#shell-integration-finalterm) (unversioned current pages): prompt/input/output/end markers and optional status are de facto implementation conventions. Those bytes remain forgeable output in this threat model.
 - GNU Bash manual retrieval timed out during this campaign. **Open:** verified version/hook choice and interactions with existing prompt/debug hooks. Do not treat recalled `PS0`/`DEBUG`/`PROMPT_COMMAND` behavior as an admitted adapter API.
 

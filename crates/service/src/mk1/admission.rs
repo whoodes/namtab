@@ -135,6 +135,13 @@ impl Lease {
         let broker = Arc::clone(&self.pool.lock().unwrap().broker);
         let permit = || {
             let mut p = self.pool.lock().unwrap();
+            // Admission may have changed while the candidate framed its Hello
+            // or acquired State. Prefer a now-free slot; never evict needlessly.
+            if p.entries.values().filter(|e| e.admitted).count() < ADMITTED {
+                p.entries.get_mut(&self.id).unwrap().admitted = true;
+                p.auxiliary = None;
+                return true;
+            }
             let victim = p.entries.iter().find_map(|(id, e)| {
                 (*id != self.id
                     && e.admitted
@@ -476,5 +483,29 @@ mod tests {
             Some("lifecycle_has_no_work_or_input_authority")
         );
         assert_eq!(f.broker.state.lock().unwrap().endpoints.len(), 16);
+    }
+    #[test]
+    fn pending_candidate_uses_newly_free_slot_without_retiring_any_survivor() {
+        let f = Fixture::new();
+        let p = f.pool();
+        let mut old: Vec<_> = (0..4).map(|_| attached(&p)).collect();
+        for lease in &old {
+            lease.bind(Role::Human, Some("protected".into()));
+            lease.replied();
+        }
+        let candidate = attached(&p);
+        assert!(candidate.pending());
+        drop(old.pop());
+        let (r, e) = candidate.promote(&hello(None), Some(token().unwrap()));
+        assert!(r.ok);
+        candidate.bind(Role::Human, e);
+        candidate.replied();
+        for lease in &old {
+            assert!(lease.begin(false));
+        }
+        assert!(
+            Pool::reserve(&p).unwrap().pending(),
+            "auxiliary permit released without losing the four-dispatch bound"
+        );
     }
 }

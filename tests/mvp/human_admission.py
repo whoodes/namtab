@@ -17,6 +17,24 @@ from load_metrics import owned_resources, RSS_CAP
 from scoped_observation import scoped
 
 
+def stale_fence(response, endpoint, request_id):
+    r=response.get('receipt')
+    require(not response['ok'] and response['id']==request_id and response.get('error')=='writer_or_generation_stale' and r and r['endpoint']==endpoint and r['id']==request_id and r['operation']=='input' and r['state']=='rejected' and r['detail']=='writer_or_generation_stale' and r['delivered_bytes']==0,'expected exact stale-writer zero-byte receipt, not another rejection')
+
+
+def result_population(attempts, origins):
+    ids=[a['id'] for a in attempts]
+    require(len(ids)==2 and len(set(ids))==2 and set(ids)==set(origins),'missing/duplicate/extra attributed attempt')
+
+
+def arrival_binding(response, epoch):
+    require(response['id']==1 and response['epoch']==epoch,'concurrent Hello correlation/epoch mismatch')
+    if response['ok']:
+        require(isinstance(response.get('endpoint'),str) and bool(response['endpoint']) and isinstance(response.get('resume'),str) and bool(response['resume']),'missing Hello binding')
+    else:
+        require(response.get('endpoint') is None and response.get('resume') is None and response.get('error') in ['control_admission_no_eligible_transport','control_admission_state_busy'],'unexpected concurrent refusal')
+
+
 class Admission(Adapter):
     def __init__(self, args):
         super().__init__(args)
@@ -84,6 +102,7 @@ class Admission(Adapter):
         a, b, c, d = agents
         self.wait(lambda:not next(e for e in self.work(b)['endpoints'] if e['id']==setup.endpoint)['connected'], 'setup endpoint detached')
         self.observer = b
+        require('human_admission_v0' in self.work(b)['capabilities'],'admission capability absent')
         task = applied(b, {'op':'define_task','task':'admission','goal':'Synthetic local control admission','expected_artifacts':[]})
         revision = task['receipt']['result']['revision']
         applied(a, {'op':'create_session','name':'owned-control'})
@@ -122,12 +141,14 @@ class Admission(Adapter):
         # behind them, then prove it has no reserved/applied receipt before/after.
         a.socket.setsockopt(socket.SOL_SOCKET,socket.SO_RCVBUF,4096)
         queued = []
+        frames=[]
         for _ in range(128):
             rid = a.next_id; a.next_id += 1; queued.append(rid)
-            a.socket.sendall(json.dumps({'version':'namtab.mk1/1','id':rid,'operation':{'op':'observe'}}).encode()+b'\n')
+            frames.append(json.dumps({'version':'namtab.mk1/1','id':rid,'operation':{'op':'observe'}}).encode()+b'\n')
         canary_id = a.next_id; a.next_id += 1
-        canary = {'op':'input','session':sid,'generation':old['generation'],'revision':old['screen']['revision'],'mode_revision':old['screen']['mode_revision'],'policy':'human_live','intent':{'kind':'text','text':'QUEUED_ADMISSION_CANARY'}}
-        a.socket.sendall(json.dumps({'version':'namtab.mk1/1','id':canary_id,'operation':canary}).encode()+b'\n')
+        canary = {'op':'input','session':sid,'generation':old['generation'],'revision':old['screen']['revision'],'mode_revision':old['screen']['mode_revision'],'policy':'observed','intent':{'kind':'text','text':'QUEUED_ADMISSION_CANARY'}}
+        frames.append(json.dumps({'version':'namtab.mk1/1','id':canary_id,'operation':canary}).encode()+b'\n')
+        batch=b''.join(frames);require(len(batch)<=16384,'bounded queued request batch');a.socket.sendall(batch)
         pending=array.array('i',[0]);fcntl.ioctl(a.socket.fileno(),0x541B,pending,True)
         require(pending[0]>0,'no actual unread response bytes')
         require(not any(r['endpoint']==a.endpoint and r['id']==canary_id for r in self.journal()), 'fixture did not hold canary before admission')
@@ -154,7 +175,7 @@ class Admission(Adapter):
         resumed=self.connect(resume=a.resume,next_id=a.next_id)
         require(resumed.endpoint==a.endpoint and scoped(resumed,'session',sid)['session']['owner']==human.endpoint,'resume relabeled identity or stole writer')
         require(not any(r['endpoint']==a.endpoint and r['id']==canary_id for r in self.journal()),'resume replayed queued intent')
-        stale=resumed.call(canary);require(not stale['ok'] and stale['receipt']['endpoint']==a.endpoint and stale['receipt']['state']=='rejected' and stale['receipt']['delivered_bytes']==0,'resumed original owner stale intent not zero-byte rejected')
+        stale_id=resumed.next_id;stale=resumed.call(canary);stale_fence(stale,a.endpoint,stale_id)
         # A saturation Hello plus a prefetched request in ONE send retains its
         # suffix and binds it once. Never log the Hello's resume capability.
         pipe=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM);pipe.settimeout(2);pipe.connect(str(self.socket_path));self.raw_sockets.append(pipe)
@@ -167,17 +188,28 @@ class Admission(Adapter):
         # Two real concurrent arrivals; record BOTH outcomes including refusal.
         barrier=threading.Barrier(3);arrivals=[];arrival_lock=threading.Lock()
         def arrival():
+            sock=None
             barrier.wait();t=time.monotonic_ns()
             try:
-                client=self.connect('human');row={'ok':True,'endpoint':client.endpoint,'elapsed_ns':time.monotonic_ns()-t}
-            except Exception as e:row={'ok':False,'error':str(e),'elapsed_ns':time.monotonic_ns()-t}
+                sock=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM);sock.settimeout(2);sock.connect(str(self.socket_path))
+                sock.sendall(json.dumps({'version':'namtab.mk1/1','id':1,'operation':self.hello()}).encode()+b'\n')
+                with sock.makefile('rb') as reader:line=reader.readline(1_048_577)
+                require(line.endswith(b'\n') and len(line)<=1_048_576,'closed/oversize concurrent Hello')
+                response=json.loads(line);arrival_binding(response,human.epoch)
+                row={'ok':response['ok'],'protocol_ok':True,'endpoint':response.get('endpoint'),'error':response.get('error'),'elapsed_ns':time.monotonic_ns()-t}
+                if response['ok']:
+                    with arrival_lock:self.raw_sockets.append(sock)
+                    sock=None
+            except Exception as e:row={'ok':False,'protocol_ok':False,'error':type(e).__name__+': '+str(e),'elapsed_ns':time.monotonic_ns()-t}
+            finally:
+                if sock:sock.close()
             with arrival_lock:arrivals.append(row)
         threads=[threading.Thread(target=arrival) for _ in range(2)]
         for t in threads:t.start()
         barrier.wait()
         for t in threads:t.join(timeout=4);require(not t.is_alive(),'arrival thread exceeded bound')
-        require(len(arrivals)==2 and any(r['ok'] for r in arrivals),'concurrent admission made no progress')
-        self.record['concurrent_arrivals']=arrivals;self.sockets()
+        self.record['concurrent_arrivals']=arrivals
+        require(len(arrivals)==2 and all(r['protocol_ok'] for r in arrivals) and any(r['ok'] for r in arrivals),'concurrent protocol failure or no progress: '+str(arrivals));self.sockets()
         # Surviving clients are discoverable from the one protected Human.
         live=self.work(human)['endpoints']
         while any(e['connected'] and e['role']=='agent' for e in live):
@@ -199,13 +231,26 @@ class Admission(Adapter):
         except ConnectionResetError:pass
         finally:s.close()
         require(time.monotonic()-t<1,'pending framing lease not finite')
+        # A fourth slot can disappear during a pending Hello. Its replacement
+        # must not evict any of the three protected survivors.
+        candidate=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM);candidate.settimeout(2);candidate.connect(str(self.socket_path));self.raw_sockets.append(candidate)
+        frame=json.dumps({'version':'namtab.mk1/1','id':1,'operation':self.hello()}).encode()+b'\n'
+        candidate.sendall(frame[:1]);time.sleep(.04)
+        pipe.shutdown(socket.SHUT_RDWR);pipe.close()
+        survivors=self.wait(lambda:[e['id'] for e in self.work(human)['endpoints'] if e['connected']] if sum(e['connected'] for e in self.work(human)['endpoints'])==3 else None,'three surviving protected transports',timeout=.15)
+        candidate.sendall(frame[1:])
+        with candidate.makefile('rb') as reader:response=json.loads(reader.readline(1_048_577))
+        arrival_binding(response,human.epoch);require(response['ok'],'newly free slot was refused')
+        require(set(e['id'] for e in self.work(human)['endpoints'] if e['connected'])==set(survivors)|{response['endpoint']},'free-slot promotion retired a survivor')
+        self.record['free_slot_during_hello']={'survivors':survivors,'new_endpoint':response['endpoint'],'ok':True,'limit':'public ordering proof; deterministic private unit separately forces pending phase'}
         self.record['all_protected_refusal']=no_victim['error']
         self.record['socket_samples']=self.samples
         self.stop_monitor.set();self.monitor.join(timeout=3);require(not self.monitor.is_alive() and not self.monitor_errors and len(self.resources)>=2,'resource monitor incomplete/failed: '+str(self.monitor_errors))
         self.record['resources']=self.resources;self.record['monitor_errors']=self.monitor_errors
         (self.workspace/'finish').write_bytes(b'finish')
         self.wait_snapshot(lambda s:all(a['state']=='exited' for a in s['attempts']),'both attributed managed jobs drain')
-        for attempt in self.work(human)['attempts']:
+        attempts=self.work(human)['attempts'];result_population(attempts,origins)
+        for attempt in attempts:
             detail=scoped(human,'attempt',attempt['id'])['attempt']
             require(detail['origin']==origins[attempt['id']] and detail['task_revision']==revision and detail['exit_code']==0,'attempt origin/result changed')
             own='ONLY_A_' if detail['origin']['endpoint']==b.endpoint else 'ONLY_B_';other='ONLY_B_' if own=='ONLY_A_' else 'ONLY_A_'
@@ -216,15 +261,29 @@ class Admission(Adapter):
 
     def cleanup(self):
         self.stop_monitor.set()
-        if self.monitor:self.monitor.join(timeout=3);require(not self.monitor.is_alive(),'monitor left running')
-        self.record.setdefault('resources',self.resources);self.record['monitor_errors']=self.monitor_errors
-        for sock in self.raw_sockets:sock.close()
-        if self.root_pidfd is not None:os.close(self.root_pidfd);self.root_pidfd=None
-        for client in self.clients:
-            client.close()
-        self.clients=[]
-        self.observer=None
-        super().cleanup()
+        faults=[]
+        try:
+            if self.monitor:
+                self.monitor.join(timeout=3)
+                if self.monitor.is_alive():faults.append('monitor still running')
+        finally:
+            self.record.setdefault('resources',self.resources);self.record['monitor_errors']=self.monitor_errors
+            # A failed client close must not short-circuit other handles or make
+            # the superclass close the same failing client before process cleanup.
+            self.observer=None
+            try:
+                for handle in [*self.raw_sockets,*self.clients]:
+                    try:handle.close()
+                    except Exception as error:faults.append(type(error).__name__+': '+str(error))
+                self.raw_sockets=[];self.clients=[]
+                if self.root_pidfd is not None:
+                    try:os.close(self.root_pidfd)
+                    except OSError as error:faults.append(type(error).__name__+': '+str(error))
+                    self.root_pidfd=None
+            finally:
+                self.record['owned_cleanup_faults']=faults
+                super().cleanup()
+        require(not faults,'owned cleanup had failures: '+str(faults))
 
 
 if __name__=='__main__':
