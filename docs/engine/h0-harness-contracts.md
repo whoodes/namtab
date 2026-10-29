@@ -134,3 +134,8 @@ The [H0 lifecycle/write-safety model](../engineering/16-test-and-ci-strategy.md#
 ### Separately admitted adapter experiment
 
 The [external-agent/lifecycle increment](../engineering/external-agent-mvp.md) implements a finite MCP→MK1 bridge and restricted lifecycle namespace under its own bounded admission. It is not the H0 native principal/run/assignment wire, a whole-profile freeze or proof that every external agent tool/provider request is mediated. Its actual model attempt is blocked by client approval/trust prerequisites; fixtures do not satisfy live-model criteria. The earlier planning table retains its date; the experiment is an explicit exception, not retrospective full H0 acceptance.
+
+
+### Bounded engine qualification exception
+
+The separately authorized [ENG4 engine-load/0 profile](bounded-load.md) admits only a finite existing-capacity headless experiment under issue82. It owns precise workloads, numerical/functional gates, sampling limitations and source-bound results; the larger population/resource proposals above remain unselected. Source audits and a successful named experiment do not complete A1–A5, #46/#48 or H0. #49 subscription/backpressure work stays dependent.
