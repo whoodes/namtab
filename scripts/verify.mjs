@@ -220,6 +220,18 @@ const steps = [
     ],
   ],
   [
+    "mvp-human-admission",
+    "python3",
+    [
+      "-B",
+      "tests/mvp/human_admission.py",
+      "--bin-dir",
+      binaryDirectory,
+      "--artifacts",
+      realRun + "-admission",
+    ],
+  ],
+  [
     "h0-real-single-write-handoff",
     binaryDirectory + "/namtab-h0-probe",
     [

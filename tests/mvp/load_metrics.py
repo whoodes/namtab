@@ -1,4 +1,4 @@
-"""Pure result checks for the finite engine-load/0 experiment, not a scheduler model."""
+"""Pure result checks for the finite engine-load/1 experiment, not a scheduler model."""
 import os
 from pathlib import Path
 import select
@@ -7,7 +7,7 @@ import time
 def require(value,message):
     if not value:raise AssertionError(message)
 
-PROFILE='namtab.engine-load/0'
+PROFILE='namtab.engine-load/1'
 CONTROL_P95_NS=100_000_000
 SERVICE_NS=2_000_000_000
 RSS_CAP=1_073_741_824

@@ -1,4 +1,5 @@
 //! MK1 is a same-UID supervised developer host, not a sandbox or durable terminal.
+mod admission;
 mod attempts;
 mod journal;
 mod observations;
@@ -292,66 +293,139 @@ impl Broker {
     }
     fn hello(&self, id: u64, role: Role, resume: Option<String>) -> (Response, Option<String>) {
         let mut state = self.state.lock().unwrap();
-        let endpoint = if let Some(resume) = resume {
-            state
+        self.bind_hello(&mut state, id, role, resume, None, || true)
+    }
+    fn control_state(&self) -> Option<std::sync::MutexGuard<'_, State>> {
+        let deadline = std::time::Instant::now() + admission::STATE_TIME;
+        loop {
+            if std::time::Instant::now() >= deadline {
+                return None;
+            }
+            match self.state.try_lock() {
+                Ok(state) => return Some(state),
+                Err(std::sync::TryLockError::Poisoned(_)) => return None,
+                Err(std::sync::TryLockError::WouldBlock) => {
+                    std::thread::sleep(Duration::from_millis(1))
+                }
+            }
+        }
+    }
+    fn control_hello(
+        &self,
+        id: u64,
+        resume: Option<String>,
+        secret: Option<String>,
+        permit: impl FnOnce() -> bool,
+    ) -> (Response, Option<String>) {
+        if resume.is_none() && secret.is_none() {
+            return (self.fail(id, "entropy_unavailable"), None);
+        }
+        let Some(mut state) = self.control_state() else {
+            return (self.fail(id, "control_admission_state_busy"), None);
+        };
+        self.bind_hello(&mut state, id, Role::Human, resume, secret, permit)
+    }
+    fn bind_hello(
+        &self,
+        state: &mut State,
+        id: u64,
+        role: Role,
+        resume: Option<String>,
+        secret: Option<String>,
+        permit: impl FnOnce() -> bool,
+    ) -> (Response, Option<String>) {
+        let (endpoint, new) = if let Some(resume) = resume {
+            let Some(endpoint) = state
                 .endpoints
                 .iter()
-                .find(|(_, value)| {
-                    !value.resume.is_empty() && value.resume == resume && value.role == role
-                })
+                .find(|(_, e)| !e.resume.is_empty() && e.resume == resume && e.role == role)
                 .map(|(id, _)| id.clone())
+            else {
+                return (self.fail(id, "resume_unknown_in_this_epoch"), None);
+            };
+            if state.endpoints[&endpoint].connected {
+                return (self.fail(id, "endpoint_already_connected"), None);
+            }
+            (endpoint, None)
         } else {
-            if state
+            let count = state
                 .endpoints
                 .keys()
-                .filter(|k| k.as_str() != "lifecycle")
-                .count()
-                >= 15
-            {
+                .filter(|id| id.as_str() != "lifecycle")
+                .count();
+            if count >= 15 {
                 return (self.fail(id, "endpoint_capacity"), None);
             }
-            let endpoint = format!(
-                "e{}",
-                state
-                    .endpoints
-                    .keys()
-                    .filter(|k| k.as_str() != "lifecycle")
-                    .count()
-                    + 1
-            );
-            let Ok(resume) = token() else {
-                return (self.fail(id, "entropy_unavailable"), None);
+            let resume = match secret {
+                Some(s) => s,
+                None => {
+                    let Ok(s) = token() else {
+                        return (self.fail(id, "entropy_unavailable"), None);
+                    };
+                    s
+                }
             };
-            state.endpoints.insert(
-                endpoint.clone(),
-                Endpoint {
+            (
+                format!("e{}", count + 1),
+                Some(Endpoint {
                     role,
                     resume,
                     connected: false,
                     high_water: 0,
                     decisions: BTreeMap::new(),
                     emergency: BTreeMap::new(),
-                },
+                }),
+            )
+        };
+        if !permit() {
+            return (
+                self.fail(id, "control_admission_no_eligible_transport"),
+                None,
             );
-            Some(endpoint)
-        };
-        let Some(endpoint) = endpoint else {
-            return (self.fail(id, "resume_unknown_in_this_epoch"), None);
-        };
-        let value = state.endpoints.get_mut(&endpoint).unwrap();
-        if value.connected {
-            return (self.fail(id, "endpoint_already_connected"), None);
         }
+        if let Some(new) = new {
+            state.endpoints.insert(endpoint.clone(), new);
+        }
+        let value = state.endpoints.get_mut(&endpoint).unwrap();
         value.connected = true;
-        let mut response = self.response(id);
-        response.endpoint = Some(endpoint.clone());
-        response.resume = Some(value.resume.clone());
-        (response, Some(endpoint))
+        let mut r = self.response(id);
+        r.endpoint = Some(endpoint.clone());
+        r.resume = Some(value.resume.clone());
+        (r, Some(endpoint))
     }
-    // One reserved, restricted lifecycle identity; no work/PTY authority and no
-    // reusable credential. Repeated status cannot exhaust ordinary identities.
     fn lifecycle_hello(&self, id: u64) -> (Response, Option<String>) {
         let mut state = self.state.lock().unwrap();
+        self.bind_lifecycle(&mut state, id, || true)
+    }
+    fn control_lifecycle_hello(
+        &self,
+        id: u64,
+        permit: impl FnOnce() -> bool,
+    ) -> (Response, Option<String>) {
+        let Some(mut state) = self.control_state() else {
+            return (self.fail(id, "control_admission_state_busy"), None);
+        };
+        self.bind_lifecycle(&mut state, id, permit)
+    }
+    fn bind_lifecycle(
+        &self,
+        state: &mut State,
+        id: u64,
+        permit: impl FnOnce() -> bool,
+    ) -> (Response, Option<String>) {
+        if state
+            .endpoints
+            .get("lifecycle")
+            .is_some_and(|e| e.connected)
+        {
+            return (self.fail(id, "lifecycle_already_connected"), None);
+        }
+        if !permit() {
+            return (
+                self.fail(id, "control_admission_no_eligible_transport"),
+                None,
+            );
+        }
         let value = state
             .endpoints
             .entry("lifecycle".into())
@@ -363,9 +437,6 @@ impl Broker {
                 decisions: BTreeMap::new(),
                 emergency: BTreeMap::new(),
             });
-        if value.connected {
-            return (self.fail(id, "lifecycle_already_connected"), None);
-        }
         value.connected = true;
         let mut r = self.response(id);
         r.endpoint = Some("lifecycle".into());

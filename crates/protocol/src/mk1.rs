@@ -9,6 +9,7 @@ pub const SHARED_TASKS: &str = "shared_tasks_v1";
 pub const ATTEMPT_ORIGIN: &str = "attempt_origin_v1";
 pub const ATTEMPT_CANCEL: &str = "attempt_cancel_v0";
 pub const ATTEMPT_CONTROL_PROFILE: &str = "namtab.attempt-control/0";
+pub const HUMAN_ADMISSION: &str = "human_admission_v0";
 pub const HUMAN_SHUTDOWN: &str = "human_shutdown_v1";
 pub const RECEIPT_RESULTS: &str = "receipt_results_v1";
 pub const SCOPED_OBSERVE: &str = "scoped_observe_v0";

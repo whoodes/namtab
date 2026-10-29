@@ -22,7 +22,7 @@ Ctrl+Shift+X opens a confirmation for one frozen epoch/attempt/origin tuple, wit
 
 A fresh actual-window journey must use two explicitly scripted clients and one immutable shared task: observe independent attributed attempts/streams; navigate work and canonical terminals; cancel A while B continues; take over only the chosen terminal and reject stale writer input; show disconnected/failed/unknown truthfully. No fixture is called a model. Capture actual window pixels and targeted keyboard/focus evidence, preserving the original failed focus assertion and library-suppression limitations.
 
-Retain2PTY/2attempt/four-connection bounds and disclose lifetime slot exhaustion. Record raw samples/workload/hardware for any latency statistic; sampled control RPC and input-to-receipt timing are not inference, renderer or all-process performance qualification. Wider fleet scheduling/targeted subscription capacity belongs to later engine gates; larger UI virtualization/final accessibility/IME belong to later harness gates. No exact32client or universal speed promise.
+Retain2PTY/2attempt/four-dispatch-connection bounds ([ENG5 draft auxiliary admission](../engine/human-admission.md) is a separate engine policy) and disclose lifetime slot exhaustion. Record raw samples/workload/hardware for any latency statistic; sampled control RPC and input-to-receipt timing are not inference, renderer or all-process performance qualification. Wider fleet scheduling/targeted subscription capacity belongs to later engine gates; larger UI virtualization/final accessibility/IME belong to later harness gates. No exact32client or universal speed promise.
 
 ## Launch and actual validation
 

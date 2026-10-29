@@ -35,6 +35,8 @@ nav:
       - Implemented exact-attempt API: engine/attempt-control.md
       - Draft scoped pull API: engine/scoped-observations.md
       - Bounded load qualification: engine/bounded-load.md
+      - Draft fresh control admission: engine/human-admission.md
+      - Proposed PTY command visibility: engine/pty-command-visibility.md
       - Compatibility / owned core design: engine/compatibility-and-core.md
       - Runtime / recovery design: engine/runtime-persistence-security.md
       - Client projection contract: engine/frontend-contracts.md

@@ -68,3 +68,5 @@ Not implemented/qualified: dozens-agent scheduling/capacity, authenticated model
 [Scoped observations](../engine/scoped-observations.md) owns merged ENG2's public read projections and the merged ENG3 MCP consumer. The latter uses one full discovery then exact session/attempt or freshness-preserving work export, never a partial full snapshot. Native/diagnostic polling and capacity stay unchanged. MCP consumes public contracts and applies export filtering; the broker owns artifact freshness, attribution and canonical state.
 
 The [ENG4 bounded-load draft](../engine/bounded-load.md) adds test/evidence only around those public contracts. It separates preconnected human control from new-human admission at full connection capacity and sampled RSS from enforced allocation; no new scheduler/parser/harness policy follows.
+
+[ENG5 admission draft](../engine/human-admission.md) changes only bounded same-UID transport handoff; main/PR83 do not yet implement it. Four dispatch slots remain. [PTY command visibility](../engine/pty-command-visibility.md) is a separate proposed cooperative shell boundary, not authoritative command attribution.
