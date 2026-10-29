@@ -46,15 +46,17 @@ def validate_read_trace(rows):
     require(rows and rows[0]['request']['operation']['op']=='hello','missing initial hello')
     require(sum(x['request']['operation']['op']=='observe' for x in rows)==1,'expected exactly one full discovery, no fallback')
     require(rows[1]['request']['operation']['op']=='observe','discovery must precede scoped dispatch')
-    endpoint=rows[0]['response']['endpoint']
+    endpoint=rows[0]['response']['endpoint'];epoch=rows[0]['response']['epoch']
     for row in rows:
         q=row['request'];r=row['response'];require(q['id']==r['id'],'trace correlation')
         if q['operation']['op']!='observe_scoped':continue
-        require(q['operation']['epoch']==r['epoch'],'trace epoch')
+        require(q['operation']['epoch']==r['epoch']==epoch,'trace epoch')
         require(all(r[k] is None for k in ['snapshot','receipt','resume']),'mixed scoped response')
-        if not r['ok']:require(not r.get('observation'),'refused read exported view');continue
+        require(r['ok']==(r.get('observation') is not None),'trace success/view consistency')
+        if not r['ok']:require(isinstance(r.get('error'),str),'read refusal reason required');continue
+        require(r.get('error') is None,'successful read carried error')
         o=r['observation'];scope=q['operation']['scope'];view=o['view']
-        require(o['epoch']==q['operation']['epoch'] and o['endpoint']==endpoint and (r.get('endpoint') is None or r['endpoint']==endpoint) and o['profile']=='namtab.scoped-observation/0','trace projection binding')
+        require(o['version']=='namtab.mk1/1' and o['epoch']==q['operation']['epoch'] and o['endpoint']==endpoint and (r.get('endpoint') is None or r['endpoint']==endpoint) and o['profile']=='namtab.scoped-observation/0','trace projection binding')
         require(view['kind']==scope['kind'],'trace scope')
         if scope['kind'] in ['attempt','session']:require(view[scope['kind']]['id']==scope[scope['kind']],'cross-target projection')
         if scope['kind']=='work_export':

@@ -12,5 +12,5 @@ test("MCP evidence rejects fallback, binding corruption and unrequested bodies",
     },
   );
   assert.equal(result.status, 0, result.stdout + result.stderr);
-  assert.match(result.stderr, /Ran 4 tests/u);
+  assert.match(result.stderr, /Ran 5 tests/u);
 });

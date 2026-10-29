@@ -50,6 +50,9 @@ fn peer(case: &'static str) -> (std::path::PathBuf, std::thread::JoinHandle<Vec<
                     caps.retain(|x| *x != p::SCOPED_WORK_EXPORT)
                 }
                 r["snapshot"] = json!({"version":p::VERSION,"epoch":"fixture-epoch","endpoint":"fixture-agent","capabilities":caps,"endpoints":[],"tasks":[],"sessions":[],"attempts":[],"artifacts":[],"receipts":[],"degraded":null});
+                if case == "discovery_error" {
+                    r["error"] = json!("observation_epoch_stale");
+                }
                 if case == "discovery_missing" {
                     r["snapshot"] = Value::Null
                 }
@@ -119,6 +122,7 @@ fn mcp_reads_negotiate_once_export_exact_scopes_and_fence_bad_peers_without_fall
         "unsupported",
         "missing_export_cap",
         "discovery_missing",
+        "discovery_error",
         "discovery_resume",
         "discovery_receipt",
         "profile",

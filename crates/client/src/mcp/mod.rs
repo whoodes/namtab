@@ -32,18 +32,7 @@ impl Bridge {
         if client.epoch != epoch {
             return Err(io::Error::other("wrong broker epoch; no tools admitted"));
         }
-        let discovery = client.call(Op::Observe {})?;
-        if !discovery.ok
-            || discovery.snapshot.is_none()
-            || discovery.receipt.is_some()
-            || discovery.resume.is_some()
-        {
-            client.close_transport();
-            return Err(io::Error::other(
-                "invalid MCP scoped discovery; connection fenced",
-            ));
-        }
-        let s = discovery.snapshot.expect("checked discovery");
+        let s = client.discover_scoped()?;
         for cap in [
             p::SHARED_TASKS,
             p::ATTEMPT_ORIGIN,

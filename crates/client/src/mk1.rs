@@ -130,6 +130,23 @@ impl Client {
             .ok_or_else(|| io::Error::other("missing snapshot"))?;
         Ok(s)
     }
+    /// Shared strict capability-discovery seam for scoped consumers. A success
+    /// carrying an error is contradictory evidence, never permission to act.
+    pub(crate) fn discover_scoped(&mut self) -> io::Result<mk1::Snapshot> {
+        let discovery = self.call(Op::Observe {})?;
+        if !discovery.ok
+            || discovery.error.is_some()
+            || discovery.snapshot.is_none()
+            || discovery.receipt.is_some()
+            || discovery.resume.is_some()
+        {
+            self.close_transport();
+            return Err(io::Error::other(
+                "invalid scoped capability discovery; connection fenced",
+            ));
+        }
+        Ok(discovery.snapshot.expect("checked discovery"))
+    }
     /// Discover support at most once per transport via legacy Observe. That
     /// bootstrap can refresh artifacts; only the explicitly negotiated WorkExport
     /// scope does so on later pulls. Plain Work/Session/Attempt do not. Never
@@ -145,17 +162,7 @@ impl Client {
             ));
         }
         if self.scoped_support.is_none() {
-            let discovery = self.call(Op::Observe {})?;
-            if !discovery.ok
-                || discovery.snapshot.is_none()
-                || discovery.receipt.is_some()
-                || discovery.resume.is_some()
-            {
-                self.close_transport();
-                return Err(io::Error::other(
-                    "invalid scoped capability discovery; connection fenced",
-                ));
-            }
+            self.discover_scoped()?;
         }
         if self.scoped_support != Some(true) {
             return Err(io::Error::new(

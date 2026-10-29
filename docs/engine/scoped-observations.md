@@ -44,7 +44,7 @@ Each **one-shot CLI** performs full bootstrap and consumes a retained endpoint i
 
 [Issue80](https://github.com/whoodes/namtab/issues/80) migrates repeated MCP reads only. This draft uses `namtab.mcp-local/1` over unchanged `namtab.mk1/1` and `namtab.scoped-observation/0`. A separately advertised **`scoped_work_export_v0`** capability gates the additive `work_export` scope/view. Older clients never request its new tag; older brokers missing either scoped capability are explicitly refused by the new bridge before tools become available. No automatic legacy fallback, reconnect/resume or replay. The former `/0` MCP profile remains historical; this is a private experimental profile revision, not a stable SDK.
 
-`Bridge::connect` performs exactly one checked full Observe for capability discovery on its single live transport. It can copy/rehash full state once. Subsequent `namtab_observe` calls dispatch one scoped read:
+`Bridge::connect` performs exactly one checked full Observe (success with no error/receipt/resume, bound snapshot) for capability discovery on its single live transport. It can copy/rehash full state once. Subsequent `namtab_observe` calls dispatch one scoped read:
 
 | MCP arguments | Broker scope | Export semantics |
 | --- | --- | --- |
