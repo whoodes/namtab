@@ -8,5 +8,5 @@ test("engine-load evidence refuses missing, stale, starved and over-budget resul
     timeout: 10000,
   });
   assert.equal(r.status, 0, r.stdout + r.stderr);
-  assert.match(r.stderr, /Ran 10 tests/u);
+  assert.match(r.stderr, /Ran 12 tests/u);
 });

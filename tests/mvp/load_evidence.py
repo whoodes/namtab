@@ -43,7 +43,7 @@ def execute(run, identity=source_identity):
             total=0
             for path in sorted(run.artifacts.rglob('*')):
                 if path.is_symlink():raise AssertionError('symlink in owned evidence')
-                if path.is_file() and path.name!='checks.json':
+                if path.is_file() and path!=run.artifacts/'checks.json':
                     total+=path.stat().st_size
                     if total>20*1024*1024 or len(manifest)>=2048:raise AssertionError('evidence seal capacity')
                     manifest[str(path.relative_to(run.artifacts))]={'bytes':path.stat().st_size,'sha256':digest(path)}

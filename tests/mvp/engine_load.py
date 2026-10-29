@@ -64,8 +64,7 @@ class EngineLoad(Adapter):
         if not warmup:self.record['interventions'].append(sample)
         before=self.session(self.sid);oldgen=before['generation'];ticks={k:(self.workspace/('ticks-'+k)).stat().st_size for k in ['A','B']}
         started=time.monotonic_ns();sample['start_ns']=started;applied(self.observer,{'op':'take_control','session':self.sid,'generation':oldgen,'force':True});sample['takeover_ns']=time.monotonic_ns()-started
-        with self.agent_lock:stale=self.a.call({'op':'input','session':self.sid,'generation':oldgen,'revision':before['screen']['revision'],'mode_revision':before['screen']['mode_revision'],'policy':'observed','intent':{'kind':'text','text':'STALE_LOAD_CANARY'}})
-        require(not stale['ok'] and stale['receipt'] and stale['receipt']['endpoint']==self.a.endpoint and stale['receipt']['id']==self.a.last['request_id'] and stale['receipt']['delivered_bytes']==0,'stale owner effect/receipt');sample['stale_bytes']=stale['receipt']['delivered_bytes']
+        sample['stale_bytes']=self.stale_input(before)
         current=self.session(self.sid);token=f'{rep}:{phase}:{cycle}' if not warmup else f'warmup:{cycle}';old=(self.workspace/'probes').read_text().splitlines() if (self.workspace/'probes').exists() else [];command="printf '%s\\n' '"+token+"' >> probes"
         def write(intent):
             s=self.session(self.sid);started=time.monotonic_ns();r=applied(self.observer,{'op':'input','session':self.sid,'generation':s['generation'],'revision':s['screen']['revision'],'mode_revision':s['screen']['mode_revision'],'policy':'human_live','intent':intent});return time.monotonic_ns()-started,r
@@ -76,6 +75,15 @@ class EngineLoad(Adapter):
         applied(self.observer,{'op':'release_control','session':self.sid,'generation':current['generation']});current=self.session(self.sid)
         with self.agent_lock:applied(self.a,{'op':'take_control','session':self.sid,'generation':current['generation'],'force':False})
         sample['ok']=True
+    def stale_input(self,before):
+        with self.agent_lock:
+            request_id,endpoint=self.a.next_id,self.a.endpoint
+            stale=self.a.call({'op':'input','session':self.sid,'generation':before['generation'],'revision':before['screen']['revision'],'mode_revision':before['screen']['mode_revision'],'policy':'observed','intent':{'kind':'text','text':'STALE_LOAD_CANARY'}})
+        # Another poll can now update Timed.last. Only this immutable transaction
+        # may establish the zero-effect refusal, never that mutable diagnostic.
+        receipt=stale.get('receipt')
+        require(not stale['ok'] and stale['id']==request_id and receipt and receipt['endpoint']==endpoint and receipt['id']==request_id and receipt['operation']=='input' and receipt['state']=='rejected' and receipt['delivered_bytes']==0,'stale owner effect/receipt')
+        return receipt['delivered_bytes']
     def unread_b(self):
         pending=array.array('i',[0]);fcntl.ioctl(self.b.socket.fileno(),termios.FIONREAD,pending,True);return pending[0]
     def stall(self):

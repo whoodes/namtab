@@ -99,4 +99,27 @@ class Sealing(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             f=Fake(Path(d));f.cleanup=lambda:f.fixture_files[0].write_text('changed')
             self.assertEqual(execute(f,self.identity),1);self.assertIn('seal_error',json.loads((f.artifacts/'checks.json').read_text()))
+class Transaction(unittest.TestCase):
+    def test_stale_receipt_uses_captured_request_not_mutable_last(self):
+        from types import SimpleNamespace
+        from engine_load import EngineLoad
+        for mode in ['valid','wrong_id','unknown']:
+            receipt=dict(endpoint='a',id=5,operation='input',state='rejected',delivered_bytes=0)
+            if mode=='wrong_id':receipt['id']=6
+            if mode=='unknown':receipt['state']='unknown'
+            peer=SimpleNamespace(endpoint='a',next_id=5,last={'request_id':5},call=lambda _:dict(ok=False,id=5,receipt=receipt))
+            class PollOnUnlock:
+                def __enter__(self):return self
+                def __exit__(self,*_):peer.last={'request_id':6};peer.next_id=7
+            fixture=SimpleNamespace(a=peer,sid='s',agent_lock=PollOnUnlock());before=dict(generation=1,screen=dict(revision=2,mode_revision=3))
+            if mode=='valid':self.assertEqual(EngineLoad.stale_input(fixture,before),0);self.assertEqual(peer.last['request_id'],6)
+            else:
+                with self.assertRaises(AssertionError):EngineLoad.stale_input(fixture,before)
+    def test_nested_checks_file_is_included_in_evidence_seal(self):
+        with tempfile.TemporaryDirectory() as d:
+            f=Fake(Path(d))
+            def create_nested():
+                (f.artifacts/'workspace').mkdir();(f.artifacts/'workspace/checks.json').write_text('{"synthetic":true}')
+            f.cleanup=create_nested;self.assertEqual(execute(f,Sealing().identity),0)
+            self.assertIn('workspace/checks.json',json.loads((f.artifacts/'checks.json').read_text())['evidence'])
 if __name__=='__main__':unittest.main()
