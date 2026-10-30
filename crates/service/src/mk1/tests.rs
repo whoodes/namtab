@@ -2191,3 +2191,6 @@ fn output_loss_scanner_matches_independent_legacy_render_budget() {
         }
     }
 }
+
+#[path = "watch_tests.rs"]
+mod watch_tests;

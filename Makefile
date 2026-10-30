@@ -105,3 +105,8 @@ engine-load-test: mk1-build
 .PHONY: human-admission-test
 human-admission-test: mk1-build
 	python3 -B tests/mvp/human_admission.py --bin-dir "$(if $(CARGO_TARGET_DIR),$(CARGO_TARGET_DIR),target)/debug" --artifacts .artifacts/admission-$(shell python3 -c 'import uuid; print(uuid.uuid4().hex[:12])')
+
+# Request-driven single-session watch proof; fresh owned processes, no model/GUI.
+.PHONY: session-watch-test
+session-watch-test: mk1-build
+	python3 -B tests/mvp/session_watch.py --bin-dir "$(if $(CARGO_TARGET_DIR),$(CARGO_TARGET_DIR),target)/debug" --artifacts .artifacts/session-watch-$(shell python3 -c 'import uuid; print(uuid.uuid4().hex[:12])')

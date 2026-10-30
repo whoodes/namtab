@@ -4,6 +4,7 @@ use std::io::{self, BufRead, BufReader, Write};
 use std::os::unix::net::UnixStream;
 use std::path::Path;
 use std::time::Duration;
+mod session_watch;
 
 /// Immutable cancellation confirmation target. Not a process handle or a grant.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -46,6 +47,8 @@ pub struct Client {
     pub resume: String,
     failed: bool,
     scoped_support: Option<bool>,
+    watch_support: Option<bool>,
+    watch_binding: Option<session_watch::Binding>,
     scoped_work_export_support: bool,
 }
 impl Client {
@@ -92,6 +95,8 @@ impl Client {
             resume: String::new(),
             failed: false,
             scoped_support: None,
+            watch_support: None,
+            watch_binding: None,
             scoped_work_export_support: false,
         })
     }
@@ -114,6 +119,7 @@ impl Client {
     pub fn close_transport(&mut self) {
         let _ = self.writer.shutdown(std::net::Shutdown::Both);
         self.failed = true;
+        self.watch_binding = None;
     }
     pub fn transport_failed(&self) -> bool {
         self.failed
@@ -262,6 +268,13 @@ impl Client {
                 "scoped request epoch mismatch; nothing dispatched",
             ));
         }
+        let watch = match &operation {
+            Op::SessionWatch { epoch, request } => {
+                self.watch_preflight(epoch, request)?;
+                Some(request.clone())
+            }
+            _ => None,
+        };
         let scope = match &operation {
             Op::ObserveScoped { scope, .. } => Some(scope.clone()),
             _ => None,
@@ -282,10 +295,15 @@ impl Client {
         let result = (|| {
             self.writer.write_all(&bytes)?;
             let mut bytes = Vec::new();
-            let mut limited = self.reader.by_ref().take((mk1::MAX_FRAME + 1) as u64);
+            let frame_limit = if watch.is_some() {
+                mk1::WATCH_MAX_REPLY
+            } else {
+                mk1::MAX_FRAME
+            };
+            let mut limited = self.reader.by_ref().take((frame_limit + 1) as u64);
             use std::io::Read;
             let n = limited.read_until(b'\n', &mut bytes)?;
-            if n == 0 || n > mk1::MAX_FRAME || bytes.last() != Some(&b'\n') {
+            if n == 0 || n > frame_limit || bytes.last() != Some(&b'\n') {
                 return Err(io::Error::other("closed or oversized response"));
             }
             let response: Response = serde_json::from_slice(&bytes)?;
@@ -310,6 +328,7 @@ impl Client {
                     "snapshot binding mismatch; effects unknown",
                 ));
             }
+            self.watch_response(watch.as_ref(), &response)?;
             match (&scope, &response.observation) {
                 (Some(wanted), observation) => {
                     if response.snapshot.is_some()
@@ -343,6 +362,7 @@ impl Client {
             }
             if let Some(s) = &response.snapshot {
                 self.scoped_support = Some(s.capabilities.iter().any(|c| c == mk1::SCOPED_OBSERVE));
+                self.watch_support = Some(s.capabilities.iter().any(|c| c == mk1::SESSION_WATCH));
                 self.scoped_work_export_support =
                     s.capabilities.iter().any(|c| c == mk1::SCOPED_WORK_EXPORT);
             }

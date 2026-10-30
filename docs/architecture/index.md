@@ -69,4 +69,6 @@ Not implemented/qualified: dozens-agent scheduling/capacity, authenticated model
 
 The [ENG4 bounded-load draft](../engine/bounded-load.md) adds test/evidence only around those public contracts. It separates preconnected human control from new-human admission at full connection capacity and sampled RSS from enforced allocation; no new scheduler/parser/harness policy follows.
 
-[ENG5 admission draft](../engine/human-admission.md) changes only bounded same-UID transport handoff; main/PR83 do not yet implement it. Four dispatch slots remain. [PTY command visibility](../engine/pty-command-visibility.md) is a separate proposed cooperative shell boundary, not authoritative command attribution.
+[Merged ENG5 admission](../engine/human-admission.md), PR86/main51cf9d1, changes only bounded same-UID transport handoff. Four dispatch slots remain. [PTY command visibility](../engine/pty-command-visibility.md) is a separate proposed cooperative shell boundary, not authoritative command attribution.
+
+[ENG6 watch draft](../engine/session-watch.md) adds transport-owned request-driven latest-session observations behind a separate capability. The engine owns cuts/completeness/backpressure/refusal; clients only acknowledge applied cursors. No harness policy/parser or MCP export path is added.

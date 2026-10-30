@@ -1,5 +1,7 @@
 //! Experimental bounded hands-on contract, not the N0 proposed public schema.
 use serde::{Deserialize, Serialize};
+mod watch;
+pub use watch::*;
 pub const VERSION: &str = "namtab.mk1/1";
 pub const MAX_FRAME: usize = 1_048_576;
 pub const MAX_INPUT: usize = 8192;
@@ -54,6 +56,10 @@ pub enum Op {
     },
     LifecycleHello {},
     Observe {},
+    SessionWatch {
+        epoch: String,
+        request: WatchRequest,
+    },
     ObserveScoped {
         epoch: String,
         scope: ObservationScope,
@@ -393,6 +399,8 @@ pub struct Response {
     pub snapshot: Option<Snapshot>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub observation: Option<ScopedObservation>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub watch: Option<SessionWatch>,
     pub endpoint: Option<String>,
     pub resume: Option<String>,
     pub epoch: String,
@@ -404,6 +412,7 @@ impl Op {
             | Self::LifecycleHello {}
             | Self::Observe {}
             | Self::ObserveScoped { .. }
+            | Self::SessionWatch { .. }
             | Self::Receipt { .. } => return None,
             Self::Shutdown {} => "shutdown",
             Self::CancelAttempt { .. } => "cancel_attempt",

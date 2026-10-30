@@ -187,6 +187,7 @@ fn connection_io(
     mut endpoint: Option<String>,
     mut initial: Option<Response>,
 ) {
+    let mut watch = super::watch::Watch::default();
     let _ = stream.set_read_timeout(Some(Duration::from_secs(300)));
     let _ = stream.set_write_timeout(Some(Duration::from_secs(2)));
     loop {
@@ -201,7 +202,10 @@ fn connection_io(
             let readonly = request.as_ref().is_ok_and(|r| {
                 matches!(
                     r.operation,
-                    Op::Observe {} | Op::ObserveScoped { .. } | Op::Receipt { .. }
+                    Op::Observe {}
+                        | Op::ObserveScoped { .. }
+                        | Op::Receipt { .. }
+                        | Op::SessionWatch { .. }
                 )
             });
             if lease.is_some_and(|l| !l.begin(readonly)) {
@@ -213,7 +217,15 @@ fn connection_io(
                     if let Some(endpoint) = &endpoint {
                         let stopping = matches!(request.operation, Op::Shutdown {});
                         let id = request.id;
-                        let r = broker.request(endpoint, request);
+                        let r = if let Op::SessionWatch {
+                            epoch,
+                            request: selection,
+                        } = &request.operation
+                        {
+                            watch.request(&broker, endpoint, request.id, epoch, selection)
+                        } else {
+                            broker.request(endpoint, request)
+                        };
                         accepted_shutdown = stopping && broker.owns_shutdown(endpoint, id);
                         r
                     } else if matches!(request.operation, Op::LifecycleHello {}) {

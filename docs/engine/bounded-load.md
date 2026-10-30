@@ -2,7 +2,7 @@
 
 [Architecture](../architecture/index.md) · [H0 admission owner](h0-harness-contracts.md) · [Issue82](https://github.com/whoodes/namtab/issues/82) · [Fairness backlog48](https://github.com/whoodes/namtab/issues/48)
 
-**ENG4 draft, based on merged PR81/main97741bb.** The unchanged parent [PR83](https://github.com/whoodes/namtab/pull/83) uses `namtab.engine-load/0`; this ENG5 child uses **`namtab.engine-load/1`** with [new admission policy](human-admission.md). It names a test/evidence profile, not a new runtime wire, grant, scheduler or full H0 acceptance. The owner authorized this isolated qualification slice after scoped MCP integration. Numerical gates below are predeclared for this experiment; results must name the exact source/tree, host, executable hashes and fresh evidence directory. Calibration is not final validation, and a gate failure is not permission to tune it to green.
+**ENG4 merged in PR83/main13325a1; ENG5/profile1 followed in PR86/main51cf9d1.** The unchanged historical parent [PR83](https://github.com/whoodes/namtab/pull/83) uses `namtab.engine-load/0`; this ENG5 child uses **`namtab.engine-load/1`** with [new admission policy](human-admission.md). It names a test/evidence profile, not a new runtime wire, grant, scheduler or full H0 acceptance. The owner authorized this isolated qualification slice after scoped MCP integration. Numerical gates below are predeclared for this experiment; results must name the exact source/tree, host, executable hashes and fresh evidence directory. Calibration is not final validation, and a gate failure is not permission to tune it to green.
 
 ## Admitted tuple
 

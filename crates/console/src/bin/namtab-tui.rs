@@ -1085,6 +1085,7 @@ mod tests {
             }),
             snapshot: None,
             observation: None,
+            watch: None,
             endpoint: None,
             resume: None,
             epoch: "synthetic-test".into(),

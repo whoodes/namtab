@@ -220,6 +220,18 @@ const steps = [
     ],
   ],
   [
+    "mvp-session-watch",
+    "python3",
+    [
+      "-B",
+      "tests/mvp/session_watch.py",
+      "--bin-dir",
+      binaryDirectory,
+      "--artifacts",
+      realRun + "-watch",
+    ],
+  ],
+  [
     "mvp-human-admission",
     "python3",
     [

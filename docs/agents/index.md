@@ -57,6 +57,8 @@ Capture-off does not make logs/screenshots/model export private. Use synthetic, 
 
 [Scoped pull observations](../engine/scoped-observations.md) owns merged ENG2 API/client/CLI and merged ENG3 MCP migration. Use `make scoped-test` or `make mcp-scoped-test` for isolated scripted protocol proofs; native polling remains legacy. Neither check invokes a model or admits larger capacity.
 
-[Bounded engine-load qualification](../engine/bounded-load.md) owns the ENG4 draft profile and `make engine-load-test`. It uses only synthetic owned resources; CI's functional pass is distinct from explicit local `--qualify`, and neither is full H0 or capacity admission.
+[Bounded engine-load qualification](../engine/bounded-load.md) owns the merged ENG4/ENG5 profile and `make engine-load-test`. It uses only synthetic owned resources; CI's functional pass is distinct from explicit local `--qualify`, and neither is full H0 or capacity admission.
 
-[ENG5 fresh local-control admission](../engine/human-admission.md) is an unmerged child of PR83. It keeps four dispatch slots plus one explicit auxiliary transport, not a larger fleet capacity. [Cooperative PTY visibility](../engine/pty-command-visibility.md) is design only.
+[ENG5 fresh local-control admission](../engine/human-admission.md) merged in PR86 after PR83. It keeps four dispatch slots plus one explicit auxiliary transport, not a larger fleet capacity. [Cooperative PTY visibility](../engine/pty-command-visibility.md) is design only.
+
+[ENG6 request-driven session watch](../engine/session-watch.md) is a new draft subset of49. `make session-watch-test` exercises only fresh scripted headless resources; no push/delta/wait or native/MCP migration is implied.
