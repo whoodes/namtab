@@ -97,6 +97,10 @@ impl Client {
             Some("invalid watch request; nothing dispatched")
         } else if self.watch_support != Some(true) {
             Some("watch capability not negotiated; nothing dispatched")
+        } else if matches!(request, WatchRequest::Open { .. })
+            && self.watch_seen.len() >= usize::from(mk1::WATCH_MAX_OPENS)
+        {
+            Some("watch open budget exhausted; nothing dispatched")
         } else if matches!(request, WatchRequest::Open { .. }) {
             self.watch_binding
                 .as_ref()
@@ -160,6 +164,10 @@ impl Client {
         {
             return Err(fail());
         }
+        if matches!(request, WatchRequest::Open { .. }) && self.watch_seen.contains(&f.subscription)
+        {
+            return Err(fail());
+        }
         let prior = self.watch_binding.as_ref();
         let target = match request {
             WatchRequest::Open { session } => session,
@@ -213,6 +221,11 @@ impl Client {
         };
         if !valid {
             return Err(fail());
+        }
+        // Bounded identifier memory only, not observation/event retention. Close
+        // must not allow a corrupt peer to rebrand an old application ack.
+        if matches!(request, WatchRequest::Open { .. }) {
+            self.watch_seen.push(f.subscription.clone());
         }
         self.watch_binding = if matches!(f.body, WatchBody::Closed {}) {
             None

@@ -48,6 +48,7 @@ pub struct Client {
     failed: bool,
     scoped_support: Option<bool>,
     watch_support: Option<bool>,
+    watch_seen: Vec<String>,
     watch_binding: Option<session_watch::Binding>,
     scoped_work_export_support: bool,
 }
@@ -96,6 +97,7 @@ impl Client {
             failed: false,
             scoped_support: None,
             watch_support: None,
+            watch_seen: Vec::new(),
             watch_binding: None,
             scoped_work_export_support: false,
         })
@@ -120,6 +122,7 @@ impl Client {
         let _ = self.writer.shutdown(std::net::Shutdown::Both);
         self.failed = true;
         self.watch_binding = None;
+        self.watch_seen.clear();
     }
     pub fn transport_failed(&self) -> bool {
         self.failed

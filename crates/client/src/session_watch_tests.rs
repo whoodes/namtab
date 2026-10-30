@@ -342,3 +342,142 @@ fn transport_contracts_fail_closed_without_automatic_credit_or_resync() {
         std::fs::remove_dir(dir).unwrap();
     }
 }
+
+#[test]
+fn closed_subscription_ids_cannot_rebrand_an_old_ack_but_fresh_reopen_works() {
+    for reuse in [true, false] {
+        let dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../../.artifacts")
+            .join(format!(
+                "swr-{}-{}",
+                std::process::id(),
+                NEXT.fetch_add(1, Ordering::Relaxed)
+            ));
+        std::fs::create_dir_all(&dir).unwrap();
+        let path = dir.join("s");
+        let listener = UnixListener::bind(&path).unwrap();
+        let count = Arc::new(AtomicUsize::new(0));
+        let seen = count.clone();
+        let server = std::thread::spawn(move || {
+            let (mut socket, _) = listener.accept().unwrap();
+            socket
+                .set_read_timeout(Some(Duration::from_secs(2)))
+                .unwrap();
+            let mut reader = BufReader::new(socket.try_clone().unwrap());
+            for step in 0..if reuse { 5 } else { 6 } {
+                let mut line = String::new();
+                reader.read_line(&mut line).unwrap();
+                let q: p::Request = serde_json::from_str(&line).unwrap();
+                seen.fetch_add(1, Ordering::SeqCst);
+                let mut r = json!({"id":q.id,"ok":true,"error":null,"receipt":null,"snapshot":null,"endpoint":null,"resume":null,"epoch":"a".repeat(64)});
+                if step == 0 {
+                    r["endpoint"] = json!("agent");
+                    r["resume"] = json!("synthetic");
+                } else if step == 1 {
+                    r["snapshot"] = json!({"version":p::VERSION,"epoch":"a".repeat(64),"endpoint":"agent","capabilities":[p::SESSION_WATCH],"tasks":[],"endpoints":[],"sessions":[],"attempts":[],"artifacts":[],"receipts":[],"degraded":null});
+                } else {
+                    r["watch"] = frame(
+                        if step == 5 { 2 } else { 1 },
+                        if step == 3 {
+                            "closed"
+                        } else if step == 5 {
+                            "unchanged"
+                        } else {
+                            "baseline"
+                        },
+                    );
+                    if step >= 4 && !reuse {
+                        r["watch"]["subscription"] = json!("sub-fresh");
+                    }
+                }
+                let mut bytes = serde_json::to_vec(&r).unwrap();
+                bytes.push(b'\n');
+                socket.write_all(&bytes).unwrap();
+            }
+        });
+        let mut c = Client::connect(&path, "synthetic", p::Role::Agent).unwrap();
+        let old = c.session_watch_open("session1").unwrap();
+        c.session_watch_close().unwrap();
+        let reopened = c.session_watch_open("session1");
+        if reuse {
+            assert!(reopened.is_err());
+            assert!(c.transport_failed());
+            let n = c.next_id();
+            assert!(c.session_watch_next(&old).is_err());
+            assert_eq!(c.next_id(), n);
+        } else {
+            let new = reopened.unwrap();
+            let n = c.next_id();
+            assert!(c.session_watch_next(&old).is_err());
+            assert_eq!(c.next_id(), n);
+            assert!(matches!(
+                c.session_watch_next(&new).unwrap().body,
+                p::WatchBody::Unchanged {}
+            ));
+        }
+        drop(c);
+        server.join().unwrap();
+        assert_eq!(count.load(Ordering::SeqCst), if reuse { 5 } else { 6 });
+        std::fs::remove_file(&path).unwrap();
+        std::fs::remove_dir(dir).unwrap();
+    }
+}
+
+#[test]
+fn successful_open_identifier_memory_is_bounded_before_next_dispatch() {
+    let dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../../.artifacts")
+        .join(format!(
+            "swb-{}-{}",
+            std::process::id(),
+            NEXT.fetch_add(1, Ordering::Relaxed)
+        ));
+    std::fs::create_dir_all(&dir).unwrap();
+    let path = dir.join("s");
+    let listener = UnixListener::bind(&path).unwrap();
+    let count = Arc::new(AtomicUsize::new(0));
+    let seen = count.clone();
+    let server = std::thread::spawn(move || {
+        let (mut socket, _) = listener.accept().unwrap();
+        socket
+            .set_read_timeout(Some(Duration::from_secs(2)))
+            .unwrap();
+        let mut reader = BufReader::new(socket.try_clone().unwrap());
+        for step in 0..2 + usize::from(p::WATCH_MAX_OPENS) * 2 {
+            let mut line = String::new();
+            reader.read_line(&mut line).unwrap();
+            let q: p::Request = serde_json::from_str(&line).unwrap();
+            seen.fetch_add(1, Ordering::SeqCst);
+            let mut r = json!({"id":q.id,"ok":true,"error":null,"receipt":null,"snapshot":null,"endpoint":null,"resume":null,"epoch":"a".repeat(64)});
+            if step == 0 {
+                r["endpoint"] = json!("agent");
+                r["resume"] = json!("synthetic");
+            } else if step == 1 {
+                r["snapshot"] = json!({"version":p::VERSION,"epoch":"a".repeat(64),"endpoint":"agent","capabilities":[p::SESSION_WATCH],"tasks":[],"endpoints":[],"sessions":[],"attempts":[],"artifacts":[],"receipts":[],"degraded":null});
+            } else {
+                r["watch"] = frame(1, if step % 2 == 0 { "baseline" } else { "closed" });
+                r["watch"]["subscription"] = json!(format!("sub-{}", (step - 2) / 2));
+            }
+            let mut bytes = serde_json::to_vec(&r).unwrap();
+            bytes.push(b'\n');
+            socket.write_all(&bytes).unwrap();
+        }
+    });
+    let mut c = Client::connect(&path, "synthetic", p::Role::Agent).unwrap();
+    for _ in 0..p::WATCH_MAX_OPENS {
+        c.session_watch_open("session1").unwrap();
+        c.session_watch_close().unwrap();
+    }
+    let n = c.next_id();
+    assert!(c.session_watch_open("session1").is_err());
+    assert_eq!(c.next_id(), n);
+    assert!(!c.transport_failed());
+    drop(c);
+    server.join().unwrap();
+    assert_eq!(
+        count.load(Ordering::SeqCst),
+        2 + usize::from(p::WATCH_MAX_OPENS) * 2
+    );
+    std::fs::remove_file(&path).unwrap();
+    std::fs::remove_dir(dir).unwrap();
+}
