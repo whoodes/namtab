@@ -139,3 +139,7 @@ The [external-agent/lifecycle increment](../engineering/external-agent-mvp.md) i
 ### Bounded engine qualification exception
 
 The separately authorized [ENG4 engine-load/0 profile](bounded-load.md) admits only a finite existing-capacity headless experiment under issue82. It owns precise workloads, numerical/functional gates, sampling limitations and source-bound results; the larger population/resource proposals above remain unselected. Source audits and a successful named experiment do not complete A1–A5, #46/#48 or H0. #49 subscription/backpressure work stays dependent.
+
+### Finite request-driven watch exception
+
+The separately authorized [ENG6 draft](session-watch.md), issue87, admits one-session latest-state sampling and changed-body omission with explicit one-credit/base/resync and transport lifetime. It introduces no publisher queue, wait scheduler, capacity increase, native/MCP consumer or fullH0/#46/#48/#49 acceptance. The larger event/delta/wait contracts remain residual.

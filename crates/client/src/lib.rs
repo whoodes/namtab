@@ -42,3 +42,5 @@ mod tests {
 mod attempt_control_tests;
 #[cfg(test)]
 mod scoped_observation_tests;
+#[cfg(test)]
+mod session_watch_tests;

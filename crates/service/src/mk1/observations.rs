@@ -10,6 +10,7 @@ pub(super) fn capabilities() -> Vec<String> {
         wire::ATTEMPT_ORIGIN,
         wire::RECEIPT_RESULTS,
         wire::SCOPED_OBSERVE,
+        wire::SESSION_WATCH,
         wire::SCOPED_WORK_EXPORT,
     ]
     .into_iter()

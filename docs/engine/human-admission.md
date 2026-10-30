@@ -2,7 +2,7 @@
 
 [Engine architecture](../architecture/index.md) · [Issue84](https://github.com/whoodes/namtab/issues/84) · [Parent ENG4](bounded-load.md)
 
-**ENG5 draft, stacked on unmerged ENG4/PR83.** Main does not yet have this policy. It changes transport admission, not execution capacities or the `namtab.mk1/1` operation shape. Discover `human_admission_v0` through the existing capability list. The observation/profile versions,2lifetimePTY/2lifetimeattempt/15ordinary+1lifecycle identities and all input/receipt fences remain unchanged.
+**ENG5 merged in PR86/main51cf9d1 after ENG4/PR83.** It changes transport admission, not execution capacities or the `namtab.mk1/1` operation shape. Discover `human_admission_v0` through the existing capability list. The observation/profile versions,2lifetimePTY/2lifetimeattempt/15ordinary+1lifecycle identities and all input/receipt fences remain unchanged.
 
 ## Resource and trust boundary
 

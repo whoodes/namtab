@@ -94,4 +94,6 @@ Report the exact run path, revision, selected task/attempt/session, action, expe
 
 Developers can run `make foundation-verify` for headless active checks. `make nat1-test` prepares same-worktree binaries and local terminfo through `mk1-build`, then runs a fresh isolated **actual X11** fleet journey. It additionally needs existing `tic`, ImageMagick `import`, libX11 and the font above. No manual terminfo directory setup is required. Native fixtures use the declared `TERM=dumb` fallback; they do not certify the generated `namtab-mk1` profile. No model is invoked by either check.
 
-The [ENG5 admission draft](../engine/human-admission.md) may retire an idle/read-only Agent connection for fresh local control when all four dispatch slots are occupied. It is not on main yet. Explicit reconnect resumes the same identity without replay; role claims are not authenticated humans and all-protected/busy/exhausted cases may still refuse.
+The [merged ENG5 admission](../engine/human-admission.md) may retire an idle/read-only Agent connection for fresh local control when all four dispatch slots are occupied. It merged as PR86/main51cf9d1. Explicit reconnect resumes the same identity without replay; role claims are not authenticated humans and all-protected/busy/exhausted cases may still refuse.
+
+The [request-driven session-watch draft](../engine/session-watch.md) is for checked/raw engine clients and `make session-watch-test`, not a new native control or MCP tool. Ordinary launch/interaction stays unchanged; no watch or provider runs automatically.

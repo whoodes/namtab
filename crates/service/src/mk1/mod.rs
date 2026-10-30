@@ -8,6 +8,7 @@ mod sessions;
 mod tasks;
 #[cfg(test)]
 mod tests;
+mod watch;
 mod worker;
 
 use project_x_platform::local_process::{
@@ -280,6 +281,7 @@ impl Broker {
             receipt: None,
             snapshot: None,
             observation: None,
+            watch: None,
             endpoint: None,
             resume: None,
             epoch: self.epoch.clone(),
@@ -654,6 +656,9 @@ impl Broker {
         response
     }
     pub fn request(self: &Arc<Self>, endpoint: &str, request: Request) -> Response {
+        if matches!(request.operation, Op::SessionWatch { .. }) {
+            return self.fail(request.id, "watch_requires_transport");
+        }
         if let Op::ObserveScoped { epoch, scope } = &request.operation {
             return match self.scoped_observation(endpoint, epoch, scope) {
                 Ok(observation) => {

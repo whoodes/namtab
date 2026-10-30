@@ -198,6 +198,7 @@ fn wrong_or_missing_broker_receipts_fence_the_real_client() {
                     receipt: None,
                     snapshot: None,
                     observation: None,
+                    watch: None,
                     endpoint: None,
                     resume: None,
                     epoch: "fixture-epoch".into(),

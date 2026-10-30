@@ -10,7 +10,7 @@ The first MK1 owned finite core/worker and real Linux PTY/managed-process primit
 
 | Track | Immediate slice / exit | Later backlog / integration |
 | --- | --- | --- |
-| Engine | Completed70/ENG1; current bounded draft [78/ENG2](https://github.com/whoodes/namtab/issues/78) adds [direct scoped pull observations](scoped-observations.md), public client/CLI and isolated read/ownership/noise evidence | 4coordination,48scheduling/resource fairness,49targeted observations,3compatibility,5recovery; no broad qualification from ENG1 |
+| Engine | Merged ENG1/ENG2/ENG3 and bounded ENG4/ENG5 (PR83/86); current [87/ENG6 draft](https://github.com/whoodes/namtab/issues/87) adds [request-driven session watches](session-watch.md) with explicit credits/cuts/resync | 4coordination,48scheduling/resource fairness,49targeted observations,3compatibility,5recovery; no broad qualification from ENG1 |
 | Native harness | Completed [71/NAT1](https://github.com/whoodes/namtab/issues/71): actual native roster/selection/terminal/takeover/cancel UX through public contracts | 47presentation/IME/a11y; larger navigation/polish after current useful loop; no duplicated parser/policy |
 | Integration | [69alignment](https://github.com/whoodes/namtab/issues/69),46contract/admission residuals,50actual agent mediation,51joint acceptance | Existing H0–H2 below remain cross-track qualification criteria, not a single undifferentiated harness backlog |
 
