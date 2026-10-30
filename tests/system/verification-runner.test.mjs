@@ -18,7 +18,11 @@ function verify(args, failure = "", extraEnv = {}) {
   const root = resolve(mkdtempSync(".artifacts/verification-runner-"));
   for (const dir of ["scripts", "tests/system", "bin", ".venv-docs/bin"])
     mkdirSync(root + "/" + dir, { recursive: true });
-  for (const file of ["verify.mjs", "source-identity.mjs"])
+  for (const file of [
+    "verify.mjs",
+    "source-identity.mjs",
+    "fixture-diagnostics.mjs",
+  ])
     copyFileSync("scripts/" + file, root + "/scripts/" + file);
   writeFileSync(root + "/.node-version", process.versions.node + "\n");
   for (const name of ["z.test.mjs", "a.test.mjs", "helper.mjs"])
@@ -36,6 +40,10 @@ if (bin === "git") {
 }
 if (process.env.VERIFY_TEST_FAILURE === "source" && args[0] === "test") writeFileSync("changed-source", "fixture");
 console.log("stub " + bin);
+if (process.env.VERIFY_TEST_FAILURE === "watch" && args.includes("tests/mvp/session_watch.py")) {
+  console.log(JSON.stringify({ verdict: "FAIL", errors: { execution_error: { type: "AssertionError", message: "synthetic-watch-failure" } }, screen: "DO_NOT_ECHO" }));
+  process.exit(1);
+}
 if ((process.env.VERIFY_TEST_FAILURE === "check" && bin === "cargo" && args[0] === "test") ||
     (process.env.VERIFY_TEST_FAILURE === "coordination" && args.includes("tests/mk1/agents.py")) ||
     (process.env.VERIFY_TEST_FAILURE === "journey" && args.includes("tests/mk1/e2e.py")) ||
@@ -269,4 +277,20 @@ test("failed scoped observation journey fails the aggregate without hiding other
     report.checks.find((c) => c.name === "strict-mkdocs").verdict,
     "PASS",
   );
+});
+
+test("failed owned fixture keeps the gate red and prints only bounded structured errors", () => {
+  const { result, report } = verify(["--source-foundation"], "watch");
+  assert.equal(result.status, 1);
+  assert.equal(
+    report.checks.find((c) => c.name === "mvp-session-watch").verdict,
+    "FAIL",
+  );
+  assert.ok(
+    result.stdout.includes(
+      'Synthetic fixture failure: {"execution_error":{"type":"AssertionError","message":"synthetic-watch-failure"}}',
+    ),
+  );
+  assert.ok(!result.stdout.includes("DO_NOT_ECHO"));
+  assert.equal(report.checks.at(-1).verdict, "PASS");
 });
