@@ -1,3 +1,4 @@
+import { fixtureFailureSummary } from "./fixture-diagnostics.mjs";
 import { sourceIdentity } from "./source-identity.mjs";
 import { spawnSync } from "node:child_process";
 import { readFile, writeFile, mkdir, readdir } from "node:fs/promises";
@@ -295,6 +296,17 @@ for (const [name, bin, args] of steps) {
   const verdict = r.exit === 0 ? "PASS" : "FAIL";
   checks.push({ name, verdict, ...r });
   console.log(name + ": " + verdict);
+  if (
+    verdict === "FAIL" &&
+    [
+      "engine-bounded-load-functional",
+      "mvp-human-admission",
+      "mvp-session-watch",
+    ].includes(name)
+  ) {
+    const summary = fixtureFailureSummary(r.stdout);
+    if (summary) console.log("Synthetic fixture failure: " + summary);
+  }
 }
 const folder = new URL(
   "../.artifacts/verification/" + randomUUID() + "/",

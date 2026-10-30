@@ -1,4 +1,6 @@
 """Damaged evidence and finalizer checks; no process/model/listener is started."""
+import contextlib
+import io
 import copy
 import json
 from pathlib import Path
@@ -85,6 +87,16 @@ class Sealing(unittest.TestCase):
     def test_good_seal_has_tree_sources_and_evidence(self):
         with tempfile.TemporaryDirectory() as d:
             f=Fake(Path(d));self.assertEqual(execute(f,self.identity),0);r=json.loads((f.artifacts/'checks.json').read_text());self.assertEqual(r['source_identity']['verdict'],'PASS');self.assertEqual(r['source_identity']['after']['tree'],'t');self.assertIn('sources/fixture.py',r['evidence'])
+    def test_failure_stdout_is_bounded_structured_and_not_a_screen_dump(self):
+        with tempfile.TemporaryDirectory() as d:
+            f=Fake(Path(d));f.record['private_screen']='NEVER_DUMP_THIS'
+            def broken():raise AssertionError('synthetic\n\x1b[31m'+('x'*2000))
+            f.journey=broken;output=io.StringIO()
+            with contextlib.redirect_stdout(output):self.assertEqual(execute(f,self.identity),1)
+            lines=output.getvalue().splitlines();self.assertEqual(len(lines),1);r=json.loads(lines[0])
+            self.assertNotIn('NEVER_DUMP_THIS',lines[0]);self.assertEqual(r['verdict'],'FAIL');self.assertEqual(set(r['errors']),{'execution_error'})
+            self.assertEqual(len(r['errors']['execution_error']['message']),512)
+            self.assertEqual(r['errors']['execution_error']['type'],'AssertionError')
     def test_cleanup_failure_never_preserves_pass(self):
         with tempfile.TemporaryDirectory() as d:
             f=Fake(Path(d),True);self.assertEqual(execute(f,self.identity),1);r=json.loads((f.artifacts/'checks.json').read_text());self.assertEqual(r['verdict'],'FAIL');self.assertTrue(r['qualification'].startswith('FAIL'));self.assertIn('cleanup_error',r)

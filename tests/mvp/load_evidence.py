@@ -52,5 +52,7 @@ def execute(run, identity=source_identity):
         record['verdict']='FAIL' if failed else 'PASS'
         if failed:record['qualification']='FAIL_EXECUTION_CLEANUP_OR_EVIDENCE'
         (run.artifacts/'checks.json').write_text(json.dumps(record,indent=2)+'\n')
-    print(json.dumps({'verdict':record['verdict'],'qualification':record.get('qualification'),'checks':str(run.artifacts/'checks.json')}))
+    # Only these synthetic-fixture errors enter CI stdout; never dump screens/env.
+    errors={key:{'type':record[key]['type'][:128],'message':record[key]['message'][:512]} for key in ['execution_error','cleanup_error','seal_error'] if key in record}
+    print(json.dumps({'verdict':record['verdict'],'qualification':record.get('qualification'),'checks':str(run.artifacts/'checks.json'),'errors':errors}))
     return 1 if failed else 0
